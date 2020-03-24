@@ -1,0 +1,52 @@
+{
+			"name": "react-three-mre",
+			"version": "1.0.0",
+			"description": "",
+			"private": true,
+			"scripts": {
+						"test": "echo \"Error: no test specified\" && exit 1",
+						"watch": "webpack --watch",
+						"start": "webpack-dev-server --open --config webpack.dev.js",
+						"build": "webpack --config webpack.prod.js"
+			},
+			"keywords": [],
+			"author": "",
+			"license": "ISC",
+			"devDependencies": {
+						"@babel/core": "^7.7.4",
+						"@babel/preset-env": "^7.7.4",
+						"@babel/preset-react": "^7.7.4",
+						"babel-loader": "^8.0.6",
+						"babel-plugin-transform-react-jsx-source": "^6.22.0",
+						"clean-webpack-plugin": "^3.0.0",
+						"eslint": "^6.8.0",
+						"eslint-plugin-react": "^7.18.3",
+						"eslint-plugin-react-hooks": "^2.5.0",
+						"file-loader": "^4.3.0",
+						"html-webpack-plugin": "^3.2.0",
+						"style-loader": "^1.0.1",
+						"webpack": "^4.41.2",
+						"webpack-bundle-analyzer": "^3.6.0",
+						"webpack-cli": "^3.3.10",
+						"webpack-dev-server": "^3.9.0",
+						"webpack-merge": "^4.2.2"
+			},
+			"dependencies": {
+						"@emotion/babel-preset-css-prop": "^10.0.23",
+						"@emotion/core": "^10.0.22",
+						"@jesseburke/basic-react-components": "^1.1.0",
+						"@jesseburke/graphics-components": "^1.1.0",
+						"@navsnpm/katex-expression": "^1.0.8",
+						"babel-plugin-emotion": "^10.0.23",
+						"css-loader": "^3.2.1",
+						"delaunator": "^4.0.1",
+						"emotion": "^10.0.23",
+						"expr-eval": "^2.0.2",
+						"katex": "^0.11.1",
+						"react": "^16.12.0",
+						"react-dom": "^16.12.0",
+						"three": "^0.110.0",
+						"three-gltf-exporter": "0.0.1",
+						"three-orbitcontrols": "^2.110.1"
+			}
+}
