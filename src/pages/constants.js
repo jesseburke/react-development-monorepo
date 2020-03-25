@@ -9,8 +9,11 @@ export const halfXSize = 10;
 export const halfYSize = 7;
 export const gridSize = 100;
 
-export const xMin = -15, xMax = 15;
-export const yMin = -10, yMax = 10;
+export const xMin = -100, xMax = 100;
+export const yMin = -100, yMax = 100;
+
+// export const xMin = -15, xMax = 15;
+// export const yMin = -10, yMax = 10;
 //export const yMin = 0, yMax = 10;
 
 export const bounds = {xMin, xMax, yMin, yMax};
@@ -77,11 +80,11 @@ export const initGridData = {
 
 // how much of grid to show at start
 //export const cameraConst = 1.00;
-export const cameraConst = 1.50;
+export const cameraConst = .15;
 
 export const initCameraData = 
 {position: [0, 0, 100],
- up: [0, 1, 0],
+ up: [0, 0, 1],
  //fov: 75,
  near: -1,
  far: 5000,
@@ -93,15 +96,26 @@ export const initCameraData =
                }
 };
 
+// export const initControlsData = {
+//     mouseButtons: { LEFT: THREE.MOUSE.DOLLY }, 
+// 	touches: { ONE: THREE.MOUSE.ROTATE,
+// 		   TWO: THREE.TOUCH.DOLLY,
+// 		   THREE: THREE.MOUSE.PAN },
+//     enableRotate: false,
+//     enablePan: false,
+//     enabled: true,
+//     keyPanSpeed: 50 };
+
 export const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.DOLLY }, 
+    mouseButtons: { LEFT: THREE.MOUSE.PAN }, 
 	touches: { ONE: THREE.MOUSE.ROTATE,
 		   TWO: THREE.TOUCH.DOLLY,
 		   THREE: THREE.MOUSE.PAN },
     enableRotate: false,
-    enablePan: false,
+    enablePan: true,
     enabled: true,
-    keyPanSpeed: 50 };
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
 
 export const secControlsData =  {       
     mouseButtons: {LEFT: THREE.MOUSE.ROTATE}, 
@@ -111,4 +125,5 @@ export const secControlsData =  {
     enableRotate: true,
     enablePan: true,
     enabled: true,
-    keyPanSpeed: 50 };
+    keyPanSpeed: 50,
+    zoomSpeed: 1.25};

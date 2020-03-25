@@ -15,15 +15,14 @@ import funcParser from '../utils/funcParser.js';
 import ResetCameraButton from '../components/ResetCameraButton.js';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
 import Input from '../components/Input.js';
-import ArrowGridOptions from '../components/ArrowGridOptions.js';
+import Slider from '../components/Slider.js';
+import TexDisplayComp from '../components/TexDisplayComp.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
+import useGridAndOrigin from '../graphics/useGridAndOriginNew.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import use3DAxes from '../graphics/use3DAxes.js';
 import FunctionGraph from '../graphics/FunctionGraph.js';
-import ArrowGrid from '../graphics/ArrowGrid.js';
-import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
-import ArrowGeometry from '../graphics/ArrowGeometry.js';
+
 
 import MatrixFactory from '../math/MatrixFactory.js';
 
@@ -32,10 +31,6 @@ import {initArrowGridData, initAxesData,
         bounds, initCameraData,
         initFuncStr, initXFuncStr, fonts,
         initYFuncStr} from './constants.js';
-
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
-
 
 
 
@@ -60,7 +55,7 @@ const {xMin, xMax, yMin, yMax} = bounds;
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
-const controlBarHeight = 13;
+const controlBarHeight = 15;
 
 // (relative) font sizes (first in em's)
 const initFontSize = 1;
@@ -87,27 +82,26 @@ const testFuncMaterial = new THREE.MeshBasicMaterial({
 testFuncMaterial.transparent = true;
 testFuncMaterial.opacity = .6;
 
-const testFuncRadius = .05;
-
-const testFuncH = .1;
-
-const capacityMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color( initColors.testFunc ),
-    side: THREE.FrontSide });
-
-capacityMaterial.transparent = true;
-capacityMaterial.opacity = .4;
+const solnRadius = .2;
+const solnH = .1;
 
 
-const initAVal = 4;
-
+const initAVal = .2;
 const initBVal = 1;
+// will have -abBound < a^2 - 4b > abBound
+const abBound = 10;
+const aMax = 2.5;
+const aMin = -2.5;
+const aStep = .1;
 
 const initApproxHValue = .01;
 
 const LatexSecOrderEquation = "(\\frac{d}{dx})^2(y) + a \\cdot \\frac{d}{dx}(y) + b \\cdot y  = 0";//"\\frac{d^2y}{dx^2} + a \\cdot \\frac{dy}{dx} + b \\cdot y  = 0";
 
 const initInitConds = [[1,0], [1,1]];
+
+
+
 
 //------------------------------------------------------------------------
 
@@ -127,13 +121,16 @@ export default function App() {
 
     const [aVal, setAVal] = useState(initAVal);
 
+    // this init value should be between the min and max for b
     const [bVal, setBVal] = useState(initBVal);
 
     const [aSliderMax, setASliderMax] = useState(30);
 
     const [solnStr, setSolnStr] = useState(null);
 
-    const [sigDig, setSigDig] = useState(1);    
+    const [solnTexStr, setSolnTexStr] = useState(null);
+
+    const [sigDig, setSigDig] = useState(2);    
 
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
@@ -216,21 +213,77 @@ export default function App() {
     
     //------------------------------------------------------------------------
     //
-    // 
+    // change solnStr and solnTexStr
     
 
     useEffect( () => {
 
         const c = calcSolnStr( aVal, bVal, initialConds, sigDig+1 ) ;
-        console.log(c);
-        setSolnStr( c );
+
+        if( !c ) {
+
+            setSolnStr( null );
+            setSolnTexStr( null );
+
+            return;
+        }
+        
+        setSolnStr( c.str );
+        setSolnTexStr( c.texStr );
        
     }, [aVal, bVal, initialConds, sigDig] );
 
-
     //------------------------------------------------------------------------
     //
+    // solution display effect
+
+    useEffect( () => {
+
+        if( !threeCBs || !solnStr ) return;
+        
+        const solnFunc = funcParser( solnStr );
+        
+        let pointArray = [];
+        
+        for( let i = Math.floor(xMin/solnH); i < Math.ceil(xMax/solnH); i++ ) {
+
+            const t = solnFunc( i*solnH );
+
+            if( t >= 2*yMin && t <= 2*yMax ) {
+                
+                pointArray.push( new THREE.Vector3(i*solnH, solnFunc( i*solnH ), 0) );
+            }
+        }
+
+        const path = new THREE.CurvePath();
+
+        for( let i = 0; i < pointArray.length-1; i++ ) {
+
+            path.add( new THREE.LineCurve3( pointArray[i], pointArray[i+1] ) );
+            
+        }
+
+        const geom = new THREE.TubeBufferGeometry( path,
+						   1064,
+						   solnRadius,
+						   8,
+						   false );
+        
+        const mesh = new THREE.Mesh( geom, testFuncMaterial );
+
+        threeCBs.add( mesh );
+
+        return () => {
+            threeCBs.remove(mesh);
+            geom.dispose();
+        };
+        
+    }, [threeCBs, initialConds, bounds, solnStr] );
+
     
+    //------------------------------------------------------------------------
+    //
+        
     const resetCameraCB = useCallback( () => {
 
         if( controlsEnabled ) {
@@ -280,9 +333,11 @@ export default function App() {
                            textAlign: 'center'}}>
                   2nd order linear, w/ constant coefficients
                 </div>
-               <span css={{padding:'.25em 0'}}
-                     dangerouslySetInnerHTML={{ __html: katex.renderToString(LatexSecOrderEquation) }}
-                />
+                <div css={{whiteSpace: 'nowrap'}}>
+                  <TexDisplayComp userCss={{padding:'.25em 0'}}
+                                  str={LatexSecOrderEquation}
+                  />
+                </div>
               </div>
 
               <div css={{ margin: 0,
@@ -295,9 +350,11 @@ export default function App() {
                   userCss={{padding: '.25em 0em'}}
                   value={aVal}
                   CB={val => setAVal(val)}
-                  label={'a'}
-                  max={xMax}
-                  min={0}
+                  label={'a'}                  
+                  max={aMax}
+                  min={aMin}
+                  step={aStep}
+                  sigDig={sigDig}
                 />
 
                 <Slider
@@ -305,31 +362,42 @@ export default function App() {
                   value={bVal}
                   CB={val => setBVal(val)}
                   label={'b'}
-                  max={aVal*yMax}
+                  min={(aVal*aVal - abBound)/4}
+                  max={(aVal*aVal + abBound)/4}
+                  sigDig={sigDig}
                 />                
               </div>
             </div>
 
-            <div  css={{
-                 margin: 0,
+            <div css={{
+                margin: 0,
                 display: 'flex',
+                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
+                padding: '0em 3em',
+                flex: 3,
                 height: '100%',
-                padding: '.5em 1em',
-                fontSize: '1.25em',
                 borderRight: '1px solid'}}>
+              
               <div css={{padding:'.25em 0',
                          textAlign: 'center'}}>
-                <span css={{padding:'.25em 0'}}
-                      dangerouslySetInnerHTML={{ __html: katex.renderToString(
-                          `a^2 - 4b = ${round(aVal*aVal - 4*bVal,sigDig+1).toString()}`) }}
+                <TexDisplayComp userCss={{padding:'.25em 0'}}
+                                str={`a^2 - 4b = ${round(aVal*aVal - 4*bVal,sigDig+1).toString()}`}
                 />               
-              </div>                            
+              </div>
+              <div css={{
+                  padding: '.5em 0',
+                  fontSize: '1.00em'
+              }}>
+                <TexDisplayComp userCss={{padding:'.25em 0'}}
+                                str={solnTexStr}
+                />       
+              </div>
             </div>
             <InitialCondsComp initialConds={initialConds}
                               changeCB={useCallback( ic => setInitialConds(ic))}/>
-           
+            
           </ControlBar>
           
           <Main height={100-controlBarHeight}
@@ -352,17 +420,14 @@ export default function App() {
 }
 
 
+
+
 // a,b are numbers, initialConds is a 2 elt array of 2 elt arrays
 function calcSolnStr(a, b, initialConds, sigDig) {
 
     const [[x0, y0], [x1, y1]] = initialConds;
 
-    if( a*a - 4*b < 0 ) {
-
-        return null;
-    }
-
-    else if( a*a - 4*b > 0 ) {
+    if( a*a - 4*b > 0 ) {
 
         // in this case solns have form y = Ce^{m1 * x} + De^{m2 * x}
 
@@ -383,7 +448,33 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         m1 = round( m1, sigDig );
         m2 = round( m2, sigDig );
         
-        return `y = ${C}*e^(${m1}*x) + ${D}*e^(${m2}*x)`;
+        return {str: `${C}*e^(${m1}*x) + ${D}*e^(${m2}*x)`,
+                texStr: `y = ${C}*e^{${m1}*x} + ${D}*e^{${m2}*x}`};
+        
+    }
+
+    
+    else if( a*a - 4*b < 0 ) {
+
+        // in this case solns have form y = e^{-ax/2}(C cos(kx) + D sin(kx)), where k = (4*b-a^2)^(1/2)/4
+
+        let k =  Math.sqrt( 4*b - a*a )/2;
+
+        const alpha = Math.E**(-a*x0/2) * Math.cos(k*x0);
+        const beta = Math.E**(-a*x0/2) * Math.sin(k*x0);
+        const gamma = Math.E**(-a*x1/2) * ( -a/2*Math.cos(k*x1) - k*Math.sin(k*x1) );
+        const delta = Math.E**(-a*x1/2) * ( -a/2*Math.sin(k*x1) - k*Math.cos(k*x1) );
+
+        // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
+        const A = [[ alpha, beta, y0], [gamma, delta, y1]];
+        const m = MatrixFactory( A ).rref().getArray();
+        const C = round(m[0][2], sigDig);
+        const D = round(m[1][2], sigDig);
+        
+        k = round( k, sigDig );      
+        
+        return {str: `e^(-(${a})*x/2)*( (${C})*cos((${k})*x) + (${D})*sin((${k})*x) )`,
+                texStr: `y = e^{${-a}*x/2}( ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x) )`};
         
     }
 
@@ -443,27 +534,6 @@ function InitialCondsComp({ initialConds=[[1,0],[1,1]], changeCB = () => null}) 
           </div>
         </div>
     );        
-}
-
-function Slider({value,
-                 step = .1,
-                 CB = () => null,
-                 sigDig = 1,
-                 min = 0,
-                 max = 10,
-                 label='',
-                 userCss={}}) {
-
-    
-    return (<div style={userCss}>
-            <input name="n" type="range" value={value} step={step}
-	           onChange={(e) => CB(e.target.value)}
-	           min={min} max={max}
-            />
-              <label  css={{padding: '0em .5em',
-                            whiteSpace: 'nowrap'}}
-                    htmlFor="range_n">{label + ' = ' + round(value, sigDig).toString()}</label>
-          </div>);
 }
 
 

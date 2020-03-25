@@ -40,7 +40,7 @@ import 'katex/dist/katex.min.css';
 // initial data
 //
 
-const {xMin, xMax, yMin, yMax} = bounds;
+const {xMin, xMax, yMin, yMax} = {xMin: -100, xMax: 100, yMin: -100, yMax: 100};//bounds;
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
