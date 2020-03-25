@@ -8,7 +8,7 @@ import ArrowGeometry from './ArrowGeometry.js';
 export default function ArrowGrid( {gridSqSize,
 				    color,
 				    arrowLength,
-				    bounds} = {}, func )
+				    bounds = {}, func })
 {
     const {xMin, xMax, yMin, yMax} = bounds;
     
