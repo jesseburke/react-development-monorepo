@@ -223,24 +223,24 @@ export default function App() {
     //
     // solution display effect
 
-    useEffect( () => {
+    // useEffect( () => {
 
-        if( !threeCBs || !solnStr ) return;
+    //     if( !threeCBs || !solnStr ) return;
         
-        const solnFunc = funcParser( solnStr );
+    //     const solnFunc = funcParser( solnStr );
 
-        const geom = FunctionGraph2DGeom({ func: solnFunc, bounds });              
+    //     const geom = FunctionGraph2DGeom({ func: solnFunc, bounds });              
         
-        const mesh = new THREE.Mesh( geom, testFuncMaterial );
+    //     const mesh = new THREE.Mesh( geom, testFuncMaterial );
 
-        threeCBs.add( mesh );
+    //     threeCBs.add( mesh );
 
-        return () => {
-            threeCBs.remove(mesh);
-            geom.dispose();
-        };
+    //     return () => {
+    //         threeCBs.remove(mesh);
+    //         geom.dispose();
+    //     };
         
-    }, [threeCBs, initialConds, bounds, solnStr] );
+    // }, [threeCBs, initialConds, bounds, solnStr] );
     
     
     return (       
