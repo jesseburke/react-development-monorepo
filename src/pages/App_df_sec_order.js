@@ -100,7 +100,8 @@ const LatexSecOrderEquation = "(\\frac{d}{dx})^2(y) + a \\cdot \\frac{d}{dx}(y) 
 
 const initInitConds = [[3,6], [7,5]];
 
-
+// in msec
+const throttleTime = 100;
 
 
 //------------------------------------------------------------------------
@@ -151,14 +152,8 @@ export default function App() {
 
     useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
     use2DAxes({ threeCBs, axesData });
-        
 
-    
-    
-    //------------------------------------------------------------------------
-    //
-    // when initialConds change, change the displayed points
-
+    // make the meshes for the initial points
     useEffect( () => {
 
         if( !threeCBs ) return;
@@ -169,8 +164,8 @@ export default function App() {
         const material1 = new THREE.MeshBasicMaterial({ color: initColors.firstPt });
 
         const mesh1 = new THREE.Mesh( geometry1, material1 )
-              .translateX(initialConds[0][0])
-              .translateY(initialConds[0][1]);
+              .translateX(initInitConds[0][0])
+              .translateY(initInitConds[0][1]);
 
         threeCBs.add( mesh1 );
         setInitialPt1Mesh( mesh1 );
@@ -180,8 +175,8 @@ export default function App() {
         const material2 = new THREE.MeshBasicMaterial({ color: initColors.secPt });
 
         const mesh2 = new THREE.Mesh( geometry2, material2 )
-              .translateX(initialConds[1][0])
-              .translateY(initialConds[1][1]);
+              .translateX(initInitConds[1][0])
+              .translateY(initInitConds[1][1]);
 
         threeCBs.add( mesh2 );
         setInitialPt2Mesh( mesh2 );
@@ -201,7 +196,7 @@ export default function App() {
         };
         
         
-    }, [threeCBs, initialConds] );
+    }, [threeCBs] );
 
     //-------------------------------------------------------------------------
     //
@@ -211,9 +206,10 @@ export default function App() {
 
         if( !threeCBs ) return;
         
+        
         const dragendCB = (draggedMesh) => {
 
-            console.log('dragendcb called');
+            console.log('dragendCB called');
 
             // this will be where new position is stored
             const vec = new THREE.Vector3();
@@ -235,11 +231,10 @@ export default function App() {
             }
             
         };
-            
         
         const controlsDisposeFunc = threeCBs.addDragControls({ meshArray: [initialPt1Mesh, initialPt2Mesh],
+                                                               dragCB: throttle(dragendCB, throttleTime),
                                                                dragendCB});
-
         return () => {
 
             if( controlsDisposeFunc ) controlsDisposeFunc();
@@ -247,6 +242,44 @@ export default function App() {
         };
         
     }, [threeCBs, initialPt1Mesh, initialPt2Mesh] );
+
+    
+    
+    
+    //------------------------------------------------------------------------
+    //
+    // when initialConds change, move the initialPointMeshs
+
+    useEffect( () => {
+
+        if( !threeCBs ) return;
+        
+
+        if( !initialPt1Mesh || !initialPt2Mesh ) return;
+
+        let vec1 = new THREE.Vector3();
+        let vec2 = new THREE.Vector3();
+
+        initialPt1Mesh.getWorldPosition(vec1);
+        initialPt2Mesh.getWorldPosition(vec2);
+
+        const [d1, e1] = [ vec1.x - initialConds[0][0] ,  vec1.y - initialConds[0][1] ];
+        const [d2, e2] = [ vec2.x - initialConds[1][0] ,  vec2.y - initialConds[1][1] ];
+
+        if( d1 != 0 ) {
+            initialPt1Mesh.translateX( -d1 );
+        }
+        if( e1 != 0 ) {
+            initialPt1Mesh.translateY( -e1 );
+        }
+        if( d2 != 0 ) {
+            initialPt2Mesh.translateX( -d2 );
+        }
+        if( e2 != 0 ) {
+            initialPt2Mesh.translateY( -e2 );
+        }
+        
+    }, [threeCBs, initialConds] );
 
     
     
@@ -409,6 +442,19 @@ export default function App() {
 }
 
 
+// from the book 'Discover Functional Javascript', p. 58
+function throttle(fn, interval) {
+
+    let lastTime;
+
+    return function throttled(...args) {
+	if( !lastTime || (Date.now() - lastTime >= interval) ) {
+	    fn(...args);
+            console.log('throttled function called');
+	    lastTime = Date.now();
+	}
+    }
+}
 
 
 // a,b are numbers, initialConds is a 2 elt array of 2 elt arrays

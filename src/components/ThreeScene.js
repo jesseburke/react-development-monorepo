@@ -109,7 +109,7 @@ function ThreeScene({
         drawLabels: () => threeScene.drawLabels(),
 
         // dragendCB is called with the object that is being dragged as argument
-        addDragControls: ({meshArray, dragendCB}) => threeScene.addDragControls({meshArray, dragendCB})        
+        addDragControls: ({meshArray, dragCB, dragendCB}) => threeScene.addDragControls({meshArray, dragCB, dragendCB})        
         
     }) );
     
@@ -173,7 +173,7 @@ export function useThreeCBs( threeRef ) {
 
         const drawLabels = () => threeRef.current.drawLabels();
 
-        const addDragControls = ({meshArray, dragendCB}) => threeRef.current.addDragControls({meshArray, dragendCB});
+        const addDragControls = ({meshArray, dragCB, dragendCB}) => threeRef.current.addDragControls({meshArray, dragCB, dragendCB});
 
         
         setThreeCBs({ getCanvas, getCamera, setCameraPosition, setCameraLookAt, getMouseCoords,
