@@ -68,7 +68,7 @@ function DragPlane({ threeCBs, moveCB, mesh = null, xSize, ySize }) {
     let areDragging = false;
     let endPt;
 
-    //------------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     //
     // this is a transparent plane, used for mouse picking
     

@@ -107,7 +107,7 @@ export const initCameraData =
 //     keyPanSpeed: 50 };
 
 export const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.PAN }, 
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE }, 
 	touches: { ONE: THREE.MOUSE.ROTATE,
 		   TWO: THREE.TOUCH.DOLLY,
 		   THREE: THREE.MOUSE.PAN },
