@@ -129,6 +129,5 @@ function functionBounds({ bounds: {xMin, xMax, yMin, yMax}, onChange }) {
     );
 }
 
-const FunctionBounds = React.memo(functionBounds);
+export default React.memo(functionBounds);
 
-export default FunctionBounds;

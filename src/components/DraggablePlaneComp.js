@@ -5,25 +5,25 @@ import * as THREE from 'three';
 
 
 
-function ClickablePlaneComp({ threeCBs,                                       
-                                             clickCB,
+function DraggablePlaneComp({ threeCBs,                                       
+                                             moveCB,
                                              paused,
                                              xSize = 1000,
                                              ySize = 1000,
                                              mesh }) {
 
-    const [clickPlane, setClickPlane] = useState(null);       
+    const [dragPlane, setDragPlane] = useState(null);       
 
     useEffect( () => {
 
         let cl;
         
         if( !threeCBs )
-            setClickPlane(null);
+            setDragPlane(null);
         
         else {
-            cl = ClickPlane({ threeCBs, clickCB, mesh, xSize, ySize });
-            setClickPlane( cl );
+            cl = DragPlane({ threeCBs, moveCB, mesh, xSize, ySize });
+            setDragPlane( cl );
         }
 
         return () => {
@@ -33,31 +33,31 @@ function ClickablePlaneComp({ threeCBs,
             }
         };
         
-    }, [threeCBs, clickCB] );
+    }, [threeCBs, moveCB] );
 
     useEffect( () => {
 
-        if( !clickPlane ) {          
+        if( !dragPlane ) {          
             return;
         }
         
         if( !paused ) {
-            clickPlane.play();
+            dragPlane.play();
             return;
         }
 
         else {
-            clickPlane.pause();
+            dragPlane.pause();
         }
 
-    }, [clickPlane, paused]);
+    }, [dragPlane, paused]);
 
             
     return null;
 }
 
 
-function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
+function DragPlane({ threeCBs, moveCB, mesh = null, xSize, ySize }) {
 
     if( !threeCBs ) return;
 
@@ -65,6 +65,7 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
     const canvas = getCanvas();
 
     let areChoosing = true;
+    let areDragging = false;
     let endPt;
 
     //------------------------------------------------------------------------
@@ -90,23 +91,37 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
     add( planeMesh );
     //------------------------------------------------------------------------
       
-    function handleClick(e) {
+    function handleDown(e) {
         
         if (!areChoosing) return;
         
-        //areChoosing = false;
+        areDragging = true;
 
-        endPt =  getMouseCoords(e, planeMesh);
-        // not sure why below is needed
-        //endPt.y = -endPt.y;
-
-        clickCB( endPt );
+        canvas.addEventListener( 'pointermove', handleMove );
     }
 
-    canvas.addEventListener( 'pointerdown', handleClick );
+    canvas.addEventListener( 'pointerdown', handleDown );
+    
+
+    function handleMove(e) {
+
+        endPt =  getMouseCoords(e, planeMesh);
+        
+        moveCB( endPt );
+        
+    }
+
+    function handleUp(e) {
+
+        canvas.removeEventListener( 'pointermove', handleMove );
+        
+    }
+
+    canvas.addEventListener( 'pointerup', handleUp );
 
     function dispose() {
-        canvas.removeEventListener( 'pointerdown', handleClick );
+        canvas.removeEventListener( 'pointerdown', handleDown );
+        canvas.removeEventListener( 'pointerup', handleUp );
 
         if( planeGeom )
             planeGeom.dispose();
@@ -138,4 +153,4 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
     return {dispose, reset, getPt, pause, play};
 }
 
-export default React.memo(ClickablePlaneComp);
+export default React.memo( DraggablePlaneComp );

@@ -1,4 +1,6 @@
-export default function Slider({value,
+import React from 'react';
+
+function Slider({value,
                  step = .1,
                  CB = () => null,
                  sigDig = 1,
@@ -18,6 +20,8 @@ export default function Slider({value,
                     htmlFor="range_n">{label + ' = ' + round(value, sigDig).toString()}</label>
           </div>);
 }
+
+export default React.memo( Slider );
 
 
 function round(x, n = 2) {

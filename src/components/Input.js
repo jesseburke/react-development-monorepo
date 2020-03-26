@@ -2,7 +2,7 @@ import React from 'react';
 
 import { jsx, css } from '@emotion/core';
 
-export default function Input({onC, initValue, size, userCss={}}) {
+function Input({onC, initValue, size, userCss={}}) {
 
       const newCss = Object.assign(
         {         
@@ -40,3 +40,5 @@ export default function Input({onC, initValue, size, userCss={}}) {
               />
     );
 }
+
+export default React.memo( Input );

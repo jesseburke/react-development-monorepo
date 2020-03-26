@@ -7,7 +7,7 @@ import {Button} from '@jesseburke/basic-react-components';
 
 
 
-export default function ArrowGridOptions({ initDensity, initLength, initApproxH,
+function ArrowGridOptions({ initDensity, initLength, initApproxH,
                                            densityCB, lengthCB, approxHCB, userCss={}}) {
 
     const newCss =  Object.assign(
@@ -79,3 +79,5 @@ export default function ArrowGridOptions({ initDensity, initLength, initApproxH,
               </div>
             </div>);
 }
+
+export default React.memo(ArrowGridOptions);
