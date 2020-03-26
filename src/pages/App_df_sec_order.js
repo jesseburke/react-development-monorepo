@@ -86,8 +86,8 @@ const solnRadius = .2;
 const solnH = .1;
 
 
-const initAVal = .2;
-const initBVal = 1;
+const initAVal = -.1;
+const initBVal = 1.7;
 // will have -abBound < a^2 - 4b > abBound
 const abBound = 20;
 const aMax = 5;
@@ -98,7 +98,7 @@ const initApproxHValue = .01;
 
 const LatexSecOrderEquation = "(\\frac{d}{dx})^2(y) + a \\cdot \\frac{d}{dx}(y) + b \\cdot y  = 0";
 
-const initInitConds = [[1,3], [3,3]];
+const initInitConds = [[3,6], [7,5]];
 
 
 

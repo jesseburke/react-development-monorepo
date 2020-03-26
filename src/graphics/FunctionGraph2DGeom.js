@@ -5,7 +5,9 @@ import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils.
 export default function FunctionGraph2DGeom({ func,
 					      bounds,
 					      approxH = .1,
-					      tubularSegments = 128,
+					      // this is the max no of line segments in a component
+					      compMaxLength = 20,
+					      tubularSegments = 1064,
                                               radius = .15,
                                               radialSegments = 4 }) {
 
@@ -79,12 +81,22 @@ export default function FunctionGraph2DGeom({ func,
 	    else if( y0 < yMin ) {
 		tx = x0 + (yMin - y0)/m;
 		curArray.push( new THREE.Vector3( tx, yMin, 0 ) );
-	    }	    
+	    }
+
+	    else {
+		curArray.push( new THREE.Vector3( x0, y0, 0 ) );
+	    }
 	    
 	}
 	
-        curArray.push( new THREE.Vector3(i*approxH, func( i*approxH ), 0) );
+        curArray.push( new THREE.Vector3(i*approxH, ty, 0) );
 
+	if( curArray.length >= compMaxLength ) {
+
+	    compArray.push( curArray );
+	    curArray = [];
+	    lastOutPt = [i*approxH, ty];	    
+	}
     }
 
     if( curArray.length > 0) compArray.push( curArray );
@@ -106,7 +118,7 @@ export default function FunctionGraph2DGeom({ func,
 	
 	geomArray.push( new THREE.TubeBufferGeometry(
 	    curve,
-	    1064,
+	    tubularSegments,
 	    radius,
 	    radialSegments,
 	    false ) );	
