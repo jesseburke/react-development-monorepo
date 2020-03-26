@@ -21,7 +21,7 @@ import TexDisplayComp from '../components/TexDisplayComp.js';
 import useGridAndOrigin from '../graphics/useGridAndOriginNew.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import use3DAxes from '../graphics/use3DAxes.js';
-import FunctionGraph from '../graphics/FunctionGraph.js';
+import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 
 
 import MatrixFactory from '../math/MatrixFactory.js';
@@ -89,16 +89,16 @@ const solnH = .1;
 const initAVal = .2;
 const initBVal = 1;
 // will have -abBound < a^2 - 4b > abBound
-const abBound = 10;
-const aMax = 2.5;
-const aMin = -2.5;
+const abBound = 20;
+const aMax = 5;
+const aMin = -5;
 const aStep = .1;
 
 const initApproxHValue = .01;
 
 const LatexSecOrderEquation = "(\\frac{d}{dx})^2(y) + a \\cdot \\frac{d}{dx}(y) + b \\cdot y  = 0";//"\\frac{d^2y}{dx^2} + a \\cdot \\frac{dy}{dx} + b \\cdot y  = 0";
 
-const initInitConds = [[1,0], [1,1]];
+const initInitConds = [[1,3], [3,3]];
 
 
 
@@ -130,7 +130,7 @@ export default function App() {
 
     const [solnTexStr, setSolnTexStr] = useState(null);
 
-    const [sigDig, setSigDig] = useState(2);    
+    const [sigDig, setSigDig] = useState(1);    
 
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
@@ -242,32 +242,34 @@ export default function App() {
         if( !threeCBs || !solnStr ) return;
         
         const solnFunc = funcParser( solnStr );
-        
-        let pointArray = [];
-        
-        for( let i = Math.floor(xMin/solnH); i < Math.ceil(xMax/solnH); i++ ) {
 
-            const t = solnFunc( i*solnH );
+        const geom = FunctionGraph2DGeom({ func: solnFunc, bounds });
+        
+        // let pointArray = [];
+        
+        // for( let i = Math.floor(xMin/solnH); i < Math.ceil(xMax/solnH); i++ ) {
 
-            if( t >= 2*yMin && t <= 2*yMax ) {
+        //     const t = solnFunc( i*solnH );
+
+        //     if( t >= 2*yMin && t <= 2*yMax ) {
                 
-                pointArray.push( new THREE.Vector3(i*solnH, solnFunc( i*solnH ), 0) );
-            }
-        }
+        //         pointArray.push( new THREE.Vector3(i*solnH, solnFunc( i*solnH ), 0) );
+        //     }
+        // }
 
-        const path = new THREE.CurvePath();
+        // const path = new THREE.CurvePath();
 
-        for( let i = 0; i < pointArray.length-1; i++ ) {
+        // for( let i = 0; i < pointArray.length-1; i++ ) {
 
-            path.add( new THREE.LineCurve3( pointArray[i], pointArray[i+1] ) );
+        //     path.add( new THREE.LineCurve3( pointArray[i], pointArray[i+1] ) );
             
-        }
+        // }
 
-        const geom = new THREE.TubeBufferGeometry( path,
-						   1064,
-						   solnRadius,
-						   8,
-						   false );
+        // const geom = new THREE.TubeBufferGeometry( path,
+	// 					   1064,
+	// 					   solnRadius,
+	// 					   8,
+	// 					   false );
         
         const mesh = new THREE.Mesh( geom, testFuncMaterial );
 
@@ -376,7 +378,7 @@ export default function App() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 padding: '0em 3em',
-                flex: 3,
+                flex: 4,
                 height: '100%',
                 borderRight: '1px solid'}}>
               
@@ -406,13 +408,7 @@ export default function App() {
                             initCameraData={initCameraData}
                             controlsData={controlsData}
                             clearColor={initColors.clearColor}
-            />           
-            <ResetCameraButton key="resetCameraButton"
-                               onClickFunc={resetCameraCB}
-                               color={controlsEnabled ? colors.controlBar : null }
-                               userCss={{ top: '85%',
-                                          left: '5%',
-                                          userSelect: 'none'}}/>         
+            />                     
 
           </Main>
           
@@ -471,10 +467,32 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         const C = round(m[0][2], sigDig);
         const D = round(m[1][2], sigDig);
         
-        k = round( k, sigDig );      
-        
+        k = round( k, sigDig );
+
         return {str: `e^(-(${a})*x/2)*( (${C})*cos((${k})*x) + (${D})*sin((${k})*x) )`,
                 texStr: `y = e^{${-a}*x/2}( ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x) )`};
+        
+        
+       
+    }
+
+    else if( a*a - 4*b === 0 ) {
+
+        // in this case solns have the form y = Cxe^{-ax/2} + De^{-ax/2}
+
+        const alpha = Math.E**(-a*x0/2) * x0;
+        const beta = Math.E**(-a*x0/2);
+        const gamma = Math.E**(-a*x1/2) * (-a/2) * x0 + Math.E**(-a*x1/2);
+        const delta = Math.E**(-a*x1/2) * (-a/2);
+
+        // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
+        const A = [[ alpha, beta, y0], [gamma, delta, y1]];
+        const m = MatrixFactory( A ).rref().getArray();
+        const C = round(m[0][2], sigDig);
+        const D = round(m[1][2], sigDig);
+
+         return {str: `(${C})*x*e^(-(${a})*x/2) + (${D})*e^(-(${a})*x/2)`,
+                texStr: `y = ${C}\\cdot x e^{${-a}*x/2} + ${D}\\cdot e^{${-a}*x/2}`};
         
     }
 

@@ -9,8 +9,8 @@ export const halfXSize = 10;
 export const halfYSize = 7;
 export const gridSize = 100;
 
-export const xMin = -100, xMax = 100;
-export const yMin = -100, yMax = 100;
+export const xMin = -20, xMax = 20;
+export const yMin = -15, yMax = 15;
 
 // export const xMin = -15, xMax = 15;
 // export const yMin = -10, yMax = 10;
@@ -80,7 +80,7 @@ export const initGridData = {
 
 // how much of grid to show at start
 //export const cameraConst = 1.00;
-export const cameraConst = .15;
+export const cameraConst = 1.05;
 
 export const initCameraData = 
 {position: [0, 0, 100],
