@@ -383,10 +383,13 @@ export default function useThreeScene({ canvasRef,
 	controls.current.update();
     }
 
-    function addDragControls({ meshArray }) {
+    function addDragControls({ meshArray, dragendCB = null }) {
 
 	const controls = new DragControls( [ ...meshArray  ], camera.current, renderer.current.domElement );
 	controls.addEventListener( 'drag', render );
+
+	if( dragendCB )
+	    controls.addEventListener( 'dragend', (event) => dragendCB( event.object ) );	    
 
 	return controls.dispose;
 	

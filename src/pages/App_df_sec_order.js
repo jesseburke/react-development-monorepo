@@ -117,14 +117,18 @@ export default function App() {
 
     const [colors, setColors] = useState( initColors );
 
-    const [initialConds, setInitialConds] = useState(initInitConds); 
-
     const [aVal, setAVal] = useState(initAVal);
 
     // this init value should be between the min and max for b
     const [bVal, setBVal] = useState(initBVal);
 
     const [aSliderMax, setASliderMax] = useState(30);
+
+    const [initialConds, setInitialConds] = useState(initInitConds);
+
+    const [initialPt1Mesh, setInitialPt1Mesh] = useState(null);
+
+    const [initialPt2Mesh, setInitialPt2Mesh] = useState(null);
 
     const [solnStr, setSolnStr] = useState(null);
 
@@ -169,6 +173,7 @@ export default function App() {
               .translateY(initialConds[0][1]);
 
         threeCBs.add( mesh1 );
+        setInitialPt1Mesh( mesh1 );
         //console.log('effect based on initialConds called');
 
         const geometry2 = new THREE.SphereBufferGeometry( radius, 15, 15 );
@@ -179,8 +184,7 @@ export default function App() {
               .translateY(initialConds[1][1]);
 
         threeCBs.add( mesh2 );
-
-        const controlsDisposeFunc = threeCBs.addDragControls({ meshArray: [mesh1, mesh2] });
+        setInitialPt2Mesh( mesh2 );
 
         return () => {
 
@@ -192,12 +196,58 @@ export default function App() {
             geometry2.dispose();
             material2.dispose();
 
-            if( controlsDisposeFunc ) controlsDisposeFunc();
+            
             
         };
         
         
     }, [threeCBs, initialConds] );
+
+    //-------------------------------------------------------------------------
+    //
+    // make initial condition points draggable
+
+    useEffect( () => {
+
+        if( !threeCBs ) return;
+        
+        const dragendCB = (draggedMesh) => {
+
+            console.log('dragendcb called');
+
+            // this will be where new position is stored
+            const vec = new THREE.Vector3();
+
+            // depends on whether pt1 or pt2 is being dragged
+            
+            if( draggedMesh.id === initialPt1Mesh.id ) {
+
+                draggedMesh.getWorldPosition( vec );
+
+                setInitialConds( ([p1, p2]) => [[round(vec.x, sigDig+1), round(vec.y, sigDig+1)], p2] );
+            }
+
+            else if( draggedMesh.id === initialPt2Mesh.id ) {
+
+                draggedMesh.getWorldPosition( vec );
+
+                setInitialConds( ([p1, p2]) => [p1, [round(vec.x, sigDig+1), round(vec.y, sigDig+1)]] );
+            }
+            
+        };
+            
+        
+        const controlsDisposeFunc = threeCBs.addDragControls({ meshArray: [initialPt1Mesh, initialPt2Mesh],
+                                                               dragendCB});
+
+        return () => {
+
+            if( controlsDisposeFunc ) controlsDisposeFunc();
+
+        };
+        
+    }, [threeCBs, initialPt1Mesh, initialPt2Mesh] );
+
     
     
     
@@ -227,24 +277,24 @@ export default function App() {
     //
     // solution display effect
 
-    // useEffect( () => {
+    useEffect( () => {
 
-    //     if( !threeCBs || !solnStr ) return;
+        if( !threeCBs || !solnStr ) return;
         
-    //     const solnFunc = funcParser( solnStr );
+        const solnFunc = funcParser( solnStr );
 
-    //     const geom = FunctionGraph2DGeom({ func: solnFunc, bounds });              
+        const geom = FunctionGraph2DGeom({ func: solnFunc, bounds });              
         
-    //     const mesh = new THREE.Mesh( geom, testFuncMaterial );
+        const mesh = new THREE.Mesh( geom, testFuncMaterial );
 
-    //     threeCBs.add( mesh );
+        threeCBs.add( mesh );
 
-    //     return () => {
-    //         threeCBs.remove(mesh);
-    //         geom.dispose();
-    //     };
+        return () => {
+            threeCBs.remove(mesh);
+            geom.dispose();
+        };
         
-    // }, [threeCBs, initialConds, bounds, solnStr] );
+    }, [threeCBs, initialConds, bounds, solnStr] );
     
     
     return (       
