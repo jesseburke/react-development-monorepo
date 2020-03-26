@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import { jsx, css } from '@emotion/core';
 
@@ -10,9 +10,14 @@ function Input({onC, initValue, size, userCss={}}) {
             
         }, userCss);
 
-    const [intermediateValue, setIntermediateValue] = React.useState(initValue);
+    const [intermediateValue, setIntermediateValue] = useState(initValue);
 
-    const inputElt = React.useRef(null);
+    const inputElt = useRef(null);
+
+    useEffect( () => {
+
+        setIntermediateValue( initValue );
+    }, [initValue] );
 
 
     function handleBlur(event) {
