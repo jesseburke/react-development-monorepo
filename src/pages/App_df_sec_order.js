@@ -79,8 +79,8 @@ const testFuncMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color( initColors.testFunc ),
     side: THREE.FrontSide });
 
-testFuncMaterial.transparent = true;
-testFuncMaterial.opacity = .6;
+//testFuncMaterial.transparent = true;
+//testFuncMaterial.opacity = .6;
 
 const solnRadius = .2;
 const solnH = .1;

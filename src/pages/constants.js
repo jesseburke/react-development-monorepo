@@ -10,7 +10,7 @@ export const halfYSize = 7;
 export const gridSize = 100;
 
 export const xMin = -20, xMax = 20;
-export const yMin = -15, yMax = 15;
+export const yMin = -20, yMax = 20;
 
 // export const xMin = -15, xMax = 15;
 // export const yMin = -10, yMax = 10;
