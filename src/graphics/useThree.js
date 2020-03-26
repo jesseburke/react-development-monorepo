@@ -3,6 +3,7 @@ import * as THREE from 'three';
 //import {OrbitControls} from 'three-orbitcontrols';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GeometryUtils } from 'three/examples/jsm/utils/GeometryUtils.js';
+import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import GLTFExporter from 'three-gltf-exporter';
 
 import { jsx } from '@emotion/core';
@@ -302,8 +303,8 @@ export default function useThreeScene({ canvasRef,
 	//console.log('threeScene.setcameraposition over');
     }
 
-     function setCameraLookAt( newPos  ) {	
-	 
+    function setCameraLookAt( newPos  ) {	
+	
 	camera.current.lookAt(...newPos);
 	
 	//console.log('camera has been positioned in threeScene.setcameraposition');
@@ -381,12 +382,22 @@ export default function useThreeScene({ canvasRef,
 
 	controls.current.update();
     }
+
+    function addDragControls({ meshArray }) {
+
+	const controls = new DragControls( [ ...meshArray  ], camera.current, renderer.current.domElement );
+	controls.addEventListener( 'drag', render );
+
+	return controls.dispose;
+	
+    }
 	
 
     return {add, remove, render, controlsPubSub: controlsPubSub.current,
 	    addLabel, removeLabel, drawLabels, setCameraPosition, setCameraLookAt,
 	    exportGLTF, downloadGLTF, getCamera,
-	    getMouseCoords, resetControls, changeControls};
+	    getMouseCoords, resetControls, changeControls,
+	   addDragControls};
     
 }
 

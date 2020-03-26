@@ -11,3 +11,6 @@
 
 package-lock.json
 
+# files containing a sharp
+*\#*
+

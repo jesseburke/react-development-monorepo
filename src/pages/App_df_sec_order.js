@@ -13,7 +13,6 @@ import Main from '../components/Main.js';
 import FunctionInput from '../components/FunctionInput.js';
 import funcParser from '../utils/funcParser.js';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
-import DraggablePlaneComp from '../components/DraggablePlaneComp.js';
 import Input from '../components/Input.js';
 import Slider from '../components/Slider.js';
 import TexDisplayComp from '../components/TexDisplayComp.js';
@@ -148,6 +147,7 @@ export default function App() {
 
     useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
     use2DAxes({ threeCBs, axesData });
+        
 
     
     
@@ -180,6 +180,8 @@ export default function App() {
 
         threeCBs.add( mesh2 );
 
+        const controlsDisposeFunc = threeCBs.addDragControls({ meshArray: [mesh1, mesh2] });
+
         return () => {
 
             if( mesh1 ) threeCBs.remove(mesh1);
@@ -189,6 +191,8 @@ export default function App() {
             if( mesh2 ) threeCBs.remove(mesh2);
             geometry2.dispose();
             material2.dispose();
+
+            if( controlsDisposeFunc ) controlsDisposeFunc();
             
         };
         
@@ -347,10 +351,7 @@ export default function App() {
                             initCameraData={initCameraData}
                             controlsData={controlsData}
                             clearColor={initColors.clearColor}
-            />
-            <DraggablePlaneComp threeCBs={threeCBs}                           
-                                moveCB={console.log}
-            />
+            />           
 
           </Main>
           

@@ -180,7 +180,7 @@ export function useThreeCBs( threeRef ) {
                       resetControls, changeControls,
                       downloadGLTF,
                       addLabel, removeLabel, drawLabels,
-                    addDragControls});
+                      addDragControls});
 
     }, [threeRef.current] );
 
