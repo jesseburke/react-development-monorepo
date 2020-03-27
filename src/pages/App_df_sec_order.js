@@ -86,7 +86,7 @@ const solnRadius = .2;
 const solnH = .1;
 
 
-const initAVal = -.1;
+const initAVal = 0;
 const initBVal = 1.7;
 // will have -abBound < a^2 - 4b > abBound
 const abBound = 20;
@@ -507,9 +507,14 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         k = roundStr( k, sigDig );
 
         if( a === 0 ) {
+
+            // put equation in form of notes
+            const phi = Math.atan( -D/C );
+
+            const newA = roundStr(C/Math.cos(phi));
             
-             return {str: ` (${C})*cos((${k})*x) + (${D})*sin((${k})*x)`,
-                     texStr: `y = ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x)`};
+            return {str: ` (${C})*cos((${k})*x) + (${D})*sin((${k})*x)`,
+                    texStr: `y = ${newA} \\cos(${k}*x + ${roundStr(phi)})`};//y = ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x)`};
         }
             
 
