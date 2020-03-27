@@ -209,8 +209,6 @@ export default function App() {
         
         const dragendCB = (draggedMesh) => {
 
-            console.log('dragendCB called');
-
             // this will be where new position is stored
             const vec = new THREE.Vector3();
 
@@ -220,14 +218,14 @@ export default function App() {
 
                 draggedMesh.getWorldPosition( vec );
 
-                setInitialConds( ([p1, p2]) => [[round(vec.x, sigDig+1), round(vec.y, sigDig+1)], p2] );
+                setInitialConds( ([p1, p2]) => [[roundStr(vec.x, sigDig+1), roundStr(vec.y, sigDig+1)], p2] );
             }
 
             else if( draggedMesh.id === initialPt2Mesh.id ) {
 
                 draggedMesh.getWorldPosition( vec );
 
-                setInitialConds( ([p1, p2]) => [p1, [round(vec.x, sigDig+1), round(vec.y, sigDig+1)]] );
+                setInitialConds( ([p1, p2]) => [p1, [roundStr(vec.x, sigDig+1), roundStr(vec.y, sigDig+1)]] );
             }
             
         };
@@ -377,7 +375,7 @@ export default function App() {
                 <Slider
                   userCss={{padding: '.25em 0em'}}
                   value={aVal}
-                  CB={val => setAVal(val)}
+                  CB={val => setAVal(Number(val))}
                   label={'a'}                  
                   max={aMax}
                   min={aMin}
@@ -388,7 +386,7 @@ export default function App() {
                 <Slider
                   userCss={{padding: '.25em 0em'}}
                   value={bVal}
-                  CB={val => setBVal(val)}
+                  CB={val => setBVal(Number(val))}
                   label={'b'}
                   min={(aVal*aVal - abBound)/4}
                   max={(aVal*aVal + abBound)/4}
@@ -411,7 +409,7 @@ export default function App() {
               <div css={{padding:'.25em 0',
                          textAlign: 'center'}}>
                 <TexDisplayComp userCss={{padding:'.25em 0'}}
-                                str={`a^2 - 4b = ${round(aVal*aVal - 4*bVal,sigDig+1).toString()}`}
+                                str={`a^2 - 4b = ${roundStr(aVal*aVal - 4*bVal,sigDig+1).toString()}`}
                 />               
               </div>
               <div css={{
@@ -450,7 +448,6 @@ function throttle(fn, interval) {
     return function throttled(...args) {
 	if( !lastTime || (Date.now() - lastTime >= interval) ) {
 	    fn(...args);
-            console.log('throttled function called');
 	    lastTime = Date.now();
 	}
     }
@@ -477,11 +474,11 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         // putting A in rref will allow us to find C,D
         
         const m = MatrixFactory( A ).rref().getArray();
-        const C = round(m[0][2], sigDig);
-        const D = round(m[1][2], sigDig);
+        const C = roundStr(m[0][2], sigDig);
+        const D = roundStr(m[1][2], sigDig);
 
-        m1 = round( m1, sigDig );
-        m2 = round( m2, sigDig );
+        m1 = roundStr( m1, sigDig );
+        m2 = roundStr( m2, sigDig );
         
         return {str: `${C}*e^(${m1}*x) + ${D}*e^(${m2}*x)`,
                 texStr: `y = ${C}*e^{${m1}*x} + ${D}*e^{${m2}*x}`};        
@@ -502,10 +499,17 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
         const A = [[ alpha, beta, y0], [gamma, delta, y1]];
         const m = MatrixFactory( A ).rref().getArray();
-        const C = round(m[0][2], sigDig);
-        const D = round(m[1][2], sigDig);
+        const C = roundStr(m[0][2], sigDig);
+        const D = roundStr(m[1][2], sigDig);
         
-        k = round( k, sigDig );
+        k = roundStr( k, sigDig );
+
+        if( a === 0 ) {
+            
+             return {str: ` (${C})*cos((${k})*x) + (${D})*sin((${k})*x)`,
+                     texStr: `y = ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x)`};
+        }
+            
 
         return {str: `e^(-(${a})*x/2)*( (${C})*cos((${k})*x) + (${D})*sin((${k})*x) )`,
                 texStr: `y = e^{${-a}*x/2}( ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x) )`};                      
@@ -523,8 +527,15 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
         const A = [[ alpha, beta, y0], [gamma, delta, y1]];
         const m = MatrixFactory( A ).rref().getArray();
-        const C = round(m[0][2], sigDig);
-        const D = round(m[1][2], sigDig);
+        const C = roundStr(m[0][2], sigDig);
+        const D = roundStr(m[1][2], sigDig);
+
+        if( roundStr(a, sigDig) === 0 ) {
+
+             return {str: `(${C})*x*e^(-(${a})*x/2) + (${D})*e^(-(${a})*x/2)`,
+                texStr: `y = ${C}\\cdot x e^{${-a}*x/2} + ${D}\\cdot e^{${-a}*x/2}`};        
+            
+        }
 
         return {str: `(${C})*x*e^(-(${a})*x/2) + (${D})*e^(-(${a})*x/2)`,
                 texStr: `y = ${C}\\cdot x e^{${-a}*x/2} + ${D}\\cdot e^{${-a}*x/2}`};        
@@ -534,7 +545,7 @@ function calcSolnStr(a, b, initialConds, sigDig) {
 
 
 
-function round(x, n = 2) {
+function roundStr(x, n = 2) {
 
     // x = -2.336596841557143
     

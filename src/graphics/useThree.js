@@ -394,13 +394,13 @@ export default function useThreeScene({ canvasRef,
 	controls.addEventListener( 'drag', render );
 
 	if( dragCB ) {
-	    console.log('dragCB added');
 	    controls.addEventListener( 'drag', (event) => dragCB( event.object ) );	    
 	};
 	
-	if( dragendCB )
+	if( dragendCB ) {
 	    controls.addEventListener( 'dragend', (event) => dragendCB( event.object ) );	    
-
+	};
+	
 	return controls.dispose;
 	
     }
