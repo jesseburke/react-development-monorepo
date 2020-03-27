@@ -43,7 +43,7 @@ export const initColors = {
     arrows: '#C2374F',
     solution: '#C2374F',
     firstPt: '#C2374F',
-    secPt: '#E16962',
+    secPt: '#C2374F',
     testFunc: '#E16962',//#DBBBB0',
     axes: '#0A2C3C',
     controlBar: '#0A2C3C',
@@ -100,7 +100,9 @@ const LatexSecOrderEquation = "(\\frac{d}{dx})^2(y) + a \\cdot \\frac{d}{dx}(y) 
 
 const initInitConds = [[3,6], [7,5]];
 
-// in msec
+const initialPointMeshRadius = .4;
+
+// in msec, for dragging
 const throttleTime = 100;
 
 
@@ -158,9 +160,7 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const radius = .2;
-
-        const geometry1 = new THREE.SphereBufferGeometry( radius, 15, 15 );
+        const geometry1 = new THREE.SphereBufferGeometry( initialPointMeshRadius, 15, 15 );
         const material1 = new THREE.MeshBasicMaterial({ color: initColors.firstPt });
 
         const mesh1 = new THREE.Mesh( geometry1, material1 )
@@ -171,8 +171,11 @@ export default function App() {
         setInitialPt1Mesh( mesh1 );
         //console.log('effect based on initialConds called');
 
-        const geometry2 = new THREE.SphereBufferGeometry( radius, 15, 15 );
+        const geometry2 = new THREE.SphereBufferGeometry( initialPointMeshRadius, 15, 15 );
         const material2 = new THREE.MeshBasicMaterial({ color: initColors.secPt });
+
+        material2.transparent = true;
+        material2.opacity = .5;
 
         const mesh2 = new THREE.Mesh( geometry2, material2 )
               .translateX(initInitConds[1][0])
@@ -252,7 +255,6 @@ export default function App() {
 
         if( !threeCBs ) return;
         
-
         if( !initialPt1Mesh || !initialPt2Mesh ) return;
 
         let vec1 = new THREE.Vector3();
