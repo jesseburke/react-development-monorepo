@@ -23,8 +23,9 @@ import use2DAxes from '../graphics/use2DAxes.js';
 import use3DAxes from '../graphics/use3DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 
+import {processNum, throttle} from '../utils/BaseUtils.js';
 
-import MatrixFactory from '../math/MatrixFactory.js';
+import {solnStrs} from '../math/differentialEquations/secOrderConstantCoeff.js';
 
 import {initArrowGridData, initAxesData,
         initGridData, initControlsData, secControlsData,
@@ -305,7 +306,7 @@ export default function App() {
 
     useEffect( () => {
 
-        const c = calcSolnStr( Number.parseFloat(aVal.str), Number.parseFloat(bVal.str), initialConds, precision ) ;
+        const c = solnStrs( Number.parseFloat(aVal.str), Number.parseFloat(bVal.str), initialConds, precision ) ;
 
         if( !c ) {
 
@@ -458,184 +459,4 @@ export default function App() {
         </FullScreenBaseComponent>);                              
 }
 
-
-// from the book 'Discover Functional Javascript', p. 58
-function throttle(fn, interval) {
-
-    let lastTime;
-
-    return function throttled(...args) {
-	if( !lastTime || (Date.now() - lastTime >= interval) ) {
-	    fn(...args);
-	    lastTime = Date.now();
-	}
-    }
-}
-
-
-// a,b are numbers, initialConds is a 2 elt array of 2 elt arrays
-function calcSolnStr(a, b, initialConds, precision) {
-
-    const [[x0, y0], [x1, y1]] = initialConds;
-
-    let returnVal;
-
-    if( a*a - 4*b > 0 ) {
-
-        // in this case solns have form y = Ce^{m1 * x} + De^{m2 * x}
-
-        const sr = Math.sqrt( a*a - 4*b );
-
-        let m1 = (-a + sr)/2;
-        let m2 = (-a - sr)/2;
-
-        const A = [[ Math.E**( m1 * x0), Math.E**( m2 * x0 ), y0 ],
-                   [ m1*Math.E**( m1 * x1), m2*Math.E**( m2 * x1 ), y1 ]];
-
-        // putting A in rref will allow us to find C,D
-        
-        const m = MatrixFactory( A ).rref().getArray();
-        let C = processNum(m[0][2], precision);
-        let D = processNum(m[1][2], precision);
-
-        console.log( C );
-
-        // prepare numbers for display
-        m1 = processNum(m1, precision);
-        m2 = processNum(m2, precision);
-
-        returnVal = {str: `${C.str}*e^(${m1.str}*x) + ${D.str}*e^(${m2.str}*x)`,
-                     texStr: `y = ${C.texStr}\\cdot e^{${m1.texStr}\\cdot x} + ${D.texStr}\\cdot
- e^{${m2.texStr}\\cdot x}`};
-        
-        return returnVal;        
-    }
-
-    
-    else if( a*a - 4*b < 0 ) {
-
-        // in this case solns have form y = e^{-ax/2}(C cos(kx) + D sin(kx)), where k = (4*b-a^2)^(1/2)/4
-
-        let k =  Math.sqrt( 4*b - a*a )/2;
-
-        const alpha = Math.E**(-a*x0/2) * Math.cos(k*x0);
-        const beta = Math.E**(-a*x0/2) * Math.sin(k*x0);
-        const gamma = Math.E**(-a*x1/2) * ( -a/2*Math.cos(k*x1) - k*Math.sin(k*x1) );
-        const delta = Math.E**(-a*x1/2) * ( -a/2*Math.sin(k*x1) - k*Math.cos(k*x1) );
-
-        // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
-        const tA = [[ alpha, beta, y0], [gamma, delta, y1]];
-        let m = MatrixFactory( tA );
-        console.log('m is ', m);
-        m = m.rref().getArray();
-        console.log('after rref and getArray, m is ', m);
-
-        let C = processNum(m[0][2], precision);
-        let D = processNum(m[1][2], precision);
-        k = processNum(k, precision);
-
-        console.log('C is ', C);
-        console.log('D is ', D);
-        console.log('k is ', k);
-
-        // to put equation in form of notes
-        const phi = processNum( Math.atan( -Number.parseFloat(D.str)/Number.parseFloat(C.str) ), precision );
-
-        const newA = processNum( Number.parseFloat(C.str)/Math.cos(Number.parseFloat(phi.str)),
-                                 precision );
-
-        console.log('phi is ', phi);
-        console.log('newA is ', newA);
-            
-
-        if( a === 0 ) {          
-          
-            returnVal =  {str: ` (${C.str})*cos((${k.str})*x) + (${D.str})*sin((${k.str})*x)`,
-                          texStr: `y = ${newA.texStr} \\cdot \\cos(${k.texStr}\\cdot x +`
-			  + ` ${phi.texStr})`};
-
-            return returnVal;	
-        }
-            
-
-         returnVal =  {str: `e^(-(${a/2})*x)*( (${C.str})*cos((${k.str})*x) + (${D.str})*sin((${k.str})*x) )`,
-                       texStr: `y = e^{${-a/2}\\cdot x}\\left(`
-	 	      + `${newA.texStr} \\cdot \\cos(${k.texStr}\\cdot x +`
-		       + ` ${phi.texStr})\\right)`};// ${C.texStr}\\cdot\\cos(${k.texStr}x)+${D.texStr}\\cdot\\sin(${k.texStr}x) )`};
-
-         return returnVal;
-    }
-
-    else if( a*a - 4*b === 0 ) {
-
-        // in this case solns have the form y = Cxe^{-ax/2} + De^{-ax/2}
-
-        const alpha = Math.E**(-a*x0/2) * x0;
-        const beta = Math.E**(-a*x0/2);
-        const gamma = Math.E**(-a*x1/2) * (-a/2) * x0 + Math.E**(-a*x1/2);
-        const delta = Math.E**(-a*x1/2) * (-a/2);
-
-        // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
-        const A = [[ alpha, beta, y0], [gamma, delta, y1]];
-        const m = MatrixFactory( A ).rref().getArray();
-        let C = processNum(m[0][2], precision);
-        let D = processNum(m[1][2], precision);
-
-        // if a is zero
-        if( Math.abs(a) <= 10**(-precision) ) {
-
-             returnVal =  {str: `(${C.str})*x*e^(-(${a})*x/2) + (${D.str})*e^(-(${a})*x/2)`,
-                           texStr: `y = ${C.texStr}\\cdot x`
-			   + ` e^{${-a/2}\\cdot x} + ${D.texStr}\\cdot`
-			   + ` e^{${-a/2}\\cdot x}`};
-
-            return returnVal;
-            
-        }
-
-        returnVal =  {str: `(${C.str})* x * e^(-(${a})* x/2) + (${D.str})* e^(-(${a})* x/2)`,
-                      texStr: `y = ${C.texStr}\\cdot x e^{${-a/2}\\cdot x} +`
-		      + ` ${D.texStr}\\cdot e^{${-a/2}\\cdot x}`};
-
-        return returnVal;
-    }    
-}
-
-function processNum( num, precision = 5, epsilon = 10**(-precision) ) {
-
-    if( Math.abs(num) < epsilon ) return {str: '0', texStr: '0'};
-
-    let x = num.toPrecision( precision );
-
-    let arr = x.split('e');
-
-    if( arr.length === 1 ) {
-        return ({str: x,
-                 texStr: x});
-    }
-
-    // otherwise it is in scientific notation
-    //
-    // e.g., 1.458e-21 or 1.458e+21
-    //
-    
-    if( arr[1][0] === '-' ) {
-        return ({ str: arr[0] + '*10^(' + arr[1] + ')',
-                  texStr: '(' + arr[0] + '\\cdot 10^{' + arr[1] + '}' + ')' });
-    }
-
-    // get rid of the '+' before returning
-    return ({ str: arr[0]+'*10^(' + arr[1].split('+')[1] + ')' ,
-              texStr: '(' + arr[0]+'\\cdot 10^{' + arr[1].split('+')[1] +
-              '}' + ')' });
-        
-}
-
-function roundStr(x, n = 2) {
-
-    // x = -2.336596841557143
-    
-    return Number(( x * Math.pow(10, n) )/Math.pow(10, n)).toFixed(n); 
-    
-}
 
