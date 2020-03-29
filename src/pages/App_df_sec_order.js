@@ -86,8 +86,8 @@ const solnRadius = .2;
 const solnH = .1;
 
 
-const initAVal = 0;
-const initBVal = 1.7;
+const initAVal = 2.9;
+const initBVal = 1.9;
 // will have -abBound < a^2 - 4b > abBound
 const abBound = 20;
 const aMax = 5;
@@ -98,12 +98,18 @@ const initApproxHValue = .01;
 
 const LatexSecOrderEquation = "(\\frac{d}{dx})^2(y) + a \\cdot \\frac{d}{dx}(y) + b \\cdot y  = 0";
 
-const initInitConds = [[3,6], [7,5]];
+const initInitConds = [[4,7], [7,5]];
 
 const initialPointMeshRadius = .4;
 
 // in msec, for dragging
 const throttleTime = 100;
+
+const initSigDig = 3;
+
+const initPrecision = 4;
+const initCondsPrecision = 4;
+const sliderPrecision = 3;
 
 
 //------------------------------------------------------------------------
@@ -120,10 +126,10 @@ export default function App() {
 
     const [colors, setColors] = useState( initColors );
 
-    const [aVal, setAVal] = useState(initAVal);
+    const [aVal, setAVal] = useState(processNum(initAVal, precision));
 
     // this init value should be between the min and max for b
-    const [bVal, setBVal] = useState(initBVal);
+    const [bVal, setBVal] = useState(processNum(initBVal, precision));
 
     const [aSliderMax, setASliderMax] = useState(30);
 
@@ -137,7 +143,9 @@ export default function App() {
 
     const [solnTexStr, setSolnTexStr] = useState(null);
 
-    const [sigDig, setSigDig] = useState(1);    
+    const [sigDig, setSigDig] = useState(initSigDig);
+
+    const [precision, setPrecision] = useState(initPrecision);    
 
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
@@ -221,14 +229,20 @@ export default function App() {
 
                 draggedMesh.getWorldPosition( vec );
 
-                setInitialConds( ([p1, p2]) => [[roundStr(vec.x, sigDig+1), roundStr(vec.y, sigDig+1)], p2] );
+                setInitialConds( ([p1, p2]) =>
+                                 [[processNum(vec.x, initCondsPrecision).str,
+                                   processNum(vec.y, initCondsPrecision).str],
+                                  p2] );
             }
 
             else if( draggedMesh.id === initialPt2Mesh.id ) {
 
                 draggedMesh.getWorldPosition( vec );
 
-                setInitialConds( ([p1, p2]) => [p1, [roundStr(vec.x, sigDig+1), roundStr(vec.y, sigDig+1)]] );
+                setInitialConds( ([p1, p2]) => [p1,
+                                                [processNum(vec.x, initCondsPrecision).str,
+                                                 processNum(vec.y, initCondsPrecision).str],
+                                               ] );
             }
             
         };
@@ -291,7 +305,7 @@ export default function App() {
 
     useEffect( () => {
 
-        const c = calcSolnStr( aVal, bVal, initialConds, sigDig+1 ) ;
+        const c = calcSolnStr( Number.parseFloat(aVal.str), Number.parseFloat(bVal.str), initialConds, precision ) ;
 
         if( !c ) {
 
@@ -344,7 +358,7 @@ export default function App() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100%',
-                padding: '.5em 1em',
+                padding: '.5em .5em',
                 fontSize: '1.25em',
                 borderRight: '1px solid',
                 flex: 5
@@ -356,7 +370,7 @@ export default function App() {
                   flexDirection: 'column',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  padding: '0em 3em'}}>
+                  padding: '0em 2em'}}>
                 <div css={{padding:'.25em 0',
                            textAlign: 'center'}}>
                   2nd order linear, w/ constant coefficients
@@ -373,26 +387,28 @@ export default function App() {
                           flexDirection: 'column',
                           justifyContent: 'center',
                           alignItems: 'flex-start',
-                          padding: '0em 2em'}}>
+                          padding: '0em 1em'}}>
                 <Slider
                   userCss={{padding: '.25em 0em'}}
-                  value={aVal}
-                  CB={val => setAVal(Number(val))}
+                  value={Number.parseFloat(aVal.str)}
+                  CB={val =>
+                      setAVal(processNum(Number.parseFloat(val), precision))}
                   label={'a'}                  
                   max={aMax}
                   min={aMin}
                   step={aStep}
-                  sigDig={sigDig}
+                  precision={sliderPrecision}
                 />
 
                 <Slider
                   userCss={{padding: '.25em 0em'}}
-                  value={bVal}
-                  CB={val => setBVal(Number(val))}
+                  value={Number.parseFloat(bVal.str)}
+                  CB={val =>
+                      setBVal(processNum(Number.parseFloat(val), precision))}
                   label={'b'}
-                  min={(aVal*aVal - abBound)/4}
-                  max={(aVal*aVal + abBound)/4}
-                  sigDig={sigDig}
+                  min={(Number.parseFloat(aVal.str)*Number.parseFloat(aVal.str) - abBound)/4}
+                  max={(Number.parseFloat(aVal.str)*Number.parseFloat(aVal.str) + abBound)/4}
+                  precision={sliderPrecision}
                 />                
               </div>
             </div>
@@ -403,20 +419,21 @@ export default function App() {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '0em 3em',
-                flex: 4,
+                padding: '0em 2em',
+                flex: 5,
                 height: '100%',
                 borderRight: '1px solid'}}>
               
               <div css={{padding:'.25em 0',
                          textAlign: 'center'}}>
                 <TexDisplayComp userCss={{padding:'.25em 0'}}
-                                str={`a^2 - 4b = ${roundStr(aVal*aVal - 4*bVal,sigDig+1).toString()}`}
+                                str={`a^2 - 4b = ${processNum(Number.parseFloat(aVal.str)*Number.parseFloat(aVal.str) - 4*Number.parseFloat(bVal.str), precision).texStr}`}
                 />               
               </div>
               <div css={{
                   padding: '.5em 0',
-                  fontSize: '1.00em'
+                  fontSize: '1.00em',
+                  whiteSpace: 'nowrap'
               }}>
                 <TexDisplayComp userCss={{padding:'.25em 0'}}
                                 str={solnTexStr}
@@ -457,9 +474,11 @@ function throttle(fn, interval) {
 
 
 // a,b are numbers, initialConds is a 2 elt array of 2 elt arrays
-function calcSolnStr(a, b, initialConds, sigDig) {
+function calcSolnStr(a, b, initialConds, precision) {
 
     const [[x0, y0], [x1, y1]] = initialConds;
+
+    let returnVal;
 
     if( a*a - 4*b > 0 ) {
 
@@ -476,14 +495,20 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         // putting A in rref will allow us to find C,D
         
         const m = MatrixFactory( A ).rref().getArray();
-        const C = roundStr(m[0][2], sigDig);
-        const D = roundStr(m[1][2], sigDig);
+        let C = processNum(m[0][2], precision);
+        let D = processNum(m[1][2], precision);
 
-        m1 = roundStr( m1, sigDig );
-        m2 = roundStr( m2, sigDig );
+        console.log( C );
+
+        // prepare numbers for display
+        m1 = processNum(m1, precision);
+        m2 = processNum(m2, precision);
+
+        returnVal = {str: `${C.str}*e^(${m1.str}*x) + ${D.str}*e^(${m2.str}*x)`,
+                     texStr: `y = ${C.texStr}\\cdot e^{${m1.texStr}\\cdot x} + ${D.texStr}\\cdot
+ e^{${m2.texStr}\\cdot x}`};
         
-        return {str: `${C}*e^(${m1}*x) + ${D}*e^(${m2}*x)`,
-                texStr: `y = ${C}*e^{${m1}*x} + ${D}*e^{${m2}*x}`};        
+        return returnVal;        
     }
 
     
@@ -499,27 +524,46 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         const delta = Math.E**(-a*x1/2) * ( -a/2*Math.sin(k*x1) - k*Math.cos(k*x1) );
 
         // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
-        const A = [[ alpha, beta, y0], [gamma, delta, y1]];
-        const m = MatrixFactory( A ).rref().getArray();
-        const C = roundStr(m[0][2], sigDig);
-        const D = roundStr(m[1][2], sigDig);
-        
-        k = roundStr( k, sigDig );
+        const tA = [[ alpha, beta, y0], [gamma, delta, y1]];
+        let m = MatrixFactory( tA );
+        console.log('m is ', m);
+        m = m.rref().getArray();
+        console.log('after rref and getArray, m is ', m);
 
-        if( a === 0 ) {
+        let C = processNum(m[0][2], precision);
+        let D = processNum(m[1][2], precision);
+        k = processNum(k, precision);
 
-            // put equation in form of notes
-            const phi = Math.atan( -D/C );
+        console.log('C is ', C);
+        console.log('D is ', D);
+        console.log('k is ', k);
 
-            const newA = roundStr(C/Math.cos(phi));
+        // to put equation in form of notes
+        const phi = processNum( Math.atan( -Number.parseFloat(D.str)/Number.parseFloat(C.str) ), precision );
+
+        const newA = processNum( Number.parseFloat(C.str)/Math.cos(Number.parseFloat(phi.str)),
+                                 precision );
+
+        console.log('phi is ', phi);
+        console.log('newA is ', newA);
             
-            return {str: ` (${C})*cos((${k})*x) + (${D})*sin((${k})*x)`,
-                    texStr: `y = ${newA} \\cos(${k}*x + ${roundStr(phi)})`};//y = ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x)`};
+
+        if( a === 0 ) {          
+          
+            returnVal =  {str: ` (${C.str})*cos((${k.str})*x) + (${D.str})*sin((${k.str})*x)`,
+                          texStr: `y = ${newA.texStr} \\cdot \\cos(${k.texStr}\\cdot x +`
+			  + ` ${phi.texStr})`};
+
+            return returnVal;	
         }
             
 
-        return {str: `e^(-(${a})*x/2)*( (${C})*cos((${k})*x) + (${D})*sin((${k})*x) )`,
-                texStr: `y = e^{${-a}*x/2}( ${C}\\cdot\\cos(${k}x) + ${D}\\cdot\\sin(${k}x) )`};                      
+         returnVal =  {str: `e^(-(${a/2})*x)*( (${C.str})*cos((${k.str})*x) + (${D.str})*sin((${k.str})*x) )`,
+                       texStr: `y = e^{${-a/2}\\cdot x}\\left(`
+	 	      + `${newA.texStr} \\cdot \\cos(${k.texStr}\\cdot x +`
+		       + ` ${phi.texStr})\\right)`};// ${C.texStr}\\cdot\\cos(${k.texStr}x)+${D.texStr}\\cdot\\sin(${k.texStr}x) )`};
+
+         return returnVal;
     }
 
     else if( a*a - 4*b === 0 ) {
@@ -534,23 +578,58 @@ function calcSolnStr(a, b, initialConds, sigDig) {
         // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
         const A = [[ alpha, beta, y0], [gamma, delta, y1]];
         const m = MatrixFactory( A ).rref().getArray();
-        const C = roundStr(m[0][2], sigDig);
-        const D = roundStr(m[1][2], sigDig);
+        let C = processNum(m[0][2], precision);
+        let D = processNum(m[1][2], precision);
 
-        if( roundStr(a, sigDig) === 0 ) {
+        // if a is zero
+        if( Math.abs(a) <= 10**(-precision) ) {
 
-             return {str: `(${C})*x*e^(-(${a})*x/2) + (${D})*e^(-(${a})*x/2)`,
-                texStr: `y = ${C}\\cdot x e^{${-a}*x/2} + ${D}\\cdot e^{${-a}*x/2}`};        
+             returnVal =  {str: `(${C.str})*x*e^(-(${a})*x/2) + (${D.str})*e^(-(${a})*x/2)`,
+                           texStr: `y = ${C.texStr}\\cdot x`
+			   + ` e^{${-a/2}\\cdot x} + ${D.texStr}\\cdot`
+			   + ` e^{${-a/2}\\cdot x}`};
+
+            return returnVal;
             
         }
 
-        return {str: `(${C})*x*e^(-(${a})*x/2) + (${D})*e^(-(${a})*x/2)`,
-                texStr: `y = ${C}\\cdot x e^{${-a}*x/2} + ${D}\\cdot e^{${-a}*x/2}`};        
+        returnVal =  {str: `(${C.str})* x * e^(-(${a})* x/2) + (${D.str})* e^(-(${a})* x/2)`,
+                      texStr: `y = ${C.texStr}\\cdot x e^{${-a/2}\\cdot x} +`
+		      + ` ${D.texStr}\\cdot e^{${-a/2}\\cdot x}`};
+
+        return returnVal;
     }    
 }
 
+function processNum( num, precision = 5, epsilon = 10**(-precision) ) {
 
+    if( Math.abs(num) < epsilon ) return {str: '0', texStr: '0'};
 
+    let x = num.toPrecision( precision );
+
+    let arr = x.split('e');
+
+    if( arr.length === 1 ) {
+        return ({str: x,
+                 texStr: x});
+    }
+
+    // otherwise it is in scientific notation
+    //
+    // e.g., 1.458e-21 or 1.458e+21
+    //
+    
+    if( arr[1][0] === '-' ) {
+        return ({ str: arr[0] + '*10^(' + arr[1] + ')',
+                  texStr: '(' + arr[0] + '\\cdot 10^{' + arr[1] + '}' + ')' });
+    }
+
+    // get rid of the '+' before returning
+    return ({ str: arr[0]+'*10^(' + arr[1].split('+')[1] + ')' ,
+              texStr: '(' + arr[0]+'\\cdot 10^{' + arr[1].split('+')[1] +
+              '}' + ')' });
+        
+}
 
 function roundStr(x, n = 2) {
 
