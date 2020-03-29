@@ -69,4 +69,48 @@ function round(x, n = 3) {
     
 }
 
-export {isZero, scalarMultiply, unitVector, vectorAdd, vectorLength, round};
+// from the book 'Discover Functional Javascript', p. 58
+function throttle(fn, interval) {
+
+    let lastTime;
+
+    return function throttled(...args) {
+	if( !lastTime || (Date.now() - lastTime >= interval) ) {
+	    fn(...args);
+	    lastTime = Date.now();
+	}
+    }
+}
+
+function processNum( num, precision = 5, epsilon = 10**(-precision) ) {
+
+    if( Math.abs(num) < epsilon ) return {str: '0', texStr: '0'};
+
+    let x = num.toPrecision( precision );
+
+    let arr = x.split('e');
+
+    if( arr.length === 1 ) {
+        return ({str: x,
+                 texStr: x});
+    }
+
+    // otherwise it is in scientific notation
+    //
+    // e.g., 1.458e-21 or 1.458e+21
+    //
+    
+    if( arr[1][0] === '-' ) {
+        return ({ str: arr[0] + '*10^(' + arr[1] + ')',
+                  texStr: '(' + arr[0] + '\\cdot 10^{' + arr[1] + '}' + ')' });
+    }
+
+    // get rid of the '+' before returning
+    return ({ str: arr[0]+'*10^(' + arr[1].split('+')[1] + ')' ,
+              texStr: '(' + arr[0]+'\\cdot 10^{' + arr[1].split('+')[1] +
+              '}' + ')' });
+        
+}
+
+
+export {isZero, scalarMultiply, unitVector, vectorAdd, vectorLength, round, throttle, processNum};
