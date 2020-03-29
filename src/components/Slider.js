@@ -3,6 +3,7 @@ import React from 'react';
 function Slider({value,
                  step = .1,
                  CB = () => null,
+                 precision = 5,
                  sigDig = 1,
                  min = 0,
                  max = 10,
@@ -17,7 +18,7 @@ function Slider({value,
             />
               <label  css={{padding: '0em .5em',
                             whiteSpace: 'nowrap'}}
-                    htmlFor="range_n">{label + ' = ' + round(value, sigDig).toString()}</label>
+                    htmlFor="range_n">{label + ' = ' + value.toPrecision(precision)}</label>
           </div>);
 }
 
