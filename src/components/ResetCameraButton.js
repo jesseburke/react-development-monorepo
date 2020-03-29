@@ -9,7 +9,7 @@ import { jsx } from '@emotion/core';
 
 export default function ResetCameraButton({onClickFunc, fontSize=1.75, color, userCss={} }) {
     
-    const cssToCombine = Object.assign(
+    const newCss = Object.assign(
         {
             position: 'absolute',
             top: '85%',
@@ -27,7 +27,7 @@ export default function ResetCameraButton({onClickFunc, fontSize=1.75, color, us
     
     
     return <div
-             css={cssToCombine}
+             css={newCss}
              onClick={onClickFunc}
            >                         
            <span css={{padding: '.15em', fontSize: '2rem'}}>{'\u{1F4F7}'}</span>

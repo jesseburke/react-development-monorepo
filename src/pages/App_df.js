@@ -109,11 +109,7 @@ export default function App() {
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs( threeSceneRef );    
 
-
-    const funcInputCallback = useCallback(
-        newFunc => setArrowGridData( ({func,...rest}) => ({func: newFunc, ...rest}) ),
-        [] );
-
+  
 
 
     //------------------------------------------------------------------------
@@ -122,6 +118,11 @@ export default function App() {
 
     useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
     use2DAxes({ threeCBs, axesData });
+
+    const funcInputCallback = useCallback(
+        newFunc => setArrowGridData( ({func,...rest}) => ({func: newFunc, ...rest}) ),
+        [] );
+
 
     //------------------------------------------------------------------------
     //
