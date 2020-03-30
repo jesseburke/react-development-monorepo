@@ -5,7 +5,6 @@ import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 
 import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
-import {Button} from '@jesseburke/basic-react-components';
 
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
