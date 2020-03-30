@@ -44,14 +44,14 @@ export function solnStrs(a, b, initialConds, precision) {
     
     else if( a*a - 4*b < 0 ) {
 
-        // in this case solns have form y = e^{-ax/2}(C cos(kx) + D sin(kx)), where k = (4*b-a^2)^(1/2)/4
+	let k =  Math.sqrt( 4*b - a*a )/2;
 
-        let k =  Math.sqrt( 4*b - a*a )/2;
+	// in this case solns have form y = e^{-ax/2}(A cos(kx + w)
 
         const alpha = Math.E**(-a*x0/2) * Math.cos(k*x0);
         const beta = Math.E**(-a*x0/2) * Math.sin(k*x0);
         const gamma = Math.E**(-a*x1/2) * ( -a/2*Math.cos(k*x1) - k*Math.sin(k*x1) );
-        const delta = Math.E**(-a*x1/2) * ( -a/2*Math.sin(k*x1) - k*Math.cos(k*x1) );
+        const delta = Math.E**(-a*x1/2) * ( -a/2*Math.sin(k*x1) + k*Math.cos(k*x1) );
 
         // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
         const tA = [[ alpha, beta, y0], [gamma, delta, y1]];
@@ -85,6 +85,48 @@ export function solnStrs(a, b, initialConds, precision) {
 		       + ` ${phi.texStr})\\right)`};// ${C.texStr}\\cdot\\cos(${k.texStr}x)+${D.texStr}\\cdot\\sin(${k.texStr}x) )`};
 
          return returnVal;
+
+        // in this case solns have form y = e^{-ax/2}(C cos(kx) + D sin(kx)), where k = (4*b-a^2)^(1/2)/4
+
+        // let k =  Math.sqrt( 4*b - a*a )/2;
+
+        // const alpha = Math.E**(-a*x0/2) * Math.cos(k*x0);
+        // const beta = Math.E**(-a*x0/2) * Math.sin(k*x0);
+        // const gamma = Math.E**(-a*x1/2) * ( -a/2*Math.cos(k*x1) - k*Math.sin(k*x1) );
+        // const delta = Math.E**(-a*x1/2) * ( -a/2*Math.sin(k*x1) - k*Math.cos(k*x1) );
+
+        // // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
+        // const tA = [[ alpha, beta, y0], [gamma, delta, y1]];
+        // let m = MatrixFactory( tA );
+
+        // m = m.rref().getArray();
+
+        // let C = processNum(m[0][2], precision);
+        // let D = processNum(m[1][2], precision);
+        // k = processNum(k, precision);
+
+        // // to put equation in form of notes
+        // const phi = processNum( Math.atan( -Number.parseFloat(D.str)/Number.parseFloat(C.str) ), precision );
+
+        // const newA = processNum( Number.parseFloat(C.str)/Math.cos(Number.parseFloat(phi.str)),
+        //                          precision );                  
+
+        // if( a === 0 ) {          
+          
+        //     returnVal =  {str: ` (${C.str})*cos((${k.str})*x) + (${D.str})*sin((${k.str})*x)`,
+        //                   texStr: `y = ${newA.texStr} \\cdot \\cos(${k.texStr}\\cdot x +`
+	// 		  + ` ${phi.texStr})`};
+
+        //     return returnVal;	
+        // }
+            
+
+        //  returnVal =  {str: `e^(-(${a/2})*x)*( (${C.str})*cos((${k.str})*x) + (${D.str})*sin((${k.str})*x) )`,
+        //                texStr: `y = e^{${-a/2}\\cdot x}\\left(`
+	//  	      + `${newA.texStr} \\cdot \\cos(${k.texStr}\\cdot x +`
+	// 	       + ` ${phi.texStr})\\right)`};// ${C.texStr}\\cdot\\cos(${k.texStr}x)+${D.texStr}\\cdot\\sin(${k.texStr}x) )`};
+
+        //  return returnVal;
     }
 
     else if( a*a - 4*b === 0 ) {
