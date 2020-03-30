@@ -10,19 +10,18 @@ import {Button} from '@jesseburke/basic-react-components';
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
 import Main from '../components/Main.js';
-import FunctionInput from '../components/FunctionInput.js';
-import funcParser from '../utils/funcParser.js';
 import ResetCameraButton from '../components/ResetCameraButton.js';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
-import Input from '../components/Input.js';
 import ArrowGridOptions from '../components/ArrowGridOptions.js';
+import TexDisplayComp from '../components/TexDisplayComp.js';
+import Slider from '../components/Slider.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
-import use3DAxes from '../graphics/use3DAxes.js';
 import FunctionGraph from '../graphics/FunctionGraph.js';
 import ArrowGrid from '../graphics/ArrowGrid.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
+import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
 
@@ -31,11 +30,6 @@ import {initColors, initArrowGridData, initAxesData,
         bounds, initCameraData,
         initFuncStr, initXFuncStr, fonts,
         initYFuncStr} from './constants.js';
-
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
-
-
 
 
 //------------------------------------------------------------------------
@@ -61,7 +55,7 @@ const solutionMaterial = new THREE.MeshBasicMaterial({
 solutionMaterial.transparent = true;
 solutionMaterial.opacity = .6;
 
-const solutionCurveRadius = .05;
+const solutionCurveRadius = .1;
 
 const pointMaterial = solutionMaterial.clone();
 pointMaterial.transparent = false;
@@ -74,7 +68,7 @@ const testFuncMaterial = new THREE.MeshBasicMaterial({
 testFuncMaterial.transparent = true;
 testFuncMaterial.opacity = .6;
 
-const testFuncRadius = .05;
+const testFuncRadius = .1;
 
 const testFuncH = .1;
 
@@ -86,22 +80,24 @@ capacityMaterial.transparent = true;
 capacityMaterial.opacity = .4;
 
 
-const initAVal = 4;
+const initAVal = 1.1;
 
-const initKVal = 8;
+const initKVal = 4.8;
 
 const initApproxHValue = .01;
 
 const LatexSepEquation = "\\frac{dy}{dx} = k \\!\\cdot\\! y - a \\!\\cdot\\! y^2";
 
+const initialInitialPt = [1,1];
 
+const precision = 3;
 
 //------------------------------------------------------------------------
 
 export default function App() {
 
-    const [arrowGridData, setArrowGridData] = useState( initArrowGridData );    
-
+    const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
+ 
     const [axesData, setAxesData] = useState( initAxesData );
 
     const [gridData, setGridData] = useState( initGridData );
@@ -110,7 +106,11 @@ export default function App() {
 
     const [colors, setColors] = useState( initColors );
 
-    const [initialPt, setInitialPt] = useState(null);
+    const [func, setFunc] = useState({ func: (x,y) => initKVal*y - initAVal*y*y });
+
+    const [initialPt, setInitialPt] = useState(initialInitialPt);
+
+    const [meshArray, setMeshArray] = useState(null);
 
     const [approxH, setApproxH] = useState(initApproxHValue);
 
@@ -119,8 +119,6 @@ export default function App() {
     const [kVal, setKVal] = useState(initKVal);
 
     const [aSliderMax, setASliderMax] = useState(30);
-
-    const [sigDig, setSigDig] = useState(1);
 
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
@@ -135,51 +133,113 @@ export default function App() {
     //
     // initial effects
 
-    useGridAndOrigin({ gridData, threeCBs, originRadius: .1
-                     });
+    useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
     use2DAxes({ threeCBs, axesData });
 
-    useEffect( () => {
-
-         setArrowGridData( ({func, ...rest}) =>
-                           ({ func: (x,y) => initKVal*y - initAVal*y*y,
-                              ...rest}) );
-    }, [] );
-
-
-    //------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     //
-    // effect to make camera look at median point
-
+    // make the mesh for the initial point
+    
     useEffect( () => {
 
         if( !threeCBs ) return;
 
-        //threeCBs.setCameraLookAt([(xMax+xMin)/2,(yMin+yMax)/2,0]);
-        //console.log('set camera to look at: ', [(xMax+xMin)/2,(yMin+yMax)/2,0]);
+        const geometry = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 );
+        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
+
+        const mesh = new THREE.Mesh( geometry, material )
+              .translateX(initialInitialPt[0])
+              .translateY(initialInitialPt[1]);
+
+        threeCBs.add( mesh );
+        setMeshArray([ mesh ]);
+
+        return () => {
+
+            if( mesh ) threeCBs.remove(mesh);
+            geometry.dispose();
+            material.dispose();
+            
+        };
+        
         
     }, [threeCBs] );
+
+    //-------------------------------------------------------------------------
+    //
+    // make initial condition point draggable
+
+    // in this case there is no argument, because we know what is being dragged
+    const dragCB = useCallback( () => {
+
+        if( !meshArray || !meshArray[0] ) {
+            setInitialPt( p => p );
+            return;
+        }
+
+        const vec = new THREE.Vector3();
+
+        // this will be where new position is stored
+        meshArray[0].getWorldPosition(vec);
+        
+        setInitialPt(
+            [vec.x, vec.y]
+        );
+        
+    }, [meshArray]);
+
     
+    useDraggableMeshArray({ meshArray, threeCBs, dragCB, dragendCB: dragCB });
+
+    // change initial point mesh if initialPoint changes
+
+    useEffect( () => {
+
+        if( !threeCBs ) return;
+        
+        if( !meshArray || !meshArray[0] || !initialPt ) return;
+
+        let vec = new THREE.Vector3();
+
+        meshArray[0].getWorldPosition(vec);
+
+        const [d1, e1] = [ vec.x - initialPt[0] ,  vec.y - initialPt[1] ];
+
+        if( d1 != 0 ) {
+            meshArray[0].translateX( -d1 );
+        }
+        if( e1 != 0 ) {
+            meshArray[0].translateY( -e1 );
+        }      
+        
+    }, [threeCBs, meshArray, initialPt] );
+    
+
 
     //------------------------------------------------------------------------
     //
-    //arrowGrid effect
+    // arrowGrid effect
     
     useEffect( ()  => {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid( arrowGridData );
+         const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
+                                      bounds: arrowGridData.bounds,
+                                      color: arrowGridData.color,
+                                      arrowLength: arrowGridData.arrowLength,
+                                       func: func.func
+                                    });
 
-        threeCBs.add( arrowGrid.getMesh() );
+        threeCBs.add( arrowGrid.getMesh() );	
 	
         return () => {
             threeCBs.remove( arrowGrid.getMesh() );
             arrowGrid.dispose();
         };
 	
-    }, [threeCBs, arrowGridData] );
-    
+    }, [threeCBs, arrowGridData, func] );
+      
 
     //------------------------------------------------------------------------
     //
@@ -188,26 +248,29 @@ export default function App() {
     const clickCB = useCallback( (pt) => {
 
         if( controlsEnabled ) {
-
             setInitialPt( s => s );
             return;
         }
 
         // if user clicks too close to boundary, don't want to deal with it
-        if( pt.x > xMax - .25 || pt.x < xMin + .25 ) {
-            setInitialPt( null );
+        if( pt.x > bounds.xMax  || pt.x < bounds.xMin ||
+            pt.y > bounds.yMax  || pt.y < bounds.yMin )
+        {
+            setInitialPt( initialInitialPt );
             return;
         }
 
         setInitialPt( [pt.x, pt.y] );
         
-    }, [controlsEnabled] );
+    }, [controlsEnabled, bounds] );
+    
+
 
     useEffect( () => {
 
         if( !threeCBs || !initialPt ) return;
 
-        const dfag = DirectionFieldApproxGeom({ func: arrowGridData.func,
+        const dfag = DirectionFieldApproxGeom({ func: func.func,
                                                 initialPt,
                                                 bounds,
                                                 h: approxH,
@@ -215,26 +278,17 @@ export default function App() {
 
         const mesh = new THREE.Mesh( dfag, solutionMaterial );
 
-        threeCBs.add( mesh );
-
-        const ptGeom = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 )
-              .translate(initialPt[0], initialPt[1], 0);
-
-        const ptMesh = new THREE.Mesh( ptGeom, pointMaterial );
-        threeCBs.add( ptMesh );      	
+        threeCBs.add( mesh );      
 
         return () => {
             threeCBs.remove(mesh);
             dfag.dispose();
-
-            threeCBs.remove(ptMesh);
-            ptGeom.dispose();
         };
 
-    }, [threeCBs, initialPt, arrowGridData.func, approxH] );
+    }, [threeCBs, initialPt, func, approxH] );
     
 
-   
+    
     //------------------------------------------------------------------------
     //
     // when sliders change:
@@ -243,12 +297,10 @@ export default function App() {
 
     useEffect( () => {
 
-        setArrowGridData( ({func, ...rest}) =>
-                          ({ func: (x,y) => kVal*y - (aVal)*y*y,
-                             ...rest}) );
-
+        setFunc({ func: (x,y) => kVal*y - (aVal)*y*y });
         
     }, [aVal, kVal] );
+    
 
     // change the capacity line
     useEffect( () => {
@@ -258,8 +310,8 @@ export default function App() {
         if( !threeCBs ) return;
 
         const path = new THREE.LineCurve3( new THREE.Vector3(xMin, kVal/aVal),
-                                     new THREE.Vector3(xMax, kVal/aVal) );
-                    
+                                           new THREE.Vector3(xMax, kVal/aVal) );
+        
         const geom = new THREE.TubeBufferGeometry( path,
 						   16,
 						   testFuncRadius,
@@ -329,8 +381,9 @@ export default function App() {
                            textAlign: 'center'}}>
                   Logistic equation
                 </div>
-                <div css={{padding:'.25em 0'}}
-                     dangerouslySetInnerHTML={{ __html: katex.renderToString(LatexSepEquation) }} />
+                <TexDisplayComp userCss={{padding:'.25em 0'}}
+                                str={LatexSepEquation}
+                />
               </div>         
               <div css={{ margin: 0,
                           display: 'flex',
@@ -340,19 +393,21 @@ export default function App() {
                           padding: '0em 2em'}}>
                 <Slider
                   userCss={{padding: '.25em 0em'}}
-                  value={aVal}
+                  value={Number.parseFloat(aVal)}
                   CB={val => setAVal(val)}
                   label={'a'}
                   max={xMax}
                   min={0}
+                  precision={precision}
                 />
 
                 <Slider
                   userCss={{padding: '.25em 0em'}}
-                  value={kVal}
+                  value={Number.parseFloat(kVal)}
                   CB={val => setKVal(val)}
                   label={'k'}
                   max={aVal*yMax}
+                  precision={precision}
                 />
                 
               </div>
@@ -401,33 +456,4 @@ export default function App() {
 }
 
 
-
-function Slider({value,
-                 step = .1,
-                 CB = () => null,
-                 sigDig = 1,
-                 min = 0,
-                 max = 10,
-                 label='',
-                 userCss={}}) {
-
-    
-    return (<div style={userCss}>
-              <input name="n" type="range" value={value} step={step}
-	             onChange={(e) => CB(e.target.value)}
-	             min={min} max={max}
-              />
-              <label  css={{padding: '0em .5em'}}
-                      htmlFor="range_n">{label + ' = ' + round(value, sigDig).toString()}</label>
-            </div>);
-}
-
-
-function round(x, n = 2) {
-
-    // x = -2.336596841557143
-    
-    return Number(( x * Math.pow(10, n) )/Math.pow(10, n)).toFixed(n); 
-    
-}
 
