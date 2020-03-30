@@ -38,8 +38,6 @@ import {initColors, initArrowGridData, initAxesData,
 // initial data
 //
 
-const {xMin, xMax, yMin, yMax} = {xMin: -100, xMax: 100, yMin: -100, yMax: 100};//bounds;
-
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 13;
@@ -241,14 +239,16 @@ export default function App() {
         }
 
         // if user clicks too close to boundary, don't want to deal with it
-        if( pt.x > xMax - .25 || pt.x < xMin + .25 ) {
-            setInitialPt( null );
+        if( pt.x > bounds.xMax  || pt.x < bounds.xMin ||
+            pt.y > bounds.yMax  || pt.y < bounds.yMin )
+        {
+            setInitialPt( initialInitialPt );
             return;
         }
 
         setInitialPt( [pt.x, pt.y] );
         
-    }, [controlsEnabled] );
+    }, [controlsEnabled, bounds] );
 
     useEffect( () => {
 
@@ -326,7 +326,7 @@ export default function App() {
             geom.dispose();
         };
 
-    }, [threeCBs, testFunc, xMin, xMax, yMin, yMax] );
+    }, [threeCBs, testFunc, bounds] );
 
     //------------------------------------------------------------------------
     //
