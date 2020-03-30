@@ -16,13 +16,14 @@ import ResetCameraButton from '../components/ResetCameraButton.js';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
 import Input from '../components/Input.js';
 import ArrowGridOptions from '../components/ArrowGridOptions.js';
+import TexDisplayComp from '../components/TexDisplayComp.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
-import use3DAxes from '../graphics/use3DAxes.js';
-import FunctionGraph from '../graphics/FunctionGraph.js';
+import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 import ArrowGrid from '../graphics/ArrowGrid.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
+import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
 
@@ -58,7 +59,7 @@ const solutionMaterial = new THREE.MeshBasicMaterial({
 solutionMaterial.transparent = true;
 solutionMaterial.opacity = .6;
 
-const solutionCurveRadius = .05;
+const solutionCurveRadius = .1;
 
 const pointMaterial = solutionMaterial.clone();
 pointMaterial.transparent = false;
@@ -71,7 +72,7 @@ const testFuncMaterial = new THREE.MeshBasicMaterial({
 testFuncMaterial.transparent = true;
 testFuncMaterial.opacity = .6;
 
-const testFuncRadius = .05;
+const testFuncRadius = .1;
 
 const testFuncH = .1;
 
@@ -85,6 +86,8 @@ const initPXFunc = funcParser(initPXFuncStr);
 
 const initQXFuncStr = '12*x/(x^2+1)';
 const initQXFunc = funcParser(initQXFuncStr);
+
+const initialInitialPt = [2,2];
 
 
 //------------------------------------------------------------------------
@@ -103,15 +106,17 @@ export default function App() {
 
     const [controlsData, setControlsData] = useState( initControlsData );
 
-    const [colors, setColors] = useState( initColors );
+    const [controlsEnabled, setControlsEnabled] = useState(false);
 
-    const [initialPt, setInitialPt] = useState(null);
+    const [initialPt, setInitialPt] = useState(initialInitialPt);
+
+    const [meshArray, setMeshArray] = useState(null);
 
     const [approxH, setApproxH] = useState(initApproxHValue);
 
     const [testFunc, setTestFunc] = useState(null);
 
-    const [controlsEnabled, setControlsEnabled] = useState(false);
+    const [colors, setColors] = useState( initColors );
 
     const threeSceneRef = useRef(null);
 
@@ -125,9 +130,86 @@ export default function App() {
 
     useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
     use2DAxes({ threeCBs, axesData });
+
+    //-------------------------------------------------------------------------
+    //
+    // make the mesh for the initial point
+    
+    useEffect( () => {
+
+        if( !threeCBs ) return;
+
+        const geometry = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 );
+        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
+
+        const mesh = new THREE.Mesh( geometry, material )
+              .translateX(initialInitialPt[0])
+              .translateY(initialInitialPt[1]);
+
+        threeCBs.add( mesh );
+        setMeshArray([ mesh ]);
+
+        return () => {
+
+            if( mesh ) threeCBs.remove(mesh);
+            geometry.dispose();
+            material.dispose();
+            
+        };
+        
+        
+    }, [threeCBs] );
+    
+    
+    //-------------------------------------------------------------------------
+    //
+    // make initial condition point draggable
+
+    // in this case there is no argument, because we know what is being dragged
+    const dragCB = useCallback( () => {
+
+        const vec = new THREE.Vector3();
+
+        // this will be where new position is stored
+        meshArray[0].getWorldPosition(vec);
+        
+        setInitialPt(
+            [vec.x, vec.y]
+        );
+        
+    }, [meshArray]);
+
+    
+    useDraggableMeshArray({ meshArray, threeCBs, dragCB, dragendCB: dragCB });
+
+    // change initial point mesh if initialPoint changes
+
+    useEffect( () => {
+
+        if( !threeCBs ) return;
+        
+        if( !meshArray ) return;
+
+        let vec = new THREE.Vector3();
+
+        meshArray[0].getWorldPosition(vec);
+
+        const [d1, e1] = [ vec.x - initialPt[0] ,  vec.y - initialPt[1] ];
+
+        if( d1 != 0 ) {
+            meshArray[0].translateX( -d1 );
+        }
+        if( e1 != 0 ) {
+            meshArray[0].translateY( -e1 );
+        }      
+        
+    }, [threeCBs, meshArray, initialPt] );
     
     
 
+    
+    
+    
     //------------------------------------------------------------------------
     //
     //arrowGrid effect
@@ -136,7 +218,12 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid( arrowGridData, (x,y) => -pxFunc.func(x,0)*y + qxFunc.func(x,0) );
+        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
+                                      bounds: arrowGridData.bounds,
+                                      color: arrowGridData.color,
+                                      arrowLength: arrowGridData.arrowLength,
+                                      func: (x,y) => (-pxFunc.func(x,0)*y + qxFunc.func(x,0))                                      
+                                    });
 
         threeCBs.add( arrowGrid.getMesh() );
 	
@@ -149,14 +236,13 @@ export default function App() {
     
 
 
-     //------------------------------------------------------------------------
+    //------------------------------------------------------------------------
     //
     // solution effect
 
     const clickCB = useCallback( (pt) => {
 
         if( controlsEnabled ) {
-
             setInitialPt( s => s );
             return;
         }
@@ -182,31 +268,21 @@ export default function App() {
                                                 radius: solutionCurveRadius});
 
         if( !dfag ) {
-
             console.log( 'DirectionFieldApproxGeom return null object' );
             return null;
         }
 
         const mesh = new THREE.Mesh( dfag, solutionMaterial );
 
-        threeCBs.add( mesh );
-
-        const ptGeom = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 )
-              .translate(initialPt[0], initialPt[1], 0);
-
-        const ptMesh = new THREE.Mesh( ptGeom, pointMaterial );
-        threeCBs.add( ptMesh );      	
+        threeCBs.add( mesh );       
 
         return () => {
             if( threeCBs ) {
                 if( mesh )
-                    threeCBs.remove(mesh);
-                if( ptMesh )
-                    threeCBs.remove(ptMesh);
+                    threeCBs.remove(mesh);               
             }
             
             dfag.dispose();
-            ptGeom.dispose();
         };
 
     }, [threeCBs, initialPt, bounds, pxFunc, qxFunc, approxH] );
@@ -229,7 +305,7 @@ export default function App() {
 
     );
     
- 
+    
     //------------------------------------------------------------------------
     //
     // test graph effect
@@ -245,32 +321,8 @@ export default function App() {
     useEffect( () => {
 
         if( !threeCBs || !testFunc ) return;
-
-        let pointArray = [];
-        
-        for( let i = Math.floor(xMin/testFuncH); i < Math.ceil(xMax/testFuncH); i++ ) {
-
-            const t = testFunc( i*testFuncH );
-
-            if( t >= 2*yMin && t <= 2*yMax ) {
-                
-                pointArray.push( new THREE.Vector3(i*testFuncH, testFunc( i*testFuncH ), 0) );
-            }
-        }
-
-        const path = new THREE.CurvePath();
-
-        for( let i = 0; i < pointArray.length-1; i++ ) {
-
-            path.add( new THREE.LineCurve3( pointArray[i], pointArray[i+1] ) );
-            
-        }
-
-        const geom = new THREE.TubeBufferGeometry( path,
-						   1064,
-						   testFuncRadius,
-						   8,
-						   false );
+       
+        const geom = FunctionGraph2DGeom({ func: testFunc, bounds, radius: testFuncRadius });           
         
         const mesh = new THREE.Mesh( geom, testFuncMaterial );
 
@@ -353,9 +405,9 @@ export default function App() {
                 borderRight: '1px solid',
                 flex: 4
             }}>
-              <div css={{padding:'.25em 0'}}
-                   dangerouslySetInnerHTML={{ __html: katex.renderToString(LatexSepEquation) }} />
-
+              <TexDisplayComp userCss={{padding:'.25em 0'}}
+                              str={LatexSepEquation}
+              />
               <div css={{paddingTop: '.5em'}}>
                 <span css={{paddingRight: '1em'}}>
                   <span css={{paddingRight: '.5em'}}>p(x) = </span>
