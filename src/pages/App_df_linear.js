@@ -32,9 +32,6 @@ import {initColors, initArrowGridData, initAxesData,
         bounds, initCameraData,
         fonts} from './constants.js';
 
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
-
 
 //------------------------------------------------------------------------
 //
@@ -206,10 +203,6 @@ export default function App() {
     }, [threeCBs, meshArray, initialPt] );
     
     
-
-    
-    
-    
     //------------------------------------------------------------------------
     //
     //arrowGrid effect
@@ -372,10 +365,7 @@ export default function App() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100%',
-                paddingTop: '.5em',
-                paddingBottom: '.5em',
-                paddingLeft: '2em',
-                paddingRight: '1em',
+                padding: '.5em 2em',
                 borderRight: '1px solid',
                 flex: 1
             }}>
@@ -398,10 +388,7 @@ export default function App() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100%',
-                paddingTop: '1em',
-                paddingBottom: '.5em',
-                paddingLeft: '1.5em',
-                paddingRight: '1.5em',
+                padding: '.5em 1em',
                 borderRight: '1px solid',
                 flex: 4
             }}>
@@ -427,10 +414,8 @@ export default function App() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 flex: 5,
-                paddingTop: '.5em',
-                paddingBottom: '.5em',
-                paddingLeft: '1em',
-                paddingRight: '2em'}}
+                padding: '.5em 1em',
+            }}
                               initDensity={1/arrowGridData.gridSqSize}
                               initLength={arrowGridData.arrowLength}
                               initApproxH={approxH}
