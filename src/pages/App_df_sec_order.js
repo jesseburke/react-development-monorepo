@@ -10,9 +10,7 @@ import {Button} from '@jesseburke/basic-react-components';
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
 import Main from '../components/Main.js';
-import FunctionInput from '../components/FunctionInput.js';
 import funcParser from '../utils/funcParser.js';
-import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
 import Input from '../components/Input.js';
 import Slider from '../components/Slider.js';
 import TexDisplayComp from '../components/TexDisplayComp.js';
@@ -20,10 +18,12 @@ import InitialCondsComp from '../components/InitialCondsComp.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOriginNew.js';
 import use2DAxes from '../graphics/use2DAxes.js';
-import use3DAxes from '../graphics/use3DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
+import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 
-import {processNum, throttle} from '../utils/BaseUtils.js';
+import useDebounce from '../hooks/useDebounce.js';
+
+import {processNum} from '../utils/BaseUtils.js';
 
 import {solnStrs} from '../math/differentialEquations/secOrderConstantCoeff.js';
 
@@ -87,7 +87,7 @@ const solnRadius = .2;
 const solnH = .1;
 
 
-const initAVal = 2.9;
+const initAVal = .6;
 const initBVal = 1.9;
 // will have -abBound < a^2 - 4b > abBound
 const abBound = 20;
@@ -104,7 +104,7 @@ const initInitConds = [[4,7], [7,5]];
 const initialPointMeshRadius = .4;
 
 // in msec, for dragging
-const throttleTime = 100;
+const dragDebounceTime = 8;
 
 const initSigDig = 3;
 
@@ -136,9 +136,7 @@ export default function App() {
 
     const [initialConds, setInitialConds] = useState(initInitConds);
 
-    const [initialPt1Mesh, setInitialPt1Mesh] = useState(null);
-
-    const [initialPt2Mesh, setInitialPt2Mesh] = useState(null);
+    const [meshArray, setMeshArray] = useState(null);
 
     const [solnStr, setSolnStr] = useState(null);
 
@@ -161,6 +159,8 @@ export default function App() {
     //
     // initial effects
 
+    const debouncedInitialConds = useDebounce(initialConds, dragDebounceTime);
+
     useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
     use2DAxes({ threeCBs, axesData });
 
@@ -177,7 +177,6 @@ export default function App() {
               .translateY(initInitConds[0][1]);
 
         threeCBs.add( mesh1 );
-        setInitialPt1Mesh( mesh1 );
         //console.log('effect based on initialConds called');
 
         const geometry2 = new THREE.SphereBufferGeometry( initialPointMeshRadius, 15, 15 );
@@ -191,7 +190,8 @@ export default function App() {
               .translateY(initInitConds[1][1]);
 
         threeCBs.add( mesh2 );
-        setInitialPt2Mesh( mesh2 );
+
+        setMeshArray([ mesh1, mesh2 ]);
 
         return () => {
 
@@ -214,52 +214,31 @@ export default function App() {
     //
     // make initial condition points draggable
 
-    useEffect( () => {
+    const dragCB = useCallback( (meshIndex) => {
 
-        if( !threeCBs ) return;
+        const vec = new THREE.Vector3();
+
+        // this will be where new position is stored
+        meshArray[meshIndex].getWorldPosition(vec);
         
-        
-        const dragendCB = (draggedMesh) => {
+        setInitialConds(
+            (initCondArray) =>
+                initCondArray.map(
+                    (ic, index) => {
+                        if( index !== meshIndex )
+                            return ic;
+                        return [processNum(vec.x, initCondsPrecision).str,
+                                processNum(vec.y,
+                                           initCondsPrecision).str];
+                    }
+                )
+        );
+    }, [meshArray]);
 
-            // this will be where new position is stored
-            const vec = new THREE.Vector3();
+   
+    useDraggableMeshArray({ threeCBs, meshArray, dragCB, dragendCB: dragCB });
 
-            // depends on whether pt1 or pt2 is being dragged
-            
-            if( draggedMesh.id === initialPt1Mesh.id ) {
 
-                draggedMesh.getWorldPosition( vec );
-
-                setInitialConds( ([p1, p2]) =>
-                                 [[processNum(vec.x, initCondsPrecision).str,
-                                   processNum(vec.y, initCondsPrecision).str],
-                                  p2] );
-            }
-
-            else if( draggedMesh.id === initialPt2Mesh.id ) {
-
-                draggedMesh.getWorldPosition( vec );
-
-                setInitialConds( ([p1, p2]) => [p1,
-                                                [processNum(vec.x, initCondsPrecision).str,
-                                                 processNum(vec.y, initCondsPrecision).str],
-                                               ] );
-            }
-            
-        };
-        
-        const controlsDisposeFunc = threeCBs.addDragControls({ meshArray: [initialPt1Mesh, initialPt2Mesh],
-                                                               dragCB: throttle(dragendCB, throttleTime),
-                                                               dragendCB});
-        return () => {
-
-            if( controlsDisposeFunc ) controlsDisposeFunc();
-
-        };
-        
-    }, [threeCBs, initialPt1Mesh, initialPt2Mesh] );
-
-    
     
     
     //------------------------------------------------------------------------
@@ -268,36 +247,36 @@ export default function App() {
 
     useEffect( () => {
 
+        const ic = debouncedInitialConds;
+
         if( !threeCBs ) return;
         
-        if( !initialPt1Mesh || !initialPt2Mesh ) return;
+        if( !meshArray ) return;
 
         let vec1 = new THREE.Vector3();
         let vec2 = new THREE.Vector3();
 
-        initialPt1Mesh.getWorldPosition(vec1);
-        initialPt2Mesh.getWorldPosition(vec2);
+        meshArray[0].getWorldPosition(vec1);
+        meshArray[1].getWorldPosition(vec2);
 
-        const [d1, e1] = [ vec1.x - initialConds[0][0] ,  vec1.y - initialConds[0][1] ];
-        const [d2, e2] = [ vec2.x - initialConds[1][0] ,  vec2.y - initialConds[1][1] ];
+        const [d1, e1] = [ vec1.x - ic[0][0] ,  vec1.y - ic[0][1] ];
+        const [d2, e2] = [ vec2.x - ic[1][0] ,  vec2.y - ic[1][1] ];
 
         if( d1 != 0 ) {
-            initialPt1Mesh.translateX( -d1 );
+            meshArray[0].translateX( -d1 );
         }
         if( e1 != 0 ) {
-            initialPt1Mesh.translateY( -e1 );
+            meshArray[0].translateY( -e1 );
         }
         if( d2 != 0 ) {
-            initialPt2Mesh.translateX( -d2 );
+            meshArray[1].translateX( -d2 );
         }
         if( e2 != 0 ) {
-            initialPt2Mesh.translateY( -e2 );
+            meshArray[1].translateY( -e2 );
         }
         
-    }, [threeCBs, initialConds] );
-
-    
-    
+    }, [threeCBs, meshArray, debouncedInitialConds] );
+        
     
     //------------------------------------------------------------------------
     //
@@ -306,7 +285,7 @@ export default function App() {
 
     useEffect( () => {
 
-        const c = solnStrs( Number.parseFloat(aVal.str), Number.parseFloat(bVal.str), initialConds, precision ) ;
+        const c = solnStrs( Number.parseFloat(aVal.str), Number.parseFloat(bVal.str), debouncedInitialConds, precision ) ;
 
         if( !c ) {
 
@@ -319,7 +298,7 @@ export default function App() {
         setSolnStr( c.str );
         setSolnTexStr( c.texStr );
         
-    }, [aVal, bVal, initialConds, sigDig] );
+    }, [aVal, bVal, debouncedInitialConds, sigDig] );
 
     //------------------------------------------------------------------------
     //
@@ -342,7 +321,7 @@ export default function App() {
             geom.dispose();
         };
         
-    }, [threeCBs, initialConds, bounds, solnStr] );
+    }, [threeCBs, bounds, solnStr] );
     
     
     return (       
@@ -441,7 +420,7 @@ export default function App() {
                 />       
               </div>
             </div>
-            <InitialCondsComp initialConds={initialConds}
+            <InitialCondsComp initialConds={debouncedInitialConds}
                               changeCB={useCallback( ic => setInitialConds(ic))}/>
             
           </ControlBar>
