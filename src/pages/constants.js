@@ -9,8 +9,8 @@ export const halfXSize = 10;
 export const halfYSize = 7;
 export const gridSize = 100;
 
-export const xMin = -20, xMax = 20;
-export const yMin = -20, yMax = 20;
+export const xMin = -15, xMax = 15;
+export const yMin = -10, yMax = 10;
 
 // export const xMin = -15, xMax = 15;
 // export const yMin = -10, yMax = 10;
@@ -43,7 +43,7 @@ export const initFunc = funcParser( initFuncStr );
 
 
 export const initArrowGridData = {
-    gridSqSize: .25,
+    gridSqSize: .5,
     color: initColors.arrows,
     arrowLength: .75,
     bounds,

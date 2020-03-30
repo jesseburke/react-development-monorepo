@@ -7,9 +7,9 @@ export default function useDraggableMeshArray({ threeCBs, meshArray, dragendCB, 
 
             if( !threeCBs || !meshArray ) return;
             
-            const nonNullMeshArray = meshArray.map( m => m );
+            const nonNullMeshArray = meshArray.filter( m => m );
 
-            if( !nonNullMeshArray ) return;            
+            if( nonNullMeshArray.length === 0 ) return;            
 
             const controlsDisposeFunc = threeCBs.addDragControls({ meshArray,
                                                                    dragCB,
