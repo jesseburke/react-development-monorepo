@@ -183,7 +183,7 @@ export default function App() {
 
         if( !threeCBs ) return;
         
-        if( !meshArray ) return;
+        if( !meshArray || !initialPt) return;
 
         let vec = new THREE.Vector3();
 
