@@ -393,12 +393,33 @@ export default function useThreeScene({ canvasRef,
 	const controls = new DragControls( [ ...meshArray  ], camera.current, renderer.current.domElement );
 	controls.addEventListener( 'drag', render );
 
+	const idArray = meshArray.map( mesh => mesh.id );
+
+	// the CB functions expect an index in meshArray; the drag controls passes
+	// the mesh itself; this squares those away
+	
+	function modifyCB( f ) {
+	    
+	    const newFunc = (event) => {				
+
+		const index = idArray.indexOf( event.object.id );
+
+		if( index < 0 )
+		    return null;
+
+		else
+		    f( index );
+	    }
+	    
+	    return newFunc;
+	}
+
 	if( dragCB ) {
-	    controls.addEventListener( 'drag', (event) => dragCB( event.object ) );	    
+	    controls.addEventListener( 'drag', modifyCB( dragCB ) );	    
 	};
 	
 	if( dragendCB ) {
-	    controls.addEventListener( 'dragend', (event) => dragendCB( event.object ) );	    
+	    controls.addEventListener( 'dragend', modifyCB( dragendCB ) );	    
 	};
 	
 	return controls.dispose;
