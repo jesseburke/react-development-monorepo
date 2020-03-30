@@ -30,8 +30,6 @@ export function solnStrs(a, b, initialConds, precision) {
         let C = processNum(m[0][2], precision);
         let D = processNum(m[1][2], precision);
 
-        console.log( C );
-
         // prepare numbers for display
         m1 = processNum(m1, precision);
         m2 = processNum(m2, precision);
@@ -58,27 +56,18 @@ export function solnStrs(a, b, initialConds, precision) {
         // should now have alpha*C + beta*D = y0, gamma*C + delta*D = y1,
         const tA = [[ alpha, beta, y0], [gamma, delta, y1]];
         let m = MatrixFactory( tA );
-        console.log('m is ', m);
+
         m = m.rref().getArray();
-        console.log('after rref and getArray, m is ', m);
 
         let C = processNum(m[0][2], precision);
         let D = processNum(m[1][2], precision);
         k = processNum(k, precision);
 
-        console.log('C is ', C);
-        console.log('D is ', D);
-        console.log('k is ', k);
-
         // to put equation in form of notes
         const phi = processNum( Math.atan( -Number.parseFloat(D.str)/Number.parseFloat(C.str) ), precision );
 
         const newA = processNum( Number.parseFloat(C.str)/Math.cos(Number.parseFloat(phi.str)),
-                                 precision );
-
-        console.log('phi is ', phi);
-        console.log('newA is ', newA);
-            
+                                 precision );                  
 
         if( a === 0 ) {          
           
