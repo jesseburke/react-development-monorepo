@@ -1,30 +1,103 @@
 import * as THREE from 'three';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-// func: f(x,y) = z
+// func: f(x)
 export default function FunctionGraph2DGeom({ func,
 					      bounds,
 					      approxH = .1,
 					      // this is the max no of line segments in a component
-					      compMaxLength = 20,
+					      maxSegLength = 20,
 					      tubularSegments = 1064,
                                               radius = .15,
                                               radialSegments = 4 }) {
 
     const {xMin, xMax, yMin, yMax} = bounds;
 
-    const xRange = xMax - xMin;
-    const yRange = yMax - yMin;
-        
+    let compArray = curveComps({ bounds, func, approxH });     
+
+    const geomArray = [];
+    let curve, curArray, nextPt, l, tempD;
+    
+    for( let i = 0; i < compArray.length; i++ ) {
+
+	curArray = compArray[i];	
+	l = curArray.length;
+
+	//
+	for( let k = 0; k < Math.floor( l/maxSegLength ); k++ ) {	    
+	   
+	    curve = curveSeg( curArray.slice( k*maxSegLength, (k+1)*maxSegLength+1 )  );
+	    
+	    geomArray.push( new THREE.TubeBufferGeometry(
+		curve,
+		tubularSegments,
+		radius,
+		radialSegments,
+		false ) );
+
+	}
+
+	tempD = l - maxSegLength*Math.floor( l/maxSegLength );
+
+	if( tempD === 0 )
+	    continue;
+
+	else if( tempD === 1 )
+	    curve = new THREE.LineCurve3( curArray[l-2], curArray[l-1] );
+
+	else
+	    curve = curveSeg( curArray.slice( maxSegLength*Math.floor( l/maxSegLength ), l ) );
+
+	geomArray.push( new THREE.TubeBufferGeometry(
+	    curve,
+	    tubularSegments,
+	    radius,
+	    radialSegments,
+	    false ) );
+    }
+
+    if( geomArray.length === 0 )
+	return null;
+    
+    return BufferGeometryUtils.mergeBufferGeometries(geomArray);
+    
+};
+
+
+function curveSeg( pointArray ) {
+
+    const l = pointArray.length;
+    
+    let curve = new THREE.CurvePath();
+
+    for( let i = 0; i < Math.floor((l-1)/2); i++ ) {
+
+	curve.add( new THREE.CatmullRomCurve3([ pointArray[2*i], pointArray[2*i+1], pointArray[2*i+2] ]) );
+	
+    }
+
+    if( l % 2 === 0 )
+	curve.add( new THREE.LineCurve3( pointArray[l-2], pointArray[l-1] ) );
+
+    return curve;        
+}
+
+// this will output an array of arrays, with each array representing a connected component of
+// the graph of func, which is inside bounds
+//
+
+function curveComps({ bounds, func, approxH }) {
+    
+    const {xMin, xMax, yMin, yMax} = bounds;
+
     let compArray = [];
     let curArray = [];
 
     let pointArray = [];
 
-    let ty;
+    let x0, y0, x1, y1, m, tx, ty, lastOutPt;
 
-    let x0, y0, x1, y1, m, tx, lastOutPt;
-   
+
     for( let i = Math.floor(xMin/approxH); i < Math.ceil(xMax/approxH); i++ ) {
 
         ty = func( i*approxH );
@@ -91,68 +164,14 @@ export default function FunctionGraph2DGeom({ func,
 	
         curArray.push( new THREE.Vector3(i*approxH, ty, 0) );
 
-	if( curArray.length >= compMaxLength ) {
-
-	    compArray.push( curArray );
-	    curArray = [];
-	    lastOutPt = [i*approxH, ty];	    
-	}
     }
 
     if( curArray.length > 0) compArray.push( curArray );
 
-    const geomArray = [];
+    return compArray;
+}
 
-    let curve, nextPt, l;
-    
-    for( let i = 0; i < compArray.length; i++ ) {
 
-	curArray = compArray[i];
-	
-	l = curArray.length;
-	
-	curve = new THREE.CurvePath();
-
-	if( i < compArray.length - 1 ) {
-	    // the compArrays already overlap at first and last elements
-	    nextPt = compArray[i+1][1];
-	}
-	
-	for( let j = 0; j < Math.floor(l/2)-1; j++ ) {
-
-	    curve.add( new THREE.CatmullRomCurve3([ curArray[2*j], curArray[2*j+1], curArray[2*j+2] ]) );	    
-	}
-
-	if( l % 2 === 0 ) {
-
-	    if( nextPt )
-		curve.add( new THREE.CatmullRomCurve3([ curArray[l-2], curArray[l-1], nextPt ]) );
-
-	    else
-		curve.add( new THREE.LineCurve3( curArray[l-2], curArray[l-1] ) );
-
-	}
-
-	// for( let i = 0; i < curArray.length-1; i++ ) {
-	    
-	//     curve.add( new THREE.LineCurve3( curArray[i], curArray[i+1] ) );
-	    
-	// }
-	
-	geomArray.push( new THREE.TubeBufferGeometry(
-	    curve,
-	    tubularSegments,
-	    radius,
-	    radialSegments,
-	    false ) );
-
-	nextPt = null;
-
-    }
-
-    return BufferGeometryUtils.mergeBufferGeometries(geomArray);
-    
-};
 
 function Vector3ToArray( v ) {
 
