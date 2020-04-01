@@ -46,7 +46,7 @@ const initColors = {
 };
 
 const xMin = -50, xMax = 50;
-const yMin = -20, yMax = 20;
+const yMin = -50, yMax = 50;
 const bounds = {xMin, xMax, yMin, yMax};
 
 const cameraBounds = {xMin: -10, xMax: 10, yMin: -10, yMax: 10};
@@ -152,8 +152,7 @@ const initInitConds = [[4,7], [7,5]];
 
 const initialPointMeshRadius = .4;
 
-// in msec, for dragging
-const dragDebounceTime = 8;
+const debounceTime = 10;
 
 const initSigDig = 3;
 
@@ -206,7 +205,11 @@ export default function App() {
     // initial effects
 
     useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
-    use2DAxes({ threeCBs, axesData });
+    use2DAxes({ threeCBs, axesData, xLabel: 't' });
+
+    const dbFVal = useDebounce(fVal, debounceTime);
+    const dbWVal = useDebounce(wVal, debounceTime);
+    const dbW0Val = useDebounce(w0Val, debounceTime);
 
      //------------------------------------------------------------------------
     //
@@ -215,15 +218,27 @@ export default function App() {
     
     useEffect( () => {
 
-        const f = num(fVal);
-        const w = num(wVal);
-        const w0 = num(w0Val);
+        const f = num(dbFVal);
+        const w = num(dbWVal);
+        const w0 = num(dbW0Val);
 
         const C = f/(w0*w0 - w*w);
 
         setFunc({ func: (t) => C*(Math.cos(w*t) - Math.cos(w0*t)) });
 
-    }, [fVal, wVal, w0Val] );
+    }, [dbFVal, dbWVal, dbW0Val] );
+
+    //  useEffect( () => {
+
+    //     const f = num(fVal);
+    //     const w = num(wVal);
+    //     const w0 = num(w0Val);
+
+    //     const C = f/(w0*w0 - w*w);
+
+    //     setFunc({ func: (t) => C*(Math.cos(w*t) - Math.cos(w0*t)) });
+
+    // }, [fVal, wVal, w0Val] );
       
 
        
@@ -238,7 +253,7 @@ export default function App() {
         
         const geom = FunctionGraph2DGeom({ func: func.func,
                                            bounds,
-                                           maxSegLength: 20,
+                                           maxSegLength: 40,
                                            approxH: .05,
                                            radius: .05,
                                            tubularSegments: 1064 });
