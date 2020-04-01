@@ -368,6 +368,22 @@ export default function useThreeScene({ canvasRef,
         return array[0].point;
     }
 
+     // calculates where ray into the screen at (screenX, screenY) intersects mesh
+    function screenToWorldCoords( screenX, screenY, mesh ) {
+
+	const xperc = screenX/ canvasRef.current.clientWidth;
+	// following accounts for fact that canvas might not be entire window
+        const yperc = (screenY - canvasRef.current.offsetParent.offsetTop)/ canvasRef.current.clientHeight;
+        const ncoords = [xperc*2 - 1, yperc*2 - 1];	
+
+        raycaster.current.setFromCamera(  new THREE.Vector2( ncoords[0], ncoords[1] ),
+                                  camera.current );
+
+        const array = raycaster.current.intersectObject( mesh );
+        return array[0].point;
+    }
+
+
     function resetControls() {
 
 	controls.current.reset();	
@@ -429,7 +445,7 @@ export default function useThreeScene({ canvasRef,
 
     return {add, remove, render, controlsPubSub: controlsPubSub.current,
 	    addLabel, removeLabel, drawLabels, setCameraPosition, setCameraLookAt,
-	    exportGLTF, downloadGLTF, getCamera,
+	    exportGLTF, downloadGLTF, getCamera, screenToWorldCoords,
 	    getMouseCoords, resetControls, changeControls,
 	   addDragControls};
     
