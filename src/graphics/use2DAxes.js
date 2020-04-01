@@ -11,7 +11,9 @@ export default function use2DAxes({ threeCBs, axesData: { bounds,
 							  tickDistance = 1,
 							  tickRadius = 1.25,
 							  tickColor = '#8BC34A',
-							  labelStyle } })
+							  labelStyle },
+				    xLabel = 'x',
+				    yLabel = 'y'})
 
 {
 
@@ -97,16 +99,15 @@ export default function use2DAxes({ threeCBs, axesData: { bounds,
 	
 	let xLabelID; 
 	let yLabelID; 
-	let zLabelID;
 
 	if (showLabels) {
 	               
             xLabelID = threeCBs.addLabel({ pos: [xMax-1, 0, 0],
-					   text: "x",
+					   text: xLabel,
 					   style: labelStyle });
 
             yLabelID = threeCBs.addLabel({ pos: [0, yMax, 0],
-                                           text: "y",
+                                           text: yLabel,
                                            style: labelStyle });
 
 	    threeCBs.drawLabels();
