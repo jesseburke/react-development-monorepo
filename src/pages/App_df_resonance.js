@@ -26,7 +26,7 @@ import {processNum} from '../utils/BaseUtils.js';
 
 import {solnStrs} from '../math/differentialEquations/secOrderConstantCoeff.js';
 
-import {fonts} from './constants.js';
+import {fonts, labelStyle} from './constants.js';
 
 
 //------------------------------------------------------------------------
@@ -55,18 +55,21 @@ const cameraBounds = {xMin: -10, xMax: 10, yMin: -10, yMax: 10};
 //export const cameraConst = 1.00;
 const cameraConst = 1.05;
 
-const initCameraData = 
-{position: [0, 0, 1],
- up: [0, 0, 1],
- //fov: 75,
- near: -1,
- far: 5000,
- rotation: {order: 'XYZ'},
- orthographic: { left: cameraBounds.xMin,
-                 right: cameraBounds.xMax,
-                 top: cameraConst*(yMax),
-                 bottom: cameraConst*(yMin)
-               }
+const aspectRatio = window.innerWidth / window.innerHeight;
+const frustumSize = 20;
+
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: {order: 'XYZ'},
+    orthographic: { left: frustumSize * aspectRatio / -2,
+                    right: frustumSize * aspectRatio / 2,
+                    top: frustumSize / 2,
+                    bottom: frustumSize / -2,
+                  }
 };
 
 const initControlsData = {
@@ -88,6 +91,7 @@ const initAxesData = {
     tickRadius: 3.5,      
     show: true,
     showLabels: true,
+    labelStyle
 };
 
 const initGridData = {
