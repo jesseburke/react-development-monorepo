@@ -103,25 +103,51 @@ export default function FunctionGraph2DGeom({ func,
 
     const geomArray = [];
 
-    let curve;
+    let curve, nextPt, l;
     
     for( let i = 0; i < compArray.length; i++ ) {
 
 	curArray = compArray[i];
+	
+	l = curArray.length;
+	
 	curve = new THREE.CurvePath();
 
-	for( let i = 0; i < curArray.length-1; i++ ) {
-	    
-	    curve.add( new THREE.LineCurve3( curArray[i], curArray[i+1] ) );
-	    
+	if( i < compArray.length - 1 ) {
+	    // the compArrays already overlap at first and last elements
+	    nextPt = compArray[i+1][1];
 	}
+	
+	for( let j = 0; j < Math.floor(l/2)-1; j++ ) {
+
+	    curve.add( new THREE.CatmullRomCurve3([ curArray[2*j], curArray[2*j+1], curArray[2*j+2] ]) );	    
+	}
+
+	if( l % 2 === 0 ) {
+
+	    if( nextPt )
+		curve.add( new THREE.CatmullRomCurve3([ curArray[l-2], curArray[l-1], nextPt ]) );
+
+	    else
+		curve.add( new THREE.LineCurve3( curArray[l-2], curArray[l-1] ) );
+
+	}
+
+	// for( let i = 0; i < curArray.length-1; i++ ) {
+	    
+	//     curve.add( new THREE.LineCurve3( curArray[i], curArray[i+1] ) );
+	    
+	// }
 	
 	geomArray.push( new THREE.TubeBufferGeometry(
 	    curve,
 	    tubularSegments,
 	    radius,
 	    radialSegments,
-	    false ) );	
+	    false ) );
+
+	nextPt = null;
+
     }
 
     return BufferGeometryUtils.mergeBufferGeometries(geomArray);
