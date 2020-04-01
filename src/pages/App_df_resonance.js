@@ -26,11 +26,7 @@ import {processNum} from '../utils/BaseUtils.js';
 
 import {solnStrs} from '../math/differentialEquations/secOrderConstantCoeff.js';
 
-import {initArrowGridData, initAxesData,
-        initGridData, initControlsData, secControlsData,
-        initCameraData,
-        initFuncStr, initXFuncStr, fonts,
-        initYFuncStr} from './constants.js';
+import {fonts} from './constants.js';
 
 
 //------------------------------------------------------------------------
@@ -38,7 +34,7 @@ import {initArrowGridData, initAxesData,
 // initial data
 //
 
-export const initColors = {
+const initColors = {
     arrows: '#C2374F',
     solution: '#C2374F',
     firstPt: '#C2374F',
@@ -49,9 +45,57 @@ export const initColors = {
     clearColor: '#f0f0f0'
 };
 
-const xMin = -25, xMax = 25;
-const yMin = -10, yMax = 10;
+const xMin = -50, xMax = 50;
+const yMin = -20, yMax = 20;
 const bounds = {xMin, xMax, yMin, yMax};
+
+const cameraBounds = {xMin: -10, xMax: 10, yMin: -10, yMax: 10};
+
+// how much of grid to show at start
+//export const cameraConst = 1.00;
+const cameraConst = 1.05;
+
+const initCameraData = 
+{position: [0, 0, 1],
+ up: [0, 0, 1],
+ //fov: 75,
+ near: -1,
+ far: 5000,
+ rotation: {order: 'XYZ'},
+ orthographic: { left: cameraBounds.xMin,
+                 right: cameraBounds.xMax,
+                 top: cameraConst*(yMax),
+                 bottom: cameraConst*(yMin)
+               }
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.PAN}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
+
+const initAxesData = {
+    radius: .01,
+    color: initColors.axes,
+    bounds,
+    tickDistance: 1,
+    tickRadius: 3.5,      
+    show: true,
+    showLabels: true,
+};
+
+const initGridData = {
+    bounds,
+    show: true,
+    originColor: 0x3F405C
+};
+
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -86,7 +130,7 @@ const solnRadius = .2;
 const solnH = .1;
 
 const initW0Val = 4.8;
-const initWVal = 5.8;
+const initWVal = 4.83;
 const initFVal = 9.5;
 
 const fMin = .1;
@@ -122,8 +166,6 @@ const sliderPrecision = 3;
 //------------------------------------------------------------------------
 
 export default function App() {
-
-    const [arrowGridData, setArrowGridData] = useState( initArrowGridData );    
 
     const [axesData, setAxesData] = useState( initAxesData );
 
@@ -196,7 +238,8 @@ export default function App() {
         
         const geom = FunctionGraph2DGeom({ func: func.func,
                                            bounds,
-                                           compMaxLength: 20,
+                                           maxSegLength: 20,
+                                           approxH: .05,
                                            radius: .05,
                                            tubularSegments: 1064 });
 

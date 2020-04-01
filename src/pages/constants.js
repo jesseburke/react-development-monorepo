@@ -83,7 +83,7 @@ export const initGridData = {
 export const cameraConst = 1.05;
 
 export const initCameraData = 
-{position: [0, 0, 100],
+{position: [0, 0, 1],
  up: [0, 0, 1],
  //fov: 75,
  near: -1,
