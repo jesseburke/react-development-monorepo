@@ -90,6 +90,8 @@ function ThreeScene({
 
         getMouseCoords: ( e, mesh ) => threeScene.getMouseCoords( e, mesh ),
 
+        screenToWorldCoords: (screenX, screenY, mesh) => threeScene.screenToWorldCoords( screenX, screenY, mesh ),
+
         resetControls: () => threeScene.resetControls(),
 
         changeControls: (newControlsData) => threeScene.changeControls( newControlsData ),
@@ -154,6 +156,10 @@ export function useThreeCBs( threeRef ) {
         const getMouseCoords = 
               (e, mesh) => threeRef.current.getMouseCoords(e, mesh);
 
+        // calculates where ray into the screen at (screenX, screenY) intersects mesh
+        const screenToWorldCoords = 
+              (screenX, screenY, mesh) => threeRef.current.getMouseCoords(screenX, screenY, mesh);
+
         const add = (m) => threeRef.current.add(m);
 
         const remove = (m) => threeRef.current.remove(m);                            
@@ -179,7 +185,7 @@ export function useThreeCBs( threeRef ) {
         setThreeCBs({ getCanvas, getCamera, setCameraPosition, setCameraLookAt, getMouseCoords,
                       add, remove, render,
                       resetControls, changeControls,
-                      downloadGLTF,
+                      downloadGLTF, screenToWorldCoords, 
                       addLabel, removeLabel, drawLabels,
                       addDragControls});
 
