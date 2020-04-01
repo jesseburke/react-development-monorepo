@@ -3,17 +3,18 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export default function use2DAxes({ threeCBs, axesData: { bounds,
-							  radius,
-							  color,
-							  show,
-							  showLabels,
-							  tickDistance = 1,
-							  tickRadius = 1.25,
-							  tickColor = '#8BC34A',
-							  labelStyle },
+export default function use2DAxes({ threeCBs,
+				    bounds,
+				    radius,
+				    color,
+				    show,
+				    showLabels,
+				    tickDistance = 1,
+				    tickRadius = 1.25,
+				    tickColor = '#8BC34A',
+				    labelStyle ,
 				    xLabel = 'x',
-				    yLabel = 'y'})
+				    yLabel = 'y' })
 
 {
 
