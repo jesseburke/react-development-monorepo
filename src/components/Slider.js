@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {throttle} from '../utils/BaseUtils.js';
+
 function Slider({value,
                  step = .1,
                  CB = () => null,
@@ -10,10 +12,14 @@ function Slider({value,
                  label='',
                  userCss={}}) {
 
-    
+    const cb = React.useCallback(
+        (e) => {
+            CB(e.target.value);
+        }, []);
+
     return (<div style={userCss}>
             <input name="n" type="range" value={value} step={step}
-	           onChange={(e) => CB(e.target.value)}
+	           onChange={cb}//(e) => CB(e.target.value)}
 	           min={min} max={max}
             />
               <label  css={{padding: '0em .5em',
