@@ -241,7 +241,15 @@ export default function App() {
     // }, [fVal, wVal, w0Val] );
       
 
-       
+     useEffect( () => {
+
+         if( !threeCBs ) return;
+         
+         console.log(threeCBs.screenToWorldCoords( -1, 0 ));
+
+         console.log(threeCBs.screenToWorldCoords( 1, 0 ));
+
+    }, [threeCBs] );
 
     //------------------------------------------------------------------------
     //
