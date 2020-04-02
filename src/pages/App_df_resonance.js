@@ -45,9 +45,11 @@ const initColors = {
     clearColor: '#f0f0f0'
 };
 
-const xMin = -50, xMax = 50;
-const yMin = -50, yMax = 50;
-const bounds = {xMin, xMax, yMin, yMax};
+const xMin = -100, xMax = 100;
+const yMin = -100, yMax = 100;
+const initBounds = {xMin, xMax, yMin, yMax};
+
+const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
 const frustumSize = 20;
@@ -150,6 +152,8 @@ const initialPointMeshRadius = .4;
 
 const debounceTime = 10;
 
+const boundsDebounceTime = 40;
+
 const initSigDig = 3;
 
 const initPrecision = 4;
@@ -170,6 +174,8 @@ export default function App() {
 
     const [func, setFunc] = useState(null);
 
+    const [bounds, setBounds] = useState(initBounds);
+
     const [solnStr, setSolnStr] = useState(null);
 
     const [solnTexStr, setSolnTexStr] = useState(null);
@@ -188,28 +194,32 @@ export default function App() {
     // expects object with 'str' field
     const num = x => Number.parseFloat(x.str);
 
+    
+    const dbFVal = useDebounce(fVal, debounceTime);
+    const dbWVal = useDebounce(wVal, debounceTime);
+    const dbW0Val = useDebounce(w0Val, debounceTime);
+
+    const dbBounds = useDebounce( bounds, boundsDebounceTime);
+
+
     //------------------------------------------------------------------------
     //
-    // initial effects
+    // initial effects    
 
     useGridAndOrigin({ threeCBs,
-		       bounds,
+		       bounds: gridBounds,
 		       show: initGridData.show,
 		       originColor: initGridData.originColor,
 		       originRadius: .1 });
 
     use2DAxes({ threeCBs,
-                bounds,
+                bounds: dbBounds,
                 radius: initAxesData.radius,
                 color: initAxesData.color,
                 show: initAxesData.show,
                 showLabels: initAxesData.showLabels,
                 labelStyle,
                 xLabel: 't' });
-
-    const dbFVal = useDebounce(fVal, debounceTime);
-    const dbWVal = useDebounce(wVal, debounceTime);
-    const dbW0Val = useDebounce(w0Val, debounceTime);
 
      //------------------------------------------------------------------------
     //
@@ -222,9 +232,26 @@ export default function App() {
         const w = num(dbWVal);
         const w0 = num(dbW0Val);
 
-        const C = f/(w0*w0 - w*w);
+        if( w != w0 ) {
 
-        setFunc({ func: (t) => C*(Math.cos(w*t) - Math.cos(w0*t)) });
+            const C = f/(w0*w0 - w*w);
+
+            setFunc({ func: (t) => C*(Math.cos(w*t) - Math.cos(w0*t)) });
+
+            setSolnStr(
+                `y=${processNum(f/(w0**2 -w**2), precision).texStr}( \\cos(${w}t) - \\cos(${w0}t))`
+            );
+        }
+
+        else {
+
+            setFunc({ func: (t) => f/(2*w)*t*Math.sin(w*t) });
+
+            setSolnStr(
+                `y=${processNum(f/(2*w0), precision).texStr} \\cdot t\\cdot\\sin(${w}t)`
+            );
+
+        }
 
     }, [dbFVal, dbWVal, dbW0Val] );
 
@@ -241,15 +268,6 @@ export default function App() {
     // }, [fVal, wVal, w0Val] );
       
 
-     useEffect( () => {
-
-         if( !threeCBs ) return;
-         
-         console.log(threeCBs.screenToWorldCoords( -1, 0 ));
-
-         console.log(threeCBs.screenToWorldCoords( 1, 0 ));
-
-    }, [threeCBs] );
 
     //------------------------------------------------------------------------
     //
@@ -260,9 +278,9 @@ export default function App() {
         if( !threeCBs || !func ) return;
         
         const geom = FunctionGraph2DGeom({ func: func.func,
-                                           bounds,
+                                           bounds: dbBounds,
                                            maxSegLength: 40,
-                                           approxH: .05,
+                                           approxH: .1,
                                            radius: .05,
                                            tubularSegments: 1064 });
 
@@ -276,7 +294,7 @@ export default function App() {
             geom.dispose();
         };
         
-    }, [threeCBs, bounds, func] );
+    }, [threeCBs, dbBounds, func] ); 
     
     
     return (       
@@ -340,7 +358,7 @@ export default function App() {
                     whiteSpace: 'nowrap'
                 }}>
                   <TexDisplayComp userCss={{padding:'.25em 0'}}
-                     str={`y=${processNum(num(fVal)/(num(w0Val)**2 - num(wVal)**2), precision).texStr}( \\cos(${num(wVal)}t) - \\cos(${num(w0Val)}t))`}
+                     str={solnStr}
                   />       
                 </div>
                </div>
@@ -388,7 +406,6 @@ export default function App() {
                    precision={sliderPrecision}
                  />                
                </div>
-
             </div>
 
          
@@ -406,5 +423,7 @@ export default function App() {
           
         </FullScreenBaseComponent>);                              
 }
+
+//  
 
 
