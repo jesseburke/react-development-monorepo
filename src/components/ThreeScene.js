@@ -9,6 +9,7 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 function ThreeScene({   
     controlsCB = null,
+    scrollCB = null,
     initCameraData = {position: [10, 10, 10],
                       up: [0, 0, 1],
                       fov: 75 },
@@ -37,7 +38,8 @@ function ThreeScene({
             labelContainerRef,
             cameraData: initCameraData,
             controlsData,
-            clearColor
+            clearColor,
+            scrollCB
         })
     );
 
