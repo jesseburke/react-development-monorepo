@@ -23,6 +23,8 @@ export default function useThreeScene({ canvasRef,
     const controls = useRef(null);
     const raycaster =  useRef(new THREE.Raycaster());     
 
+    const coordPlaneMesh = useRef(null);
+    
     const threeLabelData = useRef({});
     const htmlLabelData  = useRef({});
     const labelCounter = useRef(0);
@@ -132,6 +134,7 @@ export default function useThreeScene({ canvasRef,
         };
     }, [cameraData]);
 
+    // controls effect
     useEffect( () => {
 	controls.current = new OrbitControls( camera.current, canvasRef.current );
 
@@ -153,6 +156,31 @@ export default function useThreeScene({ canvasRef,
         };
 
     }, [controlsData] );
+
+    // coordinate plane mesh is created
+    useEffect( () => {
+
+	const bounds =  {xMin: -1000, xMax: 1000, yMax: 1000, yMin: -1000};
+
+	const {xMin, xMax, yMin, yMax} = bounds; 
+
+	const planeGeom =  new THREE.PlaneBufferGeometry(xMax-xMin, yMax-yMin, 1, 1);
+	const mat = new THREE.MeshBasicMaterial( {color: 'rgba(0, 0, 0, 1)'} );
+
+	mat.transparent = true;
+	mat.opacity = 0.0;
+	mat.side = THREE.DoubleSide;
+	//planeGeom.rotateX(Math.PI);
+
+	coordPlaneMesh.current = new THREE.Mesh( planeGeom, mat );
+
+	scene.current.add( coordPlaneMesh.current );
+
+	return () => {
+	    planeGeom.dispose();
+	};
+	
+    }, []);
 
     const render = () => {     
         renderer.current.render(scene.current, camera.current);
@@ -369,17 +397,19 @@ export default function useThreeScene({ canvasRef,
     }
 
      // calculates where ray into the screen at (screenX, screenY) intersects mesh
-    function screenToWorldCoords( screenX, screenY, mesh ) {
+    function screenToWorldCoords( screenX, screenY ) {
 
-	const xperc = screenX/ canvasRef.current.clientWidth;
+	if( !coordPlaneMesh.current ) return;
+
+	//const xperc = screenX/ canvasRef.current.clientWidth;
 	// following accounts for fact that canvas might not be entire window
-        const yperc = (screenY - canvasRef.current.offsetParent.offsetTop)/ canvasRef.current.clientHeight;
-        const ncoords = [xperc*2 - 1, yperc*2 - 1];	
+        //const yperc = (screenY - canvasRef.current.offsetParent.offsetTop)/ canvasRef.current.clientHeight;
+        //const ncoords = [xperc*2 - 1, yperc*2 - 1];	
 
-        raycaster.current.setFromCamera(  new THREE.Vector2( ncoords[0], ncoords[1] ),
+        raycaster.current.setFromCamera(  new THREE.Vector2( screenX, screenY ),
                                   camera.current );
 
-        const array = raycaster.current.intersectObject( mesh );
+        const array = raycaster.current.intersectObject( coordPlaneMesh.current );
         return array[0].point;
     }
 
