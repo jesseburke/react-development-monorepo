@@ -9,11 +9,14 @@ import GLTFExporter from 'three-gltf-exporter';
 import { jsx } from '@emotion/core';
 import { css } from 'emotion';
 
+import {throttle} from '../utils/BaseUtils.js';
+
 export default function useThreeScene({ canvasRef,
 					labelContainerRef,
 					cameraData,
 					clearColor = '#f0f0f0',
 					controlsData,
+					scrollCB = null,
 					alpha = true}) 
 					
 {    
@@ -32,7 +35,7 @@ export default function useThreeScene({ canvasRef,
     const width = useRef(null);
     const height = useRef(null);
 
-    const controlsPubSub = useRef( pubsub() );
+    const controlsPubSub = useRef( pubsub(), [] );
     controlsPubSub.current.subscribe( drawLabels );
   
     // initial three setup effect
@@ -140,22 +143,55 @@ export default function useThreeScene({ canvasRef,
 
 	// adds all properties of controlsData to controls.current
 	controls.current = Object.assign( controls.current, controlsData );
-		
-	controls.current.update();	
-	controls.current.addEventListener('change', () => {            
+
+	function animate() {
+
+	    requestAnimationFrame( animate );
+	    controls.current.update();
 	    render();
-	    
-	    let v = new THREE.Vector3( 0, 0, 0 );
-	    camera.current.getWorldPosition(v);
-	    controlsPubSub.current.publish(v.toArray());
-	    render();	   
-	} );
+
+	    if( scrollCB ) {
+
+		scrollCB({ xMin: screenToWorldCoords( -1, 0 ).x,
+			   xMax: screenToWorldCoords( 1, 0 ).x,
+			   xMin: screenToWorldCoords( -1, 0 ).x,
+			   xMax: screenToWorldCoords( 1, 0 ).x,
+			   
+			 });
+	    }
+			  
+	};
+
+	animate();
 
         return () => {
             controls.current.dispose();
         };
 
     }, [controlsData] );
+
+    // controls effect
+    // useEffect( () => {
+    // 	controls.current = new OrbitControls( camera.current, canvasRef.current );
+
+    // 	// adds all properties of controlsData to controls.current
+    // 	controls.current = Object.assign( controls.current, controlsData );
+		
+    // 	controls.current.update();	
+    // 	controls.current.addEventListener('change', () => {            
+    // 	    render();
+	    
+    // 	    let v = new THREE.Vector3( 0, 0, 0 );
+    // 	    camera.current.getWorldPosition(v);
+    // 	    controlsPubSub.current.publish(v.toArray());
+    // 	    render();	   
+    // 	});
+
+    //     return () => {
+    //         controls.current.dispose();
+    //     };
+
+    // }, [controlsData] );
 
     // coordinate plane mesh is created
     useEffect( () => {
