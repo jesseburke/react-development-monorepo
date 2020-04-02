@@ -156,7 +156,7 @@ export function useThreeCBs( threeRef ) {
 
         // calculates where ray into the screen at (screenX, screenY) intersects mesh
         const screenToWorldCoords = 
-              (screenX, screenY) => threeRef.current.getMouseCoords(screenX, screenY);
+              (screenX, screenY) => threeRef.current.screenToWorldCoords(screenX, screenY);
 
         const add = (m) => threeRef.current.add(m);
 
