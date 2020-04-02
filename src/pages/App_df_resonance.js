@@ -49,12 +49,6 @@ const xMin = -50, xMax = 50;
 const yMin = -50, yMax = 50;
 const bounds = {xMin, xMax, yMin, yMax};
 
-const cameraBounds = {xMin: -10, xMax: 10, yMin: -10, yMax: 10};
-
-// how much of grid to show at start
-//export const cameraConst = 1.00;
-const cameraConst = 1.05;
-
 const aspectRatio = window.innerWidth / window.innerHeight;
 const frustumSize = 20;
 
@@ -86,7 +80,6 @@ const initControlsData = {
 const initAxesData = {
     radius: .01,
     color: initColors.axes,
-    bounds,
     tickDistance: 1,
     tickRadius: 3.5,      
     show: true,
@@ -95,7 +88,6 @@ const initAxesData = {
 };
 
 const initGridData = {
-    bounds,
     show: true,
     originColor: 0x3F405C
 };
@@ -169,15 +161,7 @@ const sliderPrecision = 3;
 //------------------------------------------------------------------------
 
 export default function App() {
-
-    const [axesData, setAxesData] = useState( initAxesData );
-
-    const [gridData, setGridData] = useState( initGridData );
-
-    const [controlsData, setControlsData] = useState( initControlsData );
-
-    const [colors, setColors] = useState( initColors );
-
+   
     const [fVal, setFVal] = useState(processNum(initFVal, precision));
 
     const [wVal, setWVal] = useState(processNum(initWVal, precision));
@@ -208,8 +192,20 @@ export default function App() {
     //
     // initial effects
 
-    useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
-    use2DAxes({ threeCBs, axesData, xLabel: 't' });
+    useGridAndOrigin({ threeCBs,
+		       bounds,
+		       show: initGridData.show,
+		       originColor: initGridData.originColor,
+		       originRadius: .1 });
+
+    use2DAxes({ threeCBs,
+                bounds,
+                radius: initAxesData.radius,
+                color: initAxesData.color,
+                show: initAxesData.show,
+                showLabels: initAxesData.showLabels,
+                labelStyle,
+                xLabel: 't' });
 
     const dbFVal = useDebounce(fVal, debounceTime);
     const dbWVal = useDebounce(wVal, debounceTime);
@@ -276,7 +272,7 @@ export default function App() {
     
     
     return (       
-        <FullScreenBaseComponent backgroundColor={colors.controlBar}
+        <FullScreenBaseComponent backgroundColor={initColors.controlBar}
                                  fonts={fonts}>
           
           <ControlBar height={controlBarHeight}
@@ -394,7 +390,7 @@ export default function App() {
                 fontSize={initFontSize*controlBarFontSize}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
-                            controlsData={controlsData}
+                            controlsData={initControlsData}
                             clearColor={initColors.clearColor}
             />           
 
