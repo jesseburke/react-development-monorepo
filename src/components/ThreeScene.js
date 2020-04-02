@@ -5,14 +5,7 @@ import useThreeScene from '../graphics/useThree.js';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 //------------------------------------------------------------------------
-
-// changes
-//
-// 1) cameraChangeFunc became controlsCB
-//
-// 2) cameraData became initCameraData
-//
-// 3) changed threeScene from Ref to state
+// 
 
 function ThreeScene({   
     controlsCB = null,
@@ -47,6 +40,10 @@ function ThreeScene({
             clearColor
         })
     );
+
+    //------------------------------------------------------------------------
+    //
+    // subscribe to controlsPubSub
 
     useEffect( () => {
 
@@ -90,7 +87,8 @@ function ThreeScene({
 
         getMouseCoords: ( e, mesh ) => threeScene.getMouseCoords( e, mesh ),
 
-        screenToWorldCoords: (screenX, screenY, mesh) => threeScene.screenToWorldCoords( screenX, screenY, mesh ),
+        screenToWorldCoords: (screenX, screenY) =>
+            threeScene.screenToWorldCoords( screenX, screenY ),
 
         resetControls: () => threeScene.resetControls(),
 
@@ -158,7 +156,7 @@ export function useThreeCBs( threeRef ) {
 
         // calculates where ray into the screen at (screenX, screenY) intersects mesh
         const screenToWorldCoords = 
-              (screenX, screenY, mesh) => threeRef.current.getMouseCoords(screenX, screenY, mesh);
+              (screenX, screenY) => threeRef.current.getMouseCoords(screenX, screenY);
 
         const add = (m) => threeRef.current.add(m);
 
