@@ -5,7 +5,6 @@ import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 
 import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
-import {Button} from '@jesseburke/basic-react-components';
 
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
@@ -526,18 +525,17 @@ export default function App() {
                             clearColor={initColors.clearColor}
             />
             <ClickablePlaneComp threeCBs={threeCBs}                           
-                                clickCB={clickCB}/>
-            <ResetCameraButton key="resetCameraButton"
-                               onClickFunc={resetCameraCB}
-                               color={controlsEnabled ? colors.controlBar : null }
-                               userCss={{ top: '85%',
-                                          left: '5%',
-                                          userSelect: 'none'}}/>
-
-
+                                clickCB={clickCB}/>          
           </Main>
           
         </FullScreenBaseComponent>);                              
 }
 
+
+  // <ResetCameraButton key="resetCameraButton"
+  //                              onClickFunc={resetCameraCB}
+  //                              color={controlsEnabled ? colors.controlBar : null }
+  //                              userCss={{ top: '85%',
+  //                                         left: '5%',
+  //                                         userSelect: 'none'}}/>
 
