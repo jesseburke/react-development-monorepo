@@ -15,7 +15,7 @@ import Slider from '../components/Slider.js';
 import TexDisplayComp from '../components/TexDisplayComp.js';
 import InitialCondsComp from '../components/InitialCondsComp.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOriginNew.js';
+import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
