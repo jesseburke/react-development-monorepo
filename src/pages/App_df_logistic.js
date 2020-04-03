@@ -157,7 +157,7 @@ const initKVal = 4.8;
 
 const initApproxHValue = .01;
 
-const LatexSepEquation = "\\frac{dy}{dx} = k \\!\\cdot\\! y - a \\!\\cdot\\! y^2";
+const logisticEquationTex = "\\frac{dy}{dx} = k \\!\\cdot\\! y - a \\!\\cdot\\! y^2";
 
 const initialInitialPt = [1,1];
 
@@ -468,7 +468,7 @@ export default function App() {
                   Logistic equation
                 </div>
                 <TexDisplayComp userCss={{padding:'.25em 0'}}
-                                str={LatexSepEquation}
+                                str={logisticEquationTex}
                 />
               </div>         
               <div css={{ margin: 0,
