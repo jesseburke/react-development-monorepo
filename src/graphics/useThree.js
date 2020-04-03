@@ -210,10 +210,11 @@ export default function useThreeScene({ canvasRef,
 
 	coordPlaneMesh.current = new THREE.Mesh( planeGeom, mat );
 
-	scene.current.add( coordPlaneMesh.current );
+	//.scene.current.add( coordPlaneMesh.current );
 
 	return () => {
-	    planeGeom.dispose();
+	    //scene.current.remove( coordPlaneMesh.current );
+	    planeGeom.dispose();	    
 	};
 	
     }, []);
