@@ -9,7 +9,6 @@ import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
 import Main from '../components/Main.js';
-import funcParser from '../utils/funcParser.js';
 import Input from '../components/Input.js';
 import Slider from '../components/Slider.js';
 import TexDisplayComp from '../components/TexDisplayComp.js';
@@ -23,14 +22,11 @@ import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 import useDebounce from '../hooks/useDebounce.js';
 
 import {processNum} from '../utils/BaseUtils.js';
+import funcParser from '../utils/funcParser.js';
 
 import {solnStrs} from '../math/differentialEquations/secOrderConstantCoeff.js';
 
-import {initArrowGridData, initAxesData,
-        initGridData, initControlsData, secControlsData,
-        bounds, initCameraData,
-        initFuncStr, initXFuncStr, fonts,
-        initYFuncStr} from './constants.js';
+import {fonts, labelStyle} from './constants.js';
 
 
 
@@ -50,8 +46,73 @@ const initColors = {
     clearColor: '#f0f0f0'
 };
 
+const xMin = -50, xMax = 50;
+const yMin = -50, yMax = 50;
+const initBounds = {xMin, xMax, yMin, yMax};
 
-const {xMin, xMax, yMin, yMax} = bounds;
+const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
+
+const aspectRatio = window.innerWidth / window.innerHeight;
+const frustumSize = 40;
+
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: {order: 'XYZ'},
+    orthographic: { left: frustumSize * aspectRatio / -2,
+                    right: frustumSize * aspectRatio / 2,
+                    top: frustumSize / 2,
+                    bottom: frustumSize / -2,
+                  }
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
+
+const secControlsData =  {       
+    mouseButtons: {LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.ROTATE,
+	       TWO: THREE.TOUCH.DOLLY,
+               THREE: THREE.MOUSE.PAN},
+    enableRotate: true,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    zoomSpeed: 1.25};
+
+
+const initAxesData = {
+    radius: .01,
+    color: initColors.axes,
+    tickDistance: 1,
+    tickRadius: 3.5,      
+    show: true,
+    showLabels: true,
+    labelStyle
+};
+
+const initGridData = {
+    show: true,
+    originColor: 0x3F405C
+};
+
+const initArrowGridData = {
+    gridSqSize: .5,
+    color: initColors.arrows,
+    arrowLength: .75
+};
+
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -86,8 +147,8 @@ const solnRadius = .2;
 const solnH = .1;
 
 
-const initAVal = .6;
-const initBVal = 1.9;
+const initAVal = .2;
+const initBVal = 3.0;
 // will have -abBound < a^2 - 4b > abBound
 const abBound = 20;
 const aMax = 5;
@@ -103,7 +164,7 @@ const initInitConds = [[4,7], [7,5]];
 const initialPointMeshRadius = .4;
 
 // in msec, for dragging
-const dragDebounceTime = 8;
+const dragDebounceTime = 7;
 
 const initSigDig = 3;
 
@@ -118,13 +179,7 @@ export default function App() {
 
     const [arrowGridData, setArrowGridData] = useState( initArrowGridData );    
 
-    const [axesData, setAxesData] = useState( initAxesData );
-
-    const [gridData, setGridData] = useState( initGridData );
-
-    const [controlsData, setControlsData] = useState( initControlsData );
-
-    const [colors, setColors] = useState( initColors );
+    const [bounds, setBounds] = useState( initBounds );
 
     const [aVal, setAVal] = useState(processNum(initAVal, precision));
 
@@ -160,8 +215,20 @@ export default function App() {
 
     const debouncedInitialConds = useDebounce(initialConds, dragDebounceTime);
 
-    useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
-    use2DAxes({ threeCBs, axesData });
+    useGridAndOrigin({ threeCBs,
+		       bounds: gridBounds,
+		       show: initGridData.show,
+		       originColor: initGridData.originColor,
+		       originRadius: .1 });
+
+    use2DAxes({ threeCBs,
+                bounds: bounds,
+                radius: initAxesData.radius,
+                color: initAxesData.color,
+                show: initAxesData.show,
+                showLabels: initAxesData.showLabels,
+                labelStyle,
+                xLabel: 't' });
 
     // make the meshes for the initial points
     useEffect( () => {
@@ -234,7 +301,7 @@ export default function App() {
         );
     }, [meshArray]);
 
-   
+    
     useDraggableMeshArray({ threeCBs, meshArray, dragCB, dragendCB: dragCB });
 
 
@@ -275,7 +342,7 @@ export default function App() {
         }
         
     }, [threeCBs, meshArray, debouncedInitialConds] );
-        
+    
     
     //------------------------------------------------------------------------
     //
@@ -324,7 +391,7 @@ export default function App() {
     
     
     return (       
-        <FullScreenBaseComponent backgroundColor={colors.controlBar}
+        <FullScreenBaseComponent backgroundColor={initColors.controlBar}
                                  fonts={fonts}>
           
           <ControlBar height={controlBarHeight}
@@ -428,7 +495,7 @@ export default function App() {
                 fontSize={initFontSize*controlBarFontSize}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
-                            controlsData={controlsData}
+                            controlsData={initControlsData}
                             clearColor={initColors.clearColor}
             />           
 
