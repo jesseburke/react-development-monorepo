@@ -18,7 +18,7 @@ import Input from '../components/Input.js';
 import ArrowGridOptions from '../components/ArrowGridOptions.js';
 import TexDisplayComp from '../components/TexDisplayComp.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOriginNew.js';
+import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 import ArrowGrid from '../graphics/ArrowGrid.js';
