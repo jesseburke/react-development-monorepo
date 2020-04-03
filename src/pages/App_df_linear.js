@@ -18,7 +18,7 @@ import Input from '../components/Input.js';
 import ArrowGridOptions from '../components/ArrowGridOptions.js';
 import TexDisplayComp from '../components/TexDisplayComp.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
+import useGridAndOrigin from '../graphics/useGridAndOriginNew.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 import ArrowGrid from '../graphics/ArrowGrid.js';
@@ -27,16 +27,92 @@ import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
 
-import {initColors, initArrowGridData, initAxesData,
-        initGridData, initControlsData, secControlsData,
-        bounds, initCameraData,
-        fonts} from './constants.js';
+import {fonts, labelStyle} from './constants.js';
 
 
 //------------------------------------------------------------------------
 //
 // initial data
 //
+
+const initColors = {
+    arrows: '#C2374F',
+    solution: '#C2374F',
+    firstPt: '#C2374F',
+    secPt: '#C2374F',
+    testFunc: '#E16962',//#DBBBB0',
+    axes: '#0A2C3C',
+    controlBar: '#0A2C3C',
+    clearColor: '#f0f0f0'
+};
+
+const xMin = -20, xMax = 20;
+const yMin = -20, yMax = 20;
+const initBounds = {xMin, xMax, yMin, yMax};
+
+const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
+
+const aspectRatio = window.innerWidth / window.innerHeight;
+const frustumSize = 20;
+
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: {order: 'XYZ'},
+    orthographic: { left: frustumSize * aspectRatio / -2,
+                    right: frustumSize * aspectRatio / 2,
+                    top: frustumSize / 2,
+                    bottom: frustumSize / -2,
+                  }
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
+
+const secControlsData =  {       
+    mouseButtons: {LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.ROTATE,
+	       TWO: THREE.TOUCH.DOLLY,
+               THREE: THREE.MOUSE.PAN},
+    enableRotate: true,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    zoomSpeed: 1.25};
+
+
+const initAxesData = {
+    radius: .01,
+    color: initColors.axes,
+    tickDistance: 1,
+    tickRadius: 3.5,      
+    show: true,
+    showLabels: true,
+    labelStyle
+};
+
+const initGridData = {
+    show: true,
+    originColor: 0x3F405C
+};
+
+ const initArrowGridData = {
+    gridSqSize: .5,
+    color: initColors.arrows,
+    arrowLength: .75
+};
+
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -91,6 +167,8 @@ export default function App() {
 
     const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
 
+    const [bounds, setBounds] = useState(initBounds);
+
     const [pxFunc, setPXFunc] = useState({ func: initPXFunc });
 
     const [qxFunc, setQXFunc] = useState({ func: initQXFunc });
@@ -123,8 +201,21 @@ export default function App() {
     //
     // initial effects
 
-    useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
-    use2DAxes({ threeCBs, axesData });
+     useGridAndOrigin({ threeCBs,
+		       bounds: gridBounds,
+		       show: initGridData.show,
+		       originColor: initGridData.originColor,
+		       originRadius: .1 });
+
+     use2DAxes({ threeCBs,
+                bounds: bounds,
+                radius: initAxesData.radius,
+                color: initAxesData.color,
+                show: initAxesData.show,
+                showLabels: initAxesData.showLabels,
+                labelStyle,
+                xLabel: 't' });
+
 
     //-------------------------------------------------------------------------
     //
@@ -210,7 +301,7 @@ export default function App() {
         if( !threeCBs ) return;
 
         const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      bounds: arrowGridData.bounds,
+                                      bounds,
                                       color: arrowGridData.color,
                                       arrowLength: arrowGridData.arrowLength,
                                       func: (x,y) => (-pxFunc.func(x,0)*y + qxFunc.func(x,0))                                      
