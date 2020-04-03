@@ -5,7 +5,6 @@ import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 
 import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
-import {Button} from '@jesseburke/basic-react-components';
 
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
@@ -18,18 +17,14 @@ import Slider from '../components/Slider.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
-import FunctionGraph from '../graphics/FunctionGraph.js';
+import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 import ArrowGrid from '../graphics/ArrowGrid.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
 import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
 
-import {initColors, initArrowGridData, initAxesData,
-        initGridData, initControlsData, secControlsData,
-        bounds, initCameraData,
-        initFuncStr, initXFuncStr, fonts,
-        initYFuncStr} from './constants.js';
+import {fonts, labelStyle} from './constants.js';
 
 
 //------------------------------------------------------------------------
@@ -37,7 +32,83 @@ import {initColors, initArrowGridData, initAxesData,
 // initial data
 //
 
-const {xMin, xMax, yMin, yMax} = bounds;
+const initColors = {
+    arrows: '#C2374F',
+    solution: '#C2374F',
+    firstPt: '#C2374F',
+    secPt: '#C2374F',
+    testFunc: '#E16962',//#DBBBB0',
+    axes: '#0A2C3C',
+    controlBar: '#0A2C3C',
+    clearColor: '#f0f0f0'
+};
+
+const xMin = -20, xMax = 20;
+const yMin = -20, yMax = 20;
+const initBounds = {xMin, xMax, yMin, yMax};
+
+const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
+
+const aspectRatio = window.innerWidth / window.innerHeight;
+const frustumSize = 20;
+
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: {order: 'XYZ'},
+    orthographic: { left: frustumSize * aspectRatio / -2,
+                    right: frustumSize * aspectRatio / 2,
+                    top: frustumSize / 2,
+                    bottom: frustumSize / -2,
+                  }
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
+
+const secControlsData =  {       
+    mouseButtons: {LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.ROTATE,
+	       TWO: THREE.TOUCH.DOLLY,
+               THREE: THREE.MOUSE.PAN},
+    enableRotate: true,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    zoomSpeed: 1.25};
+
+
+const initAxesData = {
+    radius: .01,
+    color: initColors.axes,
+    tickDistance: 1,
+    tickRadius: 3.5,      
+    show: true,
+    showLabels: true,
+    labelStyle
+};
+
+const initGridData = {
+    show: true,
+    originColor: 0x3F405C
+};
+
+const initArrowGridData = {
+    gridSqSize: .5,
+    color: initColors.arrows,
+    arrowLength: .75
+};
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -97,7 +168,9 @@ const precision = 3;
 export default function App() {
 
     const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
- 
+
+    const [bounds, setBounds] = useState(initBounds);
+    
     const [axesData, setAxesData] = useState( initAxesData );
 
     const [gridData, setGridData] = useState( initGridData );
@@ -133,8 +206,21 @@ export default function App() {
     //
     // initial effects
 
-    useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
-    use2DAxes({ threeCBs, axesData });
+    useGridAndOrigin({ threeCBs,
+		       bounds: gridBounds,
+		       show: initGridData.show,
+		       originColor: initGridData.originColor,
+		       originRadius: .1 });
+
+    use2DAxes({ threeCBs,
+                bounds: bounds,
+                radius: initAxesData.radius,
+                color: initAxesData.color,
+                show: initAxesData.show,
+                showLabels: initAxesData.showLabels,
+                labelStyle,
+                xLabel: 't' });
+
 
     //-------------------------------------------------------------------------
     //
@@ -224,11 +310,11 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-         const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      bounds: arrowGridData.bounds,
+        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
                                       color: arrowGridData.color,
                                       arrowLength: arrowGridData.arrowLength,
-                                       func: func.func
+                                      bounds,
+                                      func: func.func
                                     });
 
         threeCBs.add( arrowGrid.getMesh() );	
@@ -239,7 +325,7 @@ export default function App() {
         };
 	
     }, [threeCBs, arrowGridData, func] );
-      
+    
 
     //------------------------------------------------------------------------
     //
@@ -442,18 +528,19 @@ export default function App() {
             />
             <ClickablePlaneComp threeCBs={threeCBs}                           
                                 clickCB={clickCB}
-            />
-            <ResetCameraButton key="resetCameraButton"
-                               onClickFunc={resetCameraCB}
-                               color={controlsEnabled ? colors.controlBar : null }
-                               userCss={{ top: '85%',
-                                          left: '5%',
-                                          userSelect: 'none'}}/>         
+            />          
 
           </Main>
           
         </FullScreenBaseComponent>);                              
 }
+
+// <ResetCameraButton key="resetCameraButton"
+//                              onClickFunc={resetCameraCB}
+//                              color={controlsEnabled ? colors.controlBar : null }
+//                              userCss={{ top: '85%',
+//                                         left: '5%',
+//                                         userSelect: 'none'}}/>         
 
 
 
