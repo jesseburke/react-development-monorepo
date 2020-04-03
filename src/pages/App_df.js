@@ -5,9 +5,6 @@ import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 
 import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
-import {Button} from '@jesseburke/basic-react-components';
-import {Modal} from '@jesseburke/basic-react-components';
-import {ConditionalDisplay} from '@jesseburke/basic-react-components';
 
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
@@ -21,30 +18,105 @@ import ArrowGridOptions from '../components/ArrowGridOptions.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
-import use3DAxes from '../graphics/use3DAxes.js';
-import FunctionGraph from '../graphics/FunctionGraph.js';
+import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
 import ArrowGrid from '../graphics/ArrowGrid.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
-
+import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
 
-import {initColors, initArrowGridData, initAxesData,
-        initGridData, initControlsData, secControlsData,
-        bounds, initCameraData,
-        initFuncStr, initXFuncStr, fonts,
-        initYFuncStr} from './constants.js';
+import useDebounce from '../hooks/useDebounce.js';
 
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
+import {fonts, labelStyle} from './constants.js';
+
 
 //------------------------------------------------------------------------
 //
 // initial data
 //
 
-const {xMin, xMax, yMin, yMax} = bounds;
+const initColors = {
+    arrows: '#C2374F',
+    solution: '#C2374F',
+    firstPt: '#C2374F',
+    secPt: '#C2374F',
+    testFunc: '#E16962',//#DBBBB0',
+    axes: '#0A2C3C',
+    controlBar: '#0A2C3C',
+    clearColor: '#f0f0f0'
+};
 
-// percentage of sbcreen appBar will take (at the top)
+const xMin = -20, xMax = 20;
+const yMin = -20, yMax = 20;
+const initBounds = {xMin, xMax, yMin, yMax};
+
+const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
+
+const aspectRatio = window.innerWidth / window.innerHeight;
+const frustumSize = 20;
+
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: {order: 'XYZ'},
+    orthographic: { left: frustumSize * aspectRatio / -2,
+                    right: frustumSize * aspectRatio / 2,
+                    top: frustumSize / 2,
+                    bottom: frustumSize / -2,
+                  }
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
+
+const secControlsData =  {       
+    mouseButtons: {LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.ROTATE,
+	       TWO: THREE.TOUCH.DOLLY,
+               THREE: THREE.MOUSE.PAN},
+    enableRotate: true,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    zoomSpeed: 1.25};
+
+
+const initAxesData = {
+    radius: .01,
+    color: initColors.axes,
+    tickDistance: 1,
+    tickRadius: 3.5,      
+    show: true,
+    showLabels: true,
+    labelStyle
+};
+
+const initGridData = {
+    show: true,
+    originColor: 0x3F405C
+};
+
+ const initArrowGridData = {
+    gridSqSize: .5,
+    color: initColors.arrows,
+    arrowLength: .7
+};
+
+const initFuncStr = "x*y*sin(x + y)/10";
+
+const initTestFuncStr = 'x^3/5 + x^2/3';
+
+// percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 13;
 
@@ -60,7 +132,7 @@ const solutionMaterial = new THREE.MeshBasicMaterial({
 solutionMaterial.transparent = true;
 solutionMaterial.opacity = .6;
 
-const solutionCurveRadius = .05;
+const solutionCurveRadius = .1;
 
 const pointMaterial = solutionMaterial.clone();
 pointMaterial.transparent = false;
@@ -73,34 +145,36 @@ const testFuncMaterial = new THREE.MeshBasicMaterial({
 testFuncMaterial.transparent = true;
 testFuncMaterial.opacity = .6;
 
-const testFuncRadius = .05;
+const testFuncRadius = .1;
 
 const testFuncH = .1;
 
-const initApproxHValue = .01;
+const initApproxHValue = .1;
 
-const LatexEquation = "\\frac{dy}{dx} = ";
+const initialInitialPt = [2,2];
+
+const dragDebounceTime = 7;
 
 
 //------------------------------------------------------------------------
 
 export default function App() {   
 
-    const [arrowGridData, setArrowGridData] = useState( initArrowGridData );    
+    const [bounds, setBounds] = useState(initBounds);
 
-    const [axesData, setAxesData] = useState( initAxesData );
+    const [func, setFunc] = useState({ func: funcParser(initFuncStr) });
 
-    const [gridData, setGridData] = useState( initGridData );
+    const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
 
     const [controlsData, setControlsData] = useState( initControlsData );
 
-    const [colors, setColors] = useState( initColors );
+    const [initialPt, setInitialPt] = useState(initialInitialPt);
 
-    const [initialPt, setInitialPt] = useState(null);
+    const [meshArray, setMeshArray] = useState(null);
 
     const [approxH, setApproxH] = useState(initApproxHValue);
 
-    const [testFunc, setTestFunc] = useState(null);
+    const [testFunc, setTestFunc] = useState({ func: funcParser(initTestFuncStr) });
 
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
@@ -111,37 +185,103 @@ export default function App() {
 
   
 
-
     //------------------------------------------------------------------------
     //
     // initial effects
 
-    useGridAndOrigin({ gridData, threeCBs, originRadius: .1 });
-    use2DAxes({ threeCBs, axesData });
+    const dbInitialPt = useDebounce( initialPt, dragDebounceTime );
 
-    const funcInputCallback = useCallback(
-        newFunc => setArrowGridData( ({func,...rest}) => ({func: newFunc, ...rest}) ),
-        [] );
+    useGridAndOrigin({ threeCBs,
+		       bounds: gridBounds,
+		       show: initGridData.show,
+		       originColor: initGridData.originColor,
+		       originRadius: .1 });
+
+     use2DAxes({ threeCBs,
+                bounds: bounds,
+                radius: initAxesData.radius,
+                color: initAxesData.color,
+                show: initAxesData.show,
+                showLabels: initAxesData.showLabels,
+                labelStyle,
+                xLabel: 't' });
+   
 
 
-    //------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     //
-    //arrowGrid effect
+    // make the mesh for the initial point
     
-    useEffect( ()  => {
+    useEffect( () => {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid( arrowGridData );
+        const geometry = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 );
+        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
 
-        threeCBs.add( arrowGrid.getMesh() );
-	
+        const mesh = new THREE.Mesh( geometry, material )
+              .translateX(initialInitialPt[0])
+              .translateY(initialInitialPt[1]);
+
+        threeCBs.add( mesh );
+        setMeshArray([ mesh ]);
+
         return () => {
-            threeCBs.remove( arrowGrid.getMesh() );
-            arrowGrid.dispose();
+
+            if( mesh ) threeCBs.remove(mesh);
+            geometry.dispose();
+            material.dispose();
+            
         };
-	
-    }, [threeCBs, arrowGridData] );
+        
+        
+    }, [threeCBs] );
+    
+
+    //-------------------------------------------------------------------------
+    //
+    // make initial condition point draggable
+
+    // in this case there is no argument, because we know what is being dragged
+    const dragCB = useCallback( () => {
+
+        const vec = new THREE.Vector3();
+
+        // this will be where new position is stored
+        meshArray[0].getWorldPosition(vec);
+        
+        setInitialPt(
+            [vec.x, vec.y]
+        );
+        
+    }, [meshArray]);
+
+    
+    useDraggableMeshArray({ meshArray, threeCBs, dragCB, dragendCB: dragCB });
+
+    // change initial point mesh if initialPoint changes
+
+    useEffect( () => {
+
+        if( !threeCBs ) return;
+        
+        if( !meshArray || !dbInitialPt) return;
+
+        let vec = new THREE.Vector3();
+
+        meshArray[0].getWorldPosition(vec);
+
+        const [d1, e1] = [ vec.x - dbInitialPt[0] ,  vec.y - dbInitialPt[1] ];
+
+        if( d1 != 0 ) {
+            meshArray[0].translateX( -d1 );
+        }
+        if( e1 != 0 ) {
+            meshArray[0].translateY( -e1 );
+        }      
+        
+    }, [threeCBs, meshArray, dbInitialPt] );
+    
     
 
      //------------------------------------------------------------------------
@@ -168,10 +308,10 @@ export default function App() {
 
     useEffect( () => {
 
-        if( !threeCBs || !initialPt ) return;
+        if( !threeCBs || !dbInitialPt ) return;
 
-        const dfag = DirectionFieldApproxGeom({ func: arrowGridData.func,
-                                                initialPt,
+        const dfag = DirectionFieldApproxGeom({ func: func.func,
+                                                initialPt: dbInitialPt,
                                                 bounds,
                                                 h: approxH,
                                                 radius: solutionCurveRadius});
@@ -180,30 +320,46 @@ export default function App() {
 
         threeCBs.add( mesh );
 
-        const ptGeom = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 )
-              .translate(initialPt[0], initialPt[1], 0);
-
-        const ptMesh = new THREE.Mesh( ptGeom, pointMaterial );
-        threeCBs.add( ptMesh );      	
 
         return () => {
             threeCBs.remove(mesh);
             dfag.dispose();
-
-            threeCBs.remove(ptMesh);
-            ptGeom.dispose();
         };
 
-    }, [threeCBs, initialPt, bounds, arrowGridData.func, approxH] );
-    
+    }, [threeCBs, dbInitialPt, bounds, func, approxH] );
+
     
     //------------------------------------------------------------------------
-    // test graph effect
+    //
+    //arrowGrid effect
+    
+    useEffect( ()  => {
 
-        
+        if( !threeCBs ) return;
+
+        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
+                                      color: arrowGridData.color,
+                                      arrowLength: arrowGridData.arrowLength,
+                                      bounds,
+                                      func: func.func });
+
+        threeCBs.add( arrowGrid.getMesh() );
+	
+        return () => {
+            threeCBs.remove( arrowGrid.getMesh() );
+            arrowGrid.dispose();
+        };
+	
+    }, [threeCBs, arrowGridData] );
+    
+
+     //------------------------------------------------------------------------
+    //
+    // test graph effect
+    
     const testFuncInputCB = useCallback(
         newFunc => {
-            setTestFunc( oldFunc => newFunc );
+            setTestFunc({ func: newFunc });
         }, 
         [testFunc]
     );
@@ -212,32 +368,8 @@ export default function App() {
     useEffect( () => {
 
         if( !threeCBs || !testFunc ) return;
-
-        let pointArray = [];
-        
-        for( let i = Math.floor(xMin/testFuncH); i < Math.ceil(xMax/testFuncH); i++ ) {
-
-            const t = testFunc( i*testFuncH );
-
-            if( t >= 2*yMin && t <= 2*yMax ) {
-                
-                pointArray.push( new THREE.Vector3(i*testFuncH, testFunc( i*testFuncH ), 0) );
-            }
-        }
-
-        const path = new THREE.CurvePath();
-
-        for( let i = 0; i < pointArray.length-1; i++ ) {
-
-            path.add( new THREE.LineCurve3( pointArray[i], pointArray[i+1] ) );
-            
-        }
-
-        const geom = new THREE.TubeBufferGeometry( path,
-						   1064,
-						   testFuncRadius,
-						   8,
-						   false );
+       
+        const geom = FunctionGraph2DGeom({ func: testFunc.func, bounds, radius: testFuncRadius });           
         
         const mesh = new THREE.Mesh( geom, testFuncMaterial );
 
@@ -248,7 +380,13 @@ export default function App() {
             geom.dispose();
         };
 
-    }, [threeCBs, testFunc, xMin, xMax, yMin, yMax] );
+    }, [threeCBs, testFunc, bounds] );
+
+    
+    //------------------------------------------------------------------------
+    //
+    const funcInputCallback = useCallback(
+        newFunc => setFunc({ func: newFunc }), [] );
 
     
     //------------------------------------------------------------------------
@@ -272,8 +410,9 @@ export default function App() {
         
     }, [controlsEnabled, threeCBs] );
     
+    
     return (       
-        <FullScreenBaseComponent backgroundColor={colors.controlBar}
+        <FullScreenBaseComponent backgroundColor={initColors.controlBar}
                                  fonts={fonts}>
           
           <ControlBar height={controlBarHeight} fontSize={initFontSize*controlBarFontSize} padding='0em'>
@@ -295,7 +434,7 @@ export default function App() {
               </span>
               <div css={{padding: '0em'}}>
                 <FunctionInput onChangeFunc={testFuncInputCB}
-                               initFuncStr={''}
+                               initFuncStr={initTestFuncStr}
                                totalWidth='12em'
                                inputSize={10}
                                leftSideOfEquation={'\u{00177}(x) ='}/>  
@@ -339,19 +478,19 @@ export default function App() {
                 fontSize={initFontSize*controlBarFontSize}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
-                            controlsData={controlsData}
+                            controlsData={initControlsData}
             />
             <ClickablePlaneComp threeCBs={threeCBs}                           
-                                clickCB={clickCB}/>
-               <ResetCameraButton key="resetCameraButton"
-                               onClickFunc={resetCameraCB}
-                               color={controlsEnabled ? colors.controlBar : null }
-                               userCss={{ top: '85%',
-                                          left: '5%',
-                                          userSelect: 'none'}}/>
+                                clickCB={clickCB}/>              
 
           </Main>
           
         </FullScreenBaseComponent>);                              
 }
 
+ /* <ResetCameraButton key="resetCameraButton" */
+ /*                               onClickFunc={resetCameraCB} */
+ /*                               color={controlsEnabled ? initColors.controlBar : null } */
+ /*                               userCss={{ top: '85%', */
+ /*                                          left: '5%', */
+ /*                                          userSelect: 'none'}}/> */
