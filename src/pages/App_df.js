@@ -54,14 +54,8 @@ const xMin = -20, xMax = 20;
 const yMin = -20, yMax = 20;
 const initBounds = {xMin, xMax, yMin, yMax};
 
-const initGridData = {
-    show: true,
-    originColor: 0x3F405C
-};
-
  const initArrowGridData = {
     gridSqSize: .5,
-    color: initColors.arrows,
     arrowLength: .7
 };
 
@@ -74,8 +68,9 @@ const initApproxHValue = .1;
 const initInitialPt = [2,2];
 
 
-
-
+const initGridData = {
+    show: true
+};
 
 const initAxesData = {
     radius: .01,
@@ -88,6 +83,7 @@ const initAxesData = {
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
+
 const frustumSize = 20;
 
 const initCameraData = {
@@ -204,17 +200,16 @@ export default function App() {
     useGridAndOrigin({ threeCBs,
 		       bounds: gridBounds,
 		       show: initGridData.show,
-		       //originColor: initGridData.originColor,
 		       originRadius: .1 });
 
-     use2DAxes({ threeCBs,
+    use2DAxes({ threeCBs,
                 bounds: bounds,
                 radius: initAxesData.radius,
                 color: initAxesData.color,
                 show: initAxesData.show,
                 showLabels: initAxesData.showLabels,
                 labelStyle,
-                 xLabel: 't' });
+                xLabel: 't' });
 
     //------------------------------------------------------------------------
     //
@@ -364,7 +359,7 @@ export default function App() {
         if( !threeCBs ) return;
 
         const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      color: arrowGridData.color,
+                                      color: initColors.arrows,
                                       arrowLength: arrowGridData.arrowLength,
                                       bounds,
                                       func: func.func });
@@ -486,12 +481,29 @@ export default function App() {
                   paddingRight: '2em'}}
               initDensity={1/arrowGridData.gridSqSize}
               initLength={arrowGridData.arrowLength}
-              initApproxH={approxH}
               densityCB={useCallback(
                   val => setArrowGridData( agd => ({...agd, gridSqSize: Number(1/val)}) ) ,[])}
               lengthCB={useCallback(
                   val => setArrowGridData( agd => ({...agd, arrowLength: Number(val)}) ) ,[])}
-              approxHCB={useCallback( val => setApproxH( Number(val) ) ,[])}/>
+            />
+             <div  css={{
+                  margin: 0,
+                  position: 'relative',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column' ,
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center'}}>
+                 <div css={{textAlign: 'center'}}>
+                  Approximation constant:
+                </div>
+                <span css={{paddingTop: '.5em'}}>
+                  <Input size={4}
+                         initValue={approxH}
+                         onC={useCallback( val => setApproxH( Number(val) ) ,[])}/>
+                </span>
+              </div>
           </ControlBar>
           
           <Main height={100-controlBarHeight}
