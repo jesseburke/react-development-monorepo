@@ -37,6 +37,8 @@ import {fonts, labelStyle} from './constants.js';
 // initial data
 //
 
+
+
 const initColors = {
     arrows: '#C2374F',
     solution: '#C2374F',
@@ -52,7 +54,38 @@ const xMin = -20, xMax = 20;
 const yMin = -20, yMax = 20;
 const initBounds = {xMin, xMax, yMin, yMax};
 
-const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
+const initGridData = {
+    show: true,
+    originColor: 0x3F405C
+};
+
+ const initArrowGridData = {
+    gridSqSize: .5,
+    color: initColors.arrows,
+    arrowLength: .7
+};
+
+const initFuncStr = "x*y*sin(x + y)/10";
+
+const initTestFuncStr = 'sin(x) + 2.5*sin(5*x)';
+
+const initApproxHValue = .1;
+
+const initInitialPt = [2,2];
+
+
+
+
+
+const initAxesData = {
+    radius: .01,
+    color: initColors.axes,
+    tickDistance: 1,
+    tickRadius: 3.5,      
+    show: true,
+    showLabels: true,
+    labelStyle
+};
 
 const aspectRatio = window.innerWidth / window.innerHeight;
 const frustumSize = 20;
@@ -93,40 +126,15 @@ const secControlsData =  {
     keyPanSpeed: 50,
     zoomSpeed: 1.25};
 
-
-const initAxesData = {
-    radius: .01,
-    color: initColors.axes,
-    tickDistance: 1,
-    tickRadius: 3.5,      
-    show: true,
-    showLabels: true,
-    labelStyle
-};
-
-const initGridData = {
-    show: true,
-    originColor: 0x3F405C
-};
-
- const initArrowGridData = {
-    gridSqSize: .5,
-    color: initColors.arrows,
-    arrowLength: .7
-};
-
-const initFuncStr = "x*y*sin(x + y)/10";
-
-const initTestFuncStr = 'sin(x) + 2.5*sin(5*x)';
-
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 13;
 
 // (relative) font sizes (first in em's)
-const initFontSize = 1;
+const fontSize = 1;
 const controlBarFontSize = 1;
 
+const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
 
 const solutionMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color( initColors.solution ),
@@ -152,10 +160,6 @@ const testFuncRadius = .1;
 
 const testFuncH = .1;
 
-const initApproxHValue = .1;
-
-const initialInitialPt = [2,2];
-
 const dragDebounceTime = 5;
 
 
@@ -164,7 +168,7 @@ const dragDebounceTime = 5;
 
 // {
 //                 initBounds, initFuncStr, initArrowGridData,
-//                 initControlsData, initialInitialPt, initApproxHValue,
+//                 initControlsData, initInitialPt, initApproxHValue,
 //                 initTestFuncStr}
 
 export default function App() {   
@@ -175,7 +179,7 @@ export default function App() {
 
     const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
 
-    const [initialPt, setInitialPt] = useState(initialInitialPt);
+    const [initialPt, setInitialPt] = useState(initInitialPt);
 
     const [approxH, setApproxH] = useState(initApproxHValue);
 
@@ -200,7 +204,7 @@ export default function App() {
     useGridAndOrigin({ threeCBs,
 		       bounds: gridBounds,
 		       show: initGridData.show,
-		       originColor: initGridData.originColor,
+		       //originColor: initGridData.originColor,
 		       originRadius: .1 });
 
      use2DAxes({ threeCBs,
@@ -240,8 +244,8 @@ export default function App() {
         const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
 
         const mesh = new THREE.Mesh( geometry, material )
-              .translateX(initialInitialPt[0])
-              .translateY(initialInitialPt[1]);
+              .translateX(initInitialPt[0])
+              .translateY(initInitialPt[1]);
 
         threeCBs.add( mesh );
         setMeshArray([ mesh ]);
@@ -431,7 +435,7 @@ export default function App() {
         <FullScreenBaseComponent backgroundColor={initColors.controlBar}
                                  fonts={fonts}>
           
-          <ControlBar height={controlBarHeight} fontSize={initFontSize*controlBarFontSize} padding='0em'>
+          <ControlBar height={controlBarHeight} fontSize={fontSize*controlBarFontSize} padding='0em'>
                <div css={{
                 margin: 0,
                 display: 'flex',
@@ -491,7 +495,7 @@ export default function App() {
           </ControlBar>
           
           <Main height={100-controlBarHeight}
-                fontSize={initFontSize*controlBarFontSize}>
+                fontSize={fontSize*controlBarFontSize}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
                             controlsData={initControlsData}
