@@ -5,10 +5,9 @@ import ArrowGeometry from './ArrowGeometry.js';
 
 // arrowLength*aGridSqSize will be actual arrow length
 
-export default function ArrowGrid({ arrowDensity,
-				    color,
-				    arrowLength,
-				    bounds = {}, func })
+export default function ArrowGridGeom({ arrowDensity,
+					arrowLength,
+					bounds = {}, func })
 {
     const {xMin, xMax, yMin, yMax} = bounds;
 
@@ -38,25 +37,8 @@ export default function ArrowGrid({ arrowDensity,
     const c = gridSqSize;
     geom.scale(c,c,c);
     geom.translate(xMin, yMin, 0);
-    
-    const material = new THREE.MeshBasicMaterial({ color: color });
-    //material.transparent = true;
-    //material.opacity = .75;
-    
-    const mesh = new THREE.Mesh(geom, material);
-
-    
-    function getMesh() {
-	return mesh;
-     }
-
-    function dispose() {	
-	mesh.visible = false;
-	material.dispose();
-	geom.dispose();
-    }
-
-    return {dispose, getMesh}; 
+       
+    return geom;
 }
 
 // returns array of two element arrays; the first element is std

@@ -21,7 +21,7 @@ import ArrowGridOptions from '../components/ArrowGridOptions.js';
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import ArrowGrid from '../graphics/ArrowGrid.js';
+import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
 import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
@@ -355,20 +355,26 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid({ arrowDensity: arrowGridData.arrowDensity,
-                                      arrowLength: arrowGridData.arrowLength,
-                                      color: initColors.arrows,
-                                      bounds,
-                                      func: func.func });
+        const geom = ArrowGridGeom({ arrowDensity: arrowGridData.arrowDensity,
+                                     arrowLength: arrowGridData.arrowLength,
+                                     bounds,
+                                     func: func.func });
 
-        threeCBs.add( arrowGrid.getMesh() );
+        const material = new THREE.MeshBasicMaterial({ color: initColors.arrows });
+        //material.transparent = true;
+        //material.opacity = .75;
+    
+        const mesh = new THREE.Mesh(geom, material);
+        
+        threeCBs.add( mesh );
 	
         return () => {
-            threeCBs.remove( arrowGrid.getMesh() );
-            arrowGrid.dispose();
+            threeCBs.remove( mesh );
+            geom.dispose();
+            material.dispose();            
         };
 	
-    }, [threeCBs, arrowGridData] );
+    }, [threeCBs, arrowGridData, bounds, func] );
     
 
      //------------------------------------------------------------------------
