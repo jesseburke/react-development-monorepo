@@ -57,27 +57,8 @@ function ArrowGridOptions({ initDensity, initLength, initApproxH,
                          initValue={initLength}
                          onC={lengthCB}/>
                 </span>
-              </div>
-              
-              <div  css={{
-                  margin: 0,
-                  position: 'relative',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column' ,
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center'}}>
-                 <div css={{textAlign: 'center'}}>
-                  Approximation constant:
-                </div>
-                <span css={{paddingTop: '.5em'}}>
-                  <Input size={4}
-                         initValue={initApproxH}
-                         onC={approxHCB}/>
-                </span>
-              </div>
-            </div>);
+              </div>                           
+        </div>);
 }
 
 export default React.memo(ArrowGridOptions);
