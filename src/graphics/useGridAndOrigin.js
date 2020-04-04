@@ -5,7 +5,7 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 //import GridHelper from '../graphics/GridHelper.js';
 
-export default function useGridAndOrigin({ threeCBs, bounds, show, originColor, originRadius = .25, gridCB }) {
+export default function useGridAndOrigin({ threeCBs, bounds, show, originColor=0x3F405C, originRadius = .25, gridCB }) {
     
     useEffect( () => {
 
