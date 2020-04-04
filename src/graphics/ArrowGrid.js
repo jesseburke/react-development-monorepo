@@ -5,14 +5,16 @@ import ArrowGeometry from './ArrowGeometry.js';
 
 // arrowLength*aGridSqSize will be actual arrow length
 
-export default function ArrowGrid( {gridSqSize,
+export default function ArrowGrid({ arrowDensity,
 				    color,
 				    arrowLength,
 				    bounds = {}, func })
 {
     const {xMin, xMax, yMin, yMax} = bounds;
+
+    const gridSqSize = 1/arrowDensity;
     
-    // returns array of two element arrays;
+    // getPtsArray returns array of two element arrays;
     // first element is standard coords (where arrow has length 1)
     // second element is scaled coords (where arrow has length
     // arrowLength)    

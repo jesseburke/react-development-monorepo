@@ -38,6 +38,23 @@ import {fonts, labelStyle} from './constants.js';
 //
 
 
+const initState = {
+    xMin: -20, xMax: 20,
+    yMin: -20, yMax: 20,
+    arrowDensity: 1,
+    arrowLength: .7,
+    funcStr: 'x*y*sin(x+y)/10',
+    testFuncStr: 'sin(x)+2.5*sin(5*x)',
+    initialPt: [2,2],
+    approxHValue: .1
+};
+
+const initBounds = {xMin: initState.xMin,
+                    xMax: initState.xMax,
+                    yMin: initState.yMin,
+                    yMax: initState.yMax};
+
+const {xMin, xMax, yMin, yMax} = initBounds;
 
 const initColors = {
     arrows: '#C2374F',
@@ -50,24 +67,6 @@ const initColors = {
     clearColor: '#f0f0f0'
 };
 
-const xMin = -20, xMax = 20;
-const yMin = -20, yMax = 20;
-const initBounds = {xMin, xMax, yMin, yMax};
-
- const initArrowGridData = {
-    gridSqSize: .5,
-    arrowLength: .7
-};
-
-const initFuncStr = "x*y*sin(x + y)/10";
-
-const initTestFuncStr = 'sin(x) + 2.5*sin(5*x)';
-
-const initApproxHValue = .1;
-
-const initInitialPt = [2,2];
-
-
 const initGridData = {
     show: true
 };
@@ -75,8 +74,6 @@ const initGridData = {
 const initAxesData = {
     radius: .01,
     color: initColors.axes,
-    tickDistance: 1,
-    tickRadius: 3.5,      
     show: true,
     showLabels: true,
     labelStyle
@@ -162,24 +159,24 @@ const dragDebounceTime = 5;
 //------------------------------------------------------------------------
 
 
-// {
-//                 initBounds, initFuncStr, initArrowGridData,
-//                 initControlsData, initInitialPt, initApproxHValue,
-//                 initTestFuncStr}
-
 export default function App() {   
 
     const [bounds, setBounds] = useState(initBounds);
 
-    const [func, setFunc] = useState({ func: funcParser(initFuncStr) });
+    const [func, setFunc] = useState({ func: funcParser(initState.funcStr) });
 
-    const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
+    const [initialPt, setInitialPt] = useState(initState.initialPt);
 
-    const [initialPt, setInitialPt] = useState(initInitialPt);
+    const [approxH, setApproxH] = useState(initState.approxHValue);
 
-    const [approxH, setApproxH] = useState(initApproxHValue);
+    const [arrowGridData, setArrowGridData] = useState({
+        arrowDensity: initState.arrowDensity,
+        //gridSqSize: 1/initState.arrowDensity,
+        arrowLength: initState.arrowLength });
 
-    const [testFunc, setTestFunc] = useState({ func: funcParser(initTestFuncStr) });
+    const [testFunc, setTestFunc] = useState({ func: funcParser(initState.testFuncStr) });
+
+    //
 
     const [meshArray, setMeshArray] = useState(null);
     
@@ -217,8 +214,8 @@ export default function App() {
 
     useEffect( () => {
 
-        console.log('length of location.search is ', location.search.length );
-        console.log(queryString.parse(location.search));
+        console.log('length of location.search is ', window.location.search.length );
+        console.log(queryString.parse(window.location.search));
 
         //location.search = queryString.stringify({ test: 12, again: 'asdf' });
         window.history.replaceState(null, null, "?test")
@@ -239,8 +236,8 @@ export default function App() {
         const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
 
         const mesh = new THREE.Mesh( geometry, material )
-              .translateX(initInitialPt[0])
-              .translateY(initInitialPt[1]);
+              .translateX(initState.initialPt[0])
+              .translateY(initState.initialPt[1]);
 
         threeCBs.add( mesh );
         setMeshArray([ mesh ]);
@@ -358,9 +355,9 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      color: initColors.arrows,
+        const arrowGrid = ArrowGrid({ arrowDensity: arrowGridData.arrowDensity,
                                       arrowLength: arrowGridData.arrowLength,
+                                      color: initColors.arrows,
                                       bounds,
                                       func: func.func });
 
@@ -437,10 +434,7 @@ export default function App() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100%',
-                paddingTop: '.5em',
-                paddingBottom: '.5em',
-                paddingLeft: '2em',
-                paddingRight: '1em',
+                padding: '.5em 2.5em',
                 borderRight: '1px solid',
                 flex: 1
             }}>
@@ -449,9 +443,9 @@ export default function App() {
               </span>
               <div css={{padding: '0em'}}>
                 <FunctionInput onChangeFunc={testFuncInputCB}
-                               initFuncStr={initTestFuncStr}
+                               initFuncStr={initState.testFuncStr}
                                totalWidth='12em'
-                               inputSize={10}
+                               inputSize={16}
                                leftSideOfEquation={'\u{00177}(x) ='}/>  
               </div>
               </div>
@@ -465,7 +459,7 @@ export default function App() {
                 alignItems: 'center',
                 borderRight: '1px solid'}}>             
 	      <FunctionInput onChangeFunc={funcInputCallback}
-                             initFuncStr={initFuncStr}
+                             initFuncStr={initState.funcStr}
                              leftSideOfEquation="dy/dx ="/>  
             </div>
            
@@ -479,30 +473,33 @@ export default function App() {
                   paddingBottom: '.5em',
                   paddingLeft: '1em',
                   paddingRight: '2em'}}
-              initDensity={1/arrowGridData.gridSqSize}
+              initDensity={arrowGridData.arrowDensity}
               initLength={arrowGridData.arrowLength}
               densityCB={useCallback(
                   val => setArrowGridData( agd => ({...agd, gridSqSize: Number(1/val)}) ) ,[])}
               lengthCB={useCallback(
                   val => setArrowGridData( agd => ({...agd, arrowLength: Number(val)}) ) ,[])}
             />
-             <div  css={{
-                  margin: 0,
-                  position: 'relative',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column' ,
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center'}}>
-                 <div css={{textAlign: 'center'}}>
-                  Approximation constant:
-                </div>
-                <span css={{paddingTop: '.5em'}}>
-                  <Input size={4}
-                         initValue={approxH}
-                         onC={useCallback( val => setApproxH( Number(val) ) ,[])}/>
-                </span>
+            <div  css={{
+                margin: 0,
+                position: 'relative',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column' ,
+                justifyContent: 'center',
+                padding: '0em 2em',
+                alignContent: 'center',
+                alignItems: 'center',
+                borderLeft: '1px solid'}}>
+              <div css={{textAlign: 'center',
+                         width: '12em'}}>
+                Solution approximation constant:
+              </div>
+              <span css={{paddingTop: '.5em'}}>
+                <Input size={4}
+                       initValue={approxH}
+                       onC={useCallback( val => setApproxH( Number(val) ) ,[])}/>
+              </span>
               </div>
           </ControlBar>
           
