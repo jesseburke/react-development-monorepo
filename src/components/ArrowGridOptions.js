@@ -30,7 +30,7 @@ function ArrowGridOptions({ initDensity, initLength, initApproxH,
                   justifyContent: 'center',
                   alignItems: 'center'}}>
                 <div css={{textAlign: 'center'}}>
-                  Arrow density:
+                  Arrows per unit:
                 </div>
                 <span css={{paddingTop: '.5em'}}>
                   <Input size={4}
@@ -50,7 +50,7 @@ function ArrowGridOptions({ initDensity, initLength, initApproxH,
                   alignItems: 'center',
                   margin: '2em'}}>
                  <div css={{textAlign: 'center'}}>
-                  Arrow length:
+                  Arrow length relative to unit:
                 </div>
                 <span css={{paddingTop: '.5em'}}>
                   <Input size={4}
@@ -69,7 +69,7 @@ function ArrowGridOptions({ initDensity, initLength, initApproxH,
                   alignContent: 'center',
                   alignItems: 'center'}}>
                  <div css={{textAlign: 'center'}}>
-                  Approx const:
+                  Approximation constant:
                 </div>
                 <span css={{paddingTop: '.5em'}}>
                   <Input size={4}
