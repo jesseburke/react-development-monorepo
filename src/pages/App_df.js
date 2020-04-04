@@ -102,8 +102,7 @@ const initAxesData = {
 };
 
 const initGridData = {
-    show: true,
-    originColor: 0x3F405C
+    show: true
 };
 
  const initArrowGridData = {
@@ -194,7 +193,6 @@ export default function App() {
     useGridAndOrigin({ threeCBs,
 		       bounds: gridBounds,
 		       show: initGridData.show,
-		       originColor: initGridData.originColor,
 		       originRadius: .1 });
 
      use2DAxes({ threeCBs,
