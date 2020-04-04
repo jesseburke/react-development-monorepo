@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
+import queryString from 'query-string';
+
 import { jsx } from '@emotion/core';
 
 import * as THREE from 'three';
@@ -25,6 +27,7 @@ import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
 
 import useDebounce from '../hooks/useDebounce.js';
+import useHashLocation from '../hooks/useHashLocation.js';
 
 import {fonts, labelStyle} from './constants.js';
 
@@ -114,7 +117,7 @@ const initGridData = {
 
 const initFuncStr = "x*y*sin(x + y)/10";
 
-const initTestFuncStr = 'x^3/5 + x^2/3';
+const initTestFuncStr = 'sin(x) + 2.5*sin(5*x)';
 
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -153,10 +156,16 @@ const initApproxHValue = .1;
 
 const initialInitialPt = [2,2];
 
-const dragDebounceTime = 7;
+const dragDebounceTime = 5;
 
 
 //------------------------------------------------------------------------
+
+
+// {
+//                 initBounds, initFuncStr, initArrowGridData,
+//                 initControlsData, initialInitialPt, initApproxHValue,
+//                 initTestFuncStr}
 
 export default function App() {   
 
@@ -166,16 +175,14 @@ export default function App() {
 
     const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
 
-    const [controlsData, setControlsData] = useState( initControlsData );
-
     const [initialPt, setInitialPt] = useState(initialInitialPt);
-
-    const [meshArray, setMeshArray] = useState(null);
 
     const [approxH, setApproxH] = useState(initApproxHValue);
 
     const [testFunc, setTestFunc] = useState({ func: funcParser(initTestFuncStr) });
 
+    const [meshArray, setMeshArray] = useState(null);
+    
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
     const threeSceneRef = useRef(null);
@@ -183,8 +190,7 @@ export default function App() {
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs( threeSceneRef );    
 
-  
-
+    
     //------------------------------------------------------------------------
     //
     // initial effects
@@ -204,7 +210,21 @@ export default function App() {
                 show: initAxesData.show,
                 showLabels: initAxesData.showLabels,
                 labelStyle,
-                xLabel: 't' });
+                 xLabel: 't' });
+
+    //------------------------------------------------------------------------
+    //
+    // look at location.search
+
+    useEffect( () => {
+
+        console.log('length of location.search is ', location.search.length );
+        console.log(queryString.parse(location.search));
+
+        //location.search = queryString.stringify({ test: 12, again: 'asdf' });
+        window.history.replaceState(null, null, "?test")
+        
+    }, [] );
    
 
 
@@ -237,8 +257,7 @@ export default function App() {
         
     }, [threeCBs] );
     
-
-    //-------------------------------------------------------------------------
+   
     //
     // make initial condition point draggable
 
@@ -287,6 +306,9 @@ export default function App() {
      //------------------------------------------------------------------------
     //
     // solution effect
+
+     const funcInputCallback = useCallback(
+        newFunc => setFunc({ func: newFunc }), [] );    
 
     const clickCB = useCallback( (pt) => {
 
@@ -381,12 +403,6 @@ export default function App() {
         };
 
     }, [threeCBs, testFunc, bounds] );
-
-    
-    //------------------------------------------------------------------------
-    //
-    const funcInputCallback = useCallback(
-        newFunc => setFunc({ func: newFunc }), [] );
 
     
     //------------------------------------------------------------------------
