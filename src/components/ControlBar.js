@@ -1,14 +1,13 @@
 import React from 'react';
 
-import { jsx } from '@emotion/core';
+//import { jsx } from '@emotion/core';
 
 // height is assumed to be number, giving percentage of screen appBar will take (at the top)
 
 function controlBar( {children, height, fontSize, padding='1em'} ) {
     const b = (100-height).toString()+'%';
-    
-    return (
-        <header css={{
+
+    const cssRef = React.useRef({
             // external layout
             position: 'absolute',
             //height: '100px',
@@ -29,7 +28,10 @@ function controlBar( {children, height, fontSize, padding='1em'} ) {
             fontSize: fontSize.toString()+'em',
             outlineOffset: 0,
             overflow: 'auto'
-        }}>
+    }, []);
+    
+    return (
+        <header style={cssRef.current}>
           {children}
         </header>
     );    

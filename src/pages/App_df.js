@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import queryString from 'query-string';
 
-import { jsx } from '@emotion/core';
 
 import * as THREE from 'three';
 
-import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
+
 
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
@@ -18,6 +17,7 @@ import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
 import Input from '../components/Input.js';
 import ArrowGridOptions from '../components/ArrowGridOptions.js';
 import SaveButton from '../components/SaveButton.js';
+import FullScreenBaseComponent from '../components/FullScreenBaseComponent.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
@@ -204,6 +204,16 @@ export default function App() {
     const [state, setState] = useState({...initState });  
 
     const [meshArray, setMeshArray] = useState(null);
+
+    const [colors,] = useState(initColors);
+
+    const [fontState,] = useState(fonts);
+
+    const [cbhState,] = useState(controlBarHeight);
+
+    const [cbfsState,] = useState(controlBarFontSize);
+
+    const [minuscbhState,] = useState(100-controlBarHeight);
     
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
@@ -284,7 +294,7 @@ export default function App() {
         if( !threeCBs ) return;
 
         const geometry = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 );
-        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
+        const material = new THREE.MeshBasicMaterial({ color: colors.solution });
 
         const mesh = new THREE.Mesh( geometry, material )
               .translateX(initState.initialPt[0])
@@ -403,7 +413,7 @@ export default function App() {
                                      bounds: state.bounds,
                                      func: state.func });
 
-        const material = new THREE.MeshBasicMaterial({ color: initColors.arrows });
+        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
         //material.transparent = true;
         //material.opacity = .75;
     
@@ -481,63 +491,36 @@ export default function App() {
         
     }, [controlsEnabled, threeCBs] );
     
-    
-    return (       
-        <FullScreenBaseComponent backgroundColor={initColors.controlBar}
-                                 fonts={fonts}>
-          
-          <ControlBar height={controlBarHeight} fontSize={fontSize*controlBarFontSize} padding='0em'>
-               <div css={{
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                padding: '.5em 2.5em',
-                borderRight: '1px solid',
-                flex: 1
-            }}>
-              <span css={{textAlign: 'center'}}>             
-	        Test Function
-              </span>
-              <div css={{padding: '0em'}}>
-                <FunctionInput onChangeFunc={testFuncInputCB}
-                               initFuncStr={state.testFuncStr}
-                               totalWidth='12em'
-                               inputSize={16}
-                               leftSideOfEquation={'\u{00177}(x) ='}/>  
-              </div>
-              </div>
-            
-            <div css={{
-                paddingRight: '1em',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignContent: 'center',
-                alignItems: 'center',
-                borderRight: '1px solid'}}>             
-	      <FunctionInput onChangeFunc={funcInputCallback}
-                             initFuncStr={state.funcStr}
-                             leftSideOfEquation="dy/dx ="/>  
-            </div>
-           
 
-            <ArrowGridOptions
-              userCss={{
+    const css1 = useRef({
+        margin: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        padding: '.5em 2.5em',
+        borderRight: '1px solid',
+        flex: 1}, []);
+
+    const css2 = useRef({
+        paddingRight: '1em',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+        borderRight: '1px solid'}, []);
+
+    const css3 = useRef({
                   justifyContent: 'center',
                   alignItems: 'center',
                   flex: 7,
                   paddingTop: '.5em',
                   paddingBottom: '.5em',
                   paddingLeft: '1em',
-                  paddingRight: '2em'}}
-              initDensity={state.arrowDensity}
-              initLength={state.arrowLength}
-              densityCB={densityInputCB}
-              lengthCB={lengthInputCB}
-            />
-            <div  css={{
+        paddingRight: '2em'}, []);
+
+    const css4 = useRef({
                 margin: 0,
                 position: 'relative',
                 height: '100%',
@@ -547,12 +530,54 @@ export default function App() {
                 padding: '0em 2em',
                 alignContent: 'center',
                 alignItems: 'center',
-                borderLeft: '1px solid'}}>
-              <div css={{textAlign: 'center',
-                         width: '12em'}}>
+        borderLeft: '1px solid'}, []);
+
+    const css5 = useRef({textAlign: 'center',
+                         width: '12em'}, []);
+
+    const css6 = useRef({paddingTop: '.5em'}, []);
+
+    const css7 = useRef({textAlign: 'center'}, []);
+
+    const css8 = useRef({padding: '0em'}, []);
+    
+    return (       
+        <FullScreenBaseComponent backgroundColor={colors.controlBar}
+                                 fonts={fontState}>
+          
+          <ControlBar height={cbhState} fontSize={fontSize*cbfsState} padding='0em'>
+            <div style={css1.current}>
+              <span style={css7.current}>             
+	        Test Function
+              </span>
+              <div style={css7.current}>
+                <FunctionInput onChangeFunc={testFuncInputCB}
+                               initFuncStr={state.testFuncStr}
+                               totalWidth='12em'
+                               inputSize={16}
+                               leftSideOfEquation={'\u{00177}(x) ='}/>  
+              </div>
+              </div>
+            
+            <div style={css2.current}>             
+	      <FunctionInput onChangeFunc={funcInputCallback}
+                             initFuncStr={state.funcStr}
+                             leftSideOfEquation="dy/dx ="/>  
+            </div>
+           
+
+            <ArrowGridOptions
+              userCss={css3.current}
+              initDensity={state.arrowDensity}
+              initLength={state.arrowLength}
+              densityCB={densityInputCB}
+              lengthCB={lengthInputCB}
+            />
+            <div  style={css4.current}>
+              <div style={css5.current}>
                 Solution approximation constant:
               </div>
-              <span css={{paddingTop: '.5em'}}>
+              <span style={css6.current}>
                 <Input size={4}
                        initValue={state.approxH}
                        onC={approxInputCB}/>
@@ -560,8 +585,8 @@ export default function App() {
               </div>
           </ControlBar>
           
-          <Main height={100-controlBarHeight}
-                fontSize={fontSize*controlBarFontSize}>
+          <Main height={minuscbhState}
+                fontSize={fontSize*cbfsState}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
                             controlsData={initControlsData}
@@ -574,6 +599,7 @@ export default function App() {
           
         </FullScreenBaseComponent>);                              
 }
+
 
  /* <ResetCameraButton key="resetCameraButton" */
  /*                               onClickFunc={resetCameraCB} */

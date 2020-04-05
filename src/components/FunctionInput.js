@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 
 import { jsx } from '@emotion/core';
 
@@ -32,19 +32,23 @@ function functionInput({leftSideOfEquation,
         
         onChangeFunc(funcParser(str), str);
     }
-    
-    return (       
-        <span css={{
+
+    const css1 = useRef({
             width: totalWidth,
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center'
             //border: '2px', borderStyle: 'dashed'
-        }}>
-          <span  css={{
+    }, []);
+
+    const css2 = useRef({
               padding: '.5em'
-          }}>
+    }, []);
+    
+    return (       
+        <span style={css1.current}>
+          <span  style={css2.current}>
             {leftSideOfEquation}
           </span>        
           <Input size={inputSize}

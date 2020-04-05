@@ -3,11 +3,10 @@
 
 import React from 'react';
 
-import { jsx } from '@emotion/core';
 
 
 
-export default function SaveButton({onClickFunc, fontSize=1.25, color, userCss={} }) {
+function SaveButton({onClickFunc, fontSize=1.25, color, userCss={} }) {
     
     const newCss = Object.assign(
         {
@@ -27,9 +26,11 @@ export default function SaveButton({onClickFunc, fontSize=1.25, color, userCss={
     
     
     return <div
-             css={newCss}
+             style={newCss}
              onClick={onClickFunc}
            >                         
-           <span css={{padding: '.15em', fontSize: '2rem'}}>{'\u{1F4BE}'}</span>
+           <span style={{padding: '.15em', fontSize: '2rem'}}>{'\u{1F4BE}'}</span>
            </div>;
 }
+
+export default React.memo( SaveButton );
