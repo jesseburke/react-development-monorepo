@@ -17,6 +17,7 @@ import ResetCameraButton from '../components/ResetCameraButton.js';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
 import Input from '../components/Input.js';
 import ArrowGridOptions from '../components/ArrowGridOptions.js';
+import SaveButton from '../components/SaveButton.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
@@ -237,12 +238,7 @@ export default function App() {
     // want to: read in the query string, parse it into an object, merge that object with
     // initState, then set all of the state with that merged object
 
-    useEffect( () => {
-
-        window.history.replaceState(null, null,
-                                    '?'+queryString.stringify(shrinkState(state),
-                                                          {decode: false,
-                                                           arrayFormat: 'comma'}));
+    useEffect( () => {     
 
         const qs = window.location.search;
 
@@ -266,6 +262,13 @@ export default function App() {
         //window.history.replaceState(null, null, "?test");
         
     }, [] );
+
+    const saveButtonCB = useCallback( () => 
+        window.history.replaceState(null, null,
+                                    '?'+queryString.stringify(shrinkState(state),
+                                                              {decode: false,
+                                                               arrayFormat: 'comma'}))
+                                      ,[state]                                 );
    
 
 
@@ -349,7 +352,9 @@ export default function App() {
     // solution effect
 
     const funcInputCallback = useCallback(
-        newFunc => setState( ({ func, ...rest }) => ({ func: newFunc, ...rest }) ), [] );    
+        (newFunc, newFuncStr) => setState( ({ func, funcStr, ...rest }) => ({ func: newFunc,
+                                                                              funcStr: newFuncStr,
+                                                                              ...rest }) ), [] );    
 
     const clickCB = useCallback( (pt) => {
 
@@ -421,12 +426,11 @@ export default function App() {
     // test graph effect
     
     const testFuncInputCB = useCallback(
-        newFunc => 
-            setState( ({ testFunc, ...rest }) => ({ testFunc:newFunc, ...rest }) ),
+        (newFunc, newFuncStr) => 
+            setState( ({ testFunc, testFuncStr, ...rest }) => ({ testFunc:newFunc, testFuncStr:newFuncStr,...rest }) ),
         []
     );
 
-    
     useEffect( () => {
 
         if( !threeCBs || !state ) return;
@@ -563,7 +567,8 @@ export default function App() {
                             controlsData={initControlsData}
             />
             <ClickablePlaneComp threeCBs={threeCBs}                           
-                                clickCB={clickCB}/>              
+                                clickCB={clickCB}/>
+            <SaveButton onClickFunc={saveButtonCB}/>
 
           </Main>
           
