@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { jsx } from '@emotion/core';
 
-import {Input} from '@jesseburke/basic-react-components';
+import Input from '../components/Input.js';
 import {Button} from '@jesseburke/basic-react-components';
 
 
