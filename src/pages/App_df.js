@@ -37,22 +37,6 @@ import {fonts, labelStyle} from './constants.js';
 // initial data
 //
 
-const funcStr = 'x*y*sin(x+y)/10';
-const testFuncStr = 'sin(x)+2.5*sin(5*x)';        
-    
-const initState = {
-    bounds: {xMin: -20, xMax: 20,
-             yMin: -20, yMax: 20},
-    arrowDensity: 1,
-    arrowLength: .7,
-    funcStr,
-    func: funcParser(funcStr),
-    testFuncStr,
-    testFunc: funcParser(testFuncStr),
-    initialPt: [2,2],
-    approxH: .1
-};
-
 
 const initColors = {
     arrows: '#C2374F',
@@ -125,8 +109,6 @@ const controlBarHeight = 13;
 const fontSize = 1;
 const controlBarFontSize = 1;
 
-const gridBounds = initState.bounds;
-
 const solutionMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color( initColors.solution ),
     side: THREE.FrontSide });
@@ -149,9 +131,68 @@ testFuncMaterial.opacity = .6;
 
 const testFuncRadius = .1;
 
-const testFuncH = .1;
+const testFuncH = .01;
 
 const dragDebounceTime = 5;
+
+const funcStr = 'x*y*sin(x+y)/10';
+const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
+    
+const initState = {
+    bounds: {xMin: -20, xMax: 20,
+             yMin: -20, yMax: 20},
+    arrowDensity: 1,
+    arrowLength: .7,
+    funcStr,
+    func: funcParser(funcStr),
+    testFuncStr,
+    testFunc: funcParser(testFuncStr),
+    initialPt: [2,2],
+    approxH: .1
+};
+
+function shrinkState({ bounds, arrowDensity, arrowLength, funcStr, testFuncStr, initialPt, approxH }) {
+
+    const {xMin, xMax, yMin, yMax} = bounds;
+    
+    const newObj = { b: [xMin, xMax, yMin, yMax],
+                     ad: arrowDensity,
+                     al: arrowLength,
+                     fs: funcStr,
+                     tfs: testFuncStr,
+                     ip: initialPt,
+                     a: approxH};
+
+    return newObj;            
+}
+
+// f is a function applied to the string representing each array element
+
+function strArrayToArray( strArray, f = Number ) {
+
+    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
+
+    return strArray.split(',').map( x => f(x) );
+}
+    
+
+function expandState({ b, ad, al, fs, tfs, ip, a }) {
+
+    const bds = strArrayToArray( b, Number );
+
+    return ({ bounds: {xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3]},
+              arrowDensity: Number(ad),
+              arrowLength: Number(al),
+              funcStr: fs,
+              func: funcParser(fs),
+              testFuncStr: tfs,
+              testFunc: funcParser(tfs),
+              initialPt: strArrayToArray( ip ),
+              approxH: Number(a)
+            });    
+}
+
+const gridBounds = initState.bounds;
 
 
 //------------------------------------------------------------------------
@@ -198,6 +239,11 @@ export default function App() {
 
     useEffect( () => {
 
+        window.history.replaceState(null, null,
+                                    '?'+queryString.stringify(shrinkState(state),
+                                                          {decode: false,
+                                                           arrayFormat: 'comma'}));
+
         const qs = window.location.search;
 
         if( qs.length === 0 ) {
@@ -207,10 +253,16 @@ export default function App() {
             
         }
 
-        const newState = queryString.parse(qs);
+        const newState = queryString.parse(qs.slice(1));
+        setState(s => expandState(newState));
 
+        console.log('state is ', state);
+        console.log('newState is ', newState);
+        console.log('expandState(newState) is ', expandState(newState) );
         
-        
+
+       
+        //window.history.replaceState(null, null, '?'+queryString.stringify(state));
         //window.history.replaceState(null, null, "?test");
         
     }, [] );
@@ -241,8 +293,8 @@ export default function App() {
         return () => {
 
             if( mesh ) threeCBs.remove(mesh);
-            geometry.dispose();
-            material.dispose();
+            if( geometry) geometry.dispose();
+            if( material ) material.dispose();
             
         };
         
@@ -327,7 +379,7 @@ export default function App() {
 
         return () => {
             threeCBs.remove(mesh);
-            dfag.dispose();
+            if( dfag ) dfag.dispose();
         };
 
     }, [threeCBs, state.initialPt, state.bounds, state.func, state.approxH] );
@@ -356,8 +408,9 @@ export default function App() {
 	
         return () => {
             threeCBs.remove( mesh );
-            geom.dispose();
-            material.dispose();            
+            if( geom) geom.dispose();
+            if( material ) material.dispose();
+            
         };
 	
     }, [threeCBs, state.arrowDensity, state.arrowLength, state.bounds, state.func] );
@@ -387,7 +440,7 @@ export default function App() {
 
         return () => {
             threeCBs.remove(mesh);
-            geom.dispose();
+            if(geom) geom.dispose();
         };
 
     }, [threeCBs, state.testFunc, state.bounds] );
@@ -445,7 +498,7 @@ export default function App() {
               </span>
               <div css={{padding: '0em'}}>
                 <FunctionInput onChangeFunc={testFuncInputCB}
-                               initFuncStr={initState.testFuncStr}
+                               initFuncStr={state.testFuncStr}
                                totalWidth='12em'
                                inputSize={16}
                                leftSideOfEquation={'\u{00177}(x) ='}/>  
@@ -461,7 +514,7 @@ export default function App() {
                 alignItems: 'center',
                 borderRight: '1px solid'}}>             
 	      <FunctionInput onChangeFunc={funcInputCallback}
-                             initFuncStr={initState.funcStr}
+                             initFuncStr={state.funcStr}
                              leftSideOfEquation="dy/dx ="/>  
             </div>
            
