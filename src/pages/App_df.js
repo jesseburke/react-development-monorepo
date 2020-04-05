@@ -243,8 +243,7 @@ export default function App() {
                 color: initAxesData.color,
                 show: initAxesData.show,
                 showLabels: initAxesData.showLabels,
-                labelStyle,
-                xLabel: 't' });
+                labelStyle });
 
     //------------------------------------------------------------------------
     //
@@ -552,7 +551,7 @@ export default function App() {
           
           <ControlBar height={cbhState} fontSize={fontSize*cbfsState} padding='0em'>
             <div style={css1.current}>
-              <span style={css7.current}>             
+              <span style={css7.current}>
 	        Test Function
               </span>
               <FunctionInput userCss={css7.current}
