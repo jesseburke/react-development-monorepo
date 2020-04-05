@@ -50,7 +50,7 @@ function ArrowGridOptions({ initDensity, initLength, initApproxH,
                   alignItems: 'center',
                   margin: '2em'}}>
                  <div css={{textAlign: 'center'}}>
-                  Arrow length relative to unit:
+                   Relative arrow length:
                 </div>
                 <span css={{paddingTop: '.5em'}}>
                   <Input size={4}
