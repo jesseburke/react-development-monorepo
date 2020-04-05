@@ -19,7 +19,7 @@ function functionInput({leftSideOfEquation,
                         totalWidth='20em',
                         inputSize=25}) {   
 
-    const [funcStr, setFuncStr] = React.useState(initFuncStr);
+    //const [funcStr, setFuncStr] = React.useState(initFuncStr);
 
     function handleChange(str) {
         //console.log('functionInput.handleChange called with string value = ', str);
@@ -30,7 +30,7 @@ function functionInput({leftSideOfEquation,
             return;
         }
         
-        onChangeFunc(funcParser(str));
+        onChangeFunc(funcParser(str), str);
     }
     
     return (       
@@ -48,7 +48,7 @@ function functionInput({leftSideOfEquation,
             {leftSideOfEquation}
           </span>        
           <Input size={inputSize}
-                 initValue={funcStr}
+                 initValue={initFuncStr}
                  onC={handleChange}/>
         </span>
     );
