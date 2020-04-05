@@ -37,24 +37,22 @@ import {fonts, labelStyle} from './constants.js';
 // initial data
 //
 
-
+const funcStr = 'x*y*sin(x+y)/10';
+const testFuncStr = 'sin(x)+2.5*sin(5*x)';        
+    
 const initState = {
-    xMin: -20, xMax: 20,
-    yMin: -20, yMax: 20,
+    bounds: {xMin: -20, xMax: 20,
+             yMin: -20, yMax: 20},
     arrowDensity: 1,
     arrowLength: .7,
-    funcStr: 'x*y*sin(x+y)/10',
-    testFuncStr: 'sin(x)+2.5*sin(5*x)',
+    funcStr,
+    func: funcParser(funcStr),
+    testFuncStr,
+    testFunc: funcParser(testFuncStr),
     initialPt: [2,2],
-    approxHValue: .1
+    approxH: .1
 };
 
-const initBounds = {xMin: initState.xMin,
-                    xMax: initState.xMax,
-                    yMin: initState.yMin,
-                    yMax: initState.yMax};
-
-const {xMin, xMax, yMin, yMax} = initBounds;
 
 const initColors = {
     arrows: '#C2374F',
@@ -127,7 +125,7 @@ const controlBarHeight = 13;
 const fontSize = 1;
 const controlBarFontSize = 1;
 
-const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
+const gridBounds = initState.bounds;
 
 const solutionMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color( initColors.solution ),
@@ -159,24 +157,9 @@ const dragDebounceTime = 5;
 //------------------------------------------------------------------------
 
 
-export default function App() {   
-
-    const [bounds, setBounds] = useState(initBounds);
-
-    const [func, setFunc] = useState({ func: funcParser(initState.funcStr) });
-
-    const [initialPt, setInitialPt] = useState(initState.initialPt);
-
-    const [approxH, setApproxH] = useState(initState.approxHValue);
-
-    const [arrowGridData, setArrowGridData] = useState({
-        arrowDensity: initState.arrowDensity,
-        //gridSqSize: 1/initState.arrowDensity,
-        arrowLength: initState.arrowLength });
-
-    const [testFunc, setTestFunc] = useState({ func: funcParser(initState.testFuncStr) });
-
-    //
+export default function App() {
+         
+    const [state, setState] = useState({...initState });  
 
     const [meshArray, setMeshArray] = useState(null);
     
@@ -192,15 +175,13 @@ export default function App() {
     //
     // initial effects
 
-    const dbInitialPt = useDebounce( initialPt, dragDebounceTime );
-
     useGridAndOrigin({ threeCBs,
 		       bounds: gridBounds,
 		       show: initGridData.show,
 		       originRadius: .1 });
 
     use2DAxes({ threeCBs,
-                bounds: bounds,
+                bounds: state.bounds,
                 radius: initAxesData.radius,
                 color: initAxesData.color,
                 show: initAxesData.show,
@@ -212,13 +193,25 @@ export default function App() {
     //
     // look at location.search
 
+    // want to: read in the query string, parse it into an object, merge that object with
+    // initState, then set all of the state with that merged object
+
     useEffect( () => {
 
-        console.log('length of location.search is ', window.location.search.length );
-        console.log(queryString.parse(window.location.search));
+        const qs = window.location.search;
 
-        //location.search = queryString.stringify({ test: 12, again: 'asdf' });
-        window.history.replaceState(null, null, "?test")
+        if( qs.length === 0 ) {
+
+            setState( s => s );
+            return;
+            
+        }
+
+        const newState = queryString.parse(qs);
+
+        
+        
+        //window.history.replaceState(null, null, "?test");
         
     }, [] );
    
@@ -227,6 +220,9 @@ export default function App() {
     //-------------------------------------------------------------------------
     //
     // make the mesh for the initial point
+
+    // it's important that we're using the initial initialPt, because otherwise
+    // this would get called during dragcb, which we do not want
     
     useEffect( () => {
 
@@ -264,11 +260,9 @@ export default function App() {
 
         // this will be where new position is stored
         meshArray[0].getWorldPosition(vec);
-        
-        setInitialPt(
-            [vec.x, vec.y]
-        );
-        
+
+        setState( ({ initialPt, ...rest }) => ({ initialPt:[vec.x,vec.y], ...rest }) );
+              
     }, [meshArray]);
 
     
@@ -280,13 +274,13 @@ export default function App() {
 
         if( !threeCBs ) return;
         
-        if( !meshArray || !dbInitialPt) return;
+        if( !meshArray || !state) return;
 
         let vec = new THREE.Vector3();
 
         meshArray[0].getWorldPosition(vec);
 
-        const [d1, e1] = [ vec.x - dbInitialPt[0] ,  vec.y - dbInitialPt[1] ];
+        const [d1, e1] = [ vec.x - state.initialPt[0] ,  vec.y - state.initialPt[1] ];
 
         if( d1 != 0 ) {
             meshArray[0].translateX( -d1 );
@@ -295,43 +289,35 @@ export default function App() {
             meshArray[0].translateY( -e1 );
         }      
         
-    }, [threeCBs, meshArray, dbInitialPt] );
+    }, [threeCBs, meshArray, state.initialPt] );
     
     
-
-     //------------------------------------------------------------------------
+    //------------------------------------------------------------------------
     //
     // solution effect
 
-     const funcInputCallback = useCallback(
-        newFunc => setFunc({ func: newFunc }), [] );    
+    const funcInputCallback = useCallback(
+        newFunc => setState( ({ func, ...rest }) => ({ func: newFunc, ...rest }) ), [] );    
 
     const clickCB = useCallback( (pt) => {
 
         if( controlsEnabled ) {
-
-            setInitialPt( s => s );
+            setState( s => s );
             return;
         }
-
-        // if user clicks too close to boundary, don't want to deal with it
-        if( pt.x > xMax - .25 || pt.x < xMin + .25 ) {
-            setInitialPt( null );
-            return;
-        }
-
-        setInitialPt( [pt.x, pt.y] );
+        
+        setState( ({ initialPt, ...rest }) => ({ initialPt:[pt.x,pt.y], ...rest }) );
         
     }, [controlsEnabled] );
 
     useEffect( () => {
 
-        if( !threeCBs || !dbInitialPt ) return;
+        if( !threeCBs || !state ) return;
 
-        const dfag = DirectionFieldApproxGeom({ func: func.func,
-                                                initialPt: dbInitialPt,
-                                                bounds,
-                                                h: approxH,
+        const dfag = DirectionFieldApproxGeom({ func: state.func,
+                                                initialPt: state.initialPt,
+                                                bounds: state.bounds,
+                                                h: state.approxH,
                                                 radius: solutionCurveRadius});
 
         const mesh = new THREE.Mesh( dfag, solutionMaterial );
@@ -344,7 +330,7 @@ export default function App() {
             dfag.dispose();
         };
 
-    }, [threeCBs, dbInitialPt, bounds, func, approxH] );
+    }, [threeCBs, state.initialPt, state.bounds, state.func, state.approxH] );
 
     
     //------------------------------------------------------------------------
@@ -355,10 +341,10 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const geom = ArrowGridGeom({ arrowDensity: arrowGridData.arrowDensity,
-                                     arrowLength: arrowGridData.arrowLength,
-                                     bounds,
-                                     func: func.func });
+        const geom = ArrowGridGeom({ arrowDensity: state.arrowDensity,
+                                     arrowLength: state.arrowLength,
+                                     bounds: state.bounds,
+                                     func: state.func });
 
         const material = new THREE.MeshBasicMaterial({ color: initColors.arrows });
         //material.transparent = true;
@@ -374,7 +360,7 @@ export default function App() {
             material.dispose();            
         };
 	
-    }, [threeCBs, arrowGridData, bounds, func] );
+    }, [threeCBs, state.arrowDensity, state.arrowLength, state.bounds, state.func] );
     
 
      //------------------------------------------------------------------------
@@ -382,18 +368,18 @@ export default function App() {
     // test graph effect
     
     const testFuncInputCB = useCallback(
-        newFunc => {
-            setTestFunc({ func: newFunc });
-        }, 
-        [testFunc]
+        newFunc => 
+            setState( ({ testFunc, ...rest }) => ({ testFunc:newFunc, ...rest }) ),
+        []
     );
 
     
     useEffect( () => {
 
-        if( !threeCBs || !testFunc ) return;
+        if( !threeCBs || !state ) return;
        
-        const geom = FunctionGraph2DGeom({ func: testFunc.func, bounds, radius: testFuncRadius });           
+        const geom = FunctionGraph2DGeom({ func: state.testFunc, bounds: state.bounds,
+                                           radius: testFuncRadius });           
         
         const mesh = new THREE.Mesh( geom, testFuncMaterial );
 
@@ -404,11 +390,21 @@ export default function App() {
             geom.dispose();
         };
 
-    }, [threeCBs, testFunc, bounds] );
+    }, [threeCBs, state.testFunc, state.bounds] );
 
     
     //------------------------------------------------------------------------
     //
+
+      
+    const approxInputCB =  useCallback(
+        newA => setState( ({ approxH, ...rest }) => ({ approxH: Number(newA), ...rest }) ), [] );
+
+    const densityInputCB =  useCallback(
+        newD => setState( ({ arrowDensity, ...rest }) => ({ arrowDensity: newD, ...rest }) ), [] );
+
+    const lengthInputCB =  useCallback(
+        newL => setState( ({ arrowLength, ...rest }) => ({ arrowLength: newL, ...rest }) ), [] );
     
     
     const resetCameraCB = useCallback( () => {
@@ -479,12 +475,10 @@ export default function App() {
                   paddingBottom: '.5em',
                   paddingLeft: '1em',
                   paddingRight: '2em'}}
-              initDensity={arrowGridData.arrowDensity}
-              initLength={arrowGridData.arrowLength}
-              densityCB={useCallback(
-                  val => setArrowGridData( agd => ({...agd, gridSqSize: Number(1/val)}) ) ,[])}
-              lengthCB={useCallback(
-                  val => setArrowGridData( agd => ({...agd, arrowLength: Number(val)}) ) ,[])}
+              initDensity={state.arrowDensity}
+              initLength={state.arrowLength}
+              densityCB={densityInputCB}
+              lengthCB={lengthInputCB}
             />
             <div  css={{
                 margin: 0,
@@ -503,8 +497,8 @@ export default function App() {
               </div>
               <span css={{paddingTop: '.5em'}}>
                 <Input size={4}
-                       initValue={approxH}
-                       onC={useCallback( val => setApproxH( Number(val) ) ,[])}/>
+                       initValue={state.approxH}
+                       onC={approxInputCB}/>
               </span>
               </div>
           </ControlBar>
