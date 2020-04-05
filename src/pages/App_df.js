@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import queryString from 'query-string';
 
+import { jsx, css } from '@emotion/core';
+import styled from '@emotion/styled';
 
 import * as THREE from 'three';
 
@@ -31,6 +33,7 @@ import useDebounce from '../hooks/useDebounce.js';
 import useHashLocation from '../hooks/useHashLocation.js';
 
 import {fonts, labelStyle} from './constants.js';
+import {round} from '../utils/BaseUtils.js';
 
 
 //------------------------------------------------------------------------
@@ -152,6 +155,8 @@ const initState = {
     approxH: .1
 };
 
+const roundConst = 3;
+
 function shrinkState({ bounds, arrowDensity, arrowLength, funcStr, testFuncStr, initialPt, approxH }) {
 
     const {xMin, xMax, yMin, yMax} = bounds;
@@ -161,7 +166,7 @@ function shrinkState({ bounds, arrowDensity, arrowLength, funcStr, testFuncStr, 
                      al: arrowLength,
                      fs: funcStr,
                      tfs: testFuncStr,
-                     ip: initialPt,
+                     ip: initialPt.map( x => round(x,roundConst) ),
                      a: approxH};
 
     return newObj;            
@@ -550,22 +555,20 @@ export default function App() {
               <span style={css7.current}>             
 	        Test Function
               </span>
-              <div style={css7.current}>
-                <FunctionInput onChangeFunc={testFuncInputCB}
-                               initFuncStr={state.testFuncStr}
-                               totalWidth='12em'
-                               inputSize={16}
-                               leftSideOfEquation={'\u{00177}(x) ='}/>  
-              </div>
-              </div>
-            
-            <div style={css2.current}>             
-	      <FunctionInput onChangeFunc={funcInputCallback}
-                             initFuncStr={state.funcStr}
-                             leftSideOfEquation="dy/dx ="/>  
+              <FunctionInput userCss={css7.current}
+                             onChangeFunc={testFuncInputCB}
+                             initFuncStr={state.testFuncStr}
+                             totalWidth='12em'
+                             inputSize={16}
+                             leftSideOfEquation={'\u{00177}(x) ='}/>  
             </div>
-           
-
+            
+            
+	    <FunctionInput userCss={css2.current}
+                           onChangeFunc={funcInputCallback}
+                           initFuncStr={state.funcStr}
+                           leftSideOfEquation="dy/dx ="/>             
+            
             <ArrowGridOptions
               userCss={css3.current}
               initDensity={state.arrowDensity}
@@ -573,7 +576,7 @@ export default function App() {
               densityCB={densityInputCB}
               lengthCB={lengthInputCB}
             />
-            <div  style={css4.current}>
+            <div style={css4.current}>
               <div style={css5.current}>
                 Solution approximation constant:
               </div>
@@ -582,7 +585,7 @@ export default function App() {
                        initValue={state.approxH}
                        onC={approxInputCB}/>
               </span>
-              </div>
+            </div>
           </ControlBar>
           
           <Main height={minuscbhState}

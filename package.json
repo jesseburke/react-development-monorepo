@@ -34,6 +34,7 @@
 			"dependencies": {
 						"@emotion/babel-preset-css-prop": "^10.0.23",
 						"@emotion/core": "^10.0.22",
+						"@emotion/styled": "^10.0.27",
 						"@jesseburke/basic-react-components": "^1.1.0",
 						"@jesseburke/graphics-components": "^1.1.0",
 						"@navsnpm/katex-expression": "^1.0.8",

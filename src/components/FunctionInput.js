@@ -17,7 +17,8 @@ function functionInput({leftSideOfEquation,
                         onChangeFunc,
                         initFuncStr,
                         totalWidth='20em',
-                        inputSize=25}) {   
+                        inputSize=25,
+                        userCss={}}) {   
 
     //const [funcStr, setFuncStr] = React.useState(initFuncStr);
 
@@ -33,14 +34,14 @@ function functionInput({leftSideOfEquation,
         onChangeFunc(funcParser(str), str);
     }
 
-    const css1 = useRef({
+    const css1 = useRef(Object.assign({
             width: totalWidth,
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center'
             //border: '2px', borderStyle: 'dashed'
-    }, []);
+    }, userCss), []);
 
     const css2 = useRef({
               padding: '.5em'
