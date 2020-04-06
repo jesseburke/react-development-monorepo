@@ -18,7 +18,7 @@ import Slider from '../components/Slider.js';
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import ArrowGrid from '../graphics/ArrowGrid.js';
+import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
 import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 
@@ -305,26 +305,31 @@ export default function App() {
     //------------------------------------------------------------------------
     //
     // arrowGrid effect
-    
+
     useEffect( ()  => {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      color: arrowGridData.color,
-                                      arrowLength: arrowGridData.arrowLength,
-                                      bounds,
-                                      func: func.func
-                                    });
+        const geometry = ArrowGridGeom({ arrowDensity: 1/arrowGridData.gridSqSize,
+                                         color: arrowGridData.color,
+                                         arrowLength: arrowGridData.arrowLength,
+                                         bounds,
+                                         func: func.func});
 
-        threeCBs.add( arrowGrid.getMesh() );	
+        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
+
+        const mesh = new THREE.Mesh(geometry, material);
+
+        threeCBs.add( mesh );
 	
         return () => {
-            threeCBs.remove( arrowGrid.getMesh() );
-            arrowGrid.dispose();
+            threeCBs.remove( mesh );
+            geometry.dispose();
+            material.dispose();
         };
 	
     }, [threeCBs, arrowGridData, func] );
+    
     
 
     //------------------------------------------------------------------------
@@ -435,6 +440,48 @@ export default function App() {
         }
         
     }, [controlsEnabled, threeCBs] );
+
+    const css1 = useRef({
+        margin: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        padding: '.5em 1em',
+        fontSize: '1.25em',
+        borderRight: '1px solid',
+        flex: 5
+    }, []);
+
+    const css2 = useRef({
+        margin: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        padding: '0em 3em'}, []);
+    
+
+    const css3 = useRef({padding:'.5em 0'}, []);
+
+    const css4 = useRef({padding:'.25em 0',
+                         textAlign: 'center'}, []);
+
+    const css5 = useRef({ margin: 0,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0em 2em'}, []);
+
+    const css6 = useRef({
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 4,
+        paddingTop: '.5em',
+        paddingBottom: '.5em',
+        paddingLeft: '1em',
+        paddingRight: '2em'}, []);
     
     
     return (       
@@ -445,40 +492,18 @@ export default function App() {
                       fontSize={initFontSize*controlBarFontSize}
                       padding='.5em'>           
 
-            <div css={{
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                padding: '.5em 1em',
-                fontSize: '1.25em',
-                borderRight: '1px solid',
-                flex: 5
-            }}>
-              <div  css={{
-                  margin: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'flex-start',
-                  padding: '0em 3em'}}>
-                <div css={{padding:'.25em 0',
-                           textAlign: 'center'}}>
+            <div style={css1.current}>
+              <div  style={css2.current}>
+                <div style={css4.current}>
                   Logistic equation
                 </div>
-                <TexDisplayComp userCss={{padding:'.25em 0'}}
+                <TexDisplayComp userCss={css3.current}
                                 str={logisticEquationTex}
                 />
               </div>         
-              <div css={{ margin: 0,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'flex-start',
-                          padding: '0em 2em'}}>
+              <div css={css5.current}>
                 <Slider
-                  userCss={{padding: '.25em 0em'}}
+                  userCss={css3.current}
                   value={Number.parseFloat(aVal)}
                   CB={val => setAVal(val)}
                   label={'a'}
@@ -488,7 +513,7 @@ export default function App() {
                 />
 
                 <Slider
-                  userCss={{padding: '.25em 0em'}}
+                  userCss={css3.current}
                   value={Number.parseFloat(kVal)}
                   CB={val => setKVal(val)}
                   label={'k'}
@@ -500,14 +525,7 @@ export default function App() {
             </div>           
             
             <ArrowGridOptions
-              userCss={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flex: 4,
-                  paddingTop: '.5em',
-                  paddingBottom: '.5em',
-                  paddingLeft: '1em',
-                  paddingRight: '2em'}}
+              userCss={css6.current}
               initDensity={1/arrowGridData.gridSqSize}
               initLength={arrowGridData.arrowLength}
               initApproxH={approxH}
