@@ -9,13 +9,11 @@ import './style.css';
 
 //import App from './pages/App_df_logistic.js';
 
-//import App from './pages/App_df_logistic_tut.js';
-
 //import App from './pages/App_df_linear.js';
 
-import App from './pages/App_df_sec_order.js';
+//import App from './pages/App_df_sec_order.js';
 
-//import App from './pages/App_df_resonance.js';
+import App from './pages/App_df_resonance.js';
 
 //import App from './pages/App_df_streamlines.js';
 
