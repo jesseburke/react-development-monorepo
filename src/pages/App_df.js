@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { jsx } from '@emotion/core';
+import queryString from 'query-string';
+
+import { jsx, css } from '@emotion/core';
+import styled from '@emotion/styled';
 
 import * as THREE from 'three';
 
-import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
+
 
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
@@ -15,24 +18,29 @@ import ResetCameraButton from '../components/ResetCameraButton.js';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
 import Input from '../components/Input.js';
 import ArrowGridOptions from '../components/ArrowGridOptions.js';
+import SaveButton from '../components/SaveButton.js';
+import FullScreenBaseComponent from '../components/FullScreenBaseComponent.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import ArrowGrid from '../graphics/ArrowGrid.js';
+import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
 import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
 
 import useDebounce from '../hooks/useDebounce.js';
+import useHashLocation from '../hooks/useHashLocation.js';
 
 import {fonts, labelStyle} from './constants.js';
+import {round} from '../utils/BaseUtils.js';
 
 
 //------------------------------------------------------------------------
 //
 // initial data
 //
+
 
 const initColors = {
     arrows: '#C2374F',
@@ -45,13 +53,8 @@ const initColors = {
     clearColor: '#f0f0f0'
 };
 
-const xMin = -20, xMax = 20;
-const yMin = -20, yMax = 20;
-const initBounds = {xMin, xMax, yMin, yMax};
-
-const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
-
 const aspectRatio = window.innerWidth / window.innerHeight;
+
 const frustumSize = 20;
 
 const initCameraData = {
@@ -90,39 +93,20 @@ const secControlsData =  {
     keyPanSpeed: 50,
     zoomSpeed: 1.25};
 
+<<<<<<< HEAD
 
-const initAxesData = {
-    radius: .01,
-    color: initColors.axes,
-    tickDistance: 1,
-    tickRadius: 3.5,      
-    show: true,
-    showLabels: true,
-    labelStyle
-};
 
-const initGridData = {
-    show: true
-};
 
- const initArrowGridData = {
-    gridSqSize: .5,
-    color: initColors.arrows,
-    arrowLength: .7
-};
 
-const initFuncStr = "x*y*sin(x + y)/10";
-
-const initTestFuncStr = 'x^3/5 + x^2/3';
-
+=======
+>>>>>>> queryparams
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 13;
 
 // (relative) font sizes (first in em's)
-const initFontSize = 1;
+const fontSize = 1;
 const controlBarFontSize = 1;
-
 
 const solutionMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color( initColors.solution ),
@@ -146,35 +130,91 @@ testFuncMaterial.opacity = .6;
 
 const testFuncRadius = .1;
 
-const testFuncH = .1;
+const testFuncH = .01;
 
-const initApproxHValue = .1;
+const dragDebounceTime = 5;
 
-const initialInitialPt = [2,2];
+const funcStr = 'x*y*sin(x+y)/10';
+const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
+    
+const initState = {
+    bounds: {xMin: -20, xMax: 20,
+             yMin: -20, yMax: 20},
+    arrowDensity: 1,
+    arrowLength: .7,
+    funcStr,
+    func: funcParser(funcStr),
+    testFuncStr,
+    testFunc: funcParser(testFuncStr),
+    initialPt: [2,2],
+    approxH: .1
+};
 
-const dragDebounceTime = 7;
+const roundConst = 3;
+
+function shrinkState({ bounds, arrowDensity, arrowLength, funcStr, testFuncStr, initialPt, approxH }) {
+
+    const {xMin, xMax, yMin, yMax} = bounds;
+    
+    const newObj = { b: [xMin, xMax, yMin, yMax],
+                     ad: arrowDensity,
+                     al: arrowLength,
+                     fs: funcStr,
+                     tfs: testFuncStr,
+                     ip: initialPt.map( x => round(x,roundConst) ),
+                     a: approxH};
+
+    return newObj;            
+}
+
+// f is a function applied to the string representing each array element
+
+function strArrayToArray( strArray, f = Number ) {
+
+    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
+
+    return strArray.split(',').map( x => f(x) );
+}
+    
+
+function expandState({ b, ad, al, fs, tfs, ip, a }) {
+
+    const bds = strArrayToArray( b, Number );
+
+    return ({ bounds: {xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3]},
+              arrowDensity: Number(ad),
+              arrowLength: Number(al),
+              funcStr: fs,
+              func: funcParser(fs),
+              testFuncStr: tfs,
+              testFunc: funcParser(tfs),
+              initialPt: strArrayToArray( ip ),
+              approxH: Number(a)
+            });    
+}
+
+const gridBounds = initState.bounds;
 
 
 //------------------------------------------------------------------------
 
-export default function App() {   
 
-    const [bounds, setBounds] = useState(initBounds);
-
-    const [func, setFunc] = useState({ func: funcParser(initFuncStr) });
-
-    const [arrowGridData, setArrowGridData] = useState( initArrowGridData );
-
-    const [controlsData, setControlsData] = useState( initControlsData );
-
-    const [initialPt, setInitialPt] = useState(initialInitialPt);
+export default function App() {
+         
+    const [state, setState] = useState({...initState });  
 
     const [meshArray, setMeshArray] = useState(null);
 
-    const [approxH, setApproxH] = useState(initApproxHValue);
+    const [colors,] = useState(initColors);
 
-    const [testFunc, setTestFunc] = useState({ func: funcParser(initTestFuncStr) });
+    const [fontState,] = useState(fonts);
 
+    const [cbhState,] = useState(controlBarHeight);
+
+    const [cbfsState,] = useState(controlBarFontSize);
+
+    const [minuscbhState,] = useState(100-controlBarHeight);
+    
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
     const threeSceneRef = useRef(null);
@@ -182,44 +222,82 @@ export default function App() {
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs( threeSceneRef );    
 
-  
-
+    
     //------------------------------------------------------------------------
     //
     // initial effects
-
-    const dbInitialPt = useDebounce( initialPt, dragDebounceTime );
 
     useGridAndOrigin({ threeCBs,
 		       bounds: gridBounds,
 		       show: initGridData.show,
 		       originRadius: .1 });
 
-     use2DAxes({ threeCBs,
-                bounds: bounds,
+    use2DAxes({ threeCBs,
+                bounds: state.bounds,
                 radius: initAxesData.radius,
                 color: initAxesData.color,
                 show: initAxesData.show,
                 showLabels: initAxesData.showLabels,
-                labelStyle,
-                xLabel: 't' });
+                labelStyle });
+
+    //------------------------------------------------------------------------
+    //
+    // look at location.search
+
+    // want to: read in the query string, parse it into an object, merge that object with
+    // initState, then set all of the state with that merged object
+
+    useEffect( () => {     
+
+        const qs = window.location.search;
+
+        if( qs.length === 0 ) {
+
+            setState( s => s );
+            return;
+            
+        }
+
+        const newState = queryString.parse(qs.slice(1));
+        setState(s => expandState(newState));
+
+        console.log('state is ', state);
+        console.log('newState is ', newState);
+        console.log('expandState(newState) is ', expandState(newState) );
+        
+
+       
+        //window.history.replaceState(null, null, '?'+queryString.stringify(state));
+        //window.history.replaceState(null, null, "?test");
+        
+    }, [] );
+
+    const saveButtonCB = useCallback( () => 
+        window.history.replaceState(null, null,
+                                    '?'+queryString.stringify(shrinkState(state),
+                                                              {decode: false,
+                                                               arrayFormat: 'comma'}))
+                                      ,[state]                                 );
    
 
 
     //-------------------------------------------------------------------------
     //
     // make the mesh for the initial point
+
+    // it's important that we're using the initial initialPt, because otherwise
+    // this would get called during dragcb, which we do not want
     
     useEffect( () => {
 
         if( !threeCBs ) return;
 
         const geometry = new THREE.SphereBufferGeometry( solutionCurveRadius*2, 15, 15 );
-        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
+        const material = new THREE.MeshBasicMaterial({ color: colors.solution });
 
         const mesh = new THREE.Mesh( geometry, material )
-              .translateX(initialInitialPt[0])
-              .translateY(initialInitialPt[1]);
+              .translateX(initState.initialPt[0])
+              .translateY(initState.initialPt[1]);
 
         threeCBs.add( mesh );
         setMeshArray([ mesh ]);
@@ -227,16 +305,15 @@ export default function App() {
         return () => {
 
             if( mesh ) threeCBs.remove(mesh);
-            geometry.dispose();
-            material.dispose();
+            if( geometry) geometry.dispose();
+            if( material ) material.dispose();
             
         };
         
         
     }, [threeCBs] );
     
-
-    //-------------------------------------------------------------------------
+   
     //
     // make initial condition point draggable
 
@@ -247,11 +324,9 @@ export default function App() {
 
         // this will be where new position is stored
         meshArray[0].getWorldPosition(vec);
-        
-        setInitialPt(
-            [vec.x, vec.y]
-        );
-        
+
+        setState( ({ initialPt, ...rest }) => ({ initialPt:[vec.x,vec.y], ...rest }) );
+              
     }, [meshArray]);
 
     
@@ -263,13 +338,13 @@ export default function App() {
 
         if( !threeCBs ) return;
         
-        if( !meshArray || !dbInitialPt) return;
+        if( !meshArray || !state) return;
 
         let vec = new THREE.Vector3();
 
         meshArray[0].getWorldPosition(vec);
 
-        const [d1, e1] = [ vec.x - dbInitialPt[0] ,  vec.y - dbInitialPt[1] ];
+        const [d1, e1] = [ vec.x - state.initialPt[0] ,  vec.y - state.initialPt[1] ];
 
         if( d1 != 0 ) {
             meshArray[0].translateX( -d1 );
@@ -278,40 +353,37 @@ export default function App() {
             meshArray[0].translateY( -e1 );
         }      
         
-    }, [threeCBs, meshArray, dbInitialPt] );
+    }, [threeCBs, meshArray, state.initialPt] );
     
     
-
-     //------------------------------------------------------------------------
+    //------------------------------------------------------------------------
     //
     // solution effect
+
+    const funcInputCallback = useCallback(
+        (newFunc, newFuncStr) => setState( ({ func, funcStr, ...rest }) => ({ func: newFunc,
+                                                                              funcStr: newFuncStr,
+                                                                              ...rest }) ), [] );    
 
     const clickCB = useCallback( (pt) => {
 
         if( controlsEnabled ) {
-
-            setInitialPt( s => s );
+            setState( s => s );
             return;
         }
-
-        // if user clicks too close to boundary, don't want to deal with it
-        if( pt.x > xMax - .25 || pt.x < xMin + .25 ) {
-            setInitialPt( null );
-            return;
-        }
-
-        setInitialPt( [pt.x, pt.y] );
+        
+        setState( ({ initialPt, ...rest }) => ({ initialPt:[pt.x,pt.y], ...rest }) );
         
     }, [controlsEnabled] );
 
     useEffect( () => {
 
-        if( !threeCBs || !dbInitialPt ) return;
+        if( !threeCBs || !state ) return;
 
-        const dfag = DirectionFieldApproxGeom({ func: func.func,
-                                                initialPt: dbInitialPt,
-                                                bounds,
-                                                h: approxH,
+        const dfag = DirectionFieldApproxGeom({ func: state.func,
+                                                initialPt: state.initialPt,
+                                                bounds: state.bounds,
+                                                h: state.approxH,
                                                 radius: solutionCurveRadius});
 
         const mesh = new THREE.Mesh( dfag, solutionMaterial );
@@ -321,10 +393,10 @@ export default function App() {
 
         return () => {
             threeCBs.remove(mesh);
-            dfag.dispose();
+            if( dfag ) dfag.dispose();
         };
 
-    }, [threeCBs, dbInitialPt, bounds, func, approxH] );
+    }, [threeCBs, state.initialPt, state.bounds, state.func, state.approxH] );
 
     
     //------------------------------------------------------------------------
@@ -335,20 +407,27 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      color: arrowGridData.color,
-                                      arrowLength: arrowGridData.arrowLength,
-                                      bounds,
-                                      func: func.func });
+        const geom = ArrowGridGeom({ arrowDensity: state.arrowDensity,
+                                     arrowLength: state.arrowLength,
+                                     bounds: state.bounds,
+                                     func: state.func });
 
-        threeCBs.add( arrowGrid.getMesh() );
+        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
+        //material.transparent = true;
+        //material.opacity = .75;
+    
+        const mesh = new THREE.Mesh(geom, material);
+        
+        threeCBs.add( mesh );
 	
         return () => {
-            threeCBs.remove( arrowGrid.getMesh() );
-            arrowGrid.dispose();
+            threeCBs.remove( mesh );
+            if( geom) geom.dispose();
+            if( material ) material.dispose();
+            
         };
 	
-    }, [threeCBs, arrowGridData] );
+    }, [threeCBs, state.arrowDensity, state.arrowLength, state.bounds, state.func] );
     
 
      //------------------------------------------------------------------------
@@ -356,18 +435,17 @@ export default function App() {
     // test graph effect
     
     const testFuncInputCB = useCallback(
-        newFunc => {
-            setTestFunc({ func: newFunc });
-        }, 
-        [testFunc]
+        (newFunc, newFuncStr) => 
+            setState( ({ testFunc, testFuncStr, ...rest }) => ({ testFunc:newFunc, testFuncStr:newFuncStr,...rest }) ),
+        []
     );
 
-    
     useEffect( () => {
 
-        if( !threeCBs || !testFunc ) return;
+        if( !threeCBs || !state ) return;
        
-        const geom = FunctionGraph2DGeom({ func: testFunc.func, bounds, radius: testFuncRadius });           
+        const geom = FunctionGraph2DGeom({ func: state.testFunc, bounds: state.bounds,
+                                           radius: testFuncRadius });           
         
         const mesh = new THREE.Mesh( geom, testFuncMaterial );
 
@@ -375,20 +453,24 @@ export default function App() {
 
         return () => {
             threeCBs.remove(mesh);
-            geom.dispose();
+            if(geom) geom.dispose();
         };
 
-    }, [threeCBs, testFunc, bounds] );
+    }, [threeCBs, state.testFunc, state.bounds] );
 
     
     //------------------------------------------------------------------------
     //
-    const funcInputCallback = useCallback(
-        newFunc => setFunc({ func: newFunc }), [] );
 
-    
-    //------------------------------------------------------------------------
-    //
+      
+    const approxInputCB =  useCallback(
+        newA => setState( ({ approxH, ...rest }) => ({ approxH: Number(newA), ...rest }) ), [] );
+
+    const densityInputCB =  useCallback(
+        newD => setState( ({ arrowDensity, ...rest }) => ({ arrowDensity: newD, ...rest }) ), [] );
+
+    const lengthInputCB =  useCallback(
+        newL => setState( ({ arrowLength, ...rest }) => ({ arrowLength: newL, ...rest }) ), [] );
     
     
     const resetCameraCB = useCallback( () => {
@@ -408,83 +490,113 @@ export default function App() {
         
     }, [controlsEnabled, threeCBs] );
     
-    
-    return (       
-        <FullScreenBaseComponent backgroundColor={initColors.controlBar}
-                                 fonts={fonts}>
-          
-          <ControlBar height={controlBarHeight} fontSize={initFontSize*controlBarFontSize} padding='0em'>
-               <div css={{
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                paddingTop: '.5em',
-                paddingBottom: '.5em',
-                paddingLeft: '2em',
-                paddingRight: '1em',
-                borderRight: '1px solid',
-                flex: 1
-            }}>
-              <span css={{textAlign: 'center'}}>             
-	        Test Function
-              </span>
-              <div css={{padding: '0em'}}>
-                <FunctionInput onChangeFunc={testFuncInputCB}
-                               initFuncStr={initTestFuncStr}
-                               totalWidth='12em'
-                               inputSize={10}
-                               leftSideOfEquation={'\u{00177}(x) ='}/>  
-              </div>
-              </div>
-            
-            <div css={{
-                paddingRight: '1em',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignContent: 'center',
-                alignItems: 'center',
-                borderRight: '1px solid'}}>             
-	      <FunctionInput onChangeFunc={funcInputCallback}
-                             initFuncStr={initFuncStr}
-                             leftSideOfEquation="dy/dx ="/>  
-            </div>
-           
 
-            <ArrowGridOptions
-              userCss={{
+    const css1 = useRef({
+        margin: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        padding: '.5em 2.5em',
+        borderRight: '1px solid',
+        flex: 1}, []);
+
+    const css2 = useRef({
+        paddingRight: '1em',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+        borderRight: '1px solid'}, []);
+
+    const css3 = useRef({
                   justifyContent: 'center',
                   alignItems: 'center',
                   flex: 7,
                   paddingTop: '.5em',
                   paddingBottom: '.5em',
                   paddingLeft: '1em',
-                  paddingRight: '2em'}}
-              initDensity={1/arrowGridData.gridSqSize}
-              initLength={arrowGridData.arrowLength}
-              initApproxH={approxH}
-              densityCB={useCallback(
-                  val => setArrowGridData( agd => ({...agd, gridSqSize: Number(1/val)}) ) ,[])}
-              lengthCB={useCallback(
-                  val => setArrowGridData( agd => ({...agd, arrowLength: Number(val)}) ) ,[])}
-              approxHCB={useCallback( val => setApproxH( Number(val) ) ,[])}/>
+        paddingRight: '2em'}, []);
+
+    const css4 = useRef({
+                margin: 0,
+                position: 'relative',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column' ,
+                justifyContent: 'center',
+                padding: '0em 2em',
+                alignContent: 'center',
+                alignItems: 'center',
+        borderLeft: '1px solid'}, []);
+
+    const css5 = useRef({textAlign: 'center',
+                         width: '12em'}, []);
+
+    const css6 = useRef({paddingTop: '.5em'}, []);
+
+    const css7 = useRef({textAlign: 'center'}, []);
+
+    const css8 = useRef({padding: '0em'}, []);
+    
+    return (       
+        <FullScreenBaseComponent backgroundColor={colors.controlBar}
+                                 fonts={fontState}>
+          
+          <ControlBar height={cbhState} fontSize={fontSize*cbfsState} padding='0em'>
+            <div style={css1.current}>
+              <span style={css7.current}>
+	        Test Function
+              </span>
+              <FunctionInput userCss={css7.current}
+                             onChangeFunc={testFuncInputCB}
+                             initFuncStr={state.testFuncStr}
+                             totalWidth='12em'
+                             inputSize={16}
+                             leftSideOfEquation={'\u{00177}(x) ='}/>  
+            </div>
+            
+            
+	    <FunctionInput userCss={css2.current}
+                           onChangeFunc={funcInputCallback}
+                           initFuncStr={state.funcStr}
+                           leftSideOfEquation="dy/dx ="/>             
+            
+            <ArrowGridOptions
+              userCss={css3.current}
+              initDensity={state.arrowDensity}
+              initLength={state.arrowLength}
+              densityCB={densityInputCB}
+              lengthCB={lengthInputCB}
+            />
+            <div style={css4.current}>
+              <div style={css5.current}>
+                Solution approximation constant:
+              </div>
+              <span style={css6.current}>
+                <Input size={4}
+                       initValue={state.approxH}
+                       onC={approxInputCB}/>
+              </span>
+            </div>
           </ControlBar>
           
-          <Main height={100-controlBarHeight}
-                fontSize={initFontSize*controlBarFontSize}>
+          <Main height={minuscbhState}
+                fontSize={fontSize*cbfsState}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
                             controlsData={initControlsData}
             />
             <ClickablePlaneComp threeCBs={threeCBs}                           
-                                clickCB={clickCB}/>              
+                                clickCB={clickCB}/>
+            <SaveButton onClickFunc={saveButtonCB}/>
 
           </Main>
           
         </FullScreenBaseComponent>);                              
 }
+
 
  /* <ResetCameraButton key="resetCameraButton" */
  /*                               onClickFunc={resetCameraCB} */

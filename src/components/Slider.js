@@ -17,13 +17,15 @@ function Slider({value,
             CB(e.target.value);
         }, []);
 
+    const css1 = React.useRef({padding: '0em .5em',
+                         whiteSpace: 'nowrap'}, [])
+
     return (<div style={userCss}>
             <input name="n" type="range" value={value} step={step}
 	           onChange={cb}//(e) => CB(e.target.value)}
 	           min={min} max={max}
             />
-              <label  css={{padding: '0em .5em',
-                            whiteSpace: 'nowrap'}}
+              <label  style={css1.current}
                     htmlFor="range_n">{label + ' = ' + value.toPrecision(precision)}</label>
           </div>);
 }

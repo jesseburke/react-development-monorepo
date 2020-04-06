@@ -4,8 +4,7 @@ import { jsx } from '@emotion/core';
 
 import * as THREE from 'three';
 
-import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
-
+import FullScreenBaseComponent from '../components/FullScreenBaseComponent.js';
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
 import Main from '../components/Main.js';
@@ -20,7 +19,7 @@ import TexDisplayComp from '../components/TexDisplayComp.js';
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import ArrowGrid from '../graphics/ArrowGrid.js';
+import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
 import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 import ArrowGeometry from '../graphics/ArrowGeometry.js';
@@ -186,6 +185,14 @@ export default function App() {
     const [testFunc, setTestFunc] = useState(null);
 
     const [controlsEnabled, setControlsEnabled] = useState(false);
+
+    const [cbhState,] = useState(controlBarHeight);
+
+    const [cbfsState,] = useState(controlBarFontSize);
+
+    const [minuscbhState,] = useState(100-controlBarHeight);
+
+    const [ifsState,] = useState(initFontSize);
 
     const threeSceneRef = useRef(null);
 
@@ -353,17 +360,22 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      color: arrowGridData.color,
-                                      arrowLength: arrowGridData.arrowLength,
-                                      bounds,
-                                      func: (x,y) => xFunc.func(x,0)*yFunc.func(0,y) });
+        const geometry = ArrowGridGeom({ arrowDensity: 1/arrowGridData.gridSqSize,
+                                          color: arrowGridData.color,
+                                          arrowLength: arrowGridData.arrowLength,
+                                          bounds,
+                                         func: (x,y) => xFunc.func(x,0)*yFunc.func(0,y) });
 
-        threeCBs.add( arrowGrid.getMesh() );
+        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
+
+        const mesh = new THREE.Mesh(geometry, material);
+
+        threeCBs.add( mesh );
 	
         return () => {
-            threeCBs.remove( arrowGrid.getMesh() );
-            arrowGrid.dispose();
+            threeCBs.remove( mesh );
+            geometry.dispose();
+            material.dispose();
         };
 	
     }, [threeCBs, arrowGridData, xFunc, yFunc] );
@@ -437,6 +449,58 @@ export default function App() {
         
     }, [controlsEnabled, threeCBs] );
 
+     const css1 = useRef({
+        margin: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        padding: '.5em 2.5em',
+        borderRight: '1px solid',
+         flex: 1}, []);
+
+    const css2 = useRef({
+                margin: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                padding: '1em 1.5em',
+                borderRight: '1px solid',
+                flex: 3
+    }, []);
+
+    const css3 = useRef({padding:'.5em 0'}, []);
+
+    const css4 = useRef({paddingRight: '.5em'}, []);
+
+    const css5 = useRef({
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 4,
+        padding: '.5em 2em'}, []);
+
+    const css7 = useRef({textAlign: 'center'}, []);
+
+     const css8 = useRef({
+                margin: 0,
+                position: 'relative',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column' ,
+                justifyContent: 'center',
+                padding: '0em 2em',
+                alignContent: 'center',
+                alignItems: 'center',
+         borderLeft: '1px solid'}, []);
+
+     const css9 = useRef({textAlign: 'center',
+                         width: '12em'}, []);
+
+  
+    
+
     //------------------------------------------------------------------------
     //
     
@@ -448,57 +512,30 @@ export default function App() {
                       fontSize={initFontSize*controlBarFontSize}
                       padding='.5em'>
 
-            <div css={{
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                paddingTop: '.5em',
-                paddingBottom: '.5em',
-                paddingLeft: '2em',
-                paddingRight: '1em',
-                borderRight: '1px solid',
-                flex: 1
-            }}>
-              <span css={{textAlign: 'center'}}>             
+            <div style={css1.current} key='1'>
+              <span style={css7.current}>             
 	        Test Function
               </span>
-              <div css={{padding: '0em'}}>
                 <FunctionInput onChangeFunc={testFuncInputCB}
                                initFuncStr={''}
                                totalWidth='12em'
                                inputSize={10}
                                leftSideOfEquation={'\u{00177}(x) ='}/>  
-              </div>
             </div>
             
-            <div css={{
-                margin: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                paddingTop: '1em',
-                paddingBottom: '.5em',
-                paddingLeft: '1.5em',
-                paddingRight: '1.5em',
-                borderRight: '1px solid',
-                flex: 3
-            }}>
-              <TexDisplayComp userCss={{padding:'.25em 0'}}
+            <div style={css2.current} key='2'>
+              <TexDisplayComp userCss={css3.current}
                               str={LatexSepEquation}
               />
 
-              <div css={{paddingTop: '.5em'}}>
-                <span css={{paddingRight: '1em'}}>
-                  <span css={{paddingRight: '.5em'}}>h(y) = </span>
+              <div style={css3.current}>
+                <span style={css4.current}>
+                  <span style={css4.current}>h(y) = </span>
                   <Input size={5}
                          initValue={initYFuncStr}
                          onC={yFuncInputCB}/></span>
                 <span>
-                  <span css={{paddingRight: '.5em'}}>g(x) = </span>
+                  <span css={css4.current}>g(x) = </span>
                   <Input size={5}
                          initValue={initXFuncStr}
                          onC={xFuncInputCB}/></span>
@@ -506,34 +543,38 @@ export default function App() {
             </div>
 
             
-            <ArrowGridOptions userCss={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                flex: 7,
-                paddingTop: '.5em',
-                paddingBottom: '.5em',
-                paddingLeft: '1em',
-                paddingRight: '2em'}}
+            <ArrowGridOptions userCss={css5.current}
                               initDensity={1/arrowGridData.gridSqSize}
                               initLength={arrowGridData.arrowLength}
-                              initApproxH={approxH}
                               densityCB={useCallback(
                                   val => setArrowGridData( agd => ({...agd, gridSqSize: Number(1/val)}) ) ,[])}
                               lengthCB={useCallback(
                                   val => setArrowGridData( agd => ({...agd, arrowLength: Number(val)}) ) ,[])}
-                              approxHCB={useCallback( val => setApproxH( Number(val) ) ,[])}/>
+                              />
+             <div style={css8.current}>
+              <div style={css9.current}>
+                Solution approximation constant:
+              </div>
+              <span style={css3.current}>
+                <Input size={4}
+                       initValue={approxH}
+                       onC={useCallback( val => setApproxH( Number(val) ) ,[])}/>
+              </span>
+            </div>
             
           </ControlBar>
           
-          <Main height={100-controlBarHeight}
-                fontSize={initFontSize*controlBarFontSize}>
+          <Main height={minuscbhState}
+                fontSize={ifsState*cbfsState}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
                             controlsData={initControlsData}
                             clearColor={initColors.clearColor}
+                            key='threecomp'
             />
             <ClickablePlaneComp threeCBs={threeCBs}                           
-                                clickCB={clickCB}/>         
+                                clickCB={clickCB}
+                                key='clickcomp'/>         
 
           </Main>
           

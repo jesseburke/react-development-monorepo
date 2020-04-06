@@ -1,15 +1,19 @@
+import React from 'react';
+
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
-export default function TexDisplayComp({ str, userCss={} }) {
+function TexDisplayComp({ str, userCss={} }) {
 
     if( !str )
         return null;
     
     return (
-         <span css={userCss}
+         <span style={userCss}
                dangerouslySetInnerHTML={{ __html: katex.renderToString(
                    str) }}/>
     );
     
 }
+
+export default React.memo(TexDisplayComp);

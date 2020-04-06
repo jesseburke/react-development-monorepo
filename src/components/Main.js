@@ -1,18 +1,14 @@
 import React from 'react';
 
-import { jsx } from '@emotion/core';
 
 // height is assumed to be number, giving percentage of screen appBar will take (at the top)
 
 function main( {children, height, fontSize=.85} ) {
-    const t = (100-height).toString()+'%';
-    
-    return (
-        <main
-          css={{
+   
+    const css1 = React.useRef({
               // external layout
               position: 'absolute',
-              top: t,
+        top: (100-height).toString()+'%',
               left: 0,
               right: 0,
               bottom: 0,
@@ -21,7 +17,11 @@ function main( {children, height, fontSize=.85} ) {
               backgroundColor: '#ffffff',
               //borderStyle: 'dashed'
               fontSize: fontSize.toString()+'em'
-          }}>
+    }, []);
+    
+    return (
+        <main
+          style={css1.current}>
           {children}
         </main>
     );    

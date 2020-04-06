@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 
 import { jsx } from '@emotion/core';
 
@@ -17,9 +17,10 @@ function functionInput({leftSideOfEquation,
                         onChangeFunc,
                         initFuncStr,
                         totalWidth='20em',
-                        inputSize=25}) {   
+                        inputSize=25,
+                        userCss={}}) {   
 
-    const [funcStr, setFuncStr] = React.useState(initFuncStr);
+    //const [funcStr, setFuncStr] = React.useState(initFuncStr);
 
     function handleChange(str) {
         //console.log('functionInput.handleChange called with string value = ', str);
@@ -30,25 +31,29 @@ function functionInput({leftSideOfEquation,
             return;
         }
         
-        onChangeFunc(funcParser(str));
+        onChangeFunc(funcParser(str), str);
     }
-    
-    return (       
-        <span css={{
+
+    const css1 = useRef(Object.assign({
             width: totalWidth,
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center'
             //border: '2px', borderStyle: 'dashed'
-        }}>
-          <span  css={{
+    }, userCss), []);
+
+    const css2 = useRef({
               padding: '.5em'
-          }}>
+    }, []);
+    
+    return (       
+        <span style={css1.current}>
+          <span  style={css2.current}>
             {leftSideOfEquation}
           </span>        
           <Input size={inputSize}
-                 initValue={funcStr}
+                 initValue={initFuncStr}
                  onC={handleChange}/>
         </span>
     );

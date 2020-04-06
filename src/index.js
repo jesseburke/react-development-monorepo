@@ -3,13 +3,11 @@ import ReactDOM from 'react-dom';
 
 import './style.css';
 
-//import App from './pages/App_df.js';
+//import App from './pages/App_df.js';  
 
 //import App from './pages/App_df_sep.js';
 
 //import App from './pages/App_df_logistic.js';
-
-//import App from './pages/App_df_logistic_tut.js';
 
 //import App from './pages/App_df_linear.js';
 

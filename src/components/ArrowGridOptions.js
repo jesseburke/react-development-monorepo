@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { jsx } from '@emotion/core';
-
-import {Input} from '@jesseburke/basic-react-components';
+import Input from '../components/Input.js';
 import {Button} from '@jesseburke/basic-react-components';
 
 
@@ -10,36 +8,28 @@ import {Button} from '@jesseburke/basic-react-components';
 function ArrowGridOptions({ initDensity, initLength, initApproxH,
                                            densityCB, lengthCB, approxHCB, userCss={}}) {
 
-    const newCss =  Object.assign(
+    const newCss =  useRef(Object.assign(
         {
             margin: 0,
             display: 'flex',
             height: '100%'          
-        }, userCss);
+        }, userCss), [userCss]);
 
-    
-    return (
-        <div css={newCss}>
-               
-              <div  css={{
+    const css1 = useRef({
                   margin: 0,
                   position: 'relative',
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column' ,
                   justifyContent: 'center',
-                  alignItems: 'center'}}>
-                <div css={{textAlign: 'center'}}>
-                  Arrow density:
-                </div>
-                <span css={{paddingTop: '.5em'}}>
-                  <Input size={4}
-                         initValue={initDensity}
-                         onC={densityCB}/>
-                </span>
-              </div>
-              
-              <div  css={{
+        alignItems: 'center'}, []);
+
+    const css2 = useRef(
+        {textAlign: 'center'}, []);
+
+    const css3 = useRef({paddingTop: '.5em'}, []);
+
+    const css4 = useRef({
                   margin: 0,
                   position: 'relative',
                   height: '100%',
@@ -48,36 +38,34 @@ function ArrowGridOptions({ initDensity, initLength, initApproxH,
                   justifyContent: 'center',
                   alignContent: 'center',
                   alignItems: 'center',
-                  margin: '2em'}}>
-                 <div css={{textAlign: 'center'}}>
-                  Arrow length:
+        margin: '2em'}, []);
+
+    
+    return (
+        <div style={newCss.current}>
+               
+              <div  style={css1.current}>
+                <div style={css2.current}>
+                  Arrows per unit:
                 </div>
-                <span css={{paddingTop: '.5em'}}>
+                <span style={css3.current}>
+                  <Input size={4}
+                         initValue={initDensity}
+                         onC={densityCB}/>
+                </span>
+              </div>
+              
+              <div  style={css4.current}>
+                 <div style={css2.current}>
+                   Relative arrow length:
+                </div>
+                <span style={css3.current}>
                   <Input size={4}
                          initValue={initLength}
                          onC={lengthCB}/>
                 </span>
-              </div>
-              
-              <div  css={{
-                  margin: 0,
-                  position: 'relative',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column' ,
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center'}}>
-                 <div css={{textAlign: 'center'}}>
-                  Approx const:
-                </div>
-                <span css={{paddingTop: '.5em'}}>
-                  <Input size={4}
-                         initValue={initApproxH}
-                         onC={approxHCB}/>
-                </span>
-              </div>
-            </div>);
+              </div>                           
+        </div>);
 }
 
 export default React.memo(ArrowGridOptions);

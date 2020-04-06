@@ -150,9 +150,9 @@ const initInitConds = [[4,7], [7,5]];
 
 const initialPointMeshRadius = .4;
 
-const debounceTime = 10;
+const debounceTime = 7;
 
-const boundsDebounceTime = 40;
+const boundsDebounceTime = 20;
 
 const initSigDig = 3;
 
@@ -279,8 +279,8 @@ export default function App() {
         
         const geom = FunctionGraph2DGeom({ func: func.func,
                                            bounds: dbBounds,
-                                           maxSegLength: 40,
-                                           approxH: .1,
+                                           maxSegLength: 20,
+                                           approxH: .05,
                                            radius: .05,
                                            tubularSegments: 1064 });
 
@@ -296,6 +296,64 @@ export default function App() {
         
     }, [threeCBs, dbBounds, func] ); 
     
+
+    const css1 = useRef({padding:'.25em 0'}, []);
+
+    const css2 = useRef({
+                margin: 0,
+                display: 'flex',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                height: '100%',
+                padding: '.5em',
+                fontSize: '1.25em',
+                flex: 5
+    }, []);
+
+    const css3 = useRef({
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+        padding: '1em 2em'}, []);
+
+    const css4 = useRef({whiteSpace: 'nowrap',
+                         marginBottom: '1.5em'}, []);
+
+    const css5 = useRef({whiteSpace: 'nowrap'}, []);
+
+    const css6 = useRef({
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',               
+        padding: '1em 2em'}, []);
+
+    const css7 = useRef({
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',               
+        padding: '1em 2em'}, []);
+
+    const css8 = useRef({
+                    padding: '.5em 0',
+                    fontSize: '1.00em',
+                    whiteSpace: 'nowrap'
+    }, []);
+
+    const css9 = useRef({
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',                  
+        padding: '1em 2em'}, []);
+
+    
     
     return (       
         <FullScreenBaseComponent backgroundColor={initColors.controlBar}
@@ -305,74 +363,41 @@ export default function App() {
                       fontSize={initFontSize*controlBarFontSize}
                       padding='0em'>           
 
-            <div css={{
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'space-around',
-                alignItems: 'center',
-                height: '100%',
-                padding: '.5em',
-                fontSize: '1.25em',
-                flex: 5
-            }}>
+            <div style={css2.current}>
               
-              <div  css={{
-                  margin: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '1em 2em'}}
+              <div  style={css3.current}
               >               
-                <div css={{whiteSpace: 'nowrap',
-                           marginBottom: '1.5em'}}>
-                  <TexDisplayComp userCss={{padding:'.25em 0'}}
+                <div style={css4.current}>
+                  <TexDisplayComp userCss={css1.current}
                                   str={resonanceEqTex}
                   />
                 </div>
-                <div css={{whiteSpace: 'nowrap'}}>
-                  <TexDisplayComp userCss={{padding:'.25em 0'}}
+                <div style={css5.current}>
+                  <TexDisplayComp userCss={css1.current}
                                   str={initialCondsTex}
                   />
                 </div>
               </div>          
 
-               <div  css={{
-                  margin: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',               
-                  padding: '1em 2em'}}
+               <div  style={css6.current}
               >            
                 
-                <div css={{padding:'.25em 0',
-                           textAlign: 'center'}}>
-                  <TexDisplayComp userCss={{padding:'.25em 0'}}
+                <div style={css7.current}>
+                  <TexDisplayComp userCss={css1.current}
                                   str={`\\frac{f}{\\omega_0^2 - \\omega^2} = ${processNum(Number.parseFloat(fVal.str)/(Number.parseFloat(w0Val.str)*Number.parseFloat(w0Val.str) - Number.parseFloat(wVal.str)*Number.parseFloat(wVal.str)), precision).texStr}`}
                   />               
                 </div>
-                <div css={{
-                    padding: '.5em 0',
-                    fontSize: '1.00em',
-                    whiteSpace: 'nowrap'
-                }}>
-                  <TexDisplayComp userCss={{padding:'.25em 0'}}
+                <div style={css8.current}>
+                  <TexDisplayComp userCss={css1.current}
                      str={solnStr}
                   />       
                 </div>
                </div>
 
-                   <div  css={{
-                  margin: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',                  
-                  padding: '1em 2em'}}
+                   <div  style={css9.current}
               >            
                 <Slider
-                  userCss={{padding: '.25em 0em'}}
+                  userCss={css1.current}
                   value={Number.parseFloat(w0Val.str)}
                   CB={val =>
                       setW0Val(processNum(Number.parseFloat(val), precision))}
@@ -384,7 +409,7 @@ export default function App() {
                 />
 
                 <Slider
-                  userCss={{padding: '.25em 0em'}}
+                  userCss={css1.current}
                   value={Number.parseFloat(wVal.str)}
                   CB={val =>
                       setWVal(processNum(Number.parseFloat(val), precision))}
@@ -395,7 +420,7 @@ export default function App() {
                   precision={sliderPrecision}
                 />
                  <Slider
-                   userCss={{padding: '.25em 0em'}}
+                   userCss={css1.current}
                    value={Number.parseFloat(fVal.str)}
                    CB={val =>
                        setFVal(processNum(Number.parseFloat(val), precision))}

@@ -388,6 +388,55 @@ export default function App() {
         };
         
     }, [threeCBs, bounds, solnStr] );
+
+    const css1 = useRef({
+                margin: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                padding: '.5em .5em',
+                fontSize: '1.25em',
+                borderRight: '1px solid',
+                flex: 5
+    }, []);
+
+    const css2 = useRef({padding:'.25em 0'}, []);
+
+    const css3 = useRef({
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+        padding: '0em 2em'}, []);
+
+    const css4 = useRef({padding:'.25em 0',
+                         textAlign: 'center'}, []);
+
+    const css5 = useRef({ margin: 0,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0em 1em'}, []);
+
+    const css6 = useRef({
+                margin: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '0em 2em',
+                flex: 5,
+                height: '100%',
+        borderRight: '1px solid'}, []);
+
+    const css7 = useRef({
+                  padding: '.5em 0',
+                  fontSize: '1.00em',
+                  whiteSpace: 'nowrap'
+    }, []);
     
     
     return (       
@@ -398,44 +447,22 @@ export default function App() {
                       fontSize={initFontSize*controlBarFontSize}
                       padding='.5em'>           
 
-            <div css={{
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                padding: '.5em .5em',
-                fontSize: '1.25em',
-                borderRight: '1px solid',
-                flex: 5
-            }}>
+            <div style={css1.current}>
               
-              <div  css={{
-                  margin: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '0em 2em'}}>
-                <div css={{padding:'.25em 0',
-                           textAlign: 'center'}}>
+              <div  style={css3.current}>
+                <div style={css4.current}>
                   2nd order linear, w/ constant coefficients
                 </div>
-                <div css={{whiteSpace: 'nowrap'}}>
-                  <TexDisplayComp userCss={{padding:'.25em 0'}}
+                <div style={{whiteSpace: 'nowrap'}}>
+                  <TexDisplayComp userCss={css2.current}
                                   str={LatexSecOrderEquation}
                   />
                 </div>
               </div>
 
-              <div css={{ margin: 0,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'flex-start',
-                          padding: '0em 1em'}}>
+              <div style={css5.current}>
                 <Slider
-                  userCss={{padding: '.25em 0em'}}
+                  userCss={css2.current}
                   value={Number.parseFloat(aVal.str)}
                   CB={val =>
                       setAVal(processNum(Number.parseFloat(val), precision))}
@@ -447,7 +474,7 @@ export default function App() {
                 />
 
                 <Slider
-                  userCss={{padding: '.25em 0em'}}
+                  userCss={css2.current}
                   value={Number.parseFloat(bVal.str)}
                   CB={val =>
                       setBVal(processNum(Number.parseFloat(val), precision))}
@@ -459,35 +486,21 @@ export default function App() {
               </div>
             </div>
 
-            <div css={{
-                margin: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '0em 2em',
-                flex: 5,
-                height: '100%',
-                borderRight: '1px solid'}}>
+            <div style={css6.current}>
               
-              <div css={{padding:'.25em 0',
-                         textAlign: 'center'}}>
-                <TexDisplayComp userCss={{padding:'.25em 0'}}
+              <div style={css4.current}>
+                <TexDisplayComp userCss={css2.current}
                                 str={`a^2 - 4b = ${processNum(Number.parseFloat(aVal.str)*Number.parseFloat(aVal.str) - 4*Number.parseFloat(bVal.str), precision).texStr}`}
                 />               
               </div>
-              <div css={{
-                  padding: '.5em 0',
-                  fontSize: '1.00em',
-                  whiteSpace: 'nowrap'
-              }}>
-                <TexDisplayComp userCss={{padding:'.25em 0'}}
+              <div style={css7.current}>
+                <TexDisplayComp userCss={css2.current}
                                 str={solnTexStr}
                 />       
               </div>
             </div>
             <InitialCondsComp initialConds={debouncedInitialConds}
-                              changeCB={useCallback( ic => setInitialConds(ic))}/>
+                              changeCB={useCallback( ic => setInitialConds(ic), [])}/>
             
           </ControlBar>
           

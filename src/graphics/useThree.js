@@ -144,25 +144,38 @@ export default function useThreeScene({ canvasRef,
 	// adds all properties of controlsData to controls.current
 	controls.current = Object.assign( controls.current, controlsData );
 
-	function animate() {
+	controls.current.update();	
+    	controls.current.addEventListener('change', () => {            
+    	    render();
+	    
+    	    let v = new THREE.Vector3( 0, 0, 0 );
+    	    camera.current.getWorldPosition(v);
+    	    controlsPubSub.current.publish(v.toArray());
+    	    render();	   
+    	});
 
-	    requestAnimationFrame( animate );
-	    controls.current.update();
-	    render();
 
-	    if( scrollCB ) {
+	// function animate() {
 
-		scrollCB({ xMin: screenToWorldCoords( -1, 0 ).x,
-			   xMax: screenToWorldCoords( 1, 0 ).x,
-			   xMin: screenToWorldCoords( -1, 0 ).x,
-			   xMax: screenToWorldCoords( 1, 0 ).x,
+	//     requestAnimationFrame( animate );
+	//     controls.current.update();
+	//     render();
+
+	   
+
+	//     if( scrollCB ) {
+
+	// 	scrollCB({ xMin: screenToWorldCoords( -1, 0 ).x,
+	// 		   xMax: screenToWorldCoords( 1, 0 ).x,
+	// 		   xMin: screenToWorldCoords( -1, 0 ).x,
+	// 		   xMax: screenToWorldCoords( 1, 0 ).x,
 			   
-			 });
-	    }
+	// 		 });
+	//     }
 			  
-	};
+	// };
 
-	animate();
+	// animate();
 
         return () => {
             controls.current.dispose();

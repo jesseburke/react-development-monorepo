@@ -20,7 +20,7 @@ import TexDisplayComp from '../components/TexDisplayComp.js';
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import ArrowGrid from '../graphics/ArrowGrid.js';
+import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
 import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
 
@@ -106,7 +106,7 @@ const initGridData = {
     originColor: 0x3F405C
 };
 
- const initArrowGridData = {
+const initArrowGridData = {
     gridSqSize: .5,
     color: initColors.arrows,
     arrowLength: .75
@@ -200,13 +200,13 @@ export default function App() {
     //
     // initial effects
 
-     useGridAndOrigin({ threeCBs,
+    useGridAndOrigin({ threeCBs,
 		       bounds: gridBounds,
 		       show: initGridData.show,
 		       originColor: initGridData.originColor,
 		       originRadius: .1 });
 
-     use2DAxes({ threeCBs,
+    use2DAxes({ threeCBs,
                 bounds: bounds,
                 radius: initAxesData.radius,
                 color: initAxesData.color,
@@ -294,28 +294,32 @@ export default function App() {
     //------------------------------------------------------------------------
     //
     //arrowGrid effect
-    
-    useEffect( ()  => {
+
+      useEffect( ()  => {
 
         if( !threeCBs ) return;
 
-        const arrowGrid = ArrowGrid({ gridSqSize: arrowGridData.gridSqSize,
-                                      bounds,
-                                      color: arrowGridData.color,
-                                      arrowLength: arrowGridData.arrowLength,
-                                      func: (x,y) => (-pxFunc.func(x,0)*y + qxFunc.func(x,0))                                      
-                                    });
+        const geometry = ArrowGridGeom({ arrowDensity: 1/arrowGridData.gridSqSize,
+                                         color: arrowGridData.color,
+                                         arrowLength: arrowGridData.arrowLength,
+                                         bounds,
+                                         func: (x,y) => (-pxFunc.func(x,0)*y + qxFunc.func(x,0))});    
 
-        threeCBs.add( arrowGrid.getMesh() );
+        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
+
+        const mesh = new THREE.Mesh(geometry, material);
+
+        threeCBs.add( mesh );
 	
         return () => {
-            threeCBs.remove( arrowGrid.getMesh() );
-            arrowGrid.dispose();
+            threeCBs.remove( mesh );
+            geometry.dispose();
+            material.dispose();
         };
 	
-    }, [threeCBs, arrowGridData, pxFunc, qxFunc] );
+      }, [threeCBs, arrowGridData, pxFunc, qxFunc] );
     
-
+       
 
     //------------------------------------------------------------------------
     //
@@ -404,7 +408,7 @@ export default function App() {
     useEffect( () => {
 
         if( !threeCBs || !testFunc ) return;
-       
+        
         const geom = FunctionGraph2DGeom({ func: testFunc, bounds, radius: testFuncRadius });           
         
         const mesh = new THREE.Mesh( geom, testFuncMaterial );
@@ -440,38 +444,22 @@ export default function App() {
 
     //------------------------------------------------------------------------
     //
-    
-    return (       
-        <FullScreenBaseComponent backgroundColor={colors.controlBar}
-                                 fonts={fonts}>
-          
-          <ControlBar height={controlBarHeight}
-                      fontSize={initFontSize*controlBarFontSize}
-                      padding='.5em'>
 
-            <div css={{
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                padding: '.5em 2em',
-                borderRight: '1px solid',
-                flex: 1
-            }}>
-              <span css={{textAlign: 'center'}}>             
-	        Test Function
-              </span>
-              <div css={{padding: '0em'}}>
-                <FunctionInput onChangeFunc={testFuncInputCB}
-                               initFuncStr={''}
-                               totalWidth='12em'
-                               inputSize={10}
-                               leftSideOfEquation={'\u{00177}(x) ='}/>  
-              </div>
-            </div>
-            
-            <div css={{
+     const css1 = useRef({
+        margin: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        padding: '.5em 1em',
+        borderRight: '1px solid',
+        flex: 5
+     }, []);
+
+    const css2 = useRef({padding:'.25em 0',
+                         textAlign: 'center'}, []);
+
+    const css3 = useRef({
                 margin: 0,
                 display: 'flex',
                 flexDirection: 'column',
@@ -481,18 +469,45 @@ export default function App() {
                 padding: '.5em 1em',
                 borderRight: '1px solid',
                 flex: 4
-            }}>
-              <TexDisplayComp userCss={{padding:'.25em 0'}}
+    }, []);
+
+    const css4 = useRef({paddingRight: '1em'}, []);
+
+    const css5 = useRef({paddingTop: '.5em'}, []);
+    
+    return (       
+        <FullScreenBaseComponent backgroundColor={colors.controlBar}
+                                 fonts={fonts}>
+          
+          <ControlBar height={controlBarHeight}
+                      fontSize={initFontSize*controlBarFontSize}
+                      padding='.5em'>
+
+            <div style={css1.current}>
+              <span style={css2.current}>             
+	        Test Function
+              </span>
+              <div style={{padding: '0em'}}>
+                <FunctionInput onChangeFunc={testFuncInputCB}
+                               initFuncStr={''}
+                               totalWidth='12em'
+                               inputSize={10}
+                               leftSideOfEquation={'\u{00177}(x) ='}/>  
+              </div>
+            </div>
+            
+            <div style={css3.current}>
+              <TexDisplayComp userCss={css2.current}
                               str={LatexSepEquation}
               />
-              <div css={{paddingTop: '.5em'}}>
-                <span css={{paddingRight: '1em'}}>
-                  <span css={{paddingRight: '.5em'}}>p(x) = </span>
+              <div style={css5.current}>
+                <span style={css4.current}>
+                  <span style={css4.current}>p(x) = </span>
                   <Input size={10}
                          initValue={initPXFuncStr}
                          onC={pxFuncInputCB}/></span>
                 <span>
-                  <span css={{paddingRight: '.5em'}}>g(x) = </span>
+                  <span style={css4.current}>g(x) = </span>
                   <Input size={10}
                          initValue={initQXFuncStr}
                          onC={qxFuncInputCB}/></span>
@@ -532,10 +547,10 @@ export default function App() {
 }
 
 
-  // <ResetCameraButton key="resetCameraButton"
-  //                              onClickFunc={resetCameraCB}
-  //                              color={controlsEnabled ? colors.controlBar : null }
-  //                              userCss={{ top: '85%',
-  //                                         left: '5%',
-  //                                         userSelect: 'none'}}/>
+// <ResetCameraButton key="resetCameraButton"
+//                              onClickFunc={resetCameraCB}
+//                              color={controlsEnabled ? colors.controlBar : null }
+//                              userCss={{ top: '85%',
+//                                         left: '5%',
+//                                         userSelect: 'none'}}/>
 
