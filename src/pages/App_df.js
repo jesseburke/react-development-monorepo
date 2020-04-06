@@ -93,13 +93,6 @@ const secControlsData =  {
     keyPanSpeed: 50,
     zoomSpeed: 1.25};
 
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> queryparams
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 13;
@@ -133,6 +126,19 @@ const testFuncRadius = .1;
 const testFuncH = .01;
 
 const dragDebounceTime = 5;
+
+const initAxesData = {
+    radius: .01,
+    show: true,
+    showLabels: true,
+    labelStyle
+};
+
+const initGridData = {
+    show: true
+};
+
+
 
 const funcStr = 'x*y*sin(x+y)/10';
 const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
@@ -235,7 +241,7 @@ export default function App() {
     use2DAxes({ threeCBs,
                 bounds: state.bounds,
                 radius: initAxesData.radius,
-                color: initAxesData.color,
+                color: initColors.axes,
                 show: initAxesData.show,
                 showLabels: initAxesData.showLabels,
                 labelStyle });
@@ -285,8 +291,7 @@ export default function App() {
     //
     // make the mesh for the initial point
 
-    // it's important that we're using the initial initialPt, because otherwise
-    // this would get called during dragcb, which we do not want
+    // not listing state as a dependency on purpose; don't want this effect running on drag
     
     useEffect( () => {
 
@@ -296,8 +301,8 @@ export default function App() {
         const material = new THREE.MeshBasicMaterial({ color: colors.solution });
 
         const mesh = new THREE.Mesh( geometry, material )
-              .translateX(initState.initialPt[0])
-              .translateY(initState.initialPt[1]);
+              .translateX(state.initialPt[0])
+              .translateY(state.initialPt[1]);
 
         threeCBs.add( mesh );
         setMeshArray([ mesh ]);

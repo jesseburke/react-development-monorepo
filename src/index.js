@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import './style.css';
 
-//import App from './pages/App_df.js';  
+import App from './pages/App_df.js';  
 
 //import App from './pages/App_df_sep.js';
 
@@ -13,7 +13,7 @@ import './style.css';
 
 //import App from './pages/App_df_sec_order.js';
 
-import App from './pages/App_df_resonance.js';
+//import App from './pages/App_df_resonance.js';
 
 //import App from './pages/App_df_streamlines.js';
 
