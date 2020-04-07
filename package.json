@@ -41,6 +41,7 @@
 						"babel-plugin-emotion": "^10.0.23",
 						"css-loader": "^3.2.1",
 						"delaunator": "^4.0.1",
+						"dotenv-webpack": "^1.7.0",
 						"emotion": "^10.0.23",
 						"expr-eval": "^2.0.2",
 						"katex": "^0.11.1",

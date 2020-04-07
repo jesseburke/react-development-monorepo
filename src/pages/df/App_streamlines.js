@@ -7,10 +7,6 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 import Delaunator from 'delaunator';
 
-import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
-import {Button} from '@jesseburke/basic-react-components';
-import {Modal} from '@jesseburke/basic-react-components';
-import {ConditionalDisplay} from '@jesseburke/basic-react-components';
 
 import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
 import ControlBar from '../components/ControlBar.js';
@@ -24,12 +20,11 @@ import ResetCameraButton from '../components/ResetCameraButton.js';
 import RightDrawer from '../components/RightDrawer.js';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
 import Input from '../components/Input.js';
+import FullScreenBaseComponent from '../components/FullScreenBaseComponent.js';
 
 import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
 import use2DAxes from '../graphics/use2DAxes.js';
-import use3DAxes from '../graphics/use3DAxes.js';
 import FunctionGraph from '../graphics/FunctionGraph.js';
-import ArrowGrid from '../graphics/ArrowGrid.js';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
 import DelaunayGeometry from '../graphics/DelaunayGeometry.js';
 
@@ -38,11 +33,7 @@ import PriorityQueueFactory from '../utils/PriorityQueueFactory.js';
 import Streamlines from '../math/differentialEquations/Streamlines.js';
 
 
-import {initColors, initArrowGridData, initAxesData,
-        initGridData, initControlsData, secControlsData,
-        bounds, initCameraData,
-        initFuncStr, initFunc, fonts,
-       } from './constants.js';
+import {fonts, labelStyle} from './constants.js';
 
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
@@ -52,15 +43,57 @@ import 'katex/dist/katex.min.css';
 // initial data
 //
 
-const {xMin, xMax, yMin, yMax} = bounds;
-
-const labelStyle = {
-    color: 'black',
-    padding: '.1em',
-    margin: '.5em',
-    padding: '.4em',
-    fontSize: '1.5em'
+const initColors = {
+    arrows: '#C2374F',
+    solution: '#C2374F',
+    firstPt: '#C2374F',
+    secPt: '#C2374F',
+    testFunc: '#E16962',//#DBBBB0',
+    axes: '#0A2C3C',
+    controlBar: '#0A2C3C',
+    clearColor: '#f0f0f0'
 };
+
+const aspectRatio = window.innerWidth / window.innerHeight;
+
+const frustumSize = 20;
+
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: {order: 'XYZ'},
+    orthographic: { left: frustumSize * aspectRatio / -2,
+                    right: frustumSize * aspectRatio / 2,
+                    top: frustumSize / 2,
+                    bottom: frustumSize / -2,
+                  }
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
+
+const secControlsData =  {       
+    mouseButtons: {LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.ROTATE,
+	       TWO: THREE.TOUCH.DOLLY,
+               THREE: THREE.MOUSE.PAN},
+    enableRotate: true,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    zoomSpeed: 1.25};
+
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -94,6 +127,35 @@ testFuncMaterial.opacity = .8;
 const testFuncRadius = .05;
 
 const testFuncH = .1;
+
+const initAxesData = {
+    radius: .01,
+    show: true,
+    showLabels: true,
+    labelStyle
+};
+
+const initGridData = {
+    show: true
+};
+
+
+
+const funcStr = 'x*y*sin(x+y)/10';
+const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
+    
+const initState = {
+    bounds: {xMin: -20, xMax: 20,
+             yMin: -20, yMax: 20},
+    arrowDensity: 1,
+    arrowLength: .7,
+    funcStr,
+    func: funcParser(funcStr),
+    testFuncStr,
+    testFunc: funcParser(testFuncStr),
+    initialPt: [2,2],
+    approxH: .1
+};
 
 // constants for the Stream Line display
 const SLseparatingDistance = 1;
