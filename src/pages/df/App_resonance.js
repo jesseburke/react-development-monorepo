@@ -4,27 +4,27 @@ import { jsx } from '@emotion/core';
 
 import * as THREE from 'three';
 
-import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
 
-import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
-import ControlBar from '../components/ControlBar.js';
-import Main from '../components/Main.js';
-import funcParser from '../utils/funcParser.js';
-import Input from '../components/Input.js';
-import Slider from '../components/Slider.js';
-import TexDisplayComp from '../components/TexDisplayComp.js';
-import InitialCondsComp from '../components/InitialCondsComp.js';
+import {ThreeSceneComp, useThreeCBs} from '../../components/ThreeScene.js';
+import ControlBar from '../../components/ControlBar.js';
+import Main from '../../components/Main.js';
+import funcParser from '../../utils/funcParser.js';
+import Input from '../../components/Input.js';
+import Slider from '../../components/Slider.js';
+import TexDisplayComp from '../../components/TexDisplayComp.js';
+import InitialCondsComp from '../../components/InitialCondsComp.js';
+import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
-import use2DAxes from '../graphics/use2DAxes.js';
-import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
+import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
+import use2DAxes from '../../graphics/use2DAxes.js';
+import FunctionGraph2DGeom from '../../graphics/FunctionGraph2DGeom.js';
+import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.js';
 
-import useDebounce from '../hooks/useDebounce.js';
+import useDebounce from '../../hooks/useDebounce.js';
 
-import {processNum} from '../utils/BaseUtils.js';
+import {processNum} from '../../utils/BaseUtils.js';
 
-import {solnStrs} from '../math/differentialEquations/secOrderConstantCoeff.js';
+import {solnStrs} from '../../math/differentialEquations/secOrderConstantCoeff.js';
 
 import {fonts, labelStyle} from './constants.js';
 

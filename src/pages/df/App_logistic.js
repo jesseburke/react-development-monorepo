@@ -4,27 +4,33 @@ import { jsx } from '@emotion/core';
 
 import * as THREE from 'three';
 
-import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
+import {ThreeSceneComp, useThreeCBs} from '../../components/ThreeScene.js';
+import ControlBar from '../../components/ControlBar.js';
+import Main from '../../components/Main.js';
+import FunctionInput from '../../components/FunctionInput.js';
+import funcParser from '../../utils/funcParser.js';
+import ResetCameraButton from '../../components/ResetCameraButton.js';
+import ClickablePlaneComp from '../../components/ClickablePlaneComp.js';
+import Input from '../../components/Input.js';
+import ArrowGridOptions from '../../components/ArrowGridOptions.js';
+import SaveButton from '../../components/SaveButton.js';
+import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
+import TexDisplayComp from '../../components/TexDisplayComp.js';
+import Slider from '../../components/Slider.js';
 
-import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
-import ControlBar from '../components/ControlBar.js';
-import Main from '../components/Main.js';
-import ResetCameraButton from '../components/ResetCameraButton.js';
-import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
-import ArrowGridOptions from '../components/ArrowGridOptions.js';
-import TexDisplayComp from '../components/TexDisplayComp.js';
-import Slider from '../components/Slider.js';
+import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
+import use2DAxes from '../../graphics/use2DAxes.js';
+import FunctionGraph2DGeom from '../../graphics/FunctionGraph2DGeom.js';
+import ArrowGridGeom from '../../graphics/ArrowGridGeom.js';
+import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.js';
+import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.js';
+import ArrowGeometry from '../../graphics/ArrowGeometry.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
-import use2DAxes from '../graphics/use2DAxes.js';
-import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
-import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
-import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
-
-import ArrowGeometry from '../graphics/ArrowGeometry.js';
+import useDebounce from '../../hooks/useDebounce.js';
+import useHashLocation from '../../hooks/useHashLocation.js';
 
 import {fonts, labelStyle} from './constants.js';
+
 
 
 //------------------------------------------------------------------------

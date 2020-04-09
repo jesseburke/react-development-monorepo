@@ -13,7 +13,7 @@ import './style.css';
 
 //import App from './pages/df/App_sec_order.js';
 
-//import App from './pages/df/App_resonance.js';
+import App from './pages/df/App_resonance.js';
 
 //import App from './pages/df/App_streamlines.js';
 
@@ -23,7 +23,7 @@ import './style.css';
 
 //import App from './pages/df/App_combo.js';
 
-import App from './pages/implicitFunc/App.js';  
+//import App from './pages/implicitFunc/App.js';  
 
 
 function main() {

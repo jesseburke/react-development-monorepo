@@ -9,31 +9,31 @@ import * as THREE from 'three';
 
 
 
-import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
-import ControlBar from '../components/ControlBar.js';
-import Main from '../components/Main.js';
-import FunctionInput from '../components/FunctionInput.js';
-import funcParser from '../utils/funcParser.js';
-import ResetCameraButton from '../components/ResetCameraButton.js';
-import ClickablePlaneComp from '../components/ClickablePlaneComp.js';
-import Input from '../components/Input.js';
-import ArrowGridOptions from '../components/ArrowGridOptions.js';
-import SaveButton from '../components/SaveButton.js';
-import FullScreenBaseComponent from '../components/FullScreenBaseComponent.js';
+import {ThreeSceneComp, useThreeCBs} from '../../components/ThreeScene.js';
+import ControlBar from '../../components/ControlBar.js';
+import Main from '../../components/Main.js';
+import FunctionInput from '../../components/FunctionInput.js';
+import funcParser from '../../utils/funcParser.js';
+import ResetCameraButton from '../../components/ResetCameraButton.js';
+import ClickablePlaneComp from '../../components/ClickablePlaneComp.js';
+import Input from '../../components/Input.js';
+import ArrowGridOptions from '../../components/ArrowGridOptions.js';
+import SaveButton from '../../components/SaveButton.js';
+import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
-import use2DAxes from '../graphics/use2DAxes.js';
-import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.js';
-import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
-import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.js';
-import useDraggableMeshArray from '../graphics/useDraggableMeshArray.js';
-import ArrowGeometry from '../graphics/ArrowGeometry.js';
+import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
+import use2DAxes from '../../graphics/use2DAxes.js';
+import FunctionGraph2DGeom from '../../graphics/FunctionGraph2DGeom.js';
+import ArrowGridGeom from '../../graphics/ArrowGridGeom.js';
+import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.js';
+import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.js';
+import ArrowGeometry from '../../graphics/ArrowGeometry.js';
 
-import useDebounce from '../hooks/useDebounce.js';
-import useHashLocation from '../hooks/useHashLocation.js';
+import useDebounce from '../../hooks/useDebounce.js';
+import useHashLocation from '../../hooks/useHashLocation.js';
 
 import {fonts, labelStyle} from './constants.js';
-import {round} from '../utils/BaseUtils.js';
+import {round} from '../../utils/BaseUtils.js';
 
 
 //------------------------------------------------------------------------
