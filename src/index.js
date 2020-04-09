@@ -3,25 +3,27 @@ import ReactDOM from 'react-dom';
 
 import './style.css';
 
-import App from './pages/App_df.js';  
+//import App from './pages/df/App.js';  
 
-//import App from './pages/App_df_sep.js';
+//import App from './pages/df/App_sep.js';
 
-//import App from './pages/App_df_logistic.js';
+//import App from './pages/df/App_logistic.js';
 
-//import App from './pages/App_df_linear.js';
+//import App from './pages/df/App_linear.js';
 
-//import App from './pages/App_df_sec_order.js';
+//import App from './pages/df/App_sec_order.js';
 
-//import App from './pages/App_df_resonance.js';
+//import App from './pages/df/App_resonance.js';
 
-//import App from './pages/App_df_streamlines.js';
+//import App from './pages/df/App_streamlines.js';
 
-//import App from './pages/App_df_streamlines_new.js';
+//import App from './pages/df/App_streamlines_new.js';
 
-//import App from './pages/App_delaunay.js';
+//import App from './pages/df/App_delaunay.js';
 
-//import App from './pages/App_df_combo.js';
+//import App from './pages/df/App_combo.js';
+
+import App from './pages/implicitFunc/App.js';  
 
 
 function main() {
