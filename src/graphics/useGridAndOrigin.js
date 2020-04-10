@@ -5,32 +5,24 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 //import GridHelper from '../graphics/GridHelper.js';
 
-export default function useGridAndOrigin({ threeCBs, bounds, show, originColor=0x3F405C, originRadius = .25, gridCB }) {
+export default function useGridAndOrigin({ threeCBs,
+					   gridQuadSize = 20,
+					   center = [0,0],
+					   gridShow = true,
+					   originColor=0x3F405C,
+					   originRadius = .25,
+					   gridCB = () => null }) {
     
     useEffect( () => {
 
-	const {xMin, xMax, yMin, yMax} = bounds;
-
-        if( !threeCBs || !show) return;
-
-	if( xMax < xMin ) {
-	    console.log('useGridAndOrigin called with xMax < xMin');
-	    return;
-	}
-
-	if( yMax < yMin ) {
-	    console.log('useGridAndOrigin called with yMax < yMin');
-	    return;
-	}
-
-	const size = Math.max( xMax - xMin, yMax - yMin );
+	if( !gridShow || !threeCBs ) return;
 	
-	const grid = new THREE.GridHelper(size, size); 	
+	const grid = new THREE.GridHelper(gridQuadSize, gridQuadSize); 	
 	
         grid.material.opacity = .4;
         grid.material.transparent = true;
-	grid.translateX( (xMax+xMin)/2 );
-	grid.translateY( (yMax+yMin)/2 );
+	grid.translateX(center[0]);
+	grid.translateY(center[1]);
 	grid.rotateX(Math.PI/2);
 	
         threeCBs.add( grid );
@@ -50,6 +42,6 @@ export default function useGridAndOrigin({ threeCBs, bounds, show, originColor=0
             material.dispose();
         };
         
-    }, [threeCBs, bounds, show, originColor] );
+    }, [threeCBs, gridQuadSize, center, gridShow, originColor] );
     
 }
