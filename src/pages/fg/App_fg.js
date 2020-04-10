@@ -4,42 +4,144 @@ import { jsx } from '@emotion/core';
 
 import * as THREE from 'three';
 
-import {ControlBar} from '@jesseburke/basic-react-components';
-import {Main} from '@jesseburke/basic-react-components';
-import {FullScreenBaseComponent} from '@jesseburke/basic-react-components';
 import {Button} from '@jesseburke/basic-react-components';
 import {Modal} from '@jesseburke/basic-react-components';
 import {ConditionalDisplay} from '@jesseburke/basic-react-components';
 
-import {ThreeSceneComp, useThreeCBs} from '../components/ThreeScene.js';
-import FunctionInput from '../components/FunctionInput.js';
-import funcParser from '../utils/funcParser.js';
-import FunctionOptions from '../components/FunctionOptions.js';
-import CoordinateOptions from '../components/CoordinateOptions.js';
-import CameraOptions from '../components/CameraOptions.js';
-import ResetCameraButton from '../components/ResetCameraButton.js';
-import RightDrawer from '../components/RightDrawer.js';
+import ControlBar from '../../components/ControlBar.js';
+import Main from '../../components/Main.js';
+import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
+import {ThreeSceneComp, useThreeCBs} from '../../components/ThreeScene.js';
+import FunctionInput from '../../components/FunctionInput.js';
+import FunctionOptions from '../../components/FunctionOptions.js';
+import CoordinateOptions from '../../components/CoordinateOptions.js';
+import CameraOptions from '../../components/CameraOptions.js';
+import ResetCameraButton from '../../components/ResetCameraButton.js';
+import RightDrawer from '../../components/RightDrawer.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
-import use3DAxes from '../graphics/use3DAxes.js';
-import FunctionGraph from '../graphics/FunctionGraph.js';
+import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
+import use3DAxes from '../../graphics/use3DAxes.js';
+import FunctionGraph3DGeom from '../../graphics/FunctionGraph3DGeom.js';
 
+import funcParser from '../../utils/funcParser.js';
+import {round} from '../../utils/BaseUtils.js';
 
 //------------------------------------------------------------------------
 //
 // initial data
 //
 
-//
-// colors
-
 const initColors = {
-    funcGraph: '#E53935',
-    axes: '#084C5E',
-    label: '#83BBC9',
+    arrows: '#C2374F',
+    solution: '#C2374F',
+    firstPt: '#C2374F',
+    secPt: '#C2374F',
+    testFunc: '#E16962',//#DBBBB0',
+    axes: '#0A2C3C',
     controlBar: '#0A2C3C',
-    optionsDrawer: '#C5CAE9'
+    clearColor: '#f0f0f0',
+    funcGraph: '#E53935'
 };
+
+const initCameraData = {
+    position: [40, 40, 40],
+    up: [0,0,1]
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: true,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false};
+
+
+const solutionMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color( initColors.solution ),
+    side: THREE.FrontSide });
+
+solutionMaterial.transparent = true;
+solutionMaterial.opacity = .6;
+
+const solutionCurveRadius = .1;
+
+const pointMaterial = solutionMaterial.clone();
+pointMaterial.transparent = false;
+pointMaterial.opacity = .8;
+
+const testFuncMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color( initColors.testFunc ),
+    side: THREE.FrontSide });
+
+testFuncMaterial.transparent = true;
+testFuncMaterial.opacity = .6;
+
+const testFuncRadius = .1;
+
+const testFuncH = .01;
+
+const dragDebounceTime = 5;
+
+const initAxesData = {
+    show: true,
+    showLabels: true,
+    labelStyle
+};
+
+const initGridData = {
+    show: true
+};
+
+
+
+const funcStr = 'x*y*sin(x+y)/10';
+const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
+    
+const initState = {
+    bounds: {xMin: -20, xMax: 20,
+             yMin: -20, yMax: 20},
+    funcStr,
+    func: funcParser(funcStr)
+};
+
+const roundConst = 3;
+
+function shrinkState({ bounds, funcStr }) {
+
+    const {xMin, xMax, yMin, yMax} = bounds;
+    
+    const newObj = { b: [xMin, xMax, yMin, yMax],
+                     fs: funcStr,
+                   };
+    return newObj;            
+}
+
+// f is a function applied to the string representing each array element
+
+function strArrayToArray( strArray, f = Number ) {
+
+    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
+
+    return strArray.split(',').map( x => f(x) );
+}
+    
+
+function expandState({ b, fs }) {
+
+    const bds = strArrayToArray( b, Number );
+
+    return ({ bounds: {xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3]},
+              funcStr: fs,
+              func: funcParser(fs)
+            });    
+}
+
+const gridBounds = initState.bounds;
+
 
 const initFuncStr = "x*y*sin(x + y)/10";
 // "x*y*sin(x^2 + y)/100"
@@ -62,38 +164,6 @@ const labelStyle = {
     fontSize: '1.5em'
 };
 
-const initAxesData = {
-    radius: .05,
-    color: initColors.axes,
-    length: 100,
-    tickDistance: 1,
-    tickRadius: 2.5,      
-    show: true,
-    showLabels: true,
-    labelStyle
-};
-
-const initGridData = {
-    sqSize: 1,
-    quadSize: 100,
-    show: true,
-    originColor: 0x3F405C
-};
-
-const initCameraData = {
-    position: [40, 40, 40],
-    up: [0,0,1]
-};
-
-const initControlsData = {       
-    mouseButtons: {LEFT: THREE.MOUSE.ROTATE}, 
-    touches: { ONE: THREE.MOUSE.PAN,
-	       TWO: THREE.TOUCH.PAN,
-	       THREE: THREE.MOUSE.PAN },
-    enableRotate: true,
-    enableKeys: true,
-    enabled: true,
-    keyPanSpeed: 50 };
 
 const fonts = "'Helvetica', 'Hind', sans-serif";
 
@@ -118,7 +188,7 @@ const initOptionsOpen = true;
 
 export default function App() {   
 
-    const [funcGraphData, setFuncGraphData] = useState( initFuncGraphData );
+    const [state, setState] = useState(initState);    
 
     const [axesData, setAxesData] = useState( initAxesData );
 
@@ -161,11 +231,9 @@ export default function App() {
 
     const controlsCB = useCallback( (position) => {       
 
-        if(!threeCBs) return;        
-        
         setCameraData({position});
                 
-    }, [threeCBs] );
+    }, [] );
 
 
     // this is imperative because we are not updating cameraData
@@ -180,26 +248,45 @@ export default function App() {
 
     //------------------------------------------------------------------------
     //
-    // effects
+    // init effects
 
-    useGridAndOrigin({ gridData, threeCBs });
+    useGridAndOrigin({ threeCBs,
+                       bounds: gridBounds,
+                       show: initGridData.show,
+                       originRadius: .1 });
 
-    use3DAxes({ threeCBs, axesData });
+    use3DAxes({ threeCBs,
+                length: state.bounds.xMax,
+                color: initColors.axes,
+                show: initAxesData.show,
+                showLabels: initAxesData.showLabels,
+                labelStyle });
 
+    //------------------------------------------------------------------------
+    //
     // funcGraph effect
+    
     useEffect( ()  => {
 
         if( !threeCBs ) return;
 
-        const funcGraph = FunctionGraph( funcGraphData );
-        console.log('funcGraph effect; funcGraph.getMesh() is ', funcGraph.getMesh());
-        threeCBs.add( funcGraph.getMesh() );
-        console.log('funcGraph effect, after mesh is added');
+        const geometry = FunctionGraph3DGeom({ func: state.func,
+                                           bounds: state.bounds });
+        const material = new THREE.MeshPhongMaterial({ color: initColors.funcGraph,
+                                                       side: THREE.DoubleSide });
+        material.shininess = 0;
+        material.wireframe = false;
+
+        const mesh = new THREE.Mesh( geometry, material );
+        threeCBs.add(mesh);     
+
         return () => {
-            threeCBs.remove( funcGraph.getMesh() );
-            funcGraph.dispose();
+            threeCBs.remove( mesh );
+            geometry.dispose();
+            material.dispose();
         };
-    }, [threeCBs, funcGraphData] );
+        
+    }, [threeCBs, state.func, state.bounds] );
    
     return (       
         <FullScreenBaseComponent backgroundColor={colors.controlBar}
@@ -284,9 +371,7 @@ export default function App() {
               
               <FunctionOptions initData={initFuncGraphData}
                                onChange={ useCallback(
-                                   newData => {
-                                       console.log(newData);
-                                       setFuncGraphData( newData );}, []) }
+                                   () => null, []) }
               />
               
             </Modal>
