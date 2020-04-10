@@ -8,14 +8,11 @@ import {ConditionalDisplay} from '@jesseburke/basic-react-components';
 import FunctionBounds from './FunctionBounds.js';
 
 
-function CoordinateOptions( {axesData: {radius, color,
-                                        show, length,
-                                        tickDistance, tickRadius,
-                                        tickColor, showTicks,                                  
-                                        showLabels
-                                       },
-                             gridData,
-                             onAxesChange, onGridChange} )
+function CoordinateOptions({ axesData,
+                             gridQuadSize,
+                             gridShow,
+                             onAxesChange,
+                             onGridChange })
 {
 
     return ( 
@@ -29,17 +26,14 @@ function CoordinateOptions( {axesData: {radius, color,
             justifyContent: 'space-between',                                  
         }}>                         
 
-          <Axes show={show}
-                radius={radius}
-                color={color}
-                length={length}
-                showLabels={showLabels}
+          <Axes axesData={axesData}
                 onChangeCB={ (newData) =>
                              onAxesChange(newData) }/>         
           
           <hr style={{width: '100%'}}/>
           
-          <Grid gridData={gridData}
+          <Grid gridQuadSize={gridQuadSize}
+                gridShow={gridShow}
                 onChange={ (newData) =>
                            onGridChange(newData) }/>
         </div>
@@ -49,10 +43,28 @@ function CoordinateOptions( {axesData: {radius, color,
 export default React.memo(CoordinateOptions);
 
 function Axes({
-    show, radius, length, color, showLabels, onChangeCB })
+    axesData, onChangeCB })
 {
 
-    const axesData = {show, radius, length, color, showLabels};
+    const showCheckCB = (event) => {
+        const {show, ...rest} = axesData;
+        onChangeCB( Object.assign( rest, {show: event.target.checked}) );
+    };
+
+     const lengthCB = (l) => {
+         const {length, ...rest} = axesData;
+         onChangeCB( Object.assign( rest, {length: l}) );
+    };
+
+    const radiusCB = (r) => {
+         const {radius, ...rest} = axesData;
+         onChangeCB( Object.assign( rest, {radius: r}) );
+    };
+
+     const labelCheckCB = (event) => {
+        const {showLabels, ...rest} = axesData;
+        onChangeCB( Object.assign( rest, {showLabels: event.target.checked}) );
+    };
     
     return (
         <div  css={{
@@ -62,29 +74,21 @@ function Axes({
             paddingRight: '3em'}}>
           <label> Show axes:
             <input type='checkbox'
-                   checked={show}
-                   onChange={event =>
-                             onChangeCB({show: event.target.checked})}/>
+                   checked={axesData.show}
+                   onChange={showCheckCB}/>
           </label>
-          <ConditionalDisplay test={show}>         
-            <Color colorStr={color}
-                   onChange={ colorStr =>
-                              onChangeCB({color: colorStr})}
-            />
-            <Length length={length}
-                    onChange={ length =>
-                               onChangeCB({length: length })}/>
-            <Radius size={radius}
-                    onChange={ size =>
-                               onChangeCB({radius: size })}/>
+          <ConditionalDisplay test={axesData.show}>                  
+            <Length length={axesData.length}
+                    onChange={lengthCB}/>
+            <Radius size={axesData.radius}
+                    onChange={radiusCB}/>
             <div css={{display: 'flex',              
                        alignItems: 'center',
                        justifyContent: 'center',
                        padding: '0em'}}>
               <label> Show axes labels: 
-                <input type='checkbox' checked={showLabels}
-                       onChange={event =>
-                                 onChangeCB({ showLabels: event.target.checked})}/>
+                <input type='checkbox' checked={axesData.showLabels}
+                       onChange={labelCheckCB}/>
               </label>
             </div>
           </ConditionalDisplay>          
@@ -92,23 +96,6 @@ function Axes({
     );
 }
 
-function Color({ colorStr, onChange }) {
-    
-    return (
-        <div  css={{display: 'flex',              
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: '.5em'}}>
-          <span css={{paddingRight: '.5em'}}>
-            Color:
-          </span>
-          <Input size={10}
-                 initValue={colorStr}
-                 onC={ colorStr =>
-                       onChange(colorStr) } />
-        </div>
-    );
-}
 
 function Length({ length, onChange }) {
     return (
@@ -148,7 +135,7 @@ function Radius({ size, onChange }) {
 }
 
 
-function Grid({ gridData, onChange }) {
+function Grid({ gridQuadSize, gridShow, onChange }) {
 
        return (
         <div  css={{
@@ -158,11 +145,12 @@ function Grid({ gridData, onChange }) {
             paddingRight: '3em'}}>
           <label> Show xy-grid:
             <input type='checkbox'
-                   checked={gridData.show}
+                   checked={gridShow}
                    onChange={event =>
-                             onChange({show: event.target.checked })}/>
+                             onChange({ show: event.target.checked,
+                                        quadSize: gridQuadSize})}/>
           </label>
-          <ConditionalDisplay test={gridData.show}>         
+          <ConditionalDisplay test={gridShow}>         
             <div  css={{display: 'flex',              
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -171,9 +159,9 @@ function Grid({ gridData, onChange }) {
                 <p>Quadrant size: </p>
               </div>
               <Input size={10}
-                     initValue={gridData.quadSize}
+                     initValue={gridQuadSize}
                      onC={ sizeStr =>
-                           onChange({ quadSize: parseInt(sizeStr) }) } />
+                           onChange({ show: gridShow, quadSize: parseInt(sizeStr) }) } />
             </div>
           </ConditionalDisplay>          
         </div>               
