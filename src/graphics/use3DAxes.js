@@ -107,29 +107,27 @@ export default function use3DAxes({ threeCBs,
 
     useEffect( () => {
 
-	if( !threeCBs ) return;
+	if( !threeCBs || !show || !showLabels ) return;
 	
 	let xLabelID; 
 	let yLabelID; 
 	let zLabelID;
 
-	if (showLabels) {
-	               
-            xLabelID = threeCBs.addLabel({ pos: [length, 0, 0],
-					   text: xLabel,
-					   style: labelStyle });
+	
+        xLabelID = threeCBs.addLabel({ pos: [length, 0, 0],
+				       text: xLabel,
+				       style: labelStyle });
 
-            yLabelID = threeCBs.addLabel({ pos: [0, length, 0],
-                                           text: yLabel,
-                                           style: labelStyle });
+        yLabelID = threeCBs.addLabel({ pos: [0, length, 0],
+                                       text: yLabel,
+                                       style: labelStyle });
 
-            zLabelID = threeCBs.addLabel({ pos: [0, 0, length],
-                                           text: zLabel,
-                                           style: labelStyle });
+        zLabelID = threeCBs.addLabel({ pos: [0, 0, length],
+                                       text: zLabel,
+                                       style: labelStyle });
 
-	    threeCBs.drawLabels();
-	    threeCBs.render();
-	}
+	threeCBs.drawLabels();
+	threeCBs.render();
 
 	return () => {
 
@@ -151,7 +149,7 @@ export default function use3DAxes({ threeCBs,
 	    threeCBs.drawLabels();
 	};
 	
-    }, [threeCBs, showLabels, length, labelStyle] );
+    }, [threeCBs, show, showLabels, length, labelStyle] );
 
 };
 
