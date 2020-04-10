@@ -3,15 +3,20 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export default function use3DAxes({ threeCBs, axesData = {length,
-							  radius,
-							  color,
-							  show,
-							  showLabels,
-							  tickDistance: 1,
-							  tickRadius: 1.25,
-							  tickColor: '#8BC34A',
-							  labelStyle} })
+export default function use3DAxes({ threeCBs,
+				    length,
+				    radius = .05,
+				    color,
+				    show,
+				    showLabels,
+				    xLabel = 'x',
+				    yLabel = 'y',
+				    zLabel = 'z',
+				    labelStyle,
+				    tickDistance = 1,
+				    tickRadius = 2.5,
+				    tickColor = '#8BC34A',
+				    })
 
 {
     
@@ -22,17 +27,17 @@ export default function use3DAxes({ threeCBs, axesData = {length,
 	// this will hold axes and all adornments
 	const axesGroup = new THREE.Group();
 	
-	if( axesData.show ) {       
+	if( show ) {       
 		    
 	    // make two axes first
 	    const material = new THREE.LineBasicMaterial( {
-		color: axesData.color,
+		color: color,
 		linewidth: 100,          
 	    } );
 
-	    const radiusTop = axesData.radius;
-	    const radiusBottom = axesData.radius;
-	    let height = 2*axesData.length;
+	    const radiusTop = radius;
+	    const radiusBottom = radius;
+	    let height = 2*length;
 	    let radialSegments = 8;
 	    let heightSegments = 40;
 	    let openEnded = true;   
@@ -49,7 +54,7 @@ export default function use3DAxes({ threeCBs, axesData = {length,
 							heightSegments,
 							openEnded);
 
-	    const axesMaterial = new THREE.MeshBasicMaterial({color: axesData.color});
+	    const axesMaterial = new THREE.MeshBasicMaterial({color: color});
 
 	    const za = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
 							height, radialSegments,
@@ -65,18 +70,18 @@ export default function use3DAxes({ threeCBs, axesData = {length,
 
 	    let geomArray = [];
 
-	    for (let i = 1; i <= axesData.length; i++) {
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
+	    for (let i = 1; i <= length; i++) {
+		geomArray.push(RawTickGeometry( radius*tickRadius)
 			       .translate( i, 0, 0));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
+		geomArray.push(RawTickGeometry( radius*tickRadius)
 			       .translate(-i, 0, 0));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
+		geomArray.push(RawTickGeometry( radius*tickRadius)
 			       .translate( 0, i, 0));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
+		geomArray.push(RawTickGeometry( radius*tickRadius)
 			       .translate( 0,-i, 0));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
+		geomArray.push(RawTickGeometry( radius*tickRadius)
 			       .translate( 0, 0, i));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
+		geomArray.push(RawTickGeometry( radius*tickRadius)
 			       .translate( 0, 0,-i));    
 	    }    
 
@@ -84,7 +89,7 @@ export default function use3DAxes({ threeCBs, axesData = {length,
 		geomArray );
 
 	    // am not using tickColor right now
-	    const tickMaterial = new THREE.MeshBasicMaterial({color: axesData.color});
+	    const tickMaterial = new THREE.MeshBasicMaterial({color: color});
 	    
 	    axesGroup.add( new THREE.Mesh( axesGeom, tickMaterial ) );
 
@@ -97,8 +102,8 @@ export default function use3DAxes({ threeCBs, axesData = {length,
 	    }
 	};
 	
-    }, [threeCBs, axesData.show, axesData.radius, axesData.length,
-	axesData.radius, axesData.tickRadius, axesData.color] );
+    }, [threeCBs, show, radius, length,
+	radius, tickRadius, color] );
 
     useEffect( () => {
 
@@ -108,19 +113,19 @@ export default function use3DAxes({ threeCBs, axesData = {length,
 	let yLabelID; 
 	let zLabelID;
 
-	if (axesData.showLabels) {
+	if (showLabels) {
 	               
-            xLabelID = threeCBs.addLabel({ pos: [axesData.length, 0, 0],
-					   text: "x",
-					   style: axesData.labelStyle });
+            xLabelID = threeCBs.addLabel({ pos: [length, 0, 0],
+					   text: xLabel,
+					   style: labelStyle });
 
-            yLabelID = threeCBs.addLabel({ pos: [0, axesData.length, 0],
-                                           text: "y",
-                                           style: axesData.labelStyle });
+            yLabelID = threeCBs.addLabel({ pos: [0, length, 0],
+                                           text: yLabel,
+                                           style: labelStyle });
 
-            zLabelID = threeCBs.addLabel({ pos: [0, 0, axesData.length],
-                                           text: "z",
-                                           style: axesData.labelStyle });
+            zLabelID = threeCBs.addLabel({ pos: [0, 0, length],
+                                           text: zLabel,
+                                           style: labelStyle });
 
 	    threeCBs.drawLabels();
 	    threeCBs.render();
@@ -146,7 +151,7 @@ export default function use3DAxes({ threeCBs, axesData = {length,
 	    threeCBs.drawLabels();
 	};
 	
-    }, [threeCBs, axesData.showLabels, axesData.length, axesData.labelStyle] );
+    }, [threeCBs, showLabels, length, labelStyle] );
 
 };
 
