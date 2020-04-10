@@ -369,7 +369,7 @@ export default function useThreeScene({ canvasRef,
 	camera.current.position.set(...newPosition);
 	camera.current.quaternion.set( new THREE.Quaternion(0,0,0,1) );
 	camera.current.up = new THREE.Vector3( ...newUp );
-	//camera.current.lookAt(0,0,0);
+	camera.current.lookAt(0,0,0);
 	
 	//console.log('camera has been positioned in threeScene.setcameraposition');
 	
@@ -505,7 +505,7 @@ export default function useThreeScene({ canvasRef,
 
 		else
 		    f( index );
-	    }
+	    };
 	    
 	    return newFunc;
 	}
