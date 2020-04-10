@@ -43,10 +43,6 @@ const initColors = {
     funcGraph: '#E53935'
 };
 
-const initCameraData = {
-    position: [40, 40, 40],
-    up: [0,0,1]
-};
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
@@ -86,26 +82,25 @@ const testFuncH = .01;
 
 const dragDebounceTime = 5;
 
-const initAxesData = {
-    show: true,
-    showLabels: true,
-    labelStyle
-};
-
-const initGridData = {
-    show: true
-};
-
-
 
 const funcStr = 'x*y*sin(x+y)/10';
 const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
-    
+
+const initCameraData =  {position: [40, 40, 40],
+                         up: [0, 0, 1]};
+
 const initState = {
     bounds: {xMin: -20, xMax: 20,
              yMin: -20, yMax: 20},
     funcStr,
-    func: funcParser(funcStr)
+    func: funcParser(funcStr),
+    gridQuadSize: 40,
+    gridShow: true,
+    axesData: {show: true,
+               showLabels: true,
+               length: 40,
+               radius: .05},
+    cameraData: Object.assign({},initCameraData)
 };
 
 const roundConst = 3;
@@ -128,7 +123,7 @@ function strArrayToArray( strArray, f = Number ) {
 
     return strArray.split(',').map( x => f(x) );
 }
-    
+
 
 function expandState({ b, fs }) {
 
@@ -156,14 +151,6 @@ const initFuncGraphData = {
     color: initColors.funcGraph
 };
 
-const labelStyle = {
-    color: 'black',
-    padding: '.1em',
-    margin: '.5em',
-    padding: '.4em',
-    fontSize: '1.5em'
-};
-
 
 const fonts = "'Helvetica', 'Hind', sans-serif";
 
@@ -177,6 +164,14 @@ const percControlBar = 1.25;
 const percButton = .85;
 const percDrawer = .85;
 
+const labelStyle = {
+    color: 'black',
+    padding: '.1em',
+    margin: '.5em',
+    padding: '.4em',
+    fontSize: '1.5em'
+};
+
 
 // in em's
 const optionsDrawerWidth = 20;
@@ -188,15 +183,7 @@ const initOptionsOpen = true;
 
 export default function App() {   
 
-    const [state, setState] = useState(initState);    
-
-    const [axesData, setAxesData] = useState( initAxesData );
-
-    const [gridData, setGridData] = useState( initGridData );
-
-    const [cameraData, setCameraData] = useState( initCameraData );
-
-    const [controlsData, setControlsData] = useState( initControlsData );
+    const [state, setState] = useState(Object.assign({}, initState));    
 
     const [colors, setColors] = useState( initColors );    
 
@@ -211,56 +198,23 @@ export default function App() {
     const [showCoordOpts, setShowCoordOpts] = useState(false);
     const [showFuncOpts, setShowFuncOpts] = useState(false);
 
-    const optionsButtonCallback =
-          useCallback( () => setShowOptsDrawer(o => !o), [] );
-
-    const cameraChangeCB = useCallback( (position) => {
-
-        if( position )
-            setCameraData( cd => ({...cd, position}));
-
-        if(!threeCBs) return;                
-
-        threeCBs.setCameraPosition( position );
-        
-    }, [threeCBs]);
-
-    const funcInputCallback = useCallback(
-        newFunc => setFuncGraphData( ({func, ...rest}) => ({func: newFunc, ...rest}) ),
-        [] );
-
-    const controlsCB = useCallback( (position) => {       
-
-        setCameraData({position});
-                
-    }, [] );
-
-
-    // this is imperative because we are not updating cameraData
-    const resetCameraCallback = useCallback( () => {
-
-        if( !threeCBs ) return;
-
-        setCameraData( initCameraData );
-        threeCBs.setCameraPosition( initCameraData.position );
-              
-    }, [threeCBs] );
-
+    
     //------------------------------------------------------------------------
     //
     // init effects
 
     useGridAndOrigin({ threeCBs,
-                       bounds: gridBounds,
-                       show: initGridData.show,
+                       gridQuadSize: state.gridQuadSize,
+                       gridShow: state.gridShow,
                        originRadius: .1 });
 
     use3DAxes({ threeCBs,
-                length: state.bounds.xMax,
-                color: initColors.axes,
-                show: initAxesData.show,
-                showLabels: initAxesData.showLabels,
-                labelStyle });
+                length: state.axesData.length,
+                radius: state.axesData.radius,
+                show: state.axesData.show,
+                showLabels: state.axesData.showLabels,
+                labelStyle,
+                color: initColors.axes,});
 
     //------------------------------------------------------------------------
     //
@@ -271,7 +225,7 @@ export default function App() {
         if( !threeCBs ) return;
 
         const geometry = FunctionGraph3DGeom({ func: state.func,
-                                           bounds: state.bounds });
+                                               bounds: state.bounds });
         const material = new THREE.MeshPhongMaterial({ color: initColors.funcGraph,
                                                        side: THREE.DoubleSide });
         material.shininess = 0;
@@ -287,7 +241,54 @@ export default function App() {
         };
         
     }, [threeCBs, state.func, state.bounds] );
-   
+
+
+    //------------------------------------------------------------------------
+    //
+    // callbacks  
+
+    const funcInputCB = useCallback(
+        newFunc => setState( ({func, ...rest}) => ({func: newFunc, ...rest}) ),
+        [] );
+
+    const controlsCB = useCallback( (position) => {       
+        setState( ({cameraData, ...rest}) => ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
+    }, [] );
+
+    const cameraChangeCB = useCallback( (position) => {
+
+        if( position ) {
+            setState( ({cameraData, ...rest}) => ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
+        }
+
+        if(!threeCBs) return;                
+
+        threeCBs.setCameraPosition( position );
+        
+    }, [threeCBs]);
+  
+    // this is imperative because we are not updating cameraData
+    const resetCameraCB = useCallback( () => {
+
+        if( !threeCBs ) return;
+
+        setState( ({cameraData, ...rest}) => ({cameraData:Object.assign({},initCameraData), ...rest}) );    
+        threeCBs.setCameraPosition( initCameraData.position );
+        
+    }, [threeCBs] );
+
+    const gridCB =  useCallback( ({quadSize, show})  =>
+                                 setState( ({gridQuadSize, gridShow, ...rest}) =>
+                                           ({gridQuadSize: quadSize,
+                                             gridShow: show,
+                                             ...rest}) ),
+                                 []);
+
+    const axesCB = useCallback(  newAxesData => {
+	        setState(({ axesData, ...rest }) => ({axesData: newAxesData, ...rest}));
+    },[]);
+
+    
     return (       
         <FullScreenBaseComponent backgroundColor={colors.controlBar}
                                  fonts={fonts}>
@@ -296,12 +297,12 @@ export default function App() {
             <span css={{
                 paddingLeft: '30%',
                 paddingRight: '10%' }}>             
-	      <FunctionInput onChangeFunc={funcInputCallback}
+	      <FunctionInput onChangeFunc={funcInputCB}
                              initFuncStr={initFuncStr}
                              leftSideOfEquation="f(x,y) ="/>  
             </span>
             <Button fontSize={initFontSize*percButton}
-                    onClickFunc={optionsButtonCallback} >
+                    onClickFunc={useCallback( () => setShowOptsDrawer(o => !o), [] )} >
               <div >
                 <span css={{paddingRight: '1em'}}>Objects</span>
                 <span>{showOptsDrawer ?'\u{2B06}' : '\u{2B07}'} </span>
@@ -313,9 +314,9 @@ export default function App() {
                 fontSize={initFontSize*percDrawer}>
             <ThreeSceneComp ref={threeSceneRef}
                             initCameraData={initCameraData}
-                            controlsData={controlsData}
+                            controlsData={initControlsData}
                             controlsCB={controlsCB}
-                            />
+            />
             
             <RightDrawer toShow={showOptsDrawer}
                          width={optionsDrawerWidth}
@@ -338,9 +339,9 @@ export default function App() {
               </ListItem>
               
             </RightDrawer>
-                        
+            
             <ResetCameraButton key="resetCameraButton"
-                               onClickFunc={resetCameraCallback}
+                               onClickFunc={resetCameraCB}
                                color={colors.optionsDrawer}
                                userCss={{ top: '85%',
                                           left: '5%'}}/>
@@ -351,16 +352,11 @@ export default function App() {
                        () => setShowCoordOpts(false), [] ) }                 
                    color={colors.optionsDrawer}>
               
-              <CoordinateOptions axesData={axesData}
-                                 gridData={gridData}
-                                 onAxesChange={
-                                     useCallback(newData => 
-                                         setAxesData(ad => ({...ad, ...newData})) ,[])
-                                 }
-                                 onGridChange={
-                                     useCallback(newData =>
-                                                 setGridData(gd => ({...gd, ...newData})),
-                                                             [])}/>
+              <CoordinateOptions axesData={state.axesData}
+                                 onAxesChange={axesCB}
+                                 gridQuadSize={state.gridQuadSize}
+                                 gridShow={state.gridShow}
+                                 onGridChange={gridCB}/>
             </Modal>
             
             <Modal show={showFuncOpts}
@@ -384,7 +380,7 @@ export default function App() {
                    topPerc={70}
                    color={colors.optionsDrawer}>
               
-              <CameraOptions cameraData={cameraData}
+              <CameraOptions cameraData={state.cameraData}
                              onChangeFunc={cameraChangeCB}
               />
             </Modal>
@@ -409,30 +405,30 @@ function ListItem({children, onClick, toShow = true, width='20'}) {
 }
 // was above, where '\u2699' is now:
 //'\u2795'
-       
+
 class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
 
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        return { hasError: true };
+    }
 
-  componentDidCatch(error, errorInfo) {
-    // You can also log the error to an error reporting service
-      console.log('error: ' + error);
-      console.log('errorInfo ' + errorInfo);
-  }
+    componentDidCatch(error, errorInfo) {
+        // You can also log the error to an error reporting service
+        console.log('error: ' + error);
+        console.log('errorInfo ' + errorInfo);
+    }
 
-  render() {
-    if (this.state.hasError) {
-      // You can render any custom fallback UI
-        return <h1>Something went wrong with the graphics; try reloading].</h1>;
+    render() {
+        if (this.state.hasError) {
+            // You can render any custom fallback UI
+            return <h1>Something went wrong with the graphics; try reloading].</h1>;
     }
 
     return this.props.children; 
-  }
+}
 }
