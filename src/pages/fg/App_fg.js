@@ -409,7 +409,7 @@ export default function App() {
             <ResetCameraButton key="resetCameraButton"
                                onClickFunc={resetCameraCB}
                                color={colors.optionsDrawer}
-                               userCss={{ top: '75%',
+                               userCss={{ top: '73%',
                                           left: '5%'}}/>
              <SaveButton onClickFunc={saveButtonCB}/>
 
