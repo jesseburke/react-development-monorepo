@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import {Helmet} from 'react-helmet';
 
 import { jsx } from '@emotion/core';
 
@@ -358,6 +359,9 @@ export default function App() {
     return (       
         <FullScreenBaseComponent backgroundColor={colors.controlBar}
                                  fonts={fonts}>
+          <Helmet>
+                <meta name="viewport" content="width=device-width, user-scalable=no" />
+          </Helmet>
           
           <ControlBar height={controlBarHeight} fontSize={initFontSize*percControlBar}>
             <span css={{

@@ -48,6 +48,7 @@
 						"query-string": "^6.11.1",
 						"react": "^16.12.0",
 						"react-dom": "^16.12.0",
+						"react-helmet": "^6.0.0",
 						"three": "^0.110.0",
 						"three-gltf-exporter": "0.0.1",
 						"three-orbitcontrols": "^2.110.1",

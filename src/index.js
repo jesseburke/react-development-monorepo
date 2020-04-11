@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import {Helmet} from 'react-helmet';
+
 import './style.css';
 
 //import App from './pages/df/App.js';  
@@ -30,7 +32,12 @@ import App from './pages/fg/App_fg.js';
 
 function main() {
     const element = document.createElement('div');       
-    ReactDOM.render(<App />, element);   
+    ReactDOM.render(<React.Fragment>
+		      <Helmet>
+                        <meta name="viewport" content="width=device-width, user-scalable=no" />
+                      </Helmet>
+                      <App />
+                    </React.Fragment>, element);   
     
     return element;
 }
