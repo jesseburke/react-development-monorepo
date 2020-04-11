@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { jsx } from '@emotion/core';
 
-import {Input} from '@jesseburke/basic-react-components';
 import {ConditionalDisplay} from '@jesseburke/basic-react-components';
 
 import FunctionBounds from './FunctionBounds.js';
-
+import Input from './Input.js';
 
 function CoordinateOptions({ axesData,
                              gridQuadSize,

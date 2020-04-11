@@ -315,13 +315,7 @@ export default function App() {
         setState( ({func, funcStr, ...rest}) => ({func: newFunc,
                                                   funcStr: newFuncStr,
                                                   ...rest}) );
-    }, [] );
-            // this is broken
-        
-            // setState( ({func, funcStr, ...rest})
-            //           => ({func: newFunc, funcStr: newFuncStr, ...rest})
-                      
-              
+    }, [] );      
 
     const controlsCB = useCallback( (position) => {       
         setState( ({cameraData, ...rest}) => ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
@@ -370,7 +364,7 @@ export default function App() {
                 paddingLeft: '30%',
                 paddingRight: '10%' }}>             
 	      <FunctionInput onChangeFunc={funcInputCB}
-                             initFuncStr={initFuncStr}
+                             initFuncStr={state.funcStr}
                              leftSideOfEquation="f(x,y) ="/>  
             </span>
             <Button fontSize={initFontSize*percButton}
