@@ -17,7 +17,7 @@ export default function useGridAndOrigin({ threeCBs,
 
 	if( !gridShow || !threeCBs ) return;
 	
-	const grid = new THREE.GridHelper(gridQuadSize, gridQuadSize); 	
+	const grid = new THREE.GridHelper(2*gridQuadSize, 2*gridQuadSize); 	
 	
         grid.material.opacity = .4;
         grid.material.transparent = true;
