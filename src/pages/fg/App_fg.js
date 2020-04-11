@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { jsx } from '@emotion/core';
 
+import queryString from 'query-string';
+
 import * as THREE from 'three';
 
 import {Button} from '@jesseburke/basic-react-components';
@@ -18,6 +20,7 @@ import CoordinateOptions from '../../components/CoordinateOptions.js';
 import CameraOptions from '../../components/CameraOptions.js';
 import ResetCameraButton from '../../components/ResetCameraButton.js';
 import RightDrawer from '../../components/RightDrawer.js';
+import SaveButton from '../../components/SaveButton.js';
 
 import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
 import use3DAxes from '../../graphics/use3DAxes.js';
@@ -83,7 +86,7 @@ const testFuncH = .01;
 const dragDebounceTime = 5;
 
 
-const funcStr = 'x*y*sin(x+y)/10';
+const initFuncStr = 'x*y*sin(x+y)/10';
 const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
 
 const initCameraData =  {position: [40, 40, 40],
@@ -92,8 +95,8 @@ const initCameraData =  {position: [40, 40, 40],
 const initState = {
     bounds: {xMin: -20, xMax: 20,
              yMin: -20, yMax: 20},
-    funcStr,
-    func: funcParser(funcStr),
+    funcStr: initFuncStr,
+    func: funcParser(initFuncStr),
     gridQuadSize: 40,
     gridShow: true,
     axesData: {show: true,
@@ -105,12 +108,25 @@ const initState = {
 
 const roundConst = 3;
 
-function shrinkState({ bounds, funcStr }) {
+function shrinkState({ bounds,
+                       funcStr,
+                       gridQuadSize,
+                       gridShow,
+                       axesData: {show, showLabels, length, radius},
+                       cameraData: {position, up} }) {
 
     const {xMin, xMax, yMin, yMax} = bounds;
     
     const newObj = { b: [xMin, xMax, yMin, yMax],
                      fs: funcStr,
+                     gqs: gridQuadSize,
+                     gs: gridShow,
+                     as: show,
+                     sl: showLabels,
+                     l: length,
+                     r: radius,
+                     cp: position.map( x => round(x,2)),
+                     cu: up.map( x => round(x,2) )
                    };
     return newObj;            
 }
@@ -125,21 +141,23 @@ function strArrayToArray( strArray, f = Number ) {
 }
 
 
-function expandState({ b, fs }) {
+function expandState({ b, fs, gqs, gs, as, sl, l, r, cp, cu }) {
 
     const bds = strArrayToArray( b, Number );
 
+    const cameraPos = strArrayToArray( cp, Number );
+    const cameraUp = strArrayToArray( cu, Number );
+
     return ({ bounds: {xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3]},
               funcStr: fs,
-              func: funcParser(fs)
+              func: funcParser(fs),
+              gridQuadSize: Number(gqs),
+              gridShow: Number(gs),
+              axesData: {show: as, showLabels: sl, length: Number(l), radius: Number(r)},
+              cameraData: {position: cameraPos, up: cameraUp}
             });    
 }
 
-const gridBounds = initState.bounds;
-
-
-const initFuncStr = "x*y*sin(x + y)/10";
-// "x*y*sin(x^2 + y)/100"
 
 const initFuncGraphData = {
     func: funcParser(initFuncStr),
@@ -214,7 +232,53 @@ export default function App() {
                 show: state.axesData.show,
                 showLabels: state.axesData.showLabels,
                 labelStyle,
-                color: initColors.axes,});
+                color: initColors.axes});
+
+     //------------------------------------------------------------------------
+    //
+    // look at location.search
+
+    // want to: read in the query string, parse it into an object, merge that object with
+    // initState, then set all of the state with that merged object
+
+    useEffect( () => {
+
+        const qs = window.location.search;
+
+        if( qs.length === 0 ) {
+
+             setState( s => s );
+             return;
+            
+         }
+
+        const newState = expandState(queryString.parse(qs.slice(1),
+                                                       {parseBooleans: true}));
+        setState(newState);
+
+        if( !threeCBs ) return;
+
+        threeCBs.setCameraPosition( newState.cameraData.position );
+
+        
+
+        //console.log('state is ', state);
+        //console.log('newState is ', newState);
+        //console.log('expandState(newState) is ', expandState(newState) );
+        
+
+       
+        //	window.history.replaceState(null, null, '?'+queryString.stringify(state));
+        //window.history.replaceState(null, null, "?test");
+        
+    }, [threeCBs] );
+
+    const saveButtonCB = useCallback( () => 
+        window.history.replaceState(null, null,
+                                    '?'+queryString.stringify(shrinkState(state),
+                                                              {decode: false,
+                                                               arrayFormat: 'comma'}))
+                                      ,[state] );
 
     //------------------------------------------------------------------------
     //
@@ -247,9 +311,17 @@ export default function App() {
     //
     // callbacks  
 
-    const funcInputCB = useCallback(
-        newFunc => setState( ({func, ...rest}) => ({func: newFunc, ...rest}) ),
-        [] );
+    const funcInputCB = useCallback( (newFunc, newFuncStr) => {
+        setState( ({func, funcStr, ...rest}) => ({func: newFunc,
+                                                  funcStr: newFuncStr,
+                                                  ...rest}) );
+    }, [] );
+            // this is broken
+        
+            // setState( ({func, funcStr, ...rest})
+            //           => ({func: newFunc, funcStr: newFuncStr, ...rest})
+                      
+              
 
     const controlsCB = useCallback( (position) => {       
         setState( ({cameraData, ...rest}) => ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
@@ -343,8 +415,9 @@ export default function App() {
             <ResetCameraButton key="resetCameraButton"
                                onClickFunc={resetCameraCB}
                                color={colors.optionsDrawer}
-                               userCss={{ top: '85%',
+                               userCss={{ top: '75%',
                                           left: '5%'}}/>
+             <SaveButton onClickFunc={saveButtonCB}/>
 
             <Modal show={showCoordOpts}
                    key="axesModalWindow"
@@ -384,7 +457,7 @@ export default function App() {
                              onChangeFunc={cameraChangeCB}
               />
             </Modal>
-
+            
           </Main>
           
         </FullScreenBaseComponent>);                              
