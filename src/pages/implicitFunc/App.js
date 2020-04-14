@@ -28,11 +28,12 @@ import ArrowGridGeom from '../../graphics/ArrowGridGeom.js';
 import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.js';
 import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.js';
 import ArrowGeometry from '../../graphics/ArrowGeometry.js';
+import CurvedPathGeom from '../../graphics/CurvedPathGeom.js';
 
 import useDebounce from '../../hooks/useDebounce.js';
 import useHashLocation from '../../hooks/useHashLocation.js';
 
-import ImplicitFuncGraph, {nextSide, borderingSquare} from '../../math/ImplicitFuncGraph.js';
+import ImplicitFuncGraph, {nextSide, borderingSquare, ptOnSide} from '../../math/ImplicitFuncGraph.js';
 
 import {round} from '../../utils/BaseUtils.js';
 
@@ -136,14 +137,23 @@ const initGridData = {
     show: true
 };
 
-const funcStr = 'x^6+y^6-x^2';
-    
+const funcStr = 
+      '(x^2+y^2)^3 - 4*x^2*y^2';
+
+// shifted circle
+//'(x^2+y^2-x)/100-1';
+
+// ampersand curve
+// (y^2-x^2)*(x-1)*(2*x-3)-4*(x^2+y^2-2*x)^2
+
+
+const quadSize = 10;
 const initState = {
-    bounds: {xMin: -20, xMax: 20,
-             yMin: -20, yMax: 20},
+    bounds: {xMin: -quadSize, xMax: quadSize,
+             yMin: -quadSize, yMax: quadSize},
     funcStr,
     func: funcParser(funcStr),
-    approxH: 11
+    approxH: .01
 };
 
 const roundConst = 3;
@@ -188,8 +198,10 @@ const gridBounds = initState.bounds;
 
 export default function App() {
          
-    const [state, setState] = useState({...initState });  
+    const [state, setState] = useState(initState);
 
+    const [graphComps, setGraphComps] = useState(null);
+    
     const [colors,] = useState(initColors);
 
     const [fontState,] = useState(fonts);
@@ -227,54 +239,32 @@ export default function App() {
 
     useEffect( () => {
 
-        console.log( ImplicitFuncGraph({ func: state.func, bounds: state.bounds,
-                                         approxH: state.approxH }) );
+        setGraphComps(ImplicitFuncGraph({ func: state.func,
+                                          bounds: state.bounds,
+                                          approxH: state.approxH })
+                      .map( a => a.map( ([x,y]) => new THREE.Vector3(x,y,0) ) ) );
 
-        console.log( borderingSquare( 2, 't' ) );
-        
-    }, []);
+    }, [state.func, state.bounds, state.approxH]);
 
-    //------------------------------------------------------------------------
-    //
-    // look at location.search
+    useEffect( () => {
 
-    // want to: read in the query string, parse it into an object, merge that object with
-    // initState, then set all of the state with that merged object
+        if( !threeCBs ) return;
 
-    useEffect( () => {     
+        const geom = CurvedPathGeom({ compArray: graphComps, radius: .02 });
 
-        const qs = window.location.search;
+        const mesh = new THREE.Mesh( geom, solutionMaterial );
 
-        if( qs.length === 0 ) {
+        threeCBs.add(mesh);
 
-            setState( s => s );
-            return;
+        return () => {
+            threeCBs.remove(mesh);
+            geom.dispose();
             
-        }
-
-        const newState = queryString.parse(qs.slice(1));
-        setState(s => expandState(newState));
-
-        console.log('state is ', state);
-        console.log('newState is ', newState);
-        console.log('expandState(newState) is ', expandState(newState) );
+        };
         
+    }, [graphComps, threeCBs] );
 
-       
-        //window.history.replaceState(null, null, '?'+queryString.stringify(state));
-        //window.history.replaceState(null, null, "?test");
-        
-    }, [] );
-
-    const saveButtonCB = useCallback( () => 
-        window.history.replaceState(null, null,
-                                    '?'+queryString.stringify(shrinkState(state),
-                                                              {decode: false,
-                                                               arrayFormat: 'comma'}))
-                                      ,[state]                                 );
-    
-
-      
+   
     const funcInputCB =  useCallback(
         newFuncStr => setState(
             ({ funcStr,func, ...rest }) => ({ funcStr: newFuncStr, func: funcParser(newFuncStr), ...rest }) ), [] );
@@ -327,8 +317,7 @@ export default function App() {
                             initCameraData={initCameraData}
                             controlsData={initControlsData}
             />          
-            <SaveButton onClickFunc={saveButtonCB}/>
-
+          
           </Main>
           
         </FullScreenBaseComponent>);                              

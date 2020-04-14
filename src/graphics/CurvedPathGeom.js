@@ -2,13 +2,12 @@ import * as THREE from 'three';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 // compArray is an array of arrays; each array is a chain of points to be drawn
-
 export default function CurvedPathGeom({
     compArray,
     // this is the max no of line segments in a component
     maxSegLength = 20,
     tubularSegments = 1064,
-    radius = .15,
+    radius = .05,
     radialSegments = 4 }) {
 
     const geomArray = [];
@@ -66,14 +65,20 @@ function curveSeg( pointArray ) {
     
     let curve = new THREE.CurvePath();
 
-    for( let i = 0; i < Math.floor((l-1)/2); i++ ) {
+    // for( let i = 0; i < Math.floor((l-1)/2); i++ ) {
 
-	curve.add( new THREE.CatmullRomCurve3([ pointArray[2*i], pointArray[2*i+1], pointArray[2*i+2] ]) );
+    // 	curve.add( new THREE.CatmullRomCurve3([ pointArray[2*i], pointArray[2*i+1], pointArray[2*i+2] ]) );
+	
+    // }
+
+    // if( l % 2 === 0 )
+    // 	curve.add( new THREE.LineCurve3( pointArray[l-2], pointArray[l-1] ) );
+
+    for( let i = 0; i < l-1; i++ ) {
+
+	curve.add( new THREE.LineCurve3( pointArray[i], pointArray[i+1] ) );
 	
     }
-
-    if( l % 2 === 0 )
-	curve.add( new THREE.LineCurve3( pointArray[l-2], pointArray[l-1] ) );
 
     return curve;        
 }
