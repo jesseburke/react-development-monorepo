@@ -5,70 +5,51 @@ import React, {useRef, useEffect, useState} from 'react';
 
 import { jsx } from '@emotion/core';
 
+function Button ({ children,
+                   onClickFunc=(()=>null),
+                   fontSize='1em',
+                   margin=0,
+                   borderRadius='.35em',
+                   active=true,
+                   userCss={} })
+{
 
+    const baseCss = useRef(  Object.assign({
+                  paddingLeft: '1em',
+                  paddingRight: '1em',
+                  paddingTop: '.25em',
+                  paddingBottom: '.25em',
+                  border: '2px',
+                  borderStyle: 'solid',
+                  borderRadius: borderRadius,
+                  fontSize: fontSize.toString()+'em',
+                  margin: margin,
+                  width: '10em',
+                  textAlign: 'center',
+                  userSelect: 'none',
+                  color: 'gray'
+    }, userCss) );
 
-export default React.memo(
-    ({children,
-      onClickFunc=(()=>null),
-      fontSize='1em',
-      margin=0,
-      borderRadius='.35em',
-      active=true}) => {
+    const abledCss = useRef( Object.assign({
+        cursor:'pointer'  ,
+    }, baseCss.current) );
 
-          if( !active ) {
-            
-              return (
-                  <span
-                   css={{
-                       paddingLeft: '1em',
-                       paddingRight: '1em',
-                       paddingTop: '.25em',
-                       paddingBottom: '.25em',
-                       border: '2px',
-                       borderStyle: 'solid',
-                       borderRadius: borderRadius,
-                       fontSize: fontSize.toString()+'em',
-                       margin: margin,
-                       width: '10em',
-                       // next line stops cursor from changing to text selection on hover
-                       cursor:'not-allowed'  ,
-                       textAlign: 'center',
-                       userSelect: 'none',
-                       color: 'gray'
-                   }}                                                       
-                 >                         
-                   {children}
-                  </span>);
-          };
-           
-          return (<span
-                   css={{
-                       paddingLeft: '1em',
-                       paddingRight: '1em',
-                       paddingTop: '.25em',
-                       paddingBottom: '.25em',
-                       border: '2px',
-                       borderStyle: 'solid',
-                       borderRadius: borderRadius,
-                       fontSize: fontSize.toString()+'em',
-                       margin: margin,
-                       width: '10em',
-                       // next line stops cursor from changing to text selection on hover
-                       cursor:'pointer'  ,
-                       textAlign: 'center',
-                       userSelect: 'none'
-                   }}                                    
-                    onClick={onClickFunc}
-                 >                         
-                   {children}
-                  </span>);
-      }
-);
+    const disabledCss = useRef( Object.assign({
+        cursor:'not-allowed'
+    }, baseCss.current) );
+  
+    
+    if( !active ) {
+        
+        return ( <span style={disabledCss.current}>                         
+                      {children}
+                    </span> );
+    };
+    
+    return ( <span style={abledCss.current}>                         
+               {children}
+             </span> );
+}
 
-// changes made since package
-
-// 1) removed width prop
-
-// 2) changed default font size from .75 to 1
-
+export default React.memo(Button);
 
