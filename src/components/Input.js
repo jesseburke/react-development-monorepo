@@ -1,14 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
 
-import { jsx, css } from '@emotion/core';
+//import { jsx, css } from '@emotion/core';
 
 function Input({onC, initValue, size, userCss={}}) {
 
-      const newCss = Object.assign(
+    const newCss = useRef( Object.assign(
         {         
             fontSize: '.75em'
             
-        }, userCss);
+        }, userCss) );
 
     const [intermediateValue, setIntermediateValue] = useState(initValue);
 
@@ -40,7 +40,7 @@ function Input({onC, initValue, size, userCss={}}) {
                      onKeyPress={handleKey}
                      size={size}
                      value={intermediateValue}
-                     css={userCss}
+                     style={newCss.current}
                      ref={inputElt}
               />
     );
