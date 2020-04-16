@@ -20,6 +20,7 @@ import Input from '../../components/Input.js';
 import ArrowGridOptions from '../../components/ArrowGridOptions.js';
 import SaveButton from '../../components/SaveButton.js';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
+import Button from '../../components/Button.js';
 
 import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
 import use2DAxes from '../../graphics/use2DAxes.js';
@@ -140,6 +141,13 @@ const initGridData = {
 const funcStr = 
       '(x^2+y^2)^3 - 4*x^2*y^2';
 
+
+// sombrero
+//'3*sin((3.14)*(x^2+y^2)^(1/2))/(3.14*(x^2+y^2)^(1/2))'
+
+//
+// 'y*(1-1/(x^2+y^2))'
+
 // shifted circle
 //'(x^2+y^2-x)/100-1';
 
@@ -153,7 +161,7 @@ const initState = {
              yMin: -quadSize, yMax: quadSize},
     funcStr,
     func: funcParser(funcStr),
-    approxH: .01
+    approxH: 1
 };
 
 const roundConst = 3;
@@ -200,7 +208,9 @@ export default function App() {
          
     const [state, setState] = useState(initState);
 
-    const [graphComps, setGraphComps] = useState(null);
+    const [showGraph, setShowGraph] = useState(false);
+    
+    const [graphComps, setGraphComps] = useState(null);    
     
     const [colors,] = useState(initColors);
 
@@ -238,7 +248,7 @@ export default function App() {
                 labelStyle });
 
     useEffect( () => {
-
+      
         setGraphComps(ImplicitFuncGraph({ func: state.func,
                                           bounds: state.bounds,
                                           approxH: state.approxH })
@@ -248,7 +258,7 @@ export default function App() {
 
     useEffect( () => {
 
-        if( !threeCBs ) return;
+        if( !showGraph || !threeCBs || graphComps.length === 0 ) return;
 
         const geom = CurvedPathGeom({ compArray: graphComps, radius: .02 });
 
@@ -262,52 +272,76 @@ export default function App() {
             
         };
         
-    }, [graphComps, threeCBs] );
+    }, [showGraph, graphComps, threeCBs] );
 
    
     const funcInputCB =  useCallback(
-        newFuncStr => setState(
-            ({ funcStr,func, ...rest }) => ({ funcStr: newFuncStr, func: funcParser(newFuncStr), ...rest }) ), [] );
+        newFuncStr => {
+
+            setState( ({ funcStr,func, ...rest }) =>
+                      ({ funcStr: newFuncStr, func: funcParser(newFuncStr), ...rest }) );
+
+            setShowGraph(false);
+        } , [] );
+
+    const buttonCB = useCallback( () => setShowGraph(true), [] );
    
     
-
-   
+    const css3 = useRef({
+        margin: 0,
+        width: '100%',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: '0em 2em',
+        alignContent: 'center',
+        alignItems: 'center'
+    });
+    
     const css4 = useRef({
         margin: 0,
         width: '100%',
-                position: 'relative',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                padding: '0em 2em',
-                alignContent: 'center',
-                alignItems: 'center',
-        borderLeft: '1px solid'}, []);
-
+        position: 'relative',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        padding: '0em 2em',
+        alignContent: 'center',
+        alignItems: 'center'});
+    
     const css5 = useRef({textAlign: 'center',
-                         width: '12em'}, []);
+                         width: '12em'});
 
-    const css6 = useRef({paddingTop: '.5em'}, []);
+    const css6 = useRef({paddingTop: '.5em'});
 
-    const css7 = useRef({textAlign: 'center'}, []);
+    const css7 = useRef({textAlign: 'center'});
 
-    const css8 = useRef({padding: '0em'}, []);
+    const css8 = useRef({padding: '0em'});
+
+    const css9 = useRef({margin: '0em 2em'});
     
     return (       
         <FullScreenBaseComponent backgroundColor={colors.controlBar}
                                  fonts={fontState}>
           
           <ControlBar height={cbhState} fontSize={fontSize*cbfsState} padding='0em'>
-           
-            <div style={css4.current}>
-              <div style={css5.current}>
-                Function:
+            <div style={css3.current}>
+              <div style={css4.current}>
+                <div style={css5.current}>
+                  Function:
+                </div>
+                <span style={css6.current}>
+                  <Input size={40}
+                         initValue={state.funcStr}
+                         onC={funcInputCB}/>
+                </span>
+                <Button userCss={css9.current}
+                        onClickFunc={buttonCB}>
+                Graph
+              </Button>
               </div>
-              <span style={css6.current}>
-                <Input size={20}
-                       initValue={state.funcStr}
-                       onC={funcInputCB}/>
-              </span>
+            
             </div>
           </ControlBar>
           
