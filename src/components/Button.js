@@ -46,7 +46,8 @@ function Button ({ children,
                     </span> );
     };
     
-    return ( <span style={abledCss.current}>                         
+    return ( <span style={abledCss.current}
+                   onClick={onClickFunc}>
                {children}
              </span> );
 }
