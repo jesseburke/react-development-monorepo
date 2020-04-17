@@ -87,7 +87,7 @@ const initControlsData = {
     touches: { ONE: THREE.MOUSE.PAN,
 	       TWO: THREE.TOUCH.DOLLY,
 	       THREE: THREE.MOUSE.ROTATE },
-    enableRotate: false,
+    enableRotate: true,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
@@ -198,7 +198,9 @@ function expandState({ b, fs, a }) {
             });    
 }
 
-const gridBounds = initState.bounds;
+const textureSize = 10;
+
+
 
 
 //------------------------------------------------------------------------
@@ -210,7 +212,9 @@ export default function App() {
 
     const [showGraph, setShowGraph] = useState(false);
     
-    const [graphComps, setGraphComps] = useState(null);    
+    const [graphComps, setGraphComps] = useState(null);
+
+    const [textureCanvas, setTextureCanvas] = useState(null);
     
     const [colors,] = useState(initColors);
 
@@ -235,9 +239,9 @@ export default function App() {
     // initial effects
 
     useGridAndOrigin({ threeCBs,
-		       bounds: gridBounds,
-		       show: initGridData.show,
-		       originRadius: .1 });
+    		       bounds: initState.bounds,
+    		       show: initGridData.show,
+    		       originRadius: .1 });
 
     use2DAxes({ threeCBs,
                 bounds: state.bounds,
@@ -248,31 +252,54 @@ export default function App() {
                 labelStyle });
 
     useEffect( () => {
-      
-        setGraphComps(ImplicitFuncGraph({ func: state.func,
-                                          bounds: state.bounds,
-                                          approxH: state.approxH })
-                      .map( a => a.map( ([x,y]) => new THREE.Vector3(x,y,0) ) ) );
 
-    }, [state.func, state.bounds, state.approxH]);
+        if( !showGraph ) {
+            setGraphComps(null);
+            setTextureCanvas(null);
+            return;
+        }
+        
+        const [compArray, textureCanvas] = ImplicitFuncGraph({ func: state.func,
+                                                               bounds: state.bounds,
+                                                               approxH: state.approxH });
+      
+        setGraphComps(compArray.map( a => a.map( ([x,y]) => new THREE.Vector3(x,y,0) ) ) );
+        setTextureCanvas(textureCanvas);
+
+    }, [showGraph, state.func, state.bounds, state.approxH]);
 
     useEffect( () => {
 
-        if( !showGraph || !threeCBs || graphComps.length === 0 ) return;
+        if( !threeCBs || !graphComps || graphComps.length === 0 ) return;
 
-        const geom = CurvedPathGeom({ compArray: graphComps, radius: .02 });
+        const curveGeom = CurvedPathGeom({ compArray: graphComps, radius: .02 });
+        const curveMesh = new THREE.Mesh( curveGeom, solutionMaterial );
+        //threeCBs.add(curveMesh);
 
-        const mesh = new THREE.Mesh( geom, solutionMaterial );
+        let planeGeom, planeTexture, planeMaterial, mesh;
+        
+        if( textureCanvas ) {
+            planeGeom = new THREE.PlaneGeometry( state.bounds.xMax - state.bounds.xMin,
+                                                 state.bounds.yMax - state.bounds.yMin );
+            planeTexture = new THREE.CanvasTexture( textureCanvas.canvas );
+            planeMaterial = new THREE.MeshBasicMaterial({ map: planeTexture });
 
-        threeCBs.add(mesh);
-
+            mesh = new THREE.Mesh( planeGeom, planeMaterial );
+            threeCBs.add(mesh);
+        }
+        
         return () => {
-            threeCBs.remove(mesh);
-            geom.dispose();
+            threeCBs.remove(curveMesh);
+            curveGeom.dispose();
+
+            if(mesh) threeCBs.remove(mesh);
+            if(planeGeom) planeGeom.dispose();
+            //if(planeTexture) planeTexture.dispose();
+            if(planeMaterial) planeMaterial.dispose();
             
         };
         
-    }, [showGraph, graphComps, threeCBs] );
+    }, [graphComps, state.bounds, textureCanvas, threeCBs] );
 
    
     const funcInputCB =  useCallback(

@@ -10,7 +10,20 @@ let xMin, xMax, yMin, yMax;
 //
 // func is a function of two variables
 
-export default function ImplicitFuncGraph({ func, bounds, approxH, c = 0 }) {
+export default function ImplicitFuncGraph({ func, bounds, approxH, gamma = 0, sideLength = 512 }) {
+
+    let graphArray = new Uint8Array( sideLength ** 2 );
+    
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.canvas.width = sideLength;
+    ctx.canvas.height = sideLength;
+
+    ctx.fillStyle = '#AAA';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.lineJoin = 'round';
+
+    ctx.fillStyle = 'rgb(200, 0, 0)';
+    ctx.fillRect(10, 10, 200, 200);
 
     xMin = bounds.xMin;
     xMax = bounds.xMax;
@@ -23,12 +36,18 @@ export default function ImplicitFuncGraph({ func, bounds, approxH, c = 0 }) {
     ptArray = [];
     sqArray = [];
 
+    let a = func(0,0) - gamma;
+    let b = func(0,approxH) - gamma;
+    let c, d;
+
     // initialize ptArray
     for( let j = 0; j <= Math.floor( (yMax - yMin)/approxH); j++ ) {
-
+	
 	for( let i = 0; i <= Math.floor( (xMax - xMin)/approxH); i++ ) {
 
-	    ptArray.push( round( func(i*approxH + xMin, yMax - j*approxH) - c, 3) );
+	    
+	    
+	    ptArray.push( round( func(i*approxH + xMin, yMax - j*approxH) - gamma, 3) );
 
 	}	
     }
@@ -81,7 +100,7 @@ export default function ImplicitFuncGraph({ func, bounds, approxH, c = 0 }) {
 	
     }
 
-    return compArray;
+    return [compArray, ctx];
     
 }
 
@@ -182,13 +201,13 @@ export function ptOnSide( sqIndex, side ) {
     f1 = ptArray[x1];
     f2 = ptArray[x2];
 
-    return lerpPts( coordsOfPt(x1), coordsOfPt(x2), f1, f2 );
+    return lerpCoords( coordsOfPt(x1), coordsOfPt(x2), f1, f2 );
 }
 
 // pt1 = [x1,y1], pt2 = [x2,y2]
 // fi is the value at pti to be lerped
 
-function lerpPts( pt1, pt2, f1, f2 ) {
+function lerpCoords( pt1, pt2, f1, f2 ) {
 
     const t = f2/(f2-f1);    
     
@@ -262,7 +281,7 @@ export function borderingSquare( sqIndex, side ) {
 // console.log( borderingSquare( 2, 't' ) ); // -1
 
 
-const sideArray = [
+const edgeArrays = [
     [], [['l','t']], [['l','b']], [['t','b']],
     [['b','r']], [['l','t'],['b','r']], [['l','r']], [['t','r']],
     [['t','r']], [['l','r']], [['l','b'], ['t','r']], [['b','r']],
@@ -273,7 +292,7 @@ export function nextSide( sqNum, side ) {
 
     let t = -1;
 
-    sideArray[sqNum].forEach( s => {
+    edgeArrays[sqNum].forEach( s => {
 
 	if( s[0] === side ) t = s[1];
 
