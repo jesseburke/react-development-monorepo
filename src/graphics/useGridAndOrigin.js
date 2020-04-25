@@ -32,12 +32,15 @@ export default function useGridAndOrigin({ threeCBs,
         const geometry = new THREE.SphereBufferGeometry( originRadius, 15, 15 );
         const material = new THREE.MeshBasicMaterial({ color: originColor });
 
-        const origin = new THREE.Mesh( geometry, material );
-        threeCBs.add( origin );      	
+	let origin;
+	if( originRadius > 0 ) {
+            origin = new THREE.Mesh( geometry, material );
+            threeCBs.add( origin );
+ 	}
         
         return () => {
             if( grid ) threeCBs.remove( grid );
-            threeCBs.remove( origin );
+            if( origin ) threeCBs.remove( origin );
             geometry.dispose();
             material.dispose();
         };
