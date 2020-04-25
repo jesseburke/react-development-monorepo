@@ -77,7 +77,7 @@ export default function useThreeScene({ canvasRef,
 
 	// the spread operator below, '...', makes the array into the three arguments expected
 	camera.current.up = new THREE.Vector3( ...cameraData.up );
-        camera.current.lookAt(0,0,0);
+        if( cameraData.lookAt ) camera.current.lookAt(...cameraData.lookAt);
         
         const color = 0xFFFFFF;
         let intensity = .5;
