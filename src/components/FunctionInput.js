@@ -4,7 +4,7 @@ import { jsx } from '@emotion/core';
 
 import Input from '../components/Input.js';
 
-import funcParser from '../utils/funcParser.js';
+import funcParser, {funcParserXT} from '../utils/funcParser.js';
 
 
 // changed:
@@ -13,7 +13,7 @@ import funcParser from '../utils/funcParser.js';
 // 2) changed default of totalWidth to be '20em'
 
 
-function functionInput({leftSideOfEquation,
+function FunctionInput({leftSideOfEquation,
                         onChangeFunc,
                         initFuncStr,
                         totalWidth='20em',
@@ -59,7 +59,57 @@ function functionInput({leftSideOfEquation,
     );
 }
 
-export default React.memo(functionInput);
+export default React.memo(FunctionInput);
+
+function functionInputXT({leftSideOfEquation,
+                        onChangeFunc,
+                        initFuncStr,
+                        totalWidth='20em',
+                        inputSize=25,
+                        userCss={}}) {   
+
+    //const [funcStr, setFuncStr] = React.useState(initFuncStr);
+
+    function handleChange(str) {
+        //console.log('functionInput.handleChange called with string value = ', str);
+
+        if( str.length === 0 ) {
+
+            onChangeFunc( null );
+            return;
+        }
+        
+        onChangeFunc(funcParserXT(str), str);
+    }
+
+    const css1 = useRef(Object.assign({
+            width: totalWidth,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center'
+            //border: '2px', borderStyle: 'dashed'
+    }, userCss), []);
+
+    const css2 = useRef({
+              padding: '.5em'
+    }, []);
+    
+    return (       
+        <span style={css1.current}>
+          <span  style={css2.current}>
+            {leftSideOfEquation}
+          </span>        
+          <Input size={inputSize}
+                 initValue={initFuncStr}
+                 onC={handleChange}/>
+        </span>
+    );
+}
+
+export const FunctionInputXT = React.memo(functionInputXT);
+
+
 
           //  <span  css={{
           //     padding: '.5em',             
