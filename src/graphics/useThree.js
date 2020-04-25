@@ -80,13 +80,18 @@ export default function useThreeScene({ canvasRef,
         camera.current.lookAt(0,0,0);
         
         const color = 0xFFFFFF;
-        const intensity = .5;
+        let intensity = .5;
         const light = new THREE.DirectionalLight(color, intensity);
 	light.position.set(-1000, 1000, 1000);
         scene.current.add(light);
 	const light1 = new THREE.DirectionalLight(color, intensity);
 	light1.position.set(1000, -1000, 1000);
         scene.current.add(light1);
+
+	
+	intensity = .5;
+	const light2 = new THREE.AmbientLight(color, intensity);
+	scene.current.add(light2);
 
 	// const light2 = new THREE.DirectionalLight(color, intensity);
 	// light2.position.set(1000, 1000, -1000);
