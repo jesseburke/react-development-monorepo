@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export default function use3DAxes({ threeCBs,
-				    length,
+				    bounds,
 				    radius = .05,
 				    color,
 				    show,
@@ -19,13 +19,17 @@ export default function use3DAxes({ threeCBs,
 				    })
 
 {
-    
+   
     useEffect( () => {
 
 	if( !threeCBs ) return;
 
+	const {xMin, xMax, yMin, yMax, zMin, zMax} = bounds;
+	
 	// this will hold axes and all adornments
 	const axesGroup = new THREE.Group();
+
+	let tickGeomArray = [];
 	
 	if( show ) {       
 		    
@@ -37,61 +41,64 @@ export default function use3DAxes({ threeCBs,
 
 	    const radiusTop = radius;
 	    const radiusBottom = radius;
-	    let height = 2*length;
+	    let height;
+	    
 	    let radialSegments = 8;
 	    let heightSegments = 40;
 	    let openEnded = true;   
 
-	    
+
+	    height = xMax - xMin;
 	    const xa = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
 							height, radialSegments,
 							heightSegments,
 							openEnded);
 	    xa.rotateZ(Math.PI/2);
-	    
+	    xa.translate((xMax+xMin)/2, 0, 0);
+
+	    for (let i = 0; i < height; i++) {
+		tickGeomArray.push(RawTickGeometry( radius*tickRadius)
+			       .translate( xMin + i, 0, 0));	
+	    }    
+
+	    height = yMax - yMin;
 	    const ya = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
 							height, radialSegments,
 							heightSegments,
 							openEnded);
+	    ya.translate(0, (yMax+yMin)/2, 0);
 
-	    const axesMaterial = new THREE.MeshBasicMaterial({color: color});
+	    for (let i = 0; i < height; i++) {
+		tickGeomArray.push(RawTickGeometry( radius*tickRadius)
+				   .translate( 0, yMin + i, 0 ));	
+	    }    
 
+
+
+	    height = zMax - zMin;
 	    const za = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
 							height, radialSegments,
 							heightSegments,
 							openEnded);
-	    za.rotateX(Math.PI/2);   
+	    za.translate(0, 0, (zMax+zMin)/2);
+	    za.rotateX(Math.PI/2);
 
+	    for (let i = 0; i < height; i++) {
+		tickGeomArray.push(RawTickGeometry( radius*tickRadius)
+				   .translate( 0, 0, zMin + i ));	
+	    }    
+
+
+	    const axesMaterial = new THREE.MeshBasicMaterial({color: color});
 	    axesGroup.add(new THREE.Mesh(xa, axesMaterial));
 	    axesGroup.add(new THREE.Mesh(ya, axesMaterial));
 	    axesGroup.add(new THREE.Mesh(za, axesMaterial));
+	  
 
-	    // make ticks now   
-
-	    let geomArray = [];
-
-	    for (let i = 1; i <= length; i++) {
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate( i, 0, 0));
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate(-i, 0, 0));
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate( 0, i, 0));
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate( 0,-i, 0));
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate( 0, 0, i));
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate( 0, 0,-i));    
-	    }    
-
-	    let axesGeom = BufferGeometryUtils.mergeBufferGeometries(
-		geomArray );
-
-	    // am not using tickColor right now
-	    const tickMaterial = new THREE.MeshBasicMaterial({color: color});
-	    
-	    axesGroup.add( new THREE.Mesh( axesGeom, tickMaterial ) );
+	    // am not using tickColor for now
+	    const tickGeom = BufferGeometryUtils.mergeBufferGeometries( tickGeomArray );
+	    const tickMaterial = new THREE.MeshBasicMaterial({color: color});	    
+	    axesGroup.add( new THREE.Mesh( tickGeom, tickMaterial ) );
 
 	    threeCBs.add( axesGroup );
 	}
@@ -102,27 +109,29 @@ export default function use3DAxes({ threeCBs,
 	    }
 	};
 	
-    }, [threeCBs, show, radius, length,
+    }, [threeCBs, show, radius, bounds,
 	radius, tickRadius, color] );
 
     useEffect( () => {
 
 	if( !threeCBs || !show || !showLabels ) return;
+
+	const {xMin, xMax, yMin, yMax, zMin, zMax} = bounds;
 	
 	let xLabelID; 
 	let yLabelID; 
 	let zLabelID;
 
 	
-        xLabelID = threeCBs.addLabel({ pos: [length, 0, 0],
+        xLabelID = threeCBs.addLabel({ pos: [xMax, 0, 0],
 				       text: xLabel,
 				       style: labelStyle });
 
-        yLabelID = threeCBs.addLabel({ pos: [0, length, 0],
+        yLabelID = threeCBs.addLabel({ pos: [0, yMax, 0],
                                        text: yLabel,
                                        style: labelStyle });
 
-        zLabelID = threeCBs.addLabel({ pos: [0, 0, length],
+        zLabelID = threeCBs.addLabel({ pos: [0, 0, zMax],
                                        text: zLabel,
                                        style: labelStyle });
 
@@ -149,7 +158,7 @@ export default function use3DAxes({ threeCBs,
 	    threeCBs.drawLabels();
 	};
 	
-    }, [threeCBs, show, showLabels, length, labelStyle] );
+    }, [threeCBs, show, showLabels, bounds, labelStyle] );
 
 };
 
