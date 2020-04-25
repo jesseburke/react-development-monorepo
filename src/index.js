@@ -25,9 +25,9 @@ import './style.css';
 
 //import App from './pages/df/App_combo.js';
 
-import App from './pages/implicitFunc/App.js';
+//import App from './pages/implicitFunc/App.js';
 
-//import App from './pages/fg/App_fg.js';
+import App from './pages/fg/App_fg.js';
 
 
 function main() {

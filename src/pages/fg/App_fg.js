@@ -97,7 +97,7 @@ const initState = {
     bounds: {xMin: -20, xMax: 20,
              yMin: -20, yMax: 20},
     funcStr: initFuncStr,
-    func: funcParser(initFuncStr),
+    func: funcParser(initFuncStr),    
     gridQuadSize: 40,
     gridShow: true,
     axesData: {show: true,
@@ -195,7 +195,7 @@ const labelStyle = {
 // in em's
 const optionsDrawerWidth = 20;
 
-const initOptionsOpen = true;
+const initOptionsOpen = false;
 
 
 //------------------------------------------------------------------------
@@ -374,7 +374,7 @@ export default function App() {
             <Button fontSize={initFontSize*percButton}
                     onClickFunc={useCallback( () => setShowOptsDrawer(o => !o), [] )} >
               <div >
-                <span css={{paddingRight: '1em'}}>Objects</span>
+                <span css={{paddingRight: '1em'}}>Options</span>
                 <span>{showOptsDrawer ?'\u{2B06}' : '\u{2B07}'} </span>
               </div>            
             </Button>
@@ -402,11 +402,7 @@ export default function App() {
                   useCallback( () => setShowCameraOpts(s => !s),[])}>
                 Camera
               </ListItem>
-              
-              <ListItem width={optionsDrawerWidth - 9} onClick={
-                  useCallback( () => setShowFuncOpts(s => !s),[])}>
-                Function graph
-              </ListItem>
+                           
               
             </RightDrawer>
             
