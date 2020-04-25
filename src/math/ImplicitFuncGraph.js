@@ -1,326 +1,233 @@
 
-import {round} from '../utils/BaseUtils.js';
-
-// global variables for this module
-let w,h;
-let ptArray = [], sqArray = [];
-let xMin, xMax, yMin, yMax;
+const squareBounds = (quadSize) => ({ xMin: -quadSize,
+				      xMax: quadSize,
+				      yMin: -quadSize,
+				      yMax: quadSize });
 
 
 //
 // func is a function of two variables
+// bounds = {xMin, xMax, yMin, yMax}
+// approxH is the grid size
+// g is the value of the level curve
+// sideLengthPx is the size of the canvas in pixels
 
-export default function ImplicitFuncGraph({ func, bounds, approxH, gamma = 0, sideLength = 512 }) {
+export default function ImplicitFuncGraph({ func, bounds, approxH, g = 0, sideLengthPx = 1024 }) {
 
-    let graphArray = new Uint8Array( sideLength ** 2 );
+    let {xMin, xMax, yMin, yMax} = bounds;   
+    
+    let xRange = xMax - xMin;
+    let yRange = yMax - yMin;
+    let range = xRange;
+    
+    if( xRange > yRange ) {
+
+	range = yRange;
+	const delta = (xRange - yRange)/2;
+	xMin = xMin + delta;
+	xMax = xMax - delta;
+    }
+
+    else if( yRange > xRange ) {
+
+	range = xRange;
+	const delta = (yRange - xRange)/2;
+	yMin = yMin + delta;
+	yMax = yMax - delta;	
+    }  
     
     const ctx = document.createElement('canvas').getContext('2d');
-    ctx.canvas.width = sideLength;
-    ctx.canvas.height = sideLength;
+    ctx.canvas.width = sideLengthPx;
+    ctx.canvas.height = sideLengthPx;
 
+    // gray background
     ctx.fillStyle = '#AAA';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.lineJoin = 'round';
 
-    ctx.fillStyle = 'rgb(200, 0, 0)';
-    ctx.fillRect(10, 10, 200, 200);
+    // changes canvas coordinates to bounds coordinates passed in
+    ctx.translate(0, ctx.canvas.height);
+    ctx.scale(1, -1);
+    ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2);
+    ctx.scale(sideLengthPx/range,sideLengthPx/range);
+    ctx.lineWidth = .05;
 
-    xMin = bounds.xMin;
-    xMax = bounds.xMax;
-    yMin = bounds.yMin;
-    yMax = bounds.yMax;
+    //------------------------------------------------------------------------
+    //
+    // draw curve
+    //
+    
+    const gridSize = approxH;
 
-    w = Math.floor((xMax-xMin)/approxH);
-    h = Math.floor((yMax-yMin)/approxH);
+    // square numbers are from https://en.wikipedia.org/w/index.php?title=Marching_squares&oldid=933213691
+    let drawFuncArray = [], t, s;
 
-    ptArray = [];
-    sqArray = [];
+    // assumes that b < 0 < a
+    const percHelp = (a,b) => a/(a-b);
 
-    let a = func(0,0) - gamma;
-    let b = func(0,approxH) - gamma;
-    let c, d;
+    drawFuncArray[0] = () => null;
+    
+    drawFuncArray[1] = (a,b,c,d,x,y) => {
+	t = percHelp( a, d );
+	ctx.moveTo(x, y + t*gridSize);
+	s = percHelp( a, b );
+	ctx.lineTo(x + s*gridSize, y);
+    };
+    
+    drawFuncArray[2] = (a,b,c,d,x,y) => {
+	t = percHelp( b, a );
+	ctx.moveTo(x + t*gridSize, y);
+	s = percHelp( b, c );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
+    };
+    
+    drawFuncArray[3] = (a,b,c,d,x,y) => {
+	t = percHelp( a, d );
+	ctx.moveTo(x,y + t*gridSize);
+	s = percHelp( b, c );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
+    };
 
-    // initialize ptArray
-    for( let j = 0; j <= Math.floor( (yMax - yMin)/approxH); j++ ) {
+    drawFuncArray[4] = (a,b,c,d,x,y) => {
+	t = percHelp( c, d );
+	ctx.moveTo(x + t*gridSize, y + gridSize);
+	s = percHelp( c, b );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
+    };
+
+    drawFuncArray[5] = (a,b,c,d,x,y) => {
+	t = percHelp( a, d );
+	ctx.moveTo(x, y + t*gridSize);
+	s = percHelp( c, d );
+	ctx.lineTo(x + s*gridSize, y + gridSize);
+
+	t = percHelp( a, b );
+	ctx.moveTo(x + t*gridSize, y);
+	s = percHelp( c, b );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
+    };
+
+    drawFuncArray[6] = (a,b,c,d,x,y) => {
+	t = percHelp( c, d );
+	ctx.moveTo(x + t*gridSize, y + gridSize);
+	s = percHelp( a, b );
+	ctx.lineTo(x + s*gridSize, y);
+    };
+
+    drawFuncArray[7] = (a,b,c,d,x,y) => {
+	t = a/(a-d);
+	ctx.moveTo(x, y + t*gridSize);
+	s = percHelp( c, d );
+	ctx.lineTo(x + s*gridSize, y + gridSize);
+    };
+
+    drawFuncArray[8] = (a,b,c,d,x,y) => {
+	t = d/(d-a);
+	ctx.moveTo(x, y + t*gridSize);
+	s = percHelp( d, c );
+	ctx.lineTo(x + s*gridSize, y + gridSize);
+    };
+
+    drawFuncArray[9] = (a,b,c,d,x,y) => {
+	t = percHelp( d, c );
+	ctx.moveTo(x + t*gridSize, y + gridSize);
+	s = percHelp( b, a );
+	ctx.lineTo(x + s*gridSize, y);
+    };
+
+    drawFuncArray[10] = (a,b,c,d,x,y) => {
+	t = percHelp( d, c );
+	ctx.moveTo(x + t*gridSize, y + gridSize);
+	s = percHelp( b, c );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
 	
-	for( let i = 0; i <= Math.floor( (xMax - xMin)/approxH); i++ ) {
+	t = percHelp( d, a );
+	ctx.moveTo(x, y + t*gridSize);
+	s = percHelp( b, a );
+	ctx.lineTo(x + s*gridSize, y);
+    };
 
+    drawFuncArray[11] = (a,b,c,d,x,y) => {
+	t = percHelp( d, c );
+	ctx.moveTo(x + t*gridSize, y + gridSize);
+	s = percHelp( b, c );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
+    };
+
+    drawFuncArray[12] = (a,b,c,d,x,y) => {
+	t = percHelp( d, c );
+	ctx.moveTo(x, y + t*gridSize);
+	s = percHelp( c, b );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
+    };
+
+    drawFuncArray[13] = (a,b,c,d,x,y) => {
+	t = percHelp( a, b );
+	ctx.moveTo(x + t*gridSize, y);
+	s = percHelp( c, b );
+	ctx.lineTo(x + gridSize, y + s*gridSize);
+    };
+
+    drawFuncArray[14] = (a,b,c,d,x,y) => {
+	t = percHelp( d, a );
+	ctx.moveTo(x, y + t*gridSize);
+	s = percHelp( b, a );
+	ctx.lineTo(x + s*gridSize, y);
+    };    
+    
+    drawFuncArray[15] = () => null;
+
+    const newDrawFuncArray = drawFuncArray.map( f => (
+	(a,b,c,d,x,y) => {
+	    ctx.beginPath();
+	    f(a,b,c,d,x,y);
+	    ctx.closePath();
+	    ctx.stroke();
+	} ) );
+    
+
+    let prevRow = [];
+
+    for( let i = 0; i <= Math.floor(range/gridSize); i++ )
+	prevRow[i] = func( xMin + i*gridSize, yMin );
+
+    let d;
+    let c = func( xMin, yMin + gridSize );
+    let a,b, sqNum;
+
+    const n = Math.floor(range/gridSize);
+
+    //ctx.beginPath();
+
+    for( let j = 0; j < n; j++  ) {
+
+	c = func( xMin, yMin + (j+1)*gridSize );
+
+	for( let i = 0; i < n; i++ ) {
 	    
-	    
-	    ptArray.push( round( func(i*approxH + xMin, yMax - j*approxH) - gamma, 3) );
+	    d = c;
+	    c = func( xMin + (i+1)*gridSize, yMin + (j+1)*gridSize );
+	    a = prevRow[i];
+	    b = prevRow[i+1];
 
-	}	
+	    sqNum = 0;
+
+	    if( a > g ) sqNum += 1;
+	    if( b > g ) sqNum += 2;
+	    if( c > g ) sqNum += 4;
+	    if( d > g ) sqNum += 8;
+
+	    newDrawFuncArray[sqNum](a,b,c,d, xMin + (i)*gridSize, yMin + j*gridSize);
+
+	    prevRow[i] = d;
+	}
+	prevRow[n] = c;
     }
 
-    // initial sqArray
-
-    let n, sqValue;
-
-    for( let a = 0; a < h; a++ ) {
-
-	for( let b = 0; b < w; b++ ) {
-
-	    n = a*w + b;
-	    sqValue = 0;
-	    
-	    // square vertices are valued 1, 2, 3, 4, starting in upper left and going cc.
-	    // assign a value to the square based on whether ptArray is positive or negative
-	    // at its four vertices
-	    //
-	    // this value will give the square type
-
-	    const [ul, ll, lr, ur] = vertsOfSq( n, w );
-	    // upper left
-	    sqValue += (ptArray[ul] >= 0) ? 1 : 0;
-	    // lower left
-	    sqValue += (ptArray[ll] >= 0) ? 2 : 0;
-	    // lower right
-	    sqValue += (ptArray[lr] >= 0) ? 4 : 0;
-	    // upper right
-	    sqValue += (ptArray[ur] >= 0) ? 8 : 0;
-
-	    sqArray[n] = sqValue;
-	}
-    }
-
-    let visitedArray = sqArray.slice();
-    let curComp, side, compArray = [];    
-
-    for( let i = 0; i < sqArray.length; i++ ) {
-
-	// check whether have already visited (=-1), or
-	// square has no line through it (=0 or 15)
-	//
-	if( visitedArray[i] <= 0 || visitedArray[i] === 15)
-	    continue;
-	
-	curComp = constructComp(i);
-	compArray.push(curComp.newPtArray);
-	curComp.visitedArray.forEach( (i) => visitedArray[i] = -1 );
-	
-    }
-
-    return [compArray, ctx];
+    //ctx.closePath();
+    //ctx.stroke();
     
-}
-
-
-function coordsOfPt( ptIndex ) {
-
-    // write sqIndex as a*w + b:
-    const a = Math.floor( ptIndex / (w+1) );
-    const b = ptIndex - a*(w+1);
-
-    return [b/w*(xMax - xMin) + xMin, yMax - (a/h)*(yMax - yMin)];    
-}
-
-
-function vertsOfSq( sqIndex ) {
-
-    // write sqIndex as a*w + b:
-    const a = Math.floor( sqIndex / w );
-    const b = sqIndex - a*w;
-
-    // tl, bl, br, tr
-    return [a*(w+1)+b, (a+1)*(w+1)+b, (a+1)*(w+1)+(b+1), a*(w+1)+(b+1)];	
-}
-
-
-// right now, if go out of bounds, end component; but really, should go back to inital
-// square, and start tracing in the other direction
-function constructComp( initialSq ) {
-
-    const initialSide = oneSide( sqArray[initialSq] );
-
-    // initialSq does not have a path through it
-    if( initialSide === -1 )
-	return null;    
+    return ctx;
     
-    let curSq = initialSq;
-    let sideA = initialSide;    
-
-    let newPtArray = [ptOnSide(curSq, sideA)], visitedArray = [curSq];
-
-    let sideB = nextSide(sqArray[curSq], sideA );
-    newPtArray.push( ptOnSide(curSq, sideB) );
-
-    // this is off; e.g., if sideB = 'r', this does not pass the test >= 0
-    while( !(sideB === -1)) {
-
-	curSq = borderingSquare(curSq, sideB);
-
-	// bordering square went out of bounds
-	if( curSq < 0 || curSq > sqArray.length ) {
-	    break;
-	}
-	
-	sideA = swap(sideB);
-	sideB = nextSide(sqArray[curSq], sideA);	
-	
-	// check whether arrived back where we started
-	if( (curSq === initialSq) && (sideA === initialSide) )
-	    break;
-
-	//newPtArray.push( ptOnSide(curSq, sideA) );
-	newPtArray.push( ptOnSide(curSq, sideB) );
-	visitedArray.push( curSq );
-	
-
-	// set curSq to be 
-	// if curSq is -1; if it is, we're done, so set curSide = -1;
-	// else, set curSide to be swap of curSide
-    }
-
-    return {newPtArray, visitedArray};
-}
-
-// test this by tracing inside function above
-export function ptOnSide( sqIndex, side ) {
-
-    let x1, x2, f1, f2;
-
-    switch( side ) {
-
-    case 'l':
-	[x1,x2,,] = vertsOfSq(sqIndex);	    
-	break;
-    
-    case 'r':
-	[,,x1,x2] = vertsOfSq(sqIndex);	
-	break;
-
-    case 't':
-	[x1,,,x2] = vertsOfSq(sqIndex);	
-	break;
-
-    case 'b':
-	[,x1,x2,] = vertsOfSq(sqIndex);	
-	break;
-    }
-
-    f1 = ptArray[x1];
-    f2 = ptArray[x2];
-
-    return lerpCoords( coordsOfPt(x1), coordsOfPt(x2), f1, f2 );
-}
-
-// pt1 = [x1,y1], pt2 = [x2,y2]
-// fi is the value at pti to be lerped
-
-function lerpCoords( pt1, pt2, f1, f2 ) {
-
-    const t = f2/(f2-f1);    
-    
-    return [pt1[0] + t*(pt2[0]-pt1[0]),
-	    pt1[1] + t*(pt2[1]-pt1[1])];    
-}
-
-function swap( side ) {
-
-     switch (side) {
-
-    case 'l':
-	return 'r';
-
-     case 'r':
-	 return 'l';
-
-     case 't':
-	 return 'b';
-
-     case 'b':
-	 return 't';
-     }
-
-    return -1;
-}
-
-
-export function borderingSquare( sqIndex, side ) {
-
-    switch (side) {
-
-    case 'l':
-	if( (sqIndex % w) > 0 ) {
-	    return sqIndex - 1;
-	}
-	return -1;
-	break;
-
-    case 'r':
-	if( (sqIndex % w) < w-1 ) {
-	    return sqIndex + 1;
-	}
-	return -1;
-	break;
-	
-    case 't':
-	if( sqIndex > w ) {
-	    return sqIndex - w;
-	}
-	return -1;
-	break;
-
-    case 'b':
-	if( sqIndex < (h-1)*w ) {
-	    return sqIndex + w;
-	}
-	return -1;
-	break;	
-    }
-
-    return -1;
-    
-}
-
-// test
-//
-// console.log( borderingSquare( 2, 'l' ) ); // 1
-// console.log( borderingSquare( 2, 'b' ) ); // 6
-// console.log( borderingSquare( 2, 'r' ) ); // 3
-// console.log( borderingSquare( 2, 't' ) ); // -1
-
-
-const edgeArrays = [
-    [], [['l','t']], [['l','b']], [['t','b']],
-    [['b','r']], [['l','t'],['b','r']], [['l','r']], [['t','r']],
-    [['t','r']], [['l','r']], [['l','b'], ['t','r']], [['b','r']],
-    [['t','b']], [['l','b']], [['l','t']], []
-];
-
-export function nextSide( sqNum, side ) {
-
-    let t = -1;
-
-    edgeArrays[sqNum].forEach( s => {
-
-	if( s[0] === side ) t = s[1];
-
-	else if( s[1] === side ) t = s[0];
-    });
-
-    return t;        
-}
-
-// test:
-//
-// console.log( nextSide( 0, 'l' ) ) = -1;
-// console.log( nextSide( 1, 'l' ) ) = t;
-// console.log( nextSide( 2, 'l' ) ) = b;
-
-
-// returns one side that has a line to it, given a square number
-function oneSide( sqNum ) {
-
-    if( ((sqNum % 4) === 1 ) || ((sqNum % 4) === 2 ) )
-	return 'l';
-
-    else if( (Math.floor(sqNum / 4) === 1 ) || (Math.floor(sqNum / 4) === 2 ) )
-	return 'r';
-    
-    else if( (sqNum === 12) || (sqNum === 3) )
-	return 't';
-
-    return -1;	
 }
 
