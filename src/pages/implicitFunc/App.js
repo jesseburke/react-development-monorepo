@@ -155,13 +155,13 @@ const funcStr =
 // (y^2-x^2)*(x-1)*(2*x-3)-4*(x^2+y^2-2*x)^2
 
 
-const quadSize = 10;
+const quadSize = 2;
 const initState = {
     bounds: {xMin: -quadSize, xMax: quadSize,
              yMin: -quadSize, yMax: quadSize},
     funcStr,
     func: funcParser(funcStr),
-    approxH: 1
+    approxH: .01
 };
 
 const roundConst = 3;
@@ -259,21 +259,21 @@ export default function App() {
             return;
         }
         
-        const [compArray, textureCanvas] = ImplicitFuncGraph({ func: state.func,
-                                                               bounds: state.bounds,
-                                                               approxH: state.approxH });
+        const textureCanvas = ImplicitFuncGraph({ func: state.func,
+                                                  bounds: state.bounds,
+                                                  approxH: state.approxH });
       
-        setGraphComps(compArray.map( a => a.map( ([x,y]) => new THREE.Vector3(x,y,0) ) ) );
+        //setGraphComps(compArray.map( a => a.map( ([x,y]) => new THREE.Vector3(x,y,0) ) ) );
         setTextureCanvas(textureCanvas);
 
     }, [showGraph, state.func, state.bounds, state.approxH]);
 
     useEffect( () => {
 
-        if( !threeCBs || !graphComps || graphComps.length === 0 ) return;
+        if( !threeCBs ) return; // || !graphComps || graphComps.length === 0 ) return;
 
-        const curveGeom = CurvedPathGeom({ compArray: graphComps, radius: .02 });
-        const curveMesh = new THREE.Mesh( curveGeom, solutionMaterial );
+        //const curveGeom = CurvedPathGeom({ compArray: graphComps, radius: .02 });
+        //const curveMesh = new THREE.Mesh( curveGeom, solutionMaterial );
         //threeCBs.add(curveMesh);
 
         let planeGeom, planeTexture, planeMaterial, mesh;
@@ -289,8 +289,8 @@ export default function App() {
         }
         
         return () => {
-            threeCBs.remove(curveMesh);
-            curveGeom.dispose();
+            //threeCBs.remove(curveMesh);
+            //curveGeom.dispose();
 
             if(mesh) threeCBs.remove(mesh);
             if(planeGeom) planeGeom.dispose();
@@ -299,7 +299,7 @@ export default function App() {
             
         };
         
-    }, [graphComps, state.bounds, textureCanvas, threeCBs] );
+    }, [state.bounds, textureCanvas, threeCBs] );
 
    
     const funcInputCB =  useCallback(
