@@ -23,7 +23,7 @@ function controlBar( {children, height, fontSize, padding='1em', userCss={}} ) {
             padding,
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
             alignItems: 'center',
             color: 'white',
             fontSize: fontSize.toString()+'em',
