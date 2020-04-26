@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 
+import './ThreeScene.css';
+
 import useThreeScene from '../graphics/useThree.js';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
@@ -116,20 +118,25 @@ function ThreeScene({
         addDragControls: ({meshArray, dragCB, dragendCB}) => threeScene.addDragControls({meshArray, dragCB, dragendCB})        
         
     }) );
+
+    const cssRef = useRef({
+        position: 'absolute',
+        width,
+        height,
+        outline: 'none',
+        display: 'block' });
     
     return (
-        <div ref={elt => containerRef.current = elt}
-          >       
+        <div className={'no-outline'}
+             ref={elt => containerRef.current = elt}
+        >       
           <canvas
-            css={{
-                position: 'absolute',
-                width,
-                height,
-                display: 'block'}}
+            css={cssRef.current}
             ref={elt => threeCanvasRef.current = elt}           
           />
           
-          <div ref={elt => labelContainerRef.current = elt}/>
+          <div className={'no-outline'}
+               ref={elt => labelContainerRef.current = elt}/>
           
         </div>);
 
