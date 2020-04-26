@@ -83,14 +83,9 @@ function functionInputAndBoundsXT({ leftSideOfEquation,
     }
 
     const funcCB = useCallback( (newFuncStr) =>
-                                setFuncStr( newFuncStr ), []);
-    const xMinCB = useCallback( (newXMinStr) => setBounds(
-        ({ xMin, ...rest }) =>
-            ({ xMin: Number(newXMinStr), ...rest }) ), []);  
+                                setFuncStr( newFuncStr ), []);   
     const xMaxCB = useCallback( (newXMaxStr) => setBounds(
         ({ xMax, ...rest }) => ({ xMax: Number(newXMaxStr), ...rest })), [] );
-    const tMinCB = useCallback( (newTMinStr) => setBounds(
-        ({ tMin, ...rest }) => ({ tMin: Number(newTMinStr), ...rest })), [] );
     const tMaxCB = useCallback( (newTMaxStr) => setBounds(
         ({ tMax, ...rest }) => ({ tMax: Number(newTMaxStr), ...rest })), [] );
                                                         
@@ -115,22 +110,17 @@ function functionInputAndBoundsXT({ leftSideOfEquation,
             
             <span className={'inside-container outside-container-item'}>
               <span className={'inside-container-item'}>
-                <Input size={bis}
-                       initValue={initBounds.xMin}
-                       onC={xMinCB}/>
+               
                 <span className={'text-item'}>
-                  {'\u{2264} x \u{2264}'}
+                  {'0 \u{2264} x \u{2264}'}
                 </span>
                 <Input size={bis}
                        initValue={initBounds.xMax}
                        onC={xMaxCB}/>
               </span>
-              <span className={'inside-container-item'}>
-                <Input size={bis}
-                       initValue={initBounds.tMin}
-                       onC={tMinCB}/>
+              <span className={'inside-container-item'}>               
                 <span className={'text-item'}>
-                  {'\u{2264} t \u{2264}'}
+                  {'0 \u{2264} t \u{2264}'}
                 </span>
                 <Input size={bis}
                        initValue={initBounds.tMax}
