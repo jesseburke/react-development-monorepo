@@ -1,10 +1,13 @@
-import React, {useRef} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 
 import { jsx } from '@emotion/core';
 
 import Input from '../components/Input.js';
+import Button from '../components/Button.js';
 
 import funcParser, {funcParserXT} from '../utils/funcParser.js';
+
+import styles from './FunctionAndBoundsInput.css';
 
 
 function FunctionAndBoundsInput({leftSideOfEquation,
@@ -43,7 +46,7 @@ function FunctionAndBoundsInput({leftSideOfEquation,
     
     return (       
         <span style={css1.current}>
-          <span  style={css2.current}>
+          <span className={styles['btn']}>
             {leftSideOfEquation}
           </span>        
           <Input size={inputSize}
@@ -55,58 +58,97 @@ function FunctionAndBoundsInput({leftSideOfEquation,
 
 export default React.memo(FunctionAndBoundsInput);
 
-function functionInputAndBoundsXT({leftSideOfEquation,
-                        onChangeFunc,
-                        initFuncStr,
-                        totalWidth='20em',
-                        inputSize=25,
-                        userCss={}}) {   
+// bis = bound input size
+const bis = 3;
 
-    //const [funcStr, setFuncStr] = React.useState(initFuncStr);
+function functionInputAndBoundsXT({ leftSideOfEquation,
+                                    onChangeFunc,
+                                    initFuncStr,
+                                    initBounds,
+                                    inputSize=25,
+                                    userCss={} })
+{   
 
-    function handleChange(str) {
-        //console.log('functionInput.handleChange called with string value = ', str);
+    const [bounds, setBounds] = useState( initBounds );
+    const [funcStr, setFuncStr] = useState( initFuncStr );
+    
+    function handleChange(str) {      
 
         if( str.length === 0 ) {
-
-            onChangeFunc( null );
+            //onChangeFunc( null );
             return;
         }
         
-        onChangeFunc(funcParserXT(str), str);
+        //onChangeFunc(funcParserXT(str), str);
     }
 
-    const css1 = useRef(Object.assign({
-            width: totalWidth,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center'
-            //border: '2px', borderStyle: 'dashed'
-    }, userCss), []);
-
-    const css2 = useRef({
-              padding: '.5em'
-    }, []);
+    const funcCB = useCallback( (newFuncStr) =>
+                                setFuncStr( newFuncStr ), []);
+    const xMinCB = useCallback( (newXMinStr) => setBounds(
+        ({ xMin, ...rest }) =>
+            ({ xMin: Number(newXMinStr), ...rest }) ), []);  
+    const xMaxCB = useCallback( (newXMaxStr) => setBounds(
+        ({ xMax, ...rest }) => ({ xMax: Number(newXMaxStr), ...rest })), [] );
+    const tMinCB = useCallback( (newTMinStr) => setBounds(
+        ({ tMin, ...rest }) => ({ tMin: Number(newTMinStr), ...rest })), [] );
+    const tMaxCB = useCallback( (newTMaxStr) => setBounds(
+        ({ tMax, ...rest }) => ({ tMax: Number(newTMaxStr), ...rest })), [] );
+                                                        
+                                                        
+                                                        
+    const graphButtonCB = useCallback( () => onChangeFunc( bounds, funcStr ), [bounds, funcStr] );
     
-    return (       
-        <span style={css1.current}>
-          <span  style={css2.current}>
-            {leftSideOfEquation}
-          </span>        
-          <Input size={inputSize}
-                 initValue={initFuncStr}
-                 onC={handleChange}/>
-        </span>
+    return (
+
+        <div className={'base'}>
+          
+          <div className={'outside-container base-item'}>          
+            <span className={'inside-container outside-container-item'}
+                  style={userCss}>
+              <span className={'left-side-equation'}>
+                {leftSideOfEquation}
+              </span>        
+              <Input size={inputSize}
+                     initValue={initFuncStr}
+                     onC={funcCB}/>
+            </span>
+            
+            <span className={'inside-container outside-container-item'}>
+              <span className={'inside-container-item'}>
+                <Input size={bis}
+                       initValue={initBounds.xMin}
+                       onC={xMinCB}/>
+                <span className={'text-item'}>
+                  {'\u{2264} x \u{2264}'}
+                </span>
+                <Input size={bis}
+                       initValue={initBounds.xMax}
+                       onC={xMaxCB}/>
+              </span>
+              <span className={'inside-container-item'}>
+                <Input size={bis}
+                       initValue={initBounds.tMin}
+                       onC={tMinCB}/>
+                <span className={'text-item'}>
+                  {'\u{2264} t \u{2264}'}
+                </span>
+                <Input size={bis}
+                       initValue={initBounds.tMax}
+                       onC={tMaxCB}/>
+              </span>         
+            </span>          
+          </div>
+
+          <button type={'button'}
+                  className={'base-item button'}
+                  onClick={graphButtonCB}>
+            Graph
+          </button>
+
+        </div>
     );
 }
 
 export const FunctionAndBoundsInputXT = React.memo(functionInputAndBoundsXT);
 
 
-
-          //  <span  css={{
-          //     padding: '.5em',             
-          // }}>
-          //    {'\u{1F4AC}'}
-          // </span>        
