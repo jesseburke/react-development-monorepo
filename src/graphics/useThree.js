@@ -77,8 +77,7 @@ export default function useThreeScene({ canvasRef,
 
 	// the spread operator below, '...', makes the array into the three arguments expected
 	camera.current.up = new THREE.Vector3( ...cameraData.up );
-        if( cameraData.lookAt ) camera.current.lookAt(...cameraData.lookAt);
-        
+       
         const color = 0xFFFFFF;
         let intensity = .5;
         const light = new THREE.DirectionalLight(color, intensity);
@@ -147,7 +146,7 @@ export default function useThreeScene({ canvasRef,
 	controls.current = new OrbitControls( camera.current, canvasRef.current );
 
 	// adds all properties of controlsData to controls.current
-	controls.current = Object.assign( controls.current, controlsData );
+	controls.current = Object.assign( controls.current, controlsData );	
 
 	controls.current.update();	
     	controls.current.addEventListener('change', () => {            
@@ -526,12 +525,14 @@ export default function useThreeScene({ canvasRef,
 	return controls.dispose;
 	
     }
+
+    const getControlsTarget = () => controls.current.target;
 	
 
     return {add, remove, render, controlsPubSub: controlsPubSub.current,
 	    addLabel, removeLabel, drawLabels, setCameraPosition, setCameraLookAt,
 	    exportGLTF, downloadGLTF, getCamera, screenToWorldCoords,
-	    getMouseCoords, resetControls, changeControls,
+	    getMouseCoords, resetControls, changeControls, getControlsTarget,
 	   addDragControls};
     
 }

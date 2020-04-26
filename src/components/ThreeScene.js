@@ -96,6 +96,8 @@ function ThreeScene({
 
         changeControls: (newControlsData) => threeScene.changeControls( newControlsData ),
 
+        getControlsTarget: () => threeScene.getControlsTarget(),
+
         downloadGLTF: (fileName) => threeScene.downloadGLTF( fileName ),
 
         // labelObj = {pos, text, style}
@@ -171,6 +173,8 @@ export function useThreeCBs( threeRef ) {
         const changeControls = (newControlsData) =>
               threeRef.current.changeControls(newControlsData);
 
+        const getControlsTarget = () => threeRef.current.getControlsTarget();
+
         const downloadGLTF = (filename) => threeRef.current.downloadGLTF(filename);
 
         const addLabel = (labelObj) => threeRef.current.addLabel(labelObj);           
@@ -184,7 +188,7 @@ export function useThreeCBs( threeRef ) {
         
         setThreeCBs({ getCanvas, getCamera, setCameraPosition, setCameraLookAt, getMouseCoords,
                       add, remove, render,
-                      resetControls, changeControls,
+                      resetControls, changeControls, getControlsTarget,
                       downloadGLTF, screenToWorldCoords, 
                       addLabel, removeLabel, drawLabels,
                       addDragControls});
