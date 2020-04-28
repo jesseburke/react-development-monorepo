@@ -2,3 +2,18 @@
 .no-outline {    
     outline: none;
 }
+
+.container {    
+    position: absolute;
+    outline: 'none';
+    display: 'block';
+}
+
+.canvas {    
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    outline: 'none';
+    display: 'block';
+}
+

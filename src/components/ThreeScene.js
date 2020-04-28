@@ -33,7 +33,7 @@ function ThreeScene({
     const containerRef = useRef(null);   
     const threeCanvasRef = useRef(null);   
     const labelContainerRef = useRef(null);
-        
+    
     const [threeScene, setThreeScene] = useState(
         useThreeScene({
             canvasRef: threeCanvasRef,
@@ -66,7 +66,7 @@ function ThreeScene({
             threeScene.add(mesh);
             threeScene.render();
         },
-       
+        
         remove: (mesh) => {
             threeScene.remove(mesh);
             threeScene.render();
@@ -83,7 +83,7 @@ function ThreeScene({
         },
 
         // pos is a three entry array representing a point
-         setCameraLookAt: (pos) => {
+        setCameraLookAt: (pos) => {
             threeScene.setCameraLookAt(pos);
         },
         
@@ -120,18 +120,17 @@ function ThreeScene({
     }) );
 
     const cssRef = useRef({
-        position: 'absolute',
         width,
         height,
-        outline: 'none',
-        display: 'block' });
+    });
+
     
     return (
-        <div className={'no-outline'}
+        <div css={cssRef.current}  className={'container no-outline'}
              ref={elt => containerRef.current = elt}
         >       
           <canvas
-            css={cssRef.current}
+            className={'canvas no-outline'} 
             ref={elt => threeCanvasRef.current = elt}           
           />
           
@@ -147,7 +146,7 @@ export const ThreeSceneComp = React.memo(React.forwardRef(ThreeScene));
 export function useThreeCBs( threeRef ) {    
 
     const [threeCBs, setThreeCBs] = useState(null);
-       
+    
     useEffect( () => {
 
         if(!threeRef.current) return;
