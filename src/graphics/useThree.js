@@ -255,7 +255,7 @@ export default function useThreeScene({ canvasRef,
     // pos = array of three numbers
     // test = string
     // style = axesLabelStyle    
-    function addLabel( {pos,
+    function addLabel({ pos,
 			text,
 			style = {
 			    backgroundColor:  'white',
@@ -263,10 +263,11 @@ export default function useThreeScene({ canvasRef,
 			    color: 'black',
 			    padding: 0,
 			    margin: 0,        
-			    fontSize: '1em'
-			} } )
+			    fontSize: '1em' },
+			anchor = 'ul'
+		      })
     {
-	threeLabelData.current[labelCounter.current] = {pos, text, style};
+	threeLabelData.current[labelCounter.current] = {pos, text, style, anchor};
 	labelCounter.current++;
 	return labelCounter.current;
     }
@@ -304,12 +305,15 @@ export default function useThreeScene({ canvasRef,
 		htmlLabelData.current[key].text = threeLabelData.current[key].text;
 		htmlLabelData.current[key].style = threeLabelData.current[key].style;
 		htmlLabelData.current[key].pos = [x, y];
+		htmlLabelData.current[key].anchor = threeLabelData.current[key].anchor;
 	    }
 	}
 
 	let workingDiv;
 	let labelClass;
 	let curStyleString;
+	let anchor;
+	let temp;
 	
 	for (let key in htmlLabelData.current) {
 	    
@@ -317,7 +321,12 @@ export default function useThreeScene({ canvasRef,
 	    workingDiv.textContent = htmlLabelData.current[key].text;
 	    
 	    curStyleString = htmlLabelData.current[key].style;
-	    labelClass = css`
+	    anchor = htmlLabelData.current[key].anchor;
+
+	    switch( anchor ) {
+
+	    case 'ul':		
+		labelClass = css`
                     background-color: ${curStyleString.backgroundColor};                  
                     border: ${curStyleString.border};
                     color: ${curStyleString.color};             
@@ -328,7 +337,65 @@ export default function useThreeScene({ canvasRef,
                     left: ${htmlLabelData.current[key].pos[0]}px;
                     top: ${htmlLabelData.current[key].pos[1]}px;
                     font-size: ${curStyleString.fontSize}`;
+		break;
+	
+	    case 'ur':	
+		labelClass = css`
+                    background-color: ${curStyleString.backgroundColor};                  
+                    border: ${curStyleString.border};
+                    color: ${curStyleString.color};             
+                    padding: ${curStyleString.padding};
+                    position: absolute;
+                    margin: 0;        
+                    user-select: none;
+                    right: ${width.current - htmlLabelData.current[key].pos[0]}px;
+                    top: ${htmlLabelData.current[key].pos[1]}px;
+                    font-size: ${curStyleString.fontSize}`;	
+		break;
 
+	    case 'mr':	
+		labelClass = css`
+                    background-color: ${curStyleString.backgroundColor};                  
+                    border: ${curStyleString.border};
+                    color: ${curStyleString.color};             
+                    padding: ${curStyleString.padding};
+                    position: absolute;
+                    margin: 0;        
+                    user-select: none;
+                    right: ${width.current - htmlLabelData.current[key].pos[0]}px;
+                    top: ${htmlLabelData.current[key].pos[1]}px;
+                    font-size: ${curStyleString.fontSize}`;	
+		break;
+
+	    case 'lr':		
+		labelClass = css`
+                    background-color: ${curStyleString.backgroundColor};                  
+                    border: ${curStyleString.border};
+                    color: ${curStyleString.color};             
+                    padding: ${curStyleString.padding};
+                    position: absolute;
+                    margin: 0;        
+                    user-select: none;
+                    right: ${width.current - htmlLabelData.current[key].pos[0]}px;
+                    bottom: ${height.current - htmlLabelData.current[key].pos[1]}px;
+                    font-size: ${curStyleString.fontSize}`;
+		break;
+
+	    case 'll':		
+		labelClass = css`
+                    background-color: ${curStyleString.backgroundColor};                  
+                    border: ${curStyleString.border};
+                    color: ${curStyleString.color};             
+                    padding: ${curStyleString.padding};
+                    position: absolute;
+                    margin: 0;        
+                    user-select: none;
+                    left: ${htmlLabelData.current[key].pos[0]}px;
+                    bottom: ${htmlLabelData.current[key].pos[1]}px;
+                    font-size: ${curStyleString.fontSize}`;
+		break;
+	    }
+		
 	    
 	    workingDiv.classList.add( labelClass );
 	    
