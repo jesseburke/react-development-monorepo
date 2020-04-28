@@ -125,14 +125,17 @@ export default function use3DAxes({ threeCBs,
 	
         xLabelID = threeCBs.addLabel({ pos: [xMax, 0, 0],
 				       text: xLabel,
+				       anchor: 'lr',
 				       style: labelStyle });
 
         yLabelID = threeCBs.addLabel({ pos: [0, yMax, 0],
                                        text: yLabel,
+				       anchor: 'lr',
                                        style: labelStyle });
 
         zLabelID = threeCBs.addLabel({ pos: [0, 0, zMax],
                                        text: zLabel,
+				        anchor: 'lr',
                                        style: labelStyle });
 
 	threeCBs.drawLabels();
