@@ -25,8 +25,9 @@ function Slider({value,
 	           onChange={cb}//(e) => CB(e.target.value)}
 	           min={min} max={max}
             />
+              <br/>
               <label  style={css1.current}
-                    htmlFor="range_n">{label + ' = ' + value.toPrecision(precision)}</label>
+                      htmlFor="range_n">{label + ' = ' + value.toPrecision(precision)}</label>
           </div>);
 }
 
