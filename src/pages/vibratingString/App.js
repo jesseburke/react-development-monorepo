@@ -1,33 +1,37 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import {Helmet} from 'react-helmet';
-
-import { jsx } from '@emotion/core';
-
-import queryString from 'query-string';
 
 import * as THREE from 'three';
 
-import {Button} from '@jesseburke/basic-react-components';
-import {Modal} from '@jesseburke/basic-react-components';
+import gsap from 'gsap';
+
+import {Helmet} from 'react-helmet';
+import queryString from 'query-string';
+
+import './App.css';
+
 import {ConditionalDisplay} from '@jesseburke/basic-react-components';
 
 import ControlBar from '../../components/ControlBar.js';
 import Main from '../../components/Main.js';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
 import {ThreeSceneComp, useThreeCBs} from '../../components/ThreeScene.js';
-import FunctionInput from '../../components/FunctionInput.js';
+import {FunctionAndBoundsInputXT as FunctionAndBoundsInput} from '../../components/FunctionAndBoundsInput.js';
 import FunctionOptions from '../../components/FunctionOptions.js';
 import CoordinateOptions from '../../components/CoordinateOptions.js';
 import CameraOptions from '../../components/CameraOptions.js';
 import ResetCameraButton from '../../components/ResetCameraButton.js';
 import RightDrawer from '../../components/RightDrawer.js';
 import SaveButton from '../../components/SaveButton.js';
+import Slider from '../../components/Slider.js';
 
 import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
 import use3DAxes from '../../graphics/use3DAxes.js';
 import FunctionGraph3DGeom from '../../graphics/FunctionGraph3DGeom.js';
+import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.js';
 
-import funcParser from '../../utils/funcParser.js';
+import FunctionGraphPts2D from '../../math/FunctionGraphPts2D.js';
+
+import {funcParserXT as funcParser} from '../../utils/funcParser.js';
 import {round} from '../../utils/BaseUtils.js';
 
 //------------------------------------------------------------------------
@@ -37,73 +41,38 @@ import {round} from '../../utils/BaseUtils.js';
 
 const initColors = {
     arrows: '#C2374F',
-    solution: '#C2374F',
-    firstPt: '#C2374F',
-    secPt: '#C2374F',
-    testFunc: '#E16962',//#DBBBB0',
-    axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
+    plane: '#82BFCD',
+    axes:  '#181A2A',//0A2C3C',
+    controlBar: '#181A2A',//0A2C3C',
     clearColor: '#f0f0f0',
     funcGraph: '#E53935'
 };
 
 
-const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
-    touches: { ONE: THREE.MOUSE.PAN,
-	       TWO: THREE.TOUCH.DOLLY,
-	       THREE: THREE.MOUSE.ROTATE },
-    enableRotate: true,
-    enablePan: true,
-    enabled: true,
-    keyPanSpeed: 50,
-    screenSpaceSpanning: false};
-
-
-const solutionMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color( initColors.solution ),
-    side: THREE.FrontSide });
-
-solutionMaterial.transparent = true;
-solutionMaterial.opacity = .6;
 
 const solutionCurveRadius = .1;
-
-const pointMaterial = solutionMaterial.clone();
-pointMaterial.transparent = false;
-pointMaterial.opacity = .8;
-
-const testFuncMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color( initColors.testFunc ),
-    side: THREE.FrontSide });
-
-testFuncMaterial.transparent = true;
-testFuncMaterial.opacity = .6;
-
-const testFuncRadius = .1;
-
-const testFuncH = .01;
 
 const dragDebounceTime = 5;
 
 
-const initFuncStr = 'x*y*sin(x+y)/10';
-const testFuncStr = 'sin(2*x)+1.5*sin(x)';        
+const initFuncStr = '2*e^(-(x-t)^2)';
 
-const initCameraData =  {position: [40, 40, 40],
+const initBounds = {xMin: 0, xMax: 40,
+                    tMin: 0, tMax: 40 };
+
+// it's assumed xMin and tMin are zero; it's handy to keep them around to not break things
+const xLength = initBounds.xMax;
+const tLength = initBounds.tMax;
+
+const initCameraData =  {position: [(15.7/20)*xLength, -(13.1/20)*tLength, 9.79],//[40, 40, 40],                        
                          up: [0, 0, 1]};
 
+
 const initState = {
-    bounds: {xMin: -20, xMax: 20,
-             yMin: -20, yMax: 20},
+    bounds: initBounds,
     funcStr: initFuncStr,
-    func: funcParser(initFuncStr),    
-    gridQuadSize: 40,
+    func: funcParser(initFuncStr),     
     gridShow: true,
-    axesData: {show: true,
-               showLabels: true,
-               length: 40,
-               radius: .05},
     cameraData: Object.assign({},initCameraData)
 };
 
@@ -159,23 +128,28 @@ function expandState({ b, fs, gqs, gs, as, sl, l, r, cp, cu }) {
             });    
 }
 
-
-const initFuncGraphData = {
-    func: funcParser(initFuncStr),
-    xMin: -20,
-    xMax: 20,
-    yMin: -20,
-    yMax: 20,
-    meshSize: 100,
-    color: initColors.funcGraph
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
+    touches: { ONE: THREE.MOUSE.PAN,
+	       TWO: THREE.TOUCH.DOLLY,
+	       THREE: THREE.MOUSE.ROTATE },
+    enableRotate: true,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false,
+    target: new THREE.Vector3( (initBounds.xMax - initBounds.xMin)*(10.15/20),
+                               (initBounds.tMax - initBounds.tMin)*(4.39/20),
+                               0 )
 };
+
 
 
 const fonts = "'Helvetica', 'Hind', sans-serif";
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
-const controlBarHeight = 10;
+const controlBarHeight = 15;
 
 // (relative) font sizes (first in em's)
 const initFontSize = 1;
@@ -184,18 +158,37 @@ const percButton = .85;
 const percDrawer = .85;
 
 const labelStyle = {
-    color: 'black',
+    color: initColors.controlBar,
     padding: '.1em',
-    margin: '.5em',
-    padding: '.4em',
-    fontSize: '1.5em'
+    margin: '0em',
+    padding: '.15em',
+    fontSize: '1.25em'
 };
+
+
+const axesData  = {show: true,
+                   showLabels: true,
+                   length: 50,
+                   radius: .05};
+
+const overhang = 5;
+const zLength = 5;
 
 
 // in em's
 const optionsDrawerWidth = 20;
 
 const initOptionsOpen = false;
+
+// what percentage of the horizontal window the threeScene fills
+const initThreeWidth = 50;
+
+const initTimeH = .1;
+
+const animConst = .1;
+
+// time it takes (in secs) to animate 0 \leq t \leq 10
+const animTime10T = .8;
 
 
 //------------------------------------------------------------------------
@@ -204,35 +197,50 @@ export default function App() {
 
     const [state, setState] = useState(Object.assign({}, initState));    
 
-    const [colors, setColors] = useState( initColors );    
+    const [colors, setColors] = useState( initColors );
+
+    const [t0, setT0] = useState( 0 );
+
+    const [planeMesh, setPlaneMesh] = useState( null );
+
+    const [timeH, setTimeH] = useState( initTimeH );
+
+    const [paused, setPaused] = useState( true );
+
+    const [timeline, setTimeline] = useState( null );
+
+    const [threeWidth, setThreeWidth]= useState( initThreeWidth );
 
     const threeSceneRef = useRef(null);
+    const canvasRef = useRef(null);
 
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs( threeSceneRef );    
-
-    // determine whether various UI elements are drawn
-    const [showOptsDrawer, setShowOptsDrawer] = useState(initOptionsOpen);
-    const [showCameraOpts, setShowCameraOpts] = useState(false);
-    const [showCoordOpts, setShowCoordOpts] = useState(false);
-    const [showFuncOpts, setShowFuncOpts] = useState(false);
-
+     
     
     //------------------------------------------------------------------------
     //
     // init effects
 
     useGridAndOrigin({ threeCBs,
-                       gridQuadSize: state.gridQuadSize,
+                       gridQuadSize: axesData.length,
                        gridShow: state.gridShow,
-                       originRadius: .1 });
+                       originRadius: 0,
+                       center: [ axesData.length - overhang,
+                                 axesData.length - overhang ] });
 
     use3DAxes({ threeCBs,
-                length: state.axesData.length,
-                radius: state.axesData.radius,
-                show: state.axesData.show,
-                showLabels: state.axesData.showLabels,
+                bounds: { xMin: -overhang,
+                          xMax: axesData.length-5,
+                          yMin: -overhang,
+                          yMax: axesData.length-5,
+                          zMin: -zLength,
+                          zMax: zLength },
+                radius: axesData.radius,
+                show: axesData.show,
+                showLabels: axesData.showLabels,
                 labelStyle,
+                yLabel: 't',
                 color: initColors.axes});
 
      //------------------------------------------------------------------------
@@ -283,6 +291,76 @@ export default function App() {
 
     //------------------------------------------------------------------------
     //
+    // plane mesh
+
+    useEffect( ()  => {
+
+        if( !threeCBs ) return;
+
+        const material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color( initColors.plane ),
+            side: THREE.DoubleSide });
+
+        material.transparent = true;
+        material.opacity = .6;
+        material.shininess = 0;
+
+        const geometry = new THREE.PlaneGeometry( state.bounds.xMax + overhang,
+                                                  2*zLength );
+        geometry.rotateX(Math.PI/2);
+        geometry.translate(state.bounds.xMax/2, 0, 0);
+            
+        const mesh = new THREE.Mesh( geometry, material );
+        threeCBs.add( mesh );
+        setPlaneMesh( mesh );
+
+        return () => {
+            threeCBs.remove( mesh );
+            geometry.dispose();
+            material.dispose();
+        };
+        
+    }, [threeCBs, state.bounds.xMax] );
+
+    const oldT0 = useRef( t0 );
+
+    useEffect( () => {
+        
+        if( !planeMesh ) {
+            oldT0.current = t0;
+            return;
+        }
+
+        planeMesh.translateY( t0 - oldT0.current );
+        oldT0.current = t0;
+
+    }, [t0, planeMesh] );
+
+
+    //------------------------------------------------------------------------
+    //
+    // animation
+   
+    // when pause changes, change the timeline
+    useEffect( () => {
+
+        if( paused ) {
+            if(timeline) timeline.pause();
+            setTimeline( null );
+            return;
+        }
+        
+        const newTl = animFactory({ startTime: t0/state.bounds.tMax,
+                                    duration: animTime10T*state.bounds.tMax/10,
+                                    updateCB: (t) => setT0( t*state.bounds.tMax ) });        
+        setTimeline( newTl );
+        
+    }, [paused] );
+
+   
+
+    //------------------------------------------------------------------------
+    //
     // funcGraph effect
     
     useEffect( ()  => {
@@ -290,7 +368,11 @@ export default function App() {
         if( !threeCBs ) return;
 
         const geometry = FunctionGraph3DGeom({ func: state.func,
-                                               bounds: state.bounds });
+                                               bounds: {...state.bounds,
+                                                        yMin: state.bounds.tMin,
+                                                        yMax: state.bounds.tMax},
+                                               meshSize: 200 });
+        
         const material = new THREE.MeshPhongMaterial({ color: initColors.funcGraph,
                                                        side: THREE.DoubleSide });
         material.shininess = 0;
@@ -307,25 +389,73 @@ export default function App() {
         
     }, [threeCBs, state.func, state.bounds] );
 
+    //------------------------------------------------------------------------
+    //
+    // draw on canvas
+
+    const ctx = useRef(null);
+
+    useEffect( () => {
+
+        if( !canvasRef.current ) return;
+
+        ctx.current = canvasRef.current.getContext('2d');
+        ctx.current.fillStyle = initColors.clearColor;//'#AAA';
+        ctx.current.fillRect(0, 0,
+                             ctx.current.canvas.width, ctx.current.canvas.height);
+        ctx.current.lineJoin = 'round';       
+
+    }, [canvasRef] );
+
+    useEffect( () => {
+
+        if( !canvasRef.current ) return;
+
+        ctx.current.fillStyle = initColors.clearColor;//'#AAA';
+        ctx.current.fillRect(0, 0,
+                             ctx.current.canvas.width, ctx.current.canvas.height);
+
+        const compArray = FunctionGraphPts2D({ func: (x) => state.func(x,t0),
+                                               bounds: {xMin: 0,
+                                                        xMax: state.bounds.xMax,
+                                                        yMin: -zLength,
+                                                        yMax: zLength} });
+        
+        
+        CurvedPathCanvas({ compArray,
+                           bounds: {...state.bounds,
+                                    zMax: zLength,
+                                    zMin: -zLength},
+                           ctx: canvasRef.current.getContext('2d') });
+        
+
+    }, [state.bounds.xMax, t0, state.func, canvasRef] );
+
 
     //------------------------------------------------------------------------
     //
     // callbacks  
 
-    const funcInputCB = useCallback( (newFunc, newFuncStr) => {
-        setState( ({func, funcStr, ...rest}) => ({func: newFunc,
-                                                  funcStr: newFuncStr,
-                                                  ...rest}) );
-    }, [] );      
+    const funcAndBoundsInputCB = useCallback( (newBounds, newFuncStr) => {
+        setState( ({bounds, func, funcStr, ...rest}) =>
+                  ({ funcStr: newFuncStr,
+                     func: funcParser( funcStr ),
+                     bounds: newBounds,
+                     ...rest}) );
+    }, [] );
+
+    const sliderCB = useCallback( (newT0Str) => setT0( Number(newT0Str) ), []);
 
     const controlsCB = useCallback( (position) => {       
-        setState( ({cameraData, ...rest}) => ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
+        setState( ({cameraData, ...rest}) =>
+                  ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
     }, [] );
 
     const cameraChangeCB = useCallback( (position) => {
 
         if( position ) {
-            setState( ({cameraData, ...rest}) => ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
+            setState( ({cameraData, ...rest}) =>
+                      ({cameraData:Object.assign(cameraData, {position}), ...rest}) );        
         }
 
         if(!threeCBs) return;                
@@ -338,164 +468,93 @@ export default function App() {
     const resetCameraCB = useCallback( () => {
 
         if( !threeCBs ) return;
-
-        setState( ({cameraData, ...rest}) => ({cameraData:Object.assign({},initCameraData), ...rest}) );    
+        console.log(state.cameraData.position);
+        console.log(threeCBs.getControlsTarget());	
+        setState( ({cameraData, ...rest}) =>
+                  ({cameraData:Object.assign({},initCameraData), ...rest}) );    
         threeCBs.setCameraPosition( initCameraData.position );
         
     }, [threeCBs] );
 
-    const gridCB =  useCallback( ({quadSize, show})  =>
-                                 setState( ({gridQuadSize, gridShow, ...rest}) =>
-                                           ({gridQuadSize: quadSize,
-                                             gridShow: show,
-                                             ...rest}) ),
-                                 []);
-
-    const axesCB = useCallback(  newAxesData => {
-	        setState(({ axesData, ...rest }) => ({axesData: newAxesData, ...rest}));
-    },[]);
-
+    const pauseCB = useCallback( () => setPaused( p => !p ), [] );
     
     return (       
         <FullScreenBaseComponent backgroundColor={colors.controlBar}
                                  fonts={fonts}>
           <Helmet>
+            <title>Vibrating string</title>
                 <meta name="viewport" content="width=device-width, user-scalable=no" />
           </Helmet>
           
           <ControlBar height={controlBarHeight} fontSize={initFontSize*percControlBar}>
-            <span css={{
-                paddingLeft: '30%',
-                paddingRight: '10%' }}>             
-	      <FunctionInput onChangeFunc={funcInputCB}
-                             initFuncStr={state.funcStr}
-                             leftSideOfEquation="f(x,y) ="/>  
-            </span>
-            <Button fontSize={initFontSize*percButton}
-                    onClickFunc={useCallback( () => setShowOptsDrawer(o => !o), [] )} >
-              <div >
-                <span css={{paddingRight: '1em'}}>Options</span>
-                <span>{showOptsDrawer ?'\u{2B06}' : '\u{2B07}'} </span>
-              </div>            
-            </Button>
+                     
+	      <FunctionAndBoundsInput onChangeFunc={funcAndBoundsInputCB}
+                                      initFuncStr={state.funcStr}
+                                      initBounds={state.bounds}
+                                      leftSideOfEquation="s(x,t) ="/>
+            <div className={'time-container'}>
+                <Slider
+                  value={t0}
+                  CB={sliderCB}
+                  label={'t0'}                  
+                  max={state.bounds.tMax}
+                  min={0}
+                />
+              <span onClick={pauseCB} className={'play-pause-button'}>
+                {paused ? '\u{25B6}': '\u{23F8}'}
+              </span>
+
+            </div>
           </ControlBar>
           
           <Main height={100-controlBarHeight}
                 fontSize={initFontSize*percDrawer}>
-            <ThreeSceneComp ref={threeSceneRef}
-                            initCameraData={initCameraData}
-                            controlsData={initControlsData}
-                            controlsCB={controlsCB}
-            />
-            
-            <RightDrawer toShow={showOptsDrawer}
-                         width={optionsDrawerWidth}
-                         color={colors.optionsDrawer}
-                         fontSize={'1.5em'}>
-              
-              <ListItem width={optionsDrawerWidth - 9} onClick={
-                  useCallback( () => setShowCoordOpts(s => !s),[])}>
-                Coordinates
-              </ListItem>
-              
-              <ListItem width={optionsDrawerWidth - 9} onClick={
-                  useCallback( () => setShowCameraOpts(s => !s),[])}>
-                Camera
-              </ListItem>
-                           
-              
-            </RightDrawer>
-            
-            <ResetCameraButton key="resetCameraButton"
-                               onClickFunc={resetCameraCB}
-                               color={colors.optionsDrawer}
-                               userCss={{ top: '73%',
-                                          left: '5%'}}/>
-             <SaveButton onClickFunc={saveButtonCB}/>
-
-            <Modal show={showCoordOpts}
-                   key="axesModalWindow"
-                   onClose={useCallback(
-                       () => setShowCoordOpts(false), [] ) }                 
-                   color={colors.optionsDrawer}>
-              
-              <CoordinateOptions axesData={state.axesData}
-                                 onAxesChange={axesCB}
-                                 gridQuadSize={state.gridQuadSize}
-                                 gridShow={state.gridShow}
-                                 onGridChange={gridCB}/>
-            </Modal>
-            
-            <Modal show={showFuncOpts}
-                   key="funcModal"
-                   onClose={useCallback(
-                       () => setShowFuncOpts(false), [] ) }                  
-                   color={colors.optionsDrawer}>
-              
-              <FunctionOptions initData={initFuncGraphData}
-                               onChange={ useCallback(
-                                   () => null, []) }
+              <ThreeSceneComp ref={threeSceneRef}
+                              initCameraData={initCameraData}
+                              controlsData={initControlsData}
+                              controlsCB={controlsCB}
+                              width={threeWidth.toString()+'%'}
               />
-              
-            </Modal>
-            
-            <Modal show={showCameraOpts}
-                   key="cameraModal"
-                   onClose={useCallback(
-                       () => setShowCameraOpts(false), [] ) }
-                   leftPerc={80}
-                   topPerc={70}
-                   color={colors.optionsDrawer}>
-              
-              <CameraOptions cameraData={state.cameraData}
-                             onChangeFunc={cameraChangeCB}
-              />
-            </Modal>
-            
+              <canvas  css={{
+                  position: 'absolute',
+                  right: 0,
+                  width: (100-threeWidth).toString()+'%',
+                  height: '100%',
+                  display: 'block'}}
+                       width={1000}
+                       height={1000}
+                       ref={elt => canvasRef.current = elt} />
           </Main>
           
         </FullScreenBaseComponent>);                              
 }
 
-function ListItem({children, onClick, toShow = true, width='20'}) {
-    return (
-        <div onClick={onClick}
-             css={{display:'flex',
-                   justifyContent: 'space-between',
-                   alignItems: 'flex-end',
-                   width: width.toString()+'em',
-                   cursor:'pointer'}}>
-          <div>{children}</div>
-          <div>{toShow ? '\u2699' : '\u274C'}</div>
-        </div>
-    );
-}
-// was above, where '\u2699' is now:
-//'\u2795'
+   // <ResetCameraButton key="resetCameraButton"
+   //                             onClickFunc={resetCameraCB}
+   //                             color={colors.optionsDrawer}
+   //                             userCss={{ top: '73%',
+   //                                        left: '5%'}}/>
+   //           <SaveButton onClickFunc={saveButtonCB}/>
+         
+            
+const animFactory = ({ startTime, duration, updateCB }) => {
 
-class ErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false };
-    }
+    let time = {t:0};
 
-    static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI.
-        return { hasError: true };
-    }
+    const tl = gsap.timeline();
+    
+    tl.to( time, {
+        t: 1,
+        ease: 'none',
+        duration,
+        paused: false,
+        repeat: -1,
+        onUpdate: () => updateCB(time.t),
+    });
 
-    componentDidCatch(error, errorInfo) {
-        // You can also log the error to an error reporting service
-        console.log('error: ' + error);
-        console.log('errorInfo ' + errorInfo);
-    }
+    tl.pause();        
+    tl.seek(startTime*duration);
+    tl.resume();        
 
-    render() {
-        if (this.state.hasError) {
-            // You can render any custom fallback UI
-            return <h1>Something went wrong with the graphics; try reloading].</h1>;
-    }
-
-    return this.props.children; 
-}
-}
+    return tl;
+};
