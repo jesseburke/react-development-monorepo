@@ -406,6 +406,9 @@ export default function useThreeScene({ canvasRef,
 
     // coord = array with three elts, e.g., coord = [1, 2, 1]
     function threeToHtmlCoords({coord, worldInverse, projection}) {
+
+	//camera.current.
+	camera.current.updateProjectionMatrix();
 	
         let temp = new THREE.Vector3(coord[0], coord[1], coord[2]);
         temp.project(camera.current);
