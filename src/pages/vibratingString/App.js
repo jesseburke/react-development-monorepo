@@ -9,8 +9,6 @@ import queryString from 'query-string';
 
 import './App.css';
 
-import {ConditionalDisplay} from '@jesseburke/basic-react-components';
-
 import ControlBar from '../../components/ControlBar.js';
 import Main from '../../components/Main.js';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
@@ -57,16 +55,15 @@ const dragDebounceTime = 5;
 
 const initFuncStr = '2*e^(-(x-t)^2)';
 
+// while it's assumed xMin and tMin are zero; it's handy to keep them around to not break things
 const initBounds = {xMin: 0, xMax: 40,
                     tMin: 0, tMax: 40 };
 
-// it's assumed xMin and tMin are zero; it's handy to keep them around to not break things
 const xLength = initBounds.xMax;
 const tLength = initBounds.tMax;
 
 const initCameraData =  {position: [(15.7/20)*xLength, -(13.1/20)*tLength, 9.79],//[40, 40, 40],                        
                          up: [0, 0, 1]};
-
 
 const initState = {
     bounds: initBounds,
@@ -210,11 +207,10 @@ export default function App() {
     const [timeline, setTimeline] = useState( null );
 
     const [threeWidth, setThreeWidth]= useState( initThreeWidth );
-
     const threeSceneRef = useRef(null);
     const canvasRef = useRef(null);
 
-    // following will be passed to components that need to draw
+    // following can be passed to components that need to draw
     const threeCBs = useThreeCBs( threeSceneRef );    
      
     
@@ -243,7 +239,7 @@ export default function App() {
                 yLabel: 't',
                 color: initColors.axes});
 
-     //------------------------------------------------------------------------
+    //------------------------------------------------------------------------
     //
     // look at location.search
 
@@ -269,25 +265,21 @@ export default function App() {
 
         threeCBs.setCameraPosition( newState.cameraData.position );
 
-        
-
         //console.log('state is ', state);
         //console.log('newState is ', newState);
         //console.log('expandState(newState) is ', expandState(newState) );
         
-
-       
-        //	window.history.replaceState(null, null, '?'+queryString.stringify(state));
+        //window.history.replaceState(null, null, '?'+queryString.stringify(state));
         //window.history.replaceState(null, null, "?test");
         
     }, [threeCBs] );
 
-    const saveButtonCB = useCallback( () => 
-        window.history.replaceState(null, null,
-                                    '?'+queryString.stringify(shrinkState(state),
-                                                              {decode: false,
-                                                               arrayFormat: 'comma'}))
-                                      ,[state] );
+    const saveButtonCB = useCallback(
+	() => window.history.replaceState(null, null,
+					  '?'+queryString.stringify(shrinkState(state),
+					   {decode: false,
+					    arrayFormat: 'comma'}))
+        ,[state] );
 
     //------------------------------------------------------------------------
     //
@@ -308,7 +300,7 @@ export default function App() {
         const geometry = new THREE.PlaneGeometry( state.bounds.xMax + overhang,
                                                   2*zLength );
         geometry.rotateX(Math.PI/2);
-        geometry.translate(state.bounds.xMax/2, 0, 0);
+        geometry.translate(state.bounds.xMax/2, t0, 0);
             
         const mesh = new THREE.Mesh( geometry, material );
         threeCBs.add( mesh );
@@ -341,7 +333,10 @@ export default function App() {
     //
     // animation
    
-    // when pause changes, change the timeline
+    // when pause changes, change the timeline;
+    // creates a newtimeline each time paused changes;
+    // this fixed a bug with pausing and restarting
+    
     useEffect( () => {
 
         if( paused ) {
@@ -371,7 +366,7 @@ export default function App() {
                                                bounds: {...state.bounds,
                                                         yMin: state.bounds.tMin,
                                                         yMax: state.bounds.tMax},
-                                               meshSize: 200 });
+                                               meshSize: 300 });
         
         const material = new THREE.MeshPhongMaterial({ color: initColors.funcGraph,
                                                        side: THREE.DoubleSide });
@@ -439,7 +434,7 @@ export default function App() {
     const funcAndBoundsInputCB = useCallback( (newBounds, newFuncStr) => {
         setState( ({bounds, func, funcStr, ...rest}) =>
                   ({ funcStr: newFuncStr,
-                     func: funcParser( funcStr ),
+                     func: funcParser( newFuncStr ),
                      bounds: newBounds,
                      ...rest}) );
     }, [] );
