@@ -37,7 +37,6 @@ module.exports = {
     plugins: [
 	new CleanWebpackPlugin(),
 	new HtmlWebpackPlugin({
-	    title: 'Direction Field Grapher',
 	    meta: {viewport: 'width=device-width, user-scalable=no'}
 	})
     ],
