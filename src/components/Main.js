@@ -6,17 +6,17 @@ import React from 'react';
 function main( {children, height, fontSize=.85} ) {
    
     const css1 = React.useRef({
-              // external layout
-              position: 'absolute',
+        // external layout
+        position: 'absolute',
         top: (100-height).toString()+'%',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              // internal layout
-              padding: 0,
-              backgroundColor: '#ffffff',
-              //borderStyle: 'dashed'
-              fontSize: fontSize.toString()+'em'
+        left: 0,
+        right: 0,
+        bottom: 0,
+        // internal layout
+        padding: 0,
+        backgroundColor: '#ffffff',
+        //borderStyle: 'dashed'
+        fontSize: fontSize.toString()+'em'
     }, []);
     
     return (
