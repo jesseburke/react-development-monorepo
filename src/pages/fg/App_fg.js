@@ -160,15 +160,6 @@ function expandState({ b, fs, gqs, gs, as, sl, l, r, cp, cu }) {
 }
 
 
-const initFuncGraphData = {
-    func: funcParser(initFuncStr),
-    xMin: -20,
-    xMax: 20,
-    yMin: -20,
-    yMax: 20,
-    meshSize: 100,
-    color: initColors.funcGraph
-};
 
 
 const fonts = "'Helvetica', 'Hind', sans-serif";
@@ -228,7 +219,9 @@ export default function App() {
                        originRadius: .1 });
 
     use3DAxes({ threeCBs,
-                length: state.axesData.length,
+                bounds: {xMin: -state.axesData.length, xMax: state.axesData.length,
+			 yMin: -state.axesData.length, yMax: state.axesData.length,
+			 zMin: -state.axesData.length, zMax: state.axesData.length},
                 radius: state.axesData.radius,
                 show: state.axesData.show,
                 showLabels: state.axesData.showLabels,
@@ -260,26 +253,14 @@ export default function App() {
         if( !threeCBs ) return;
 
         threeCBs.setCameraPosition( newState.cameraData.position );
-
-        
-
-        //console.log('state is ', state);
-        //console.log('newState is ', newState);
-        //console.log('expandState(newState) is ', expandState(newState) );
-        
-
-       
-        //	window.history.replaceState(null, null, '?'+queryString.stringify(state));
-        //window.history.replaceState(null, null, "?test");
         
     }, [threeCBs] );
 
-    const saveButtonCB = useCallback( () => 
-        window.history.replaceState(null, null,
-                                    '?'+queryString.stringify(shrinkState(state),
-                                                              {decode: false,
-                                                               arrayFormat: 'comma'}))
-                                      ,[state] );
+    const saveButtonCB = useCallback( () => window.history.replaceState(
+	null, null,
+	'?'+queryString.stringify(shrinkState(state),
+				  {decode: false,
+				   arrayFormat: 'comma'} ) ), [state] );
 
     //------------------------------------------------------------------------
     //
@@ -289,8 +270,12 @@ export default function App() {
 
         if( !threeCBs ) return;
 
-        const geometry = FunctionGraph3DGeom({ func: state.func,
-                                               bounds: state.bounds });
+	if( !state.func ) return;
+
+        const geometry = FunctionGraph3DGeom({ func: state.func, 
+                                               bounds: state.bounds,
+                                               meshSize: 100 });
+        
         const material = new THREE.MeshPhongMaterial({ color: initColors.funcGraph,
                                                        side: THREE.DoubleSide });
         material.shininess = 0;
@@ -300,9 +285,9 @@ export default function App() {
         threeCBs.add(mesh);     
 
         return () => {
-            threeCBs.remove( mesh );
-            geometry.dispose();
-            material.dispose();
+            if(mesh) threeCBs.remove( mesh );
+            if(geometry) geometry.dispose();
+            if(material) material.dispose();
         };
         
     }, [threeCBs, state.func, state.bounds] );
@@ -313,6 +298,14 @@ export default function App() {
     // callbacks  
 
     const funcInputCB = useCallback( (newFunc, newFuncStr) => {
+
+	if( !newFuncStr || newFuncStr.length === 0 ) 	{
+            setState( ({func, funcStr, ...rest}) => ({func: null,
+                                                      funcStr: newFuncStr,
+                                                      ...rest}) );
+	    return;
+	}
+	
         setState( ({func, funcStr, ...rest}) => ({func: newFunc,
                                                   funcStr: newFuncStr,
                                                   ...rest}) );
@@ -360,13 +353,12 @@ export default function App() {
         <FullScreenBaseComponent backgroundColor={colors.controlBar}
                                  fonts={fonts}>
           <Helmet>
+            <title>Function grapher</title>
                 <meta name="viewport" content="width=device-width, user-scalable=no" />
           </Helmet>
           
           <ControlBar height={controlBarHeight} fontSize={initFontSize*percControlBar}>
-            <span css={{
-                paddingLeft: '30%',
-                paddingRight: '10%' }}>             
+            <span>             
 	      <FunctionInput onChangeFunc={funcInputCB}
                              initFuncStr={state.funcStr}
                              leftSideOfEquation="f(x,y) ="/>  
@@ -425,20 +417,7 @@ export default function App() {
                                  gridShow={state.gridShow}
                                  onGridChange={gridCB}/>
             </Modal>
-            
-            <Modal show={showFuncOpts}
-                   key="funcModal"
-                   onClose={useCallback(
-                       () => setShowFuncOpts(false), [] ) }                  
-                   color={colors.optionsDrawer}>
-              
-              <FunctionOptions initData={initFuncGraphData}
-                               onChange={ useCallback(
-                                   () => null, []) }
-              />
-              
-            </Modal>
-            
+          
             <Modal show={showCameraOpts}
                    key="cameraModal"
                    onClose={useCallback(
@@ -469,33 +448,4 @@ function ListItem({children, onClick, toShow = true, width='20'}) {
           <div>{toShow ? '\u2699' : '\u274C'}</div>
         </div>
     );
-}
-// was above, where '\u2699' is now:
-//'\u2795'
-
-class ErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false };
-    }
-
-    static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI.
-        return { hasError: true };
-    }
-
-    componentDidCatch(error, errorInfo) {
-        // You can also log the error to an error reporting service
-        console.log('error: ' + error);
-        console.log('errorInfo ' + errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            // You can render any custom fallback UI
-            return <h1>Something went wrong with the graphics; try reloading].</h1>;
-    }
-
-    return this.props.children; 
-}
 }
