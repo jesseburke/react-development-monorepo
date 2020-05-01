@@ -72,15 +72,6 @@ function functionInputAndBoundsXT({ leftSideOfEquation,
     const [bounds, setBounds] = useState( initBounds );
     const [funcStr, setFuncStr] = useState( initFuncStr );
     
-    function handleChange(str) {      
-
-        if( str.length === 0 ) {
-            //onChangeFunc( null );
-            return;
-        }
-        
-        //onChangeFunc(funcParserXT(str), str);
-    }
 
     const funcCB = useCallback( (newFuncStr) =>
                                 setFuncStr( newFuncStr ), []);   
@@ -88,8 +79,7 @@ function functionInputAndBoundsXT({ leftSideOfEquation,
         ({ xMax, ...rest }) => ({ xMax: Number(newXMaxStr), ...rest })), [] );
     const tMaxCB = useCallback( (newTMaxStr) => setBounds(
         ({ tMax, ...rest }) => ({ tMax: Number(newTMaxStr), ...rest })), [] );
-                                                        
-                                                        
+                                                                                                                
                                                         
     const graphButtonCB = useCallback( () => onChangeFunc( bounds, funcStr ), [bounds, funcStr] );
     
