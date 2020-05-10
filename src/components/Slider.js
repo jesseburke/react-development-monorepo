@@ -5,7 +5,7 @@ import {throttle} from '../utils/BaseUtils.js';
 function Slider({value,
                  step = .1,
                  CB = () => null,
-                 precision = 5,
+                 precision = 3,
                  sigDig = 1,
                  min = 0,
                  max = 10,
