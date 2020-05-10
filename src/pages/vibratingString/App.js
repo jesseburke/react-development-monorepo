@@ -26,6 +26,7 @@ import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
 import use3DAxes from '../../graphics/use3DAxes.js';
 import FunctionGraph3DGeom from '../../graphics/FunctionGraph3DGeom.js';
 import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.js';
+import use2DAxes from '../../graphics/use2DAxesCanvas.js';
 
 import FunctionGraphPts2D from '../../math/FunctionGraphPts2D.js';
 
@@ -53,11 +54,12 @@ const solutionCurveRadius = .1;
 const dragDebounceTime = 5;
 
 
-const initFuncStr = '2*e^(-(x-t)^2)';
+const initFuncStr = '2*e^(-(x-t)^2)+sin(x+t)-cos(x-t)';//'2*e^(-(x-t)^2)';
 
 // while it's assumed xMin and tMin are zero; it's handy to keep them around to not break things
-const initBounds = {xMin: 0, xMax: 40,
-                    tMin: 0, tMax: 40 };
+const initBounds = {xMin: 0, xMax: 10,
+                    tMin: 0, tMax: 10,
+                    zMin: -5, zMax: 5};
 
 const xLength = initBounds.xMax;
 const tLength = initBounds.tMax;
@@ -127,9 +129,9 @@ function expandState({ b, fs, gqs, gs, as, sl, l, r, cp, cu }) {
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
-    touches: { ONE: THREE.MOUSE.PAN,
-	       TWO: THREE.TOUCH.DOLLY,
-	       THREE: THREE.MOUSE.ROTATE },
+    touches: { ONE: THREE.MOUSE.ROTATE,
+	       TWO: THREE.DOLLY_PAN,
+	       THREE: THREE.MOUSE.PAN },
     enableRotate: true,
     enablePan: true,
     enabled: true,
@@ -165,11 +167,11 @@ const labelStyle = {
 
 const axesData  = {show: true,
                    showLabels: true,
-                   length: 50,
+                   length: 10,
                    radius: .05};
 
-const overhang = 5;
-const zLength = 5;
+const overhang = 2;
+const canvasXOverhang = 1;
 
 
 // in em's
@@ -184,8 +186,8 @@ const initTimeH = .1;
 
 const animConst = .1;
 
-// time it takes (in secs) to animate 0 \leq t \leq 10
-const animTime10T = .8;
+// in secs
+const animTime = 12;
 
 
 //------------------------------------------------------------------------
@@ -199,6 +201,8 @@ export default function App() {
     const [t0, setT0] = useState( 0 );
 
     const [planeMesh, setPlaneMesh] = useState( null );
+
+    const [textureCanvas, setTextureCanvas] = useState( null );
 
     const [timeH, setTimeH] = useState( initTimeH );
 
@@ -218,25 +222,41 @@ export default function App() {
     //
     // init effects
 
+    const gridCenter = useRef([ axesData.length - overhang,
+                                axesData.length - overhang ]);
+
     useGridAndOrigin({ threeCBs,
                        gridQuadSize: axesData.length,
                        gridShow: state.gridShow,
                        originRadius: 0,
-                       center: [ axesData.length - overhang,
-                                 axesData.length - overhang ] });
+                       center: gridCenter.current });
+
+    const axesBounds = useRef({ xMin: -overhang,
+                                xMax: state.bounds.xMax + overhang,
+                                yMin: -overhang,
+                                yMax: state.bounds.tMax + overhang,
+                                zMin: state.bounds.zMin,
+                                zMax: state.bounds.zMax });
+
+    useEffect( () => {
+
+        axesBounds.current = { xMin: -overhang,
+                               xMax: state.bounds.xMax + overhang,
+                               yMin: -overhang,
+                               yMax: state.bounds.tMax + overhang,
+                               zMin: state.bounds.zMin,
+                               zMax: state.bounds.zMax };
+    }, [state.bounds] );
+
+    const yLabelRef = useRef('t');
 
     use3DAxes({ threeCBs,
-                bounds: { xMin: -overhang,
-                          xMax: axesData.length-5,
-                          yMin: -overhang,
-                          yMax: axesData.length-5,
-                          zMin: -zLength,
-                          zMax: zLength },
+                bounds: axesBounds.current,
                 radius: axesData.radius,
                 show: axesData.show,
                 showLabels: axesData.showLabels,
                 labelStyle,
-                yLabel: 't',
+                yLabel: yLabelRef.current,
                 color: initColors.axes});
 
     //------------------------------------------------------------------------
@@ -280,54 +300,7 @@ export default function App() {
 					   {decode: false,
 					    arrayFormat: 'comma'}))
         ,[state] );
-
-    //------------------------------------------------------------------------
-    //
-    // plane mesh
-
-    useEffect( ()  => {
-
-        if( !threeCBs ) return;
-
-        const material = new THREE.MeshBasicMaterial({
-            color: new THREE.Color( initColors.plane ),
-            side: THREE.DoubleSide });
-
-        material.transparent = true;
-        material.opacity = .6;
-        material.shininess = 0;
-
-        const geometry = new THREE.PlaneGeometry( state.bounds.xMax + overhang,
-                                                  2*zLength );
-        geometry.rotateX(Math.PI/2);
-        geometry.translate(state.bounds.xMax/2, t0, 0);
-            
-        const mesh = new THREE.Mesh( geometry, material );
-        threeCBs.add( mesh );
-        setPlaneMesh( mesh );
-
-        return () => {
-            threeCBs.remove( mesh );
-            geometry.dispose();
-            material.dispose();
-        };
-        
-    }, [threeCBs, state.bounds.xMax] );
-
-    const oldT0 = useRef( t0 );
-
-    useEffect( () => {
-        
-        if( !planeMesh ) {
-            oldT0.current = t0;
-            return;
-        }
-
-        planeMesh.translateY( t0 - oldT0.current );
-        oldT0.current = t0;
-
-    }, [t0, planeMesh] );
-
+  
 
     //------------------------------------------------------------------------
     //
@@ -344,45 +317,20 @@ export default function App() {
             setTimeline( null );
             return;
         }
+
+        const repeatCB = () => {
+            setT0(0);
+        };
         
         const newTl = animFactory({ startTime: t0/state.bounds.tMax,
-                                    duration: animTime10T*state.bounds.tMax/10,
+                                    duration: animTime,
+                                    repeatCB,
                                     updateCB: (t) => setT0( t*state.bounds.tMax ) });        
         setTimeline( newTl );
         
-    }, [paused] );
+    }, [paused, state.bounds.tMax] );
 
-   
-
-    //------------------------------------------------------------------------
-    //
-    // funcGraph effect
-    
-    useEffect( ()  => {
-
-        if( !threeCBs ) return;
-
-        const geometry = FunctionGraph3DGeom({ func: state.func,
-                                               bounds: {...state.bounds,
-                                                        yMin: state.bounds.tMin,
-                                                        yMax: state.bounds.tMax},
-                                               meshSize: 300 });
-        
-        const material = new THREE.MeshPhongMaterial({ color: initColors.funcGraph,
-                                                       side: THREE.DoubleSide });
-        material.shininess = 0;
-        material.wireframe = false;
-
-        const mesh = new THREE.Mesh( geometry, material );
-        threeCBs.add(mesh);     
-
-        return () => {
-            threeCBs.remove( mesh );
-            geometry.dispose();
-            material.dispose();
-        };
-        
-    }, [threeCBs, state.func, state.bounds] );
+      
 
     //------------------------------------------------------------------------
     //
@@ -402,29 +350,174 @@ export default function App() {
 
     }, [canvasRef] );
 
+    
     useEffect( () => {
 
         if( !canvasRef.current ) return;
 
         ctx.current.fillStyle = initColors.clearColor;//'#AAA';
-        ctx.current.fillRect(0, 0,
-                             ctx.current.canvas.width, ctx.current.canvas.height);
+        ctx.current.fillRect(0,
+                             0,
+                             ctx.current.canvas.width,
+                             ctx.current.canvas.height);
+
+        use2DAxes({ canvas: canvasRef.current,
+                    bounds: { ...state.bounds,
+                              xMin: -canvasXOverhang + state.bounds.xMin,
+                              yMin: state.bounds.zMin,
+                              yMax: state.bounds.zMax },
+                    lineWidth: 5,
+                    color: initColors.controlBar,
+                    show: true,
+                    yLabel: 'z'
+                  });       
 
         const compArray = FunctionGraphPts2D({ func: (x) => state.func(x,t0),
-                                               bounds: {xMin: 0,
+                                               approxH: .01,
+                                               bounds: {xMin: state.bounds.xMin,
                                                         xMax: state.bounds.xMax,
-                                                        yMin: -zLength,
-                                                        yMax: zLength} });
+                                                        yMin: state.bounds.zMin,
+                                                        yMax: state.bounds.zMax} });
         
         
-        CurvedPathCanvas({ compArray,
-                           bounds: {...state.bounds,
-                                    zMax: zLength,
-                                    zMin: -zLength},
-                           ctx: canvasRef.current.getContext('2d') });
-        
+        const newCtx = CurvedPathCanvas({ compArray,
+                                          bounds: {...state.bounds,
+                                                   xMin: -canvasXOverhang + state.bounds.xMin },
+                                          lineWidth: 8,
+                                          color: initColors.funcGraph });
 
-    }, [state.bounds.xMax, t0, state.func, canvasRef] );
+        ctx.current.drawImage(newCtx.canvas,0,0);       
+        
+    }, [state.bounds, t0, state.func, canvasRef] );
+
+
+    //------------------------------------------------------------------------
+    //
+    // setup texture canvas
+
+    const texture = useRef();
+
+    useEffect( () => {
+
+        const ctx = document.createElement('canvas').getContext('2d');
+
+        ctx.canvas.width = 1024;
+        ctx.canvas.height = 1024;
+        ctx.strokeStyle = initColors.controlBar;
+        ctx.lineWidth = 15;
+
+        setTextureCanvas( ctx.canvas );        
+
+    }, [state.bounds] );
+
+    useEffect( () => {
+
+        if(!textureCanvas) return;
+
+        const ctx = textureCanvas.getContext('2d');
+        const h = ctx.canvas.height;
+        const w = ctx.canvas.width;
+        
+        ctx.fillStyle = initColors.clearColor;//'#AAA';
+        ctx.fillRect(0, 0, w, h);                   
+
+        ctx.beginPath();
+        ctx.moveTo( 0, (1 - t0/(state.bounds.tMax - state.bounds.tMin))*h );
+        ctx.lineTo( w, (1 - t0/(state.bounds.tMax - state.bounds.tMin))*h );
+        ctx.stroke();
+        
+    }, [t0, state.bounds, textureCanvas] );
+
+     //------------------------------------------------------------------------
+    //
+    // funcGraph effect
+    
+    
+    useEffect( ()  => {
+
+        if( !threeCBs ) return;
+
+        const geometry = FunctionGraph3DGeom({ func: state.func,
+                                               bounds: {...state.bounds,
+                                                        yMin: state.bounds.tMin,
+                                                        yMax: state.bounds.tMax},
+                                               meshSize: 300 });
+        
+        const material = new THREE.MeshNormalMaterial({ color: initColors.funcGraph,
+                                                        side: THREE.DoubleSide,
+                                                        flatShading: true
+                                                      });
+        material.shininess = 0;
+        //material.transparent = true;
+        //material.opacity = .6;
+        material.wireframe = false;
+
+        let texture;
+        
+        // if( textureCanvas ) {
+
+        //     texture = new THREE.CanvasTexture( textureCanvas );
+        //     material.map = texture;
+        // }
+            
+        const mesh = new THREE.Mesh( geometry, material );
+        threeCBs.add(mesh);     
+
+        return () => {
+            threeCBs.remove( mesh );
+            geometry.dispose();
+            material.dispose();
+            if(texture) texture.dispose();
+        };
+        
+    }, [threeCBs, state.func, state.bounds, textureCanvas] );
+    
+    //------------------------------------------------------------------------
+    //
+    // plane mesh
+
+    useEffect( ()  => {
+
+        if( !threeCBs ) return;
+
+        const material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color( initColors.plane ),
+            side: THREE.DoubleSide });
+
+        material.transparent = true;
+        material.opacity = .6;
+        material.shininess = 0;     
+        const geometry = new THREE.PlaneGeometry( state.bounds.xMax + overhang,
+                                                  state.bounds.zMax - state.bounds.zMin );
+        geometry.rotateX(Math.PI/2);
+        geometry.translate(state.bounds.xMax/2, t0, 0);
+            
+        const mesh = new THREE.Mesh( geometry, material );
+        threeCBs.add( mesh );
+        setPlaneMesh( mesh );
+
+        return () => {
+            threeCBs.remove( mesh );
+            geometry.dispose();
+            material.dispose();
+        };
+        
+    }, [threeCBs, state.bounds, t0] );
+
+    const oldT0 = useRef( t0 );
+
+    useEffect( () => {
+        
+        if( !planeMesh ) {
+            oldT0.current = t0;
+            return;
+        }
+
+        planeMesh.translateY( t0 - oldT0.current );
+        oldT0.current = t0;
+
+    }, [t0, planeMesh] );
+
 
 
     //------------------------------------------------------------------------
@@ -515,9 +608,10 @@ export default function App() {
                   right: 0,
                   width: (100-threeWidth).toString()+'%',
                   height: '100%',
+                  borderLeft: 'solid 10px white',
                   display: 'block'}}
-                       width={1000}
-                       height={1000}
+                       width={1024}
+                       height={1024}
                        ref={elt => canvasRef.current = elt} />
           </Main>
           
@@ -532,7 +626,7 @@ export default function App() {
    //           <SaveButton onClickFunc={saveButtonCB}/>
          
             
-const animFactory = ({ startTime, duration, updateCB }) => {
+const animFactory = ({ startTime, duration, updateCB, repeatCB = () => null, repeatDelay = .75 }) => {
 
     let time = {t:0};
 
@@ -544,12 +638,14 @@ const animFactory = ({ startTime, duration, updateCB }) => {
         duration,
         paused: false,
         repeat: -1,
-        onUpdate: () => updateCB(time.t),
+        onUpdate: () => updateCB(time.t)
     });
 
     tl.pause();        
-    tl.seek(startTime*duration);
-    tl.resume();        
+    //tl.seek(startTime*duration);
+    //tl.resume();
+
+    tl.play(startTime*duration);
 
     return tl;
 };
