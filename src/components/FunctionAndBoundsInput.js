@@ -65,7 +65,7 @@ function functionInputAndBoundsXT({ leftSideOfEquation,
                                     onChangeFunc,
                                     initFuncStr,
                                     initBounds,
-                                    inputSize=25,
+                                    inputSize=35,
                                     userCss={} })
 {   
 
