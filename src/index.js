@@ -27,9 +27,9 @@ import './style.css';
 
 //import App from './pages/implicitFunc/App.js';
 
-//import App from './pages/fg/App_fg.js';
+import App from './pages/fg/App_fg.js';
 
-import App from './pages/vibratingString/App.js';
+//import App from './pages/vibratingString/App.js';
 
 
 function main() {

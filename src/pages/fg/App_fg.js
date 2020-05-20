@@ -9,7 +9,6 @@ import * as THREE from 'three';
 
 import {Button} from '@jesseburke/basic-react-components';
 import {Modal} from '@jesseburke/basic-react-components';
-import {ConditionalDisplay} from '@jesseburke/basic-react-components';
 
 import ControlBar from '../../components/ControlBar.js';
 import Main from '../../components/Main.js';
