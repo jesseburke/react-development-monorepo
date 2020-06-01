@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export default function use2DAxes({ threeCBs,
-				    bounds,
+				    bounds = {xMin: -10, xMax: 10, yMin: -10, yMax: 10},
 				    radius,
 				    color,
 				    show,
