@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
+import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+//import {VertexTangentsHelper} from 'three/examples/jsm/helpers/VertexTangentsHelper.js';
 
 import gsap from 'gsap';
 
@@ -54,7 +56,7 @@ const solutionCurveRadius = .1;
 const dragDebounceTime = 5;
 
 
-const initFuncStr = '2*e^(-(x-t)^2)+sin(x+t)-cos(x-t)';//'2*e^(-(x-t)^2)';
+const initFuncStr = '4*e^(-(x-2*t)^2)+sin(x+t)-cos(x-t)';//'2*e^(-(x-t)^2)+sin(x+t)-cos(x-t)';//'2*e^(-(x-t)^2)';
 
 // while it's assumed xMin and tMin are zero; it's handy to keep them around to not break things
 const initBounds = {xMin: 0, xMax: 10,
@@ -386,7 +388,8 @@ export default function App() {
                                           lineWidth: 8,
                                           color: initColors.funcGraph });
 
-        ctx.current.drawImage(newCtx.canvas,0,0);       
+        ctx.current.drawImage(newCtx.canvas,0,0);
+	
         
     }, [state.bounds, t0, state.func, canvasRef] );
 
@@ -441,16 +444,15 @@ export default function App() {
                                                bounds: {...state.bounds,
                                                         yMin: state.bounds.tMin,
                                                         yMax: state.bounds.tMax},
-                                               meshSize: 300 });
+                                               meshSize: 200 });
         
         const material = new THREE.MeshNormalMaterial({ color: initColors.funcGraph,
-                                                        side: THREE.DoubleSide,
-                                                        flatShading: true
+                                                        side: THREE.DoubleSide
                                                       });
         material.shininess = 0;
         //material.transparent = true;
         //material.opacity = .6;
-        material.wireframe = false;
+	//material.wireframe = true;
 
         let texture;
         
@@ -459,9 +461,18 @@ export default function App() {
         //     texture = new THREE.CanvasTexture( textureCanvas );
         //     material.map = texture;
         // }
+
+	BufferGeometryUtils.computeTangents(geometry);
             
         const mesh = new THREE.Mesh( geometry, material );
-        threeCBs.add(mesh);     
+        threeCBs.add(mesh);
+
+	const helper = new THREE.VertexNormalsHelper( mesh, .25, 0x000000, 10 );
+	//threeCBs.add(helper);
+
+	//const helper1 = new VertexTangentsHelper( mesh, .25, 0x000000, 10 );
+	//threeCBs.add(helper1);
+
 
         return () => {
             threeCBs.remove( mesh );
