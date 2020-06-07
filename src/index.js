@@ -49,4 +49,3 @@ function main() {
 }
 
 document.body.appendChild(main());
-
