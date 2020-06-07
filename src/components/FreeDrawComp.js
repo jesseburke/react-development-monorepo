@@ -114,7 +114,7 @@ function FreeDrawFactory({ threeCBs, startingGeom = null, transforms=[],
     planeMat.side = THREE.DoubleSide;
     planeMat.depthWrite = false;
 
-    //planeGeom.rotateX(Math.PI);
+    planeGeom.rotateX(Math.PI);
 
     const planeMesh = new THREE.Mesh( planeGeom, planeMat );
 
@@ -177,7 +177,7 @@ function FreeDrawFactory({ threeCBs, startingGeom = null, transforms=[],
 
             curGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);            
         }
-        //curGeom.rotateX(Math.PI);
+        curGeom.rotateX(Math.PI);
         curGeomArray.push( curGeom );
 
         const curMesh = new THREE.Mesh( curGeom, material );
