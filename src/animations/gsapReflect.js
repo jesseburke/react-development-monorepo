@@ -15,7 +15,7 @@ export default function gsapReflect({ mesh,
                                       onComplete = (x => x),
 				      clampToEnd = false,
 				      options = {}}) {
-
+    
     let qStart = new THREE.Quaternion();
     qStart.copy( mesh.quaternion );
     

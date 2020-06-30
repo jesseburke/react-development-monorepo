@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 
 import './style.css';
 
-//import App from './pages/df/App.js';  
+//import App from './pages/df/App.js';
 
 //import App from './pages/df/App_sep.js';
 
@@ -35,16 +35,20 @@ import './style.css';
 
 import App from './pages/symmetry/App_reflection_fd.js';
 
+//import App from './pages/symmetry/App_combo.js';
 
 function main() {
-    const element = document.createElement('div');       
-    ReactDOM.render(<React.Fragment>
-		      <Helmet>
-                        <meta name="viewport" content="width=device-width, user-scalable=no" />
-                      </Helmet>
-                      <App />
-                    </React.Fragment>, element);   
-    
+    const element = document.createElement('div');
+    ReactDOM.render(
+        <React.Fragment>
+            <Helmet>
+                <meta name='viewport' content='width=device-width, user-scalable=no' />
+            </Helmet>
+            <App />
+        </React.Fragment>,
+        element
+    );
+
     return element;
 }
 

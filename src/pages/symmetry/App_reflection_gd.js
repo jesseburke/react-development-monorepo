@@ -80,7 +80,7 @@ export default function App() {
     //------------------------------------------------------------------------
 
     const clearCB = useCallback( () => {
-
+	
         if( !threeCBs ) return;        
         
         if( userMesh ) {
@@ -94,7 +94,7 @@ export default function App() {
 	    fixedMesh.clear();
 	}
 
-         if( lineMesh ) {
+        if( lineMesh ) {
             threeCBs.remove( lineMesh );
             lineMesh.geometry.dispose();          
         }
@@ -105,14 +105,14 @@ export default function App() {
 
     
     const graphDrawDoneCBs = [userMesh.expandCB,
-                             useCallback( (mesh) => {
-                                 if( !mesh ) return;
-                                 mesh.material = fixedMaterial;
-                                 fixedMesh.expandCB(mesh);
-                             }, [fixedMesh])                            
+                              useCallback( (mesh) => {
+                                  if( !mesh ) return;
+                                  mesh.material = fixedMaterial;
+                                  fixedMesh.expandCB(mesh);
+                              }, [fixedMesh])                            
                              ];
 
-   
+    
     // passed to ClickablePlaneComp
     const clickCB = useCallback( (pt) => {
 
@@ -142,8 +142,8 @@ export default function App() {
     }, [line, threeCBs] );
     
 
-     const resetCB = useCallback( () => {
-
+    const resetCB = useCallback( () => {
+	
         if( !threeCBs ) return;
 
         if( userMesh.getMesh() ) {
@@ -191,75 +191,75 @@ export default function App() {
                           setAnimating(false);                         
                       }});
         
-    }, [userMesh, line, threeCBs] );
-
+    }, [userMesh, line, threeCBs]
+				 );
     
     return (
 
     	<FullScreenBaseComponent fonts={fonts}>
 
-          <ThreeSceneComp ref={threeSceneRef} cameraData={cameraData.current} />         
+            <ThreeSceneComp ref={threeSceneRef} cameraData={cameraData.current} />         
 
-          <WouterRouter hook={useHashLocation}>
+            <WouterRouter hook={useHashLocation}>
+		
+		<Route  path='/'>
+		    <GraphDrawComp threeCBs={threeCBs}
+				   doneCBs={graphDrawDoneCBs}
+				   clearCB={clearCB}
+				   material={freeDrawMaterial}
+				   fontSize='1.25em'/>
+
+		    <Link href='/reflect'>
+			<div css={{
+				 position: 'absolute',
+				 top: '10%',
+				 left: '10%',                 
+				 fontSize: '1.25em',
+			     }}>                  
+			    <Button>
+				Done drawing
+			    </Button>               
+			</div>
+		    </Link>
+		</Route>
+
+
+		<Route path='/reflect'>
+		    <ClickablePlaneComp threeCBs={threeCBs}                           
+					clickCB={clickCB}
+					paused={animating}/>
+		    <div css={{
+			     position: 'absolute',
+			     bottom: '5%',
+			     width: '100%',
+			     fontSize: '1.25em',
+			     display: 'flex',            
+			     alignItems: 'flex-end',
+			     justifyContent: 'space-around'}}>         
+
+			
+			<div  css={{ cursor:'pointer' }}>                 
+			    <Button onClickFunc={resetCB}>
+				Back to drawing
+			    </Button>          
+			</div>
+			
+			<div>
+			    Click on plane to choose reflection line
+			</div>
+
+			<div>
+			    <Button onClickFunc={reflectCB}
+				    active={!animating}>
+				Reflect!
+			    </Button>
+			</div>
+			
+		    </div>
+		</Route>
+		
+	    </WouterRouter>
             
-            <Route  path='/'>
-              <GraphDrawComp threeCBs={threeCBs}
-                             doneCBs={graphDrawDoneCBs}
-                             clearCB={clearCB}
-                             material={freeDrawMaterial}
-                             fontSize='1.25em'/>
-
-              <Link href='/reflect'>
-                <div css={{
-                    position: 'absolute',
-                    top: '10%',
-                    left: '10%',                 
-                    fontSize: '1.25em',
-                }}>                  
-                  <Button>
-                    Done drawing
-                  </Button>               
-                </div>
-              </Link>
-            </Route>
-
-
-              <Route path='/reflect'>
-              <ClickablePlaneComp threeCBs={threeCBs}                           
-                                  clickCB={clickCB}
-                                  paused={animating}/>
-              <div css={{
-                  position: 'absolute',
-                  bottom: '5%',
-                  width: '100%',
-                  fontSize: '1.25em',
-                  display: 'flex',            
-                  alignItems: 'flex-end',
-                  justifyContent: 'space-around'}}>         
-
-             
-                  <div  css={{ cursor:'pointer' }}>                 
-                    <Button onClickFunc={resetCB}>
-                      Back to drawing
-                    </Button>          
-                  </div>
-                
-                <div>
-                  Click on plane to choose reflection line
-                </div>
-
-                <div>
-                  <Button onClickFunc={reflectCB}
-                          active={!animating}>
-                    Reflect!
-                  </Button>
-                </div>
-                
-              </div>
-            </Route>
-            
-	  </WouterRouter>
-          
         </FullScreenBaseComponent>
     );
 }
