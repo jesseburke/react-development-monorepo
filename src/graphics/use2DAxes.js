@@ -3,139 +3,130 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export default function use2DAxes({ threeCBs,
-				    bounds = {xMin: -10, xMax: 10, yMin: -10, yMax: 10},
-				    radius,
-				    color,
-				    show,
-				    showLabels,
-				    tickDistance = 1,
-				    tickRadius = 1.25,
-				    tickColor = '#8BC34A',
-				    labelStyle ,
-				    xLabel = 'x',
-				    yLabel = 'y' })
+export default function use2DAxes({
+    threeCBs,
+    bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
+    radius = 0.02,
+    color = '#0A2C3C',
+    show = true,
+    showLabels = false,
+    tickDistance = 1,
+    tickRadius = 1.25,
+    tickColor = '#8BC34A',
+    labelStyle,
+    xLabel = 'x',
+    yLabel = 'y'
+}) {
+    const { xMin, xMax, yMin, yMax } = bounds;
 
-{
+    useEffect(() => {
+        if (!threeCBs) return;
 
-    const {xMin, xMax, yMin, yMax} = bounds;
-    
-    useEffect( () => {
+        // this will hold axes and all adornments
+        const axesGroup = new THREE.Group();
 
-	if( !threeCBs ) return;
+        if (show) {
+            // make two axes first
 
-	// this will hold axes and all adornments
-	const axesGroup = new THREE.Group();
-	
-	if( show ) {       
-		    
-	    // make two axes first
+            const radiusTop = radius;
+            const radiusBottom = radius;
+            let radialSegments = 8;
+            let heightSegments = 40;
+            let openEnded = true;
 
-	    const radiusTop = radius;
-	    const radiusBottom = radius;
-	    let radialSegments = 8;
-	    let heightSegments = 40;
-	    let openEnded = true;   
+            const xa = new THREE.CylinderBufferGeometry(
+                radiusTop,
+                radiusBottom,
+                xMax - xMin,
+                radialSegments,
+                heightSegments,
+                openEnded
+            );
+            xa.rotateZ(Math.PI / 2);
+            xa.translate((xMax + xMin) / 2, 0, 0);
 
-	    
-	    const xa = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
-							xMax-xMin, radialSegments,
-							heightSegments,
-							openEnded);
-	    xa.rotateZ(Math.PI/2);
-            xa.translate((xMax+xMin)/2, 0, 0);
-	    
-	    const ya = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
-							yMax-yMin, radialSegments,
-							heightSegments,
-							openEnded);
-            ya.translate(0, (yMax+yMin)/2, 0);
-            
-	    const axesMaterial = new THREE.MeshBasicMaterial({color: color});
-	    //axesMaterial.transparent = true;
-	    //axesMaterial.opacity = .5;
+            const ya = new THREE.CylinderBufferGeometry(
+                radiusTop,
+                radiusBottom,
+                yMax - yMin,
+                radialSegments,
+                heightSegments,
+                openEnded
+            );
+            ya.translate(0, (yMax + yMin) / 2, 0);
 
-	    axesGroup.add(new THREE.Mesh(xa, axesMaterial));
-	    axesGroup.add(new THREE.Mesh(ya, axesMaterial));
+            const axesMaterial = new THREE.MeshBasicMaterial({ color: color });
+            //axesMaterial.transparent = true;
+            //axesMaterial.opacity = .5;
 
-	    // make ticks now   
+            axesGroup.add(new THREE.Mesh(xa, axesMaterial));
+            axesGroup.add(new THREE.Mesh(ya, axesMaterial));
 
-	    let geomArray = [];
+            // make ticks now
 
-            
-	    for (let i = xMin; i <= xMax; i++) {
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate( i, 0, 0));
+            let geomArray = [];
+
+            for (let i = xMin; i <= xMax; i++) {
+                geomArray.push(RawTickGeometry(radius * tickRadius).translate(i, 0, 0));
             }
 
-             for (let i = yMin; i <= yMax; i++) {
-		geomArray.push(RawTickGeometry( radius*tickRadius)
-			       .translate( 0, i, 0));
+            for (let i = yMin; i <= yMax; i++) {
+                geomArray.push(RawTickGeometry(radius * tickRadius).translate(0, i, 0));
             }
-            
 
-	    let axesGeom = BufferGeometryUtils.mergeBufferGeometries(
-		geomArray );
+            let axesGeom = BufferGeometryUtils.mergeBufferGeometries(geomArray);
 
-	    // am not using tickColor right now
-	    const tickMaterial = new THREE.MeshBasicMaterial({color: color});
-	    
-	    axesGroup.add( new THREE.Mesh( axesGeom, tickMaterial ) );
+            // am not using tickColor right now
+            const tickMaterial = new THREE.MeshBasicMaterial({ color: color });
 
-	    threeCBs.add( axesGroup );
-	}
-	
-	return () => {
-	    if( axesGroup ) {
-		threeCBs.remove(axesGroup);
-	    }
-	};
-	
-    }, [threeCBs, show, xMin, xMax, yMin, yMax,
-	radius, tickRadius, color] );
+            axesGroup.add(new THREE.Mesh(axesGeom, tickMaterial));
 
-    useEffect( () => {
+            threeCBs.add(axesGroup);
+        }
 
-	if( !threeCBs ) return;
-	
-	let xLabelID; 
-	let yLabelID; 
+        return () => {
+            if (axesGroup) {
+                threeCBs.remove(axesGroup);
+            }
+        };
+    }, [threeCBs, show, xMin, xMax, yMin, yMax, radius, tickRadius, color]);
 
-	if (showLabels) {
-	               
-            xLabelID = threeCBs.addLabel({ pos: [xMax-1, 0, 0],
-					   text: xLabel,
-					   style: labelStyle });
+    useEffect(() => {
+        if (!threeCBs) return;
 
-            yLabelID = threeCBs.addLabel({ pos: [0, yMax, 0],
-                                           text: yLabel,
-                                           style: labelStyle });
+        let xLabelID;
+        let yLabelID;
 
-	    threeCBs.drawLabels();
-	    threeCBs.render();
-	}
+        if (showLabels) {
+            xLabelID = threeCBs.addLabel({
+                pos: [xMax - 1, 0, 0],
+                text: xLabel,
+                style: labelStyle
+            });
 
-	return () => {
+            yLabelID = threeCBs.addLabel({ pos: [0, yMax, 0], text: yLabel, style: labelStyle });
 
-	    if( xLabelID ) {
-		threeCBs.removeLabel(xLabelID);
-		xLabelID = null;
-	    }
-	    
-	    if( yLabelID ) {
-		threeCBs.removeLabel(yLabelID);
-		yLabelID = null;
-	    }
+            threeCBs.drawLabels();
+            threeCBs.render();
+        }
 
-	    threeCBs.drawLabels();
-	};
-	
-    }, [threeCBs, showLabels, xMax, yMax, labelStyle] );
+        return () => {
+            if (xLabelID) {
+                threeCBs.removeLabel(xLabelID);
+                xLabelID = null;
+            }
 
-};
+            if (yLabelID) {
+                threeCBs.removeLabel(yLabelID);
+                yLabelID = null;
+            }
+
+            threeCBs.drawLabels();
+        };
+    }, [threeCBs, showLabels, xMax, yMax, labelStyle]);
+}
 
 function RawTickGeometry(tickRadius) {
-
     const domeRadius = tickRadius;
     const domeWidthSubdivisions = 12;
     const domeHeightSubdivisions = 12;
@@ -143,135 +134,155 @@ function RawTickGeometry(tickRadius) {
     const domePhiEnd = Math.PI * 2;
     const domeThetaStart = 0;
     const domeThetaEnd = Math.PI;
-    
+
     return new THREE.SphereBufferGeometry(
-        domeRadius, domeWidthSubdivisions, domeHeightSubdivisions,
-        domePhiStart, domePhiEnd, domeThetaStart, domeThetaEnd);
+        domeRadius,
+        domeWidthSubdivisions,
+        domeHeightSubdivisions,
+        domePhiStart,
+        domePhiEnd,
+        domeThetaStart,
+        domeThetaEnd
+    );
 }
 
+function use2DAxesOld({
+    threeCBs,
+    axesData = {
+        length,
+        bounds: { xMin, xMax, yMin, yMax },
+        radius,
+        color,
+        show,
+        showLabels,
+        tickDistance: 1,
+        tickRadius: 1.25,
+        tickColor: '#8BC34A',
+        labelStyle
+    }
+}) {
+    useEffect(() => {
+        if (!threeCBs) return;
 
-function use2DAxesOld({ threeCBs, axesData = {length,
-					      bounds: {xMin, xMax, yMin, yMax},
-					      radius,
-					      color,
-					      show,
-					      showLabels,
-					      tickDistance: 1,
-					      tickRadius: 1.25,
-					      tickColor: '#8BC34A',
-					      labelStyle} })
+        // this will hold axes and all adornments
+        const axesGroup = new THREE.Group();
 
-{
-    
-    useEffect( () => {
+        if (axesData.show) {
+            // make two axes first
 
-	if( !threeCBs ) return;
+            const radiusTop = axesData.radius;
+            const radiusBottom = axesData.radius;
+            let height = 2 * axesData.length;
+            let radialSegments = 8;
+            let heightSegments = 40;
+            let openEnded = true;
 
-	// this will hold axes and all adornments
-	const axesGroup = new THREE.Group();
-	
-	if( axesData.show ) {       
-		    
-	    // make two axes first
+            const xa = new THREE.CylinderBufferGeometry(
+                radiusTop,
+                radiusBottom,
+                height,
+                radialSegments,
+                heightSegments,
+                openEnded
+            );
+            xa.rotateZ(Math.PI / 2);
 
-	    const radiusTop = axesData.radius;
-	    const radiusBottom = axesData.radius;
-	    let height = 2*axesData.length;
-	    let radialSegments = 8;
-	    let heightSegments = 40;
-	    let openEnded = true;   
+            const ya = new THREE.CylinderBufferGeometry(
+                radiusTop,
+                radiusBottom,
+                height,
+                radialSegments,
+                heightSegments,
+                openEnded
+            );
 
-	    
-	    const xa = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
-							height, radialSegments,
-							heightSegments,
-							openEnded);
-	    xa.rotateZ(Math.PI/2);
-	    
-	    const ya = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom,
-							height, radialSegments,
-							heightSegments,
-							openEnded);
+            const axesMaterial = new THREE.MeshBasicMaterial({ color: axesData.color });
+            //axesMaterial.transparent = true;
+            //axesMaterial.opacity = .5;
 
-	    const axesMaterial = new THREE.MeshBasicMaterial({color: axesData.color});
-	    //axesMaterial.transparent = true;
-	    //axesMaterial.opacity = .5;
+            axesGroup.add(new THREE.Mesh(xa, axesMaterial));
+            axesGroup.add(new THREE.Mesh(ya, axesMaterial));
 
-	    axesGroup.add(new THREE.Mesh(xa, axesMaterial));
-	    axesGroup.add(new THREE.Mesh(ya, axesMaterial));
+            // make ticks now
 
-	    // make ticks now   
+            let geomArray = [];
 
-	    let geomArray = [];
+            for (let i = 1; i <= axesData.length; i++) {
+                geomArray.push(
+                    RawTickGeometry(axesData.radius * axesData.tickRadius).translate(i, 0, 0)
+                );
+                geomArray.push(
+                    RawTickGeometry(axesData.radius * axesData.tickRadius).translate(-i, 0, 0)
+                );
+                geomArray.push(
+                    RawTickGeometry(axesData.radius * axesData.tickRadius).translate(0, i, 0)
+                );
+                geomArray.push(
+                    RawTickGeometry(axesData.radius * axesData.tickRadius).translate(0, -i, 0)
+                );
+            }
 
-	    for (let i = 1; i <= axesData.length; i++) {
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
-			       .translate( i, 0, 0));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
-			       .translate(-i, 0, 0));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
-			       .translate( 0, i, 0));
-		geomArray.push(RawTickGeometry( axesData.radius*axesData.tickRadius)
-			       .translate( 0,-i, 0));	
-	    }    
+            let axesGeom = BufferGeometryUtils.mergeBufferGeometries(geomArray);
 
-	    let axesGeom = BufferGeometryUtils.mergeBufferGeometries(
-		geomArray );
+            // am not using tickColor right now
+            const tickMaterial = new THREE.MeshBasicMaterial({ color: axesData.color });
 
-	    // am not using tickColor right now
-	    const tickMaterial = new THREE.MeshBasicMaterial({color: axesData.color});
-	    
-	    axesGroup.add( new THREE.Mesh( axesGeom, tickMaterial ) );
+            axesGroup.add(new THREE.Mesh(axesGeom, tickMaterial));
 
-	    threeCBs.add( axesGroup );
-	}
-	
-	return () => {
-	    if( axesGroup ) {
-		threeCBs.remove(axesGroup);
-	    }
-	};
-	
-    }, [threeCBs, axesData.show, axesData.radius, axesData.length,
-	axesData.radius, axesData.tickRadius, axesData.color] );
+            threeCBs.add(axesGroup);
+        }
 
-    useEffect( () => {
+        return () => {
+            if (axesGroup) {
+                threeCBs.remove(axesGroup);
+            }
+        };
+    }, [
+        threeCBs,
+        axesData.show,
+        axesData.radius,
+        axesData.length,
+        axesData.radius,
+        axesData.tickRadius,
+        axesData.color
+    ]);
 
-	if( !threeCBs ) return;
-	
-	let xLabelID; 
-	let yLabelID; 
-	let zLabelID;
+    useEffect(() => {
+        if (!threeCBs) return;
 
-	if (axesData.showLabels) {
-	               
-            xLabelID = threeCBs.addLabel({ pos: [axesData.length, 0, 0],
-					   text: "x",
-					   style: axesData.labelStyle });
+        let xLabelID;
+        let yLabelID;
+        let zLabelID;
 
-            yLabelID = threeCBs.addLabel({ pos: [0, axesData.length, 0],
-                                           text: "y",
-                                           style: axesData.labelStyle });
+        if (axesData.showLabels) {
+            xLabelID = threeCBs.addLabel({
+                pos: [axesData.length, 0, 0],
+                text: 'x',
+                style: axesData.labelStyle
+            });
 
-	    threeCBs.drawLabels();
-	    threeCBs.render();
-	}
+            yLabelID = threeCBs.addLabel({
+                pos: [0, axesData.length, 0],
+                text: 'y',
+                style: axesData.labelStyle
+            });
 
-	return () => {
+            threeCBs.drawLabels();
+            threeCBs.render();
+        }
 
-	    if( xLabelID ) {
-		threeCBs.removeLabel(xLabelID);
-		xLabelID = null;
-	    }
-	    
-	    if( yLabelID ) {
-		threeCBs.removeLabel(yLabelID);
-		yLabelID = null;
-	    }
+        return () => {
+            if (xLabelID) {
+                threeCBs.removeLabel(xLabelID);
+                xLabelID = null;
+            }
 
-	    threeCBs.drawLabels();
-	};
-	
-    }, [threeCBs, axesData.showLabels, axesData.length, axesData.labelStyle] );
+            if (yLabelID) {
+                threeCBs.removeLabel(yLabelID);
+                yLabelID = null;
+            }
 
-};
+            threeCBs.drawLabels();
+        };
+    }, [threeCBs, axesData.showLabels, axesData.length, axesData.labelStyle]);
+}

@@ -3,33 +3,27 @@
 
 import React from 'react';
 
-import { jsx } from '@emotion/core';
-
-
-
-export default function ResetCameraButton({onClickFunc, fontSize=1.75, color, userCss={} }) {
-    
+export default function ResetCameraButton({ onClickFunc, fontSize = 1.75, color, userCss = {} }) {
     const newCss = Object.assign(
         {
             position: 'absolute',
             top: '85%',
             left: '5%',
-            padding: '1%',               
+            padding: '1%',
             border: '1px',
             borderStyle: 'solid',
             borderRadius: '50%',
-            fontSize: fontSize.toString()+'em',    
+            fontSize: fontSize.toString() + 'em',
             // next line stops cursor from changing to text selection on hover
-            cursor:'pointer',
+            cursor: 'pointer',
             backgroundColor: color
-        }, userCss);
+        },
+        userCss
+    );
 
-    
-    
-    return <div
-             css={newCss}
-             onClick={onClickFunc}
-           >                         
-           <span css={{padding: '.15em', fontSize: '2rem'}}>{'\u{1F4F7}'}</span>
-           </div>;
+    return (
+        <div css={newCss} onClick={onClickFunc}>
+            <span css={{ padding: '.15em', fontSize: '2rem' }}>{'\u{1F4F7}'}</span>
+        </div>
+    );
 }

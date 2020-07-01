@@ -33,9 +33,31 @@ import './style.css';
 
 //------------------------------------------------------------------------
 
-import App from './pages/symmetry/App_reflection_fd.js';
+//import App from './pages/symmetry/App_reflection_fd.js';
 
-//import App from './pages/symmetry/App_combo.js';
+//import App from './pages/symmetry/App_reflection_gd.js';
+
+//import App from './pages/symmetry/App_reflection_fd_with_symm.js';
+
+//import App from './pages/symmetry/App_reflection_gd_with_symm.js';
+
+//import App from './pages/symmetry/App_rotation_fd.js';
+
+//import App from './pages/symmetry/App_rotation_gd.js';
+
+//import App from './pages/symmetry/App_rotation_fd_with_symm.js';
+
+//import App from './pages/symmetry/App_rotation_gd_with_symm.js';
+
+//import App from './pages/symmetry/App_reflection_solver_polygon.js';
+
+//import App from './pages/symmetry/App_reflection_solver_disk.js';
+
+//import App from './pages/symmetry/App_rotation_solver_polygon.js';
+
+//import App from './pages/symmetry/App_rotation_solver_disk.js';
+
+import App from './pages/symmetry/App_translation_fd.js';
 
 function main() {
     const element = document.createElement('div');

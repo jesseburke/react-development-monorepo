@@ -8,9 +8,10 @@ import * as THREE from 'three';
 import './styles.css';
 
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
+import GraphDrawComp from '../../components/GraphDrawComp.js';
 import FreeDrawComp from '../../components/FreeDrawComp.js';
 import RotateComp from '../../components/RotateComp.js';
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
+import { FullScreenBaseComponent } from '@jesseburke/basic-react-components';
 import Button from '../../components/Button.js';
 import Input from '../../components/Input.js';
 
@@ -88,7 +89,7 @@ export default function App() {
         navigate('/');
     }, [threeCBs, userMesh, fixedMesh]);
 
-    const freeDrawDoneCBs = [
+    const graphDrawDoneCBs = [
         userMesh.expandCB,
         useCallback(
             (mesh) => {
@@ -192,12 +193,12 @@ export default function App() {
 
             <WouterRouter hook={useHashLocation}>
                 <Route path='/'>
-                    <FreeDrawComp
+                    <GraphDrawComp
                         threeCBs={threeCBs}
-                        doneCBs={freeDrawDoneCBs}
+                        doneCBs={graphDrawDoneCBs}
                         clearCB={clearCB}
                         material={freeDrawMaterial}
-                        transforms={[]}
+                        fontSize='1.25em'
                     />
                     <Link href='/not_drawing'>
                         <div className='done-link'>

@@ -1,60 +1,44 @@
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-// vec1 and vec2 are Three.Vector3's, with z component assumed to be 0
-//
-// the line has direction: from vec2 to vec1
-//
+// line is expected to be created by LineFactory
 
-export default function ReflectionFactory( line ) {
-
-    if( !line ) {
-	return;
+export default function ReflectionFactory(line) {
+    if (!line) {
+        return;
     }
 
+    const angle = line.getAngle();
+
     // in future will add in appropriate translations to suppport reflection about arbitrary lines
-    
-    // pure; returns new THREE.Vector3
 
+    // pure; takes a THREE.Vector3 and returns a new THREE.Vector3
     function transformPoint(pt) {
+        const newPt = pt.clone();
 
-	const newPt = pt.clone();
+        newPt.applyAxisAngle(line.getDirection(), Math.PI);
 
-	newPt.applyAxisAngle( line.getDirection(), Math.PI );
-
-	return newPt;		
+        return newPt;
     }
 
     // pure; returns new geometry
 
     function transformGeometry(geom) {
+        const newGeom = geom.clone();
 
-	let emptyObj = new THREE.Object3D();
-	emptyObj.rotateOnWorldAxis( line.getDirection(), Math.PI );
-	//let qEnd = emptyObj.quaternion;
+        newGeom.rotateZ(-angle);
+        newGeom.rotateX(-Math.PI);
+        newGeom.rotateZ(angle);
 
-	const newGeom = geom.clone();
-	const angle = line.getAngle();
-	
-	newGeom.rotateZ( -angle );
-	newGeom.rotateX( Math.PI );
-	newGeom.rotateZ( angle );
-
-	
-	return newGeom;
-	
+        return newGeom;
     }
 
     // pure; returns new mesh
 
     function transformMesh(mesh) {
-
-	return mesh.clone();
-	
+        return mesh.clone();
     }
 
+    const getAngle = () => angle;
 
-    return {transformPoint, transformMesh, transformGeometry};
-    
+    return { transformPoint, transformMesh, transformGeometry, getAngle };
 }
-    

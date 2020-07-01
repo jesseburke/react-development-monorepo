@@ -1,18 +1,18 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { Redirect, Switch, Route, Link, useRoute } from 'wouter';
+import { Route, Link } from 'wouter';
 import { Router as WouterRouter } from 'wouter';
 
-import { jsx } from '@emotion/core';
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+
+import './styles.css';
 
 import useHashLocation from '../../hooks/useHashLocation.js';
 
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 import FreeDrawComp from '../../components/FreeDrawComp.js';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.js';
-import { FullScreenBaseComponent } from '@jesseburke/basic-react-components';
+import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
 import Button from '../../components/Button.js';
 
 import LineFactory from '../../factories/LineFactory.js';
@@ -24,16 +24,7 @@ import useExpandingMesh from '../../graphics/useExpandingMesh.js';
 import gsapRotate from '../../animations/gsapRotate.js';
 import gsapReflect from '../../animations/gsapReflect.js';
 
-import {
-    fonts,
-    halfXSize,
-    halfYSize,
-    initColors,
-    initAxesData,
-    initGridAndOriginData,
-    labelStyle,
-    initOrthographicData
-} from './constants.js';
+import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from './constants.js';
 
 //------------------------------------------------------------------------
 
@@ -196,13 +187,7 @@ export default function App() {
                         transforms={[]}
                     />
                     <Link href='/not_drawing'>
-                        <div
-                            css={{
-                                position: 'absolute',
-                                top: '10%',
-                                left: '10%',
-                                fontSize: '1.25em'
-                            }}>
+                        <div className='done-link'>
                             <Button>Done drawing</Button>
                         </div>
                     </Link>
@@ -210,17 +195,8 @@ export default function App() {
 
                 <Route path='/not_drawing'>
                     <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} paused={animating} />
-                    <div
-                        css={{
-                            position: 'absolute',
-                            bottom: '5%',
-                            width: '100%',
-                            fontSize: '1.25em',
-                            display: 'flex',
-                            alignItems: 'flex-end',
-                            justifyContent: 'space-around'
-                        }}>
-                        <div css={{ cursor: 'pointer' }}>
+                    <div className='bottom-row'>
+                        <div className='cursor-pointer'>
                             <Button onClickFunc={resetCB}>Back to drawing</Button>
                         </div>
 

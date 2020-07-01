@@ -1,0 +1,9 @@
+{
+    "configurations": [
+        {
+            "name": "projet",
+            "type": "chrome",
+            "url": "http://localhost:8080/"
+        }
+    ]
+}

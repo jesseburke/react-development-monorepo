@@ -1,30 +1,23 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { jsx } from '@emotion/core';
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import { css } from 'emotion';
 
 import { gsap } from 'gsap';
 
-import { ThreeSceneComp, useThreeCBs } from '../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.js';
-import use2DAxes from '../graphics/use2DAxes.js';
-import LinePathGeom, { RegularNgonPts, IrregularNgon } from '../graphics/LinePathGeom.js';
+import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
+import use2DAxes from '../../graphics/use2DAxes.js';
+import LinePathGeom, { RegularNgonPts, IrregularNgon } from '../../graphics/LinePathGeom.js';
 
-import OriginLine from '../graphics/OriginLine.js';
-import OriginHalfLine from '../graphics/OriginHalfLine.js';
-import { rotatedArrowheadMesh } from '../graphics/RotatedArrowhead.js';
+import OriginLine from '../../graphics/OriginLine.js';
 
-import FullScreenBaseComponent from '../components/FullScreenBaseComponent.js';
-import Button from '../components/Button.js';
-import ResetCameraButton from '../components/ResetCameraButton.js';
+import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
 
-import gsapReflect from '../animations/gsapReflect.js';
-import gsapRotate from '../animations/gsapRotate.js';
-import gsapTextAnimation from '../animations/gsapTextAnimation.js';
+import gsapRotate from '../../animations/gsapRotate.js';
+import gsapTextAnimation from '../../animations/gsapTextAnimation.js';
 
 import {
     fonts,
@@ -42,7 +35,6 @@ const symmLabelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '3em',
     top: '25%',
     left: '3%'
@@ -52,15 +44,12 @@ const transfLabelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '2em',
     top: '2.5%',
     left: '5%',
     opacity: 0
 };
 
-const originColor = 'rgb(128, 106, 139)';
-const playPauseColor = 'rgb(179, 198, 202)';
 const reflectionLineColor = 'rgb(231, 71, 41)';
 
 const startPaused = true;

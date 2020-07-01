@@ -4,85 +4,73 @@ import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import Button from '../components/Button.js';
+import ArrowGeometry from '../graphics/ArrowGeometry';
 
+function FreeDrawComp({
+    threeCBs,
+    startingGeom = null,
+    doneCBs = [() => null],
+    transforms = [],
+    material,
+    clearCB,
+    fontSize = '1.25em'
+}) {
+    const [freeDraw, setFreeDraw] = useState(null);
 
-function FreeDrawComp({ threeCBs,
-                        startingGeom = null,
-                        doneCBs = ([() => null]),
-                        transforms = [],
-                        material,
-                        clearCB,
-                        fontSize =  '1.25em' }) {
+    const resetCB = useCallback(() => {
+        if (freeDraw) freeDraw.reset();
 
-    const [freeDraw, setFreeDraw] = useState(null);   
+        if (clearCB) clearCB();
+    }, [freeDraw, clearCB]);
 
-    const resetCB = useCallback( () => {
-
-         if( freeDraw )
-            freeDraw.reset();
-        
-        if( clearCB )
-            clearCB();
-
-    }, [freeDraw, clearCB] );
-    
     // following sets up FreeDraw
-    useEffect( () => {
-        
+    useEffect(() => {
         let fd;
-        
-        if( !threeCBs || !material) {
+
+        if (!threeCBs || !material) {
             setFreeDraw(null);
-        }
-        
-        else {
-            fd = FreeDrawFactory({threeCBs, startingGeom, material, transforms});
+        } else {
+            fd = FreeDrawFactory({ threeCBs, startingGeom, material, transforms });
             setFreeDraw(fd);
         }
-        
-        return () => {            
-            if( fd ) {
-                doneCBs.map( cb => cb(fd.getMesh()) );
-                fd.dispose();                
+        // minus is clockwise
+        return () => {
+            if (fd) {
+                doneCBs.map((cb) => cb(fd.getMesh()));
+                fd.dispose();
             }
         };
-        
-    }, [threeCBs, material, startingGeom, transforms] );
-    
-    return (
-        <div css={{
-            position: 'absolute',
-            top: '90%',
-            left: '10%',
-            fontSize }}>         
-          
-          <div  css={{ cursor:'pointer' }}>
-            <Button 
-              onClickFunc={resetCB}>
-              Clear Figure
-            </Button>          
-          </div>
+    }, [threeCBs, material, startingGeom, transforms]);
 
+    return (
+        <div
+            css={{
+                position: 'absolute',
+                top: '90%',
+                left: '10%',
+                fontSize
+            }}>
+            <div css={{ cursor: 'pointer' }}>
+                <Button onClickFunc={resetCB}>Clear Figure</Button>
+            </div>
         </div>
     );
 }
 
+export default React.memo(FreeDrawComp);
 
-
-export default React.memo( FreeDrawComp );
-
-function FreeDrawFactory({ threeCBs, startingGeom = null, transforms=[],
-                          material = new THREE.MeshBasicMaterial({ color: 0xff00ff }),
-                          meshOptions = {tubularSegments: 128,
-                                         radius: .15,
-                                         radialSegments: 4,
-                                         closed: false}}) {  
-
-    const {getCanvas, add, remove} = threeCBs;
+function FreeDrawFactory({
+    threeCBs,
+    startingGeom = null,
+    transforms = [],
+    material = new THREE.MeshBasicMaterial({ color: 0xff00ff }),
+    meshOptions = { tubularSegments: 128, radius: 0.15, radialSegments: 4, closed: false }
+}) {
+    const { getCanvas, add, remove } = threeCBs;
     const getMouseCoords = threeCBs.getMouseCoords;
-    
+
     const canvas = getCanvas();
-    
+
     let areDrawing = false;
 
     let curPointArray = [];
@@ -92,150 +80,142 @@ function FreeDrawFactory({ threeCBs, startingGeom = null, transforms=[],
     let compGeomArray = [];
     let compMeshArray = [];
 
-    if(startingGeom) compGeomArray = [startingGeom];
+    if (startingGeom) compGeomArray = [startingGeom];
 
     let totalGeom;
-    
-    // constants for the curve geometry
-    const {tubularSegments, radius, radialSegments, closed} = meshOptions;
 
-     // whether have to transform meshes as we create them
-    const areTransforming = (transforms.length > 0);
+    // constants for the curve geometry
+    const { tubularSegments, radius, radialSegments, closed } = meshOptions;
+
+    // whether have to transform meshes as we create them
+    const areTransforming = transforms.length > 0;
 
     //------------------------------------------------------------------------
     //
     // this is a transparent plane, used for mouse picking
-    
+
     const planeGeom = new THREE.PlaneBufferGeometry(100, 100, 1, 1);
-    const planeMat = new THREE.MeshBasicMaterial( {color: 'rgba(100, 100, 100, 1)'} );
+    const planeMat = new THREE.MeshBasicMaterial({ color: 'rgba(100, 100, 100, 1)' });
 
     planeMat.transparent = true;
     planeMat.opacity = 0.0;
     planeMat.side = THREE.DoubleSide;
     planeMat.depthWrite = false;
 
-    planeGeom.rotateX(Math.PI);
+    const planeMesh = new THREE.Mesh(planeGeom, planeMat);
 
-    const planeMesh = new THREE.Mesh( planeGeom, planeMat );
+    add(planeMesh);
 
-    add( planeMesh );
-    
     //------------------------------------------------------------------------
 
-    function mouseDownCB( e ) {
-        
-        areDrawing = true;        
-        curPointArray.push(  yNeg(getMouseCoords(e, planeMesh)) );
-        
-    } 
-
-    let curPoint;
-    
-    function mouseMoveCB( e ) {
-	
-         if (!areDrawing) return;
-
-         curPoint =  yNeg(getMouseCoords(e, planeMesh));
-           
+    function mouseDownCB(e) {
+        areDrawing = true;
+        curPointArray.push(getMouseCoords(e, planeMesh));
     }
 
-    function animatedDrawing( ) {
+    let curPoint;
 
+    function mouseMoveCB(e) {
+        if (!areDrawing) return;
+
+        curPoint = getMouseCoords(e, planeMesh);
+    }
+
+    function animatedDrawing() {
         //requestAnimationFrame( animatedDrawing );
 
-        setTimeout( animatedDrawing, 30 );
-        
+        setTimeout(animatedDrawing, 30);
+
         if (!areDrawing || !curPoint) return;
-        
-        curPointArray.push( curPoint );
+
+        curPointArray.push(curPoint);
 
         let curPath;
         const l = curPointArray.length;
-        
-        if ( l === 2 ) {
-            curPath =  new THREE.LineCurve3( curPointArray[1], curPointArray[0] );
-        }
-        
-        else if ( l === 3 ) {
-            curPath = new THREE.QuadraticBezierCurve3( curPointArray[2], curPointArray[1], curPointArray[0] );
-        }
-        
-        else {
-            curPath =  new THREE.CatmullRomCurve3( [curPointArray[l-1], curPointArray[l-2], curPointArray[l-3]] );
+
+        if (l === 2) {
+            curPath = new THREE.LineCurve3(curPointArray[1], curPointArray[0]);
+        } else if (l === 3) {
+            curPath = new THREE.QuadraticBezierCurve3(
+                curPointArray[2],
+                curPointArray[1],
+                curPointArray[0]
+            );
+        } else {
+            curPath = new THREE.CatmullRomCurve3([
+                curPointArray[l - 1],
+                curPointArray[l - 2],
+                curPointArray[l - 3]
+            ]);
         }
 
-        
-        let curGeom =  new THREE.TubeBufferGeometry( curPath,
-                                                       tubularSegments,
-                                                       radius,
-                                                       radialSegments,
-                                                       closed );
-        if( areTransforming ) {
+        let curGeom = new THREE.TubeBufferGeometry(
+            curPath,
+            tubularSegments,
+            radius,
+            radialSegments,
+            closed
+        );
+        if (areTransforming) {
+            const newCopies = transforms.map((t) => t.transformGeometry(curGeom));
+            newCopies.push(curGeom);
 
-            const newCopies = transforms.map( t => t.transformGeometry(curGeom) );
-            newCopies.push( curGeom );
-
-            curGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);            
+            curGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);
         }
-        curGeom.rotateX(Math.PI);
-        curGeomArray.push( curGeom );
+        curGeomArray.push(curGeom);
 
-        const curMesh = new THREE.Mesh( curGeom, material );
-        curMeshArray.push( curMesh );
-        add( curMesh );      
+        const curMesh = new THREE.Mesh(curGeom, material);
+        curMeshArray.push(curMesh);
+        add(curMesh);
     }
 
     //requestAnimationFrame( animatedDrawing );
 
-    setTimeout( animatedDrawing, 30 );
+    setTimeout(animatedDrawing, 30);
 
-
-    function mouseUpCB( e ) {
-
-	if( !areDrawing ) return;
+    function mouseUpCB(e) {
+        if (!areDrawing) return;
 
         // create this connected component's geometry from curGeomArray
         let curCompGeom;
 
-	if( curGeomArray.length > 0 ) {
-	    curCompGeom = BufferGeometryUtils.mergeBufferGeometries(curGeomArray);
+        if (curGeomArray.length > 0) {
+            curCompGeom = BufferGeometryUtils.mergeBufferGeometries(curGeomArray);
 
             // add it to the array of components
-            compGeomArray.push( curCompGeom );
+            compGeomArray.push(curCompGeom);
 
             // dispose of the older geometries and meshes
-            curGeomArray.forEach( g => {
+            curGeomArray.forEach((g) => {
                 g.dispose();
             });
 
-            curMeshArray.forEach( m => remove(m) );
+            curMeshArray.forEach((m) => remove(m));
 
-            const curCompMesh = new THREE.Mesh( curCompGeom, material );
-            compMeshArray.push( curCompMesh );
-            add( curCompMesh );        
+            const curCompMesh = new THREE.Mesh(curCompGeom, material);
+            compMeshArray.push(curCompMesh);
+            add(curCompMesh);
         }
 
         // otherwise user clicked, and let up mouse, without moving
         // add a sphere at the clicked point, in this case
         else {
+            const pt = getMouseCoords(e, planeMesh);
 
-            const pt = yNeg(getMouseCoords(e, planeMesh));
-            
-            curCompGeom = new THREE.SphereBufferGeometry(radius, 15, 15 ).translate(pt.x, pt.y, 0);
-         
-            if( areTransforming ) {
+            curCompGeom = new THREE.SphereBufferGeometry(radius, 15, 15).translate(pt.x, pt.y, 0);
 
-                const newCopies = transforms.map( t => t.transformGeometry(curCompGeom) );
-                newCopies.push( curCompGeom );
+            if (areTransforming) {
+                const newCopies = transforms.map((t) => t.transformGeometry(curCompGeom));
+                newCopies.push(curCompGeom);
 
-                curCompGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);            
+                curCompGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);
             }
 
-            compGeomArray.push( curCompGeom );
-            
-            const curCompMesh = new THREE.Mesh( curCompGeom, material );
-            compMeshArray.push( curCompMesh );
-            add( curCompMesh );
+            compGeomArray.push(curCompGeom);
+
+            const curCompMesh = new THREE.Mesh(curCompGeom, material);
+            compMeshArray.push(curCompMesh);
+            add(curCompMesh);
         }
 
         curPointArray = [];
@@ -244,297 +224,56 @@ function FreeDrawFactory({ threeCBs, startingGeom = null, transforms=[],
         curPoint = null;
         areDrawing = false;
     }
-    
-    canvas.addEventListener( 'mousedown', mouseDownCB );
-    canvas.addEventListener( 'mousemove', mouseMoveCB );
-    
-    canvas.addEventListener( 'mouseup', mouseUpCB );
+
+    canvas.addEventListener('mousedown', mouseDownCB);
+    canvas.addEventListener('mousemove', mouseMoveCB);
+
+    canvas.addEventListener('mouseup', mouseUpCB);
     //canvas.addEventListener( 'mouseleave', mouseUpCB );
-    
-
-
 
     //--------------------------------------------------
     //
     // exports
     //
     //
-    
-    function dispose() {
-        
-        canvas.removeEventListener( 'mousedown', mouseDownCB );
-        canvas.removeEventListener( 'mousemove', mouseMoveCB );          
-        canvas.removeEventListener( 'mouseup', mouseUpCB );
-	canvas.removeEventListener( 'mouseleave', mouseUpCB );
 
-	if( totalGeom ) totalGeom.dispose();
-	compGeomArray.filter(g => g.dispose).forEach( g => g.dispose() );
-	compMeshArray.filter(m => m.remove).forEach( m => remove(m) );
+    function dispose() {
+        canvas.removeEventListener('mousedown', mouseDownCB);
+        canvas.removeEventListener('mousemove', mouseMoveCB);
+        canvas.removeEventListener('mouseup', mouseUpCB);
+        canvas.removeEventListener('mouseleave', mouseUpCB);
+
+        if (totalGeom) totalGeom.dispose();
+        compGeomArray.filter((g) => g.dispose).forEach((g) => g.dispose());
+        compMeshArray.filter((m) => m.remove).forEach((m) => remove(m));
         material.dispose();
-	remove(planeMesh);
+        remove(planeMesh);
     }
-    
 
     function getMesh() {
+        // removes any undefined entries
+        compGeomArray = compGeomArray.filter((g) => g);
 
-	// removes any undefined entries
-	compGeomArray = compGeomArray.filter( g => g );
+        if (compGeomArray.length == 0) {
+            return undefined;
+        }
 
-	if( compGeomArray.length == 0 )	 {	    
-	    return undefined;
-	}
-	
-	totalGeom = BufferGeometryUtils.mergeBufferGeometries(
-	    compGeomArray );
+        totalGeom = BufferGeometryUtils.mergeBufferGeometries(compGeomArray);
 
-	return new THREE.Mesh( totalGeom, material );
-
+        return new THREE.Mesh(totalGeom, material);
     }
 
     function reset() {
-	
-	compMeshArray.forEach( m => remove(m) );
+        compMeshArray.forEach((m) => remove(m));
 
-	compGeomArray.forEach( g => g.dispose() );
-	
-	curPointArray = [];
-	curGeomArray = [];
-	curMeshArray = [];
-	compGeomArray = [];
-	compMeshArray = [];
-        
-    }
-    
-    return {dispose, getMesh, reset};
-    
-}
-
-function yNeg( vec ) {
-
-    return new THREE.Vector3( vec.x, -vec.y, vec.z );
-
-}
-
-// this doesn't use animation loop; current version does
-
-function FreeDrawFactoryOld({ threeCBs, startingGeom=null, transforms=[],
-                          material = new THREE.MeshBasicMaterial({ color: 0xff00ff }),
-                          meshOptions = {tubularSegments: 128,
-                                         radius: .15,
-                                         radialSegments: 4,
-                                         closed: false}}) {  
-
-    const {getCanvas, add, remove} = threeCBs;
-    const getMouseCoords = threeCBs.getMouseCoords;
-    
-    const canvas = getCanvas();
-    
-    let areDrawing = false;
-
-    let curPointArray = [];
-
-    let curGeomArray = [];
-    let curMeshArray = [];
-    let compGeomArray = [];
-    let compMeshArray = [];
-
-    if(startingGeom) compMeshArray = [startingGeom];
-
-    let totalGeom;
-    
-    // constants for the curve geometry
-    const {tubularSegments, radius, radialSegments, closed} = meshOptions;
-
-     // whether have to transform meshes as we create them
-    const areTransforming = (transforms.length > 0);
-
-    //------------------------------------------------------------------------
-    //
-    // this is a transparent plane, used for mouse picking
-    
-    const planeGeom = new THREE.PlaneBufferGeometry(100, 100, 1, 1);
-    const planeMat = new THREE.MeshBasicMaterial( {color: 'rgba(100, 100, 100, 1)'} );
-
-    planeMat.transparent = true;
-    planeMat.opacity = 0.0;
-    planeMat.side = THREE.DoubleSide;
-    planeMat.depthWrite = false;
-
-    //planeGeom.rotateX(Math.PI);
-
-    const planeMesh = new THREE.Mesh( planeGeom, planeMat );
-
-    add( planeMesh );
-    
-    //------------------------------------------------------------------------
-
-    function mouseDownCB( e ) {
-        
-        areDrawing = true;        
-        curPointArray.push(  yNeg(getMouseCoords(e, planeMesh)) );
-        
-    } 
-        
-    function mouseMoveCB( e ) {
-	
-        if (!areDrawing) return;
-
-        let curPath;
-        const l = curPointArray.length;
-        
-        curPointArray.push(  yNeg(getMouseCoords(e, planeMesh)) );
-        
-        if ( l == 1 ) {
-            curPath =  new THREE.LineCurve3( curPointArray[1], curPointArray[0] );
-        }
-        
-        else if ( l == 2 ) {
-            curPath = new THREE.QuadraticBezierCurve3( curPointArray[2], curPointArray[1], curPointArray[0] );
-        }
-        
-        else {
-            curPath =  new THREE.CatmullRomCurve3( [curPointArray[l], curPointArray[l-1], curPointArray[l-2]] );
-        }
-
-        
-        let curGeom =  new THREE.TubeBufferGeometry( curPath,
-                                                       tubularSegments,
-                                                       radius,
-                                                       radialSegments,
-                                                       closed );
-        if( areTransforming ) {
-
-            const newCopies = transforms.map( t => t.transformGeometry(curGeom) );
-            newCopies.push( curGeom );
-
-            curGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);            
-        }
-        //curGeom.rotateX(Math.PI);
-        curGeomArray.push( curGeom );
-
-        const curMesh = new THREE.Mesh( curGeom, material );
-        curMeshArray.push( curMesh );
-        add( curMesh );      
-    }
-
-
-    function mouseUpCB( e ) {
-
-	if( !areDrawing ) return;
-
-        // create this connected component's geometry from curGeomArray
-        let curCompGeom;
-
-	if( curGeomArray.length > 0 ) {
-	    curCompGeom = BufferGeometryUtils.mergeBufferGeometries(curGeomArray);
-
-            // add it to the array of components
-            compGeomArray.push( curCompGeom );
-
-            // dispose of the older geometries and meshes
-            curGeomArray.forEach( g => {
-                g.dispose();
-            });
-
-            curMeshArray.forEach( m => remove(m) );
-
-            const curCompMesh = new THREE.Mesh( curCompGeom, material );
-            compMeshArray.push( curCompMesh );
-            add( curCompMesh );        
-        }
-
-        // otherwise user clicked, and let up mouse, without moving
-        // add a sphere at the clicked point, in this case
-        else {
-            //console.log('sphere added?');
-
-            const pt = yNeg(getMouseCoords(e, planeMesh));
-            
-            curCompGeom = new THREE.SphereBufferGeometry(radius, 15, 15 ).translate(pt.x, pt.y, 0);
-         
-            if( areTransforming ) {
-
-                const newCopies = transforms.map( t => t.transformGeometry(curCompGeom) );
-                newCopies.push( curCompGeom );
-
-                curCompGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);            
-            }
-
-            compGeomArray.push( curCompGeom );
-            
-            const curCompMesh = new THREE.Mesh( curCompGeom, material );
-            compMeshArray.push( curCompMesh );
-            add( curCompMesh );
-        }
+        compGeomArray.forEach((g) => g.dispose());
 
         curPointArray = [];
         curGeomArray = [];
-        curMeshArray = [];                              
-        areDrawing = false;
-    }
-    
-    canvas.addEventListener( 'mousedown', mouseDownCB );
-    canvas.addEventListener( 'mousemove', mouseMoveCB );
-    
-    canvas.addEventListener( 'mouseup', mouseUpCB );
-    //canvas.addEventListener( 'mouseleave', mouseUpCB );
-    
-
-
-
-    //--------------------------------------------------
-    //
-    // exports
-    //
-    //
-    
-    function dispose() {
-        
-        canvas.removeEventListener( 'mousedown', mouseDownCB );
-        canvas.removeEventListener( 'mousemove', mouseMoveCB );          
-        canvas.removeEventListener( 'mouseup', mouseUpCB );
-	canvas.removeEventListener( 'mouseleave', mouseUpCB );
-
-	if( totalGeom ) totalGeom.dispose();
-	compGeomArray.filter(g => g.dispose).forEach( g => g.dispose() );
-	compMeshArray.filter(m => m.remove).forEach( m => remove(m) );
-        material.dispose();
-	remove(planeMesh);
-    }
-    
-
-    function getMesh() {
-
-	// removes any undefined entries
-	compGeomArray = compGeomArray.filter( g => g );
-
-	if( compGeomArray.length == 0 )	 {	    
-	    return undefined;
-	}
-	
-	totalGeom = BufferGeometryUtils.mergeBufferGeometries(
-	    compGeomArray );
-
-	return new THREE.Mesh( totalGeom, material );
-
+        curMeshArray = [];
+        compGeomArray = [];
+        compMeshArray = [];
     }
 
-    function reset() {
-	
-	compMeshArray.forEach( m => remove(m) );
-
-	compGeomArray.forEach( g => g.dispose() );
-	
-	curPointArray = [];
-	curGeomArray = [];
-	curMeshArray = [];
-	compGeomArray = [];
-	compMeshArray = [];
-        
-    }
-    
-    return {dispose, getMesh, reset};
-    
+    return { dispose, getMesh, reset };
 }
-
-
