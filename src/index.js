@@ -17,14 +17,14 @@ import './style.css';
 
 //import App from './pages/df/App_resonance.js';
 
-//import App from './pages/df/App_streamlines.js';
-
-//import App from './pages/df/App_streamlines_new.js';
+import App from './pages/df/App_streamlines.js';
 
 //import App from './pages/df/App_delaunay.js';
 
+// *** App_combo needs to be changed to use ArrowGridGeom instead of ArrowGrid
 //import App from './pages/df/App_combo.js';
 
+// *** not working super well
 //import App from './pages/implicitFunc/App.js';
 
 //import App from './pages/fg/App_fg.js';
@@ -32,6 +32,10 @@ import './style.css';
 //import App from './pages/vibratingString/App.js';
 
 //------------------------------------------------------------------------
+
+//import App from './pages/symmetry/App_fd.js';
+
+//import App from './pages/symmetry/App_gd.js';
 
 //import App from './pages/symmetry/App_reflection_fd.js';
 
@@ -57,7 +61,7 @@ import './style.css';
 
 //import App from './pages/symmetry/App_rotation_solver_disk.js';
 
-import App from './pages/symmetry/App_translation_fd.js';
+//import App from './pages/symmetry/App_translation_fd.js';
 
 function main() {
     const element = document.createElement('div');

@@ -1,43 +1,26 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import queryString from 'query-string';
-
-import { jsx, css } from '@emotion/core';
-import styled from '@emotion/styled';
-
 import * as THREE from 'three';
 
-const srcDirectory = '../..';
-
-import {ThreeSceneComp, useThreeCBs} from '../../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 import ControlBar from '../../components/ControlBar.js';
 import Main from '../../components/Main.js';
-import FunctionInput from '../../components/FunctionInput.js';
+
 import funcParser from '../../utils/funcParser.js';
-import ResetCameraButton from '../../components/ResetCameraButton.js';
-import ClickablePlaneComp from '../../components/ClickablePlaneComp.js';
 import Input from '../../components/Input.js';
-import ArrowGridOptions from '../../components/ArrowGridOptions.js';
-import SaveButton from '../../components/SaveButton.js';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
 import Button from '../../components/Button.js';
 
 import useGridAndOrigin from '../../graphics/useGridAndOrigin.js';
 import use2DAxes from '../../graphics/use2DAxes.js';
-import FunctionGraph2DGeom from '../../graphics/FunctionGraph2DGeom.js';
-import ArrowGridGeom from '../../graphics/ArrowGridGeom.js';
-import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.js';
-import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.js';
-import ArrowGeometry from '../../graphics/ArrowGeometry.js';
-import CurvedPathGeom from '../../graphics/CurvedPathGeom.js';
 
-import useDebounce from '../../hooks/useDebounce.js';
-import useHashLocation from '../../hooks/useHashLocation.js';
+import ImplicitFuncGraph, {
+    nextSide,
+    borderingSquare,
+    ptOnSide
+} from '../../math/ImplicitFuncGraph.js';
 
-import ImplicitFuncGraph, {nextSide, borderingSquare, ptOnSide} from '../../math/ImplicitFuncGraph.js';
-
-import {round} from '../../utils/BaseUtils.js';
-
+import { round } from '../../utils/BaseUtils.js';
 
 //------------------------------------------------------------------------
 //
@@ -47,7 +30,6 @@ import {round} from '../../utils/BaseUtils.js';
 const fonts = "'Helvetica', 'Hind', sans-serif";
 const labelStyle = {
     color: 'black',
-    padding: '.1em',
     margin: '.5em',
     padding: '.4em',
     fontSize: '1.5em'
@@ -58,7 +40,7 @@ const initColors = {
     solution: '#C2374F',
     firstPt: '#C2374F',
     secPt: '#C2374F',
-    testFunc: '#E16962',//#DBBBB0',
+    testFunc: '#E16962', //#DBBBB0',
     axes: '#0A2C3C',
     controlBar: '#0A2C3C',
     clearColor: '#f0f0f0'
@@ -74,24 +56,24 @@ const initCameraData = {
     //fov: 75,
     near: -100,
     far: 100,
-    rotation: {order: 'XYZ'},
-    orthographic: { left: frustumSize * aspectRatio / -2,
-                    right: frustumSize * aspectRatio / 2,
-                    top: frustumSize / 2,
-                    bottom: frustumSize / -2,
-                  }
+    rotation: { order: 'XYZ' },
+    orthographic: {
+        left: (frustumSize * aspectRatio) / -2,
+        right: (frustumSize * aspectRatio) / 2,
+        top: frustumSize / 2,
+        bottom: frustumSize / -2
+    }
 };
 
 const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE}, 
-    touches: { ONE: THREE.MOUSE.PAN,
-	       TWO: THREE.TOUCH.DOLLY,
-	       THREE: THREE.MOUSE.ROTATE },
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
+    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
     enableRotate: true,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    screenSpaceSpanning: false};
+    screenSpaceSpanning: false
+};
 
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -102,33 +84,33 @@ const fontSize = 1;
 const controlBarFontSize = 1;
 
 const solutionMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color( initColors.solution ),
-    side: THREE.FrontSide });
+    color: new THREE.Color(initColors.solution),
+    side: THREE.FrontSide
+});
 
 solutionMaterial.transparent = true;
-solutionMaterial.opacity = .6;
-
-const solutionCurveRadius = .1;
+solutionMaterial.opacity = 0.6;
 
 const pointMaterial = solutionMaterial.clone();
 pointMaterial.transparent = false;
-pointMaterial.opacity = .8;
+pointMaterial.opacity = 0.8;
 
 const testFuncMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color( initColors.testFunc ),
-    side: THREE.FrontSide });
+    color: new THREE.Color(initColors.testFunc),
+    side: THREE.FrontSide
+});
 
 testFuncMaterial.transparent = true;
-testFuncMaterial.opacity = .6;
+testFuncMaterial.opacity = 0.6;
 
-const testFuncRadius = .1;
+const testFuncRadius = 0.1;
 
-const testFuncH = .01;
+const testFuncH = 0.01;
 
 const dragDebounceTime = 5;
 
 const initAxesData = {
-    radius: .01,
+    radius: 0.01,
     show: true,
     showLabels: true,
     labelStyle
@@ -138,9 +120,7 @@ const initGridData = {
     show: true
 };
 
-const funcStr = 
-      '(x^2+y^2)^3 - 4*x^2*y^2';
-
+const funcStr = '(x^2+y^2)^3 - 4*x^2*y^2';
 
 // sombrero
 //'3*sin((3.14)*(x^2+y^2)^(1/2))/(3.14*(x^2+y^2)^(1/2))'
@@ -154,166 +134,130 @@ const funcStr =
 // ampersand curve
 // (y^2-x^2)*(x-1)*(2*x-3)-4*(x^2+y^2-2*x)^2
 
-
 const quadSize = 2;
 const initState = {
-    bounds: {xMin: -quadSize, xMax: quadSize,
-             yMin: -quadSize, yMax: quadSize},
+    bounds: { xMin: -quadSize, xMax: quadSize, yMin: -quadSize, yMax: quadSize },
     funcStr,
     func: funcParser(funcStr),
-    approxH: .01
+    approxH: 0.01
 };
-
-const roundConst = 3;
-
-function shrinkState({ bounds, funcStr, approxH }) {
-
-    const {xMin, xMax, yMin, yMax} = bounds;
-    
-    const newObj = { b: [xMin, xMax, yMin, yMax],
-                     fs: funcStr,
-                     a: approxH};
-
-    return newObj;            
-}
 
 // f is a function applied to the string representing each array element
 
-function strArrayToArray( strArray, f = Number ) {
-
+function strArrayToArray(strArray, f = Number) {
     // e.g., '2,4,-32.13' -> [2, 4, -32.13]
 
-    return strArray.split(',').map( x => f(x) );
+    return strArray.split(',').map((x) => f(x));
 }
-    
-
-function expandState({ b, fs, a }) {
-
-    const bds = strArrayToArray( b, Number );
-
-    return ({ bounds: {xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3]},
-              funcStr: fs,
-              func: funcParser(fs),
-              approxH: Number(a)
-            });    
-}
-
-const textureSize = 10;
-
-
-
 
 //------------------------------------------------------------------------
 
-
 export default function App() {
-         
     const [state, setState] = useState(initState);
 
     const [showGraph, setShowGraph] = useState(false);
-    
+
     const [graphComps, setGraphComps] = useState(null);
 
     const [textureCanvas, setTextureCanvas] = useState(null);
-    
-    const [colors,] = useState(initColors);
 
-    const [fontState,] = useState(fonts);
+    const [colors] = useState(initColors);
 
-    const [cbhState,] = useState(controlBarHeight);
+    const [fontState] = useState(fonts);
 
-    const [cbfsState,] = useState(controlBarFontSize);
+    const [cbhState] = useState(controlBarHeight);
 
-    const [minuscbhState,] = useState(100-controlBarHeight);
-    
-    const [controlsEnabled, setControlsEnabled] = useState(false);
+    const [cbfsState] = useState(controlBarFontSize);
+
+    const [minuscbhState] = useState(100 - controlBarHeight);
 
     const threeSceneRef = useRef(null);
 
     // following will be passed to components that need to draw
-    const threeCBs = useThreeCBs( threeSceneRef );    
+    const threeCBs = useThreeCBs(threeSceneRef);
 
-    
     //------------------------------------------------------------------------
     //
     // initial effects
 
-    useGridAndOrigin({ threeCBs,
-    		       bounds: initState.bounds,
-    		       show: initGridData.show,
-    		       originRadius: .1 });
+    useGridAndOrigin({
+        threeCBs,
+        bounds: initState.bounds,
+        show: initGridData.show,
+        originRadius: 0.1
+    });
 
-    use2DAxes({ threeCBs,
-                bounds: state.bounds,
-                radius: initAxesData.radius,
-                color: initColors.axes,
-                show: initAxesData.show,
-                showLabels: initAxesData.showLabels,
-                labelStyle });
+    use2DAxes({
+        threeCBs,
+        bounds: state.bounds,
+        radius: initAxesData.radius,
+        color: initColors.axes,
+        show: initAxesData.show,
+        showLabels: initAxesData.showLabels,
+        labelStyle
+    });
 
-    useEffect( () => {
-
-        if( !showGraph ) {
+    useEffect(() => {
+        if (!showGraph) {
             setGraphComps(null);
             setTextureCanvas(null);
             return;
         }
-        
-        const textureCanvas = ImplicitFuncGraph({ func: state.func,
-                                                  bounds: state.bounds,
-                                                  approxH: state.approxH });
-      
+
+        const textureCanvas = ImplicitFuncGraph({
+            func: state.func,
+            bounds: state.bounds,
+            approxH: state.approxH
+        });
+
         //setGraphComps(compArray.map( a => a.map( ([x,y]) => new THREE.Vector3(x,y,0) ) ) );
         setTextureCanvas(textureCanvas);
-
     }, [showGraph, state.func, state.bounds, state.approxH]);
 
-    useEffect( () => {
-
-        if( !threeCBs ) return; // || !graphComps || graphComps.length === 0 ) return;
+    useEffect(() => {
+        if (!threeCBs) return; // || !graphComps || graphComps.length === 0 ) return;
 
         //const curveGeom = CurvedPathGeom({ compArray: graphComps, radius: .02 });
         //const curveMesh = new THREE.Mesh( curveGeom, solutionMaterial );
         //threeCBs.add(curveMesh);
 
         let planeGeom, planeTexture, planeMaterial, mesh;
-        
-        if( textureCanvas ) {
-            planeGeom = new THREE.PlaneGeometry( state.bounds.xMax - state.bounds.xMin,
-                                                 state.bounds.yMax - state.bounds.yMin );
-            planeTexture = new THREE.CanvasTexture( textureCanvas.canvas );
+
+        if (textureCanvas) {
+            planeGeom = new THREE.PlaneGeometry(
+                state.bounds.xMax - state.bounds.xMin,
+                state.bounds.yMax - state.bounds.yMin
+            );
+            planeTexture = new THREE.CanvasTexture(textureCanvas.canvas);
             planeMaterial = new THREE.MeshBasicMaterial({ map: planeTexture });
 
-            mesh = new THREE.Mesh( planeGeom, planeMaterial );
+            mesh = new THREE.Mesh(planeGeom, planeMaterial);
             threeCBs.add(mesh);
         }
-        
+
         return () => {
             //threeCBs.remove(curveMesh);
             //curveGeom.dispose();
 
-            if(mesh) threeCBs.remove(mesh);
-            if(planeGeom) planeGeom.dispose();
+            if (mesh) threeCBs.remove(mesh);
+            if (planeGeom) planeGeom.dispose();
             //if(planeTexture) planeTexture.dispose();
-            if(planeMaterial) planeMaterial.dispose();
-            
+            if (planeMaterial) planeMaterial.dispose();
         };
-        
-    }, [state.bounds, textureCanvas, threeCBs] );
+    }, [state.bounds, textureCanvas, threeCBs]);
 
-   
-    const funcInputCB =  useCallback(
-        newFuncStr => {
+    const funcInputCB = useCallback((newFuncStr) => {
+        setState(({ funcStr, func, ...rest }) => ({
+            funcStr: newFuncStr,
+            func: funcParser(newFuncStr),
+            ...rest
+        }));
 
-            setState( ({ funcStr,func, ...rest }) =>
-                      ({ funcStr: newFuncStr, func: funcParser(newFuncStr), ...rest }) );
+        setShowGraph(false);
+    }, []);
 
-            setShowGraph(false);
-        } , [] );
+    const buttonCB = useCallback(() => setShowGraph(true), []);
 
-    const buttonCB = useCallback( () => setShowGraph(true), [] );
-   
-    
     const css3 = useRef({
         margin: 0,
         width: '100%',
@@ -325,7 +269,7 @@ export default function App() {
         alignContent: 'center',
         alignItems: 'center'
     });
-    
+
     const css4 = useRef({
         margin: 0,
         width: '100%',
@@ -335,59 +279,49 @@ export default function App() {
         justifyContent: 'center',
         padding: '0em 2em',
         alignContent: 'center',
-        alignItems: 'center'});
-    
-    const css5 = useRef({textAlign: 'center',
-                         width: '12em'});
+        alignItems: 'center'
+    });
 
-    const css6 = useRef({paddingTop: '.5em'});
+    const css5 = useRef({ textAlign: 'center', width: '12em' });
 
-    const css7 = useRef({textAlign: 'center'});
+    const css6 = useRef({ paddingTop: '.5em' });
 
-    const css8 = useRef({padding: '0em'});
+    const css7 = useRef({ textAlign: 'center' });
 
-    const css9 = useRef({margin: '0em 2em'});
-    
-    return (       
-        <FullScreenBaseComponent backgroundColor={colors.controlBar}
-                                 fonts={fontState}>
-          
-          <ControlBar height={cbhState} fontSize={fontSize*cbfsState} padding='0em'>
-            <div style={css3.current}>
-              <div style={css4.current}>
-                <div style={css5.current}>
-                  Function:
+    const css8 = useRef({ padding: '0em' });
+
+    const css9 = useRef({ margin: '0em 2em' });
+
+    return (
+        <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fontState}>
+            <ControlBar height={cbhState} fontSize={fontSize * cbfsState} padding='0em'>
+                <div style={css3.current}>
+                    <div style={css4.current}>
+                        <div style={css5.current}>Function:</div>
+                        <span style={css6.current}>
+                            <Input size={40} initValue={state.funcStr} onC={funcInputCB} />
+                        </span>
+                        <Button userCss={css9.current} onClickFunc={buttonCB}>
+                            Graph
+                        </Button>
+                    </div>
                 </div>
-                <span style={css6.current}>
-                  <Input size={40}
-                         initValue={state.funcStr}
-                         onC={funcInputCB}/>
-                </span>
-                <Button userCss={css9.current}
-                        onClickFunc={buttonCB}>
-                Graph
-              </Button>
-              </div>
-            
-            </div>
-          </ControlBar>
-          
-          <Main height={minuscbhState}
-                fontSize={fontSize*cbfsState}>
-            <ThreeSceneComp ref={threeSceneRef}
-                            initCameraData={initCameraData}
-                            controlsData={initControlsData}
-            />          
-          
-          </Main>
-          
-        </FullScreenBaseComponent>);                              
+            </ControlBar>
+
+            <Main height={minuscbhState} fontSize={fontSize * cbfsState}>
+                <ThreeSceneComp
+                    ref={threeSceneRef}
+                    initCameraData={initCameraData}
+                    controlsData={initControlsData}
+                />
+            </Main>
+        </FullScreenBaseComponent>
+    );
 }
 
-
- /* <ResetCameraButton key="resetCameraButton" */
- /*                               onClickFunc={resetCameraCB} */
- /*                               color={controlsEnabled ? initColors.controlBar : null } */
- /*                               userCss={{ top: '85%', */
- /*                                          left: '5%', */
- /*                                          userSelect: 'none'}}/> */
+/* <ResetCameraButton key="resetCameraButton" */
+/*                               onClickFunc={resetCameraCB} */
+/*                               color={controlsEnabled ? initColors.controlBar : null } */
+/*                               userCss={{ top: '85%', */
+/*                                          left: '5%', */
+/*                                          userSelect: 'none'}}/> */

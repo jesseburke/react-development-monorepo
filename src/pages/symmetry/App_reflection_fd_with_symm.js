@@ -139,7 +139,7 @@ export default function App() {
 
             return LineFactory(new THREE.Vector3(yVal / xVal, 1, 0));
         });
-    });
+    }, []);
 
     return (
         <FullScreenBaseComponent fonts={fonts}>
@@ -158,13 +158,7 @@ export default function App() {
                     <div className='reflection-box'>
                         <div className='top-line-reflection-box'>
                             <span className='small-margin'> Reflecting about </span>
-                            <Input
-                                size={4}
-                                onC={yCB}
-                                key={line}
-                                initValue={line.isVertical() ? 0 : 1}
-                            />
-                            <span className='small-margin'> y = </span>
+                            <span className='small-margin'> {line.isVertical() ? 0 : 'y'} = </span>
                             <Input
                                 size={4}
                                 onC={xCB}
