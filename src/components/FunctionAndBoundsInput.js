@@ -7,7 +7,7 @@ import Button from '../components/Button.js';
 
 import funcParser, { funcParserXT } from '../utils/funcParser.js';
 
-import styles from './FunctionAndBoundsInput.css';
+import styles from './FunctionAndBoundsInput.module.css';
 
 export default React.memo(function FunctionAndBoundsInput({
     leftSideOfEquation,
@@ -87,26 +87,26 @@ export const FunctionAndBoundsInputXT = React.memo(function functionInputAndBoun
     const graphButtonCB = useCallback(() => onChangeFunc(bounds, funcStr), [bounds, funcStr]);
 
     return (
-        <div className={'base'}>
-            <div className={'outside-container base-item'}>
-                <span className={'inside-container outside-container-item'} style={userCss}>
-                    <span className={'left-side-equation'}>{leftSideOfEquation}</span>
+        <div className={styles['base']}>
+            <div className={styles['outside-container base-item']}>
+                <span className={styles['inside-container outside-container-item']} style={userCss}>
+                    <span className={styles['left-side-equation']}>{leftSideOfEquation}</span>
                     <Input size={inputSize} initValue={initFuncStr} onC={funcCB} />
                 </span>
 
-                <span className={'inside-container outside-container-item'}>
-                    <span className={'inside-container-item'}>
-                        <span className={'text-item'}>{'0 \u{2264} x \u{2264}'}</span>
+                <span className={styles['inside-container outside-container-item']}>
+                    <span className={styles['inside-container-item']}>
+                        <span className={styles['text-item']}>{'0 \u{2264} x \u{2264}'}</span>
                         <Input size={bis} initValue={initBounds.xMax} onC={xMaxCB} />
                     </span>
-                    <span className={'inside-container-item'}>
-                        <span className={'text-item'}>{'0 \u{2264} t \u{2264}'}</span>
+                    <span className={styles['inside-container-item']}>
+                        <span className={styles['text-item']}>{'0 \u{2264} t \u{2264}'}</span>
                         <Input size={bis} initValue={initBounds.tMax} onC={tMaxCB} />
                     </span>
                 </span>
             </div>
 
-            <button type={'button'} className={'base-item button'} onClick={graphButtonCB}>
+            <button type={'button'} className={styles['base-item button']} onClick={graphButtonCB}>
                 Graph
             </button>
         </div>

@@ -39,6 +39,8 @@
         "@jesseburke/graphics-components": "^1.1.0",
         "@navsnpm/katex-expression": "^1.0.8",
         "babel-plugin-emotion": "^10.0.33",
+        "classname": "0.0.0",
+        "classnames": "^2.2.6",
         "css-loader": "^3.6.0",
         "delaunator": "^4.0.1",
         "dotenv-webpack": "^1.8.0",

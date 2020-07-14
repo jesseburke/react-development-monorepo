@@ -2,14 +2,13 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-//import {VertexTangentsHelper} from 'three/examples/jsm/helpers/VertexTangentsHelper.js';
 
 import gsap from 'gsap';
 
 import { Helmet } from 'react-helmet';
 import queryString from 'query-string';
 
-import './App.css';
+import styles from './App.module.css';
 
 import ControlBar from '../../components/ControlBar.js';
 import Main from '../../components/Main.js';
@@ -554,9 +553,9 @@ export default function App() {
                     initBounds={state.bounds}
                     leftSideOfEquation='s(x,t) ='
                 />
-                <div className={'time-container'}>
+                <div className={styles.timeContainer}>
                     <Slider value={t0} CB={sliderCB} label={'t0'} max={state.bounds.tMax} min={0} />
-                    <span onClick={pauseCB} className={'play-pause-button'}>
+                    <span onClick={pauseCB} className={styles.playPauseButton}>
                         {paused ? '\u{25B6}' : '\u{23F8}'}
                     </span>
                 </div>
@@ -571,14 +570,7 @@ export default function App() {
                     width={threeWidth.toString() + '%'}
                 />
                 <canvas
-                    css={{
-                        position: 'absolute',
-                        right: 0,
-                        width: (100 - threeWidth).toString() + '%',
-                        height: '100%',
-                        borderLeft: 'solid 10px white',
-                        display: 'block'
-                    }}
+                    className={styles.canvas}
                     width={1024}
                     height={1024}
                     ref={(elt) => (canvasRef.current = elt)}

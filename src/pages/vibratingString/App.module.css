@@ -1,0 +1,24 @@
+
+.timeContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1em;
+}
+
+.playPauseButton {
+    margin: 1em;
+    padding: 1em;
+    border: solid 2px;
+    flex: 2;
+}
+
+.canvas {
+    position: absolute;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    border-left: solid 10px white;
+    display: block;
+}
