@@ -1,0 +1,5 @@
+1) Input and FunctionInput aren't working in quite a few df Apps
+
+2) css should be put into files for all Apps (and all components, etc)
+
+3) should immer, useReducer, and/or Recoil be used in these apps?

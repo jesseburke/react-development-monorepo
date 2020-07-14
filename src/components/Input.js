@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-//import { jsx, css } from '@emotion/core';
-
 export default React.memo(function Input({ onC, initValue, size, userCss = {} }) {
     const newCss = useRef(
         Object.assign(
@@ -23,7 +21,7 @@ export default React.memo(function Input({ onC, initValue, size, userCss = {} })
     const handleBlur = useCallback(
         (event) => {
             if (onC) {
-                onC(Number(event.target.value));
+                onC(event.target.value);
             }
         },
         [onC]
@@ -35,10 +33,7 @@ export default React.memo(function Input({ onC, initValue, size, userCss = {} })
         }
     }, []);
 
-    const handleChange = useCallback(
-        (event) => setIntermediateValue(Number(event.target.value)),
-        []
-    );
+    const handleChange = useCallback((event) => setIntermediateValue(event.target.value), []);
 
     return (
         <input

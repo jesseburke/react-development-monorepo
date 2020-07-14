@@ -17,7 +17,7 @@ import './style.css';
 
 //import App from './pages/df/App_resonance.js';
 
-import App from './pages/df/App_streamlines.js';
+//import App from './pages/df/App_streamlines.js';
 
 //import App from './pages/df/App_delaunay.js';
 
@@ -29,7 +29,7 @@ import App from './pages/df/App_streamlines.js';
 
 //import App from './pages/fg/App_fg.js';
 
-//import App from './pages/vibratingString/App.js';
+import App from './pages/vibratingString/App.js';
 
 //------------------------------------------------------------------------
 

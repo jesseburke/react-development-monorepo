@@ -4,6 +4,8 @@ import queryString from 'query-string';
 
 import * as THREE from 'three';
 
+import './styles.css';
+
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 import ControlBar from '../../components/ControlBar.js';
 import Main from '../../components/Main.js';
@@ -11,7 +13,6 @@ import FunctionInput from '../../components/FunctionInput.js';
 import funcParser from '../../utils/funcParser.js';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.js';
 import Input from '../../components/Input.js';
-import ArrowGridOptions from '../../components/ArrowGridOptions.js';
 import SaveButton from '../../components/SaveButton.js';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js';
 
@@ -336,15 +337,13 @@ export default function App() {
     //
     // solution effect
 
-    const funcInputCallback = useCallback(
-        (newFunc, newFuncStr) =>
-            setState(({ func, funcStr, ...rest }) => ({
-                func: newFunc,
-                funcStr: newFuncStr,
-                ...rest
-            })),
-        []
-    );
+    const funcInputCallback = useCallback((newFunc, newFuncStr) => {
+        setState(({ func, funcStr, ...rest }) => ({
+            func: newFunc,
+            funcStr: newFuncStr,
+            ...rest
+        }));
+    }, []);
 
     const clickCB = useCallback(
         (pt) => {
@@ -472,102 +471,47 @@ export default function App() {
         }
     }, [controlsEnabled, threeCBs]);
 
-    const css1 = useRef(
-        {
-            margin: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            padding: '.5em 2.5em',
-            borderRight: '1px solid',
-            flex: 1
-        },
-        []
-    );
-
-    const css2 = useRef(
-        {
-            paddingRight: '1em',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center',
-            borderRight: '1px solid'
-        },
-        []
-    );
-
-    const css3 = useRef(
-        {
-            justifyContent: 'center',
-            alignItems: 'center',
-            flex: 7,
-            paddingTop: '.5em',
-            paddingBottom: '.5em',
-            paddingLeft: '1em',
-            paddingRight: '2em'
-        },
-        []
-    );
-
-    const css4 = useRef(
-        {
-            margin: 0,
-            position: 'relative',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: '0em 2em',
-            alignContent: 'center',
-            alignItems: 'center',
-            borderLeft: '1px solid'
-        },
-        []
-    );
-
-    const css5 = useRef({ textAlign: 'center', width: '12em' }, []);
-
-    const css6 = useRef({ paddingTop: '.5em' }, []);
-
-    const css7 = useRef({ textAlign: 'center' }, []);
-
-    const css8 = useRef({ padding: '0em' }, []);
-
     return (
         <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fontState}>
             <ControlBar height={cbhState} fontSize={fontSize * cbfsState} padding='0em'>
-                <div style={css1.current}>
-                    <span style={css7.current}>Test Function</span>
+                <div className='center-flex-column border-right large-padding'>
+                    <span className='text-align-center'>Test Function:</span>
                     <FunctionInput
-                        userCss={css7.current}
                         onChangeFunc={testFuncInputCB}
                         initFuncStr={state.testFuncStr}
                         totalWidth='12em'
-                        inputSize={16}
+                        inputSize={20}
                         leftSideOfEquation={'\u{00177}(x) ='}
                     />
                 </div>
 
-                <FunctionInput
-                    userCss={css2.current}
-                    onChangeFunc={funcInputCallback}
-                    initFuncStr={state.funcStr}
-                    leftSideOfEquation='dy/dx ='
-                />
+                <div className='center-flex-row border-right'>
+                    <FunctionInput
+                        onChangeFunc={funcInputCallback}
+                        initFuncStr={state.funcStr}
+                        leftSideOfEquation='dy/dx ='
+                    />
+                </div>
 
-                <ArrowGridOptions
-                    userCss={css3.current}
-                    initDensity={state.arrowDensity}
-                    initLength={state.arrowLength}
-                    densityCB={densityInputCB}
-                    lengthCB={lengthInputCB}
-                />
-                <div style={css4.current}>
-                    <div style={css5.current}>Solution approximation constant:</div>
-                    <span style={css6.current}>
+                <div className='center-flex-row border-right med-padding'>
+                    <div className='center-flex-column med-padding'>
+                        <span className='text-align-center'>Arrows per unit:</span>
+                        <span className='med-padding'>
+                            <Input size={4} initValue={state.arrowDensity} onC={densityInputCB} />
+                        </span>
+                    </div>
+
+                    <div className='center-flex-column med-padding'>
+                        <span className='text-align-center'>Relative arrow length:</span>
+                        <span className='med-padding'>
+                            <Input size={4} initValue={state.arrowLength} onC={lengthInputCB} />
+                        </span>
+                    </div>
+                </div>
+
+                <div className='center-flex-column large-padding'>
+                    <div className='text-align-center'>Solution approximation constant:</div>
+                    <span className='med-padding'>
                         <Input size={4} initValue={state.approxH} onC={approxInputCB} />
                     </span>
                 </div>

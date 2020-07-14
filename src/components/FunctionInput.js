@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 
 import Input from '../components/Input.js';
 
@@ -19,7 +19,7 @@ export default React.memo(function FunctionInput({
 }) {
     //const [funcStr, setFuncStr] = React.useState(initFuncStr);
 
-    function handleChange(str) {
+    const handleChange = useCallback((str) => {
         //console.log('functionInput.handleChange called with string value = ', str);
 
         if (str.length === 0) {
@@ -28,7 +28,7 @@ export default React.memo(function FunctionInput({
         }
 
         onChangeFunc(funcParser(str), str);
-    }
+    }, []);
 
     const css1 = useRef(
         Object.assign(
