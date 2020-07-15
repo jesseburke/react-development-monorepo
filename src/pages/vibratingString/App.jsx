@@ -26,7 +26,6 @@ import use2DAxes from '../../graphics/use2DAxesCanvas.jsx';
 import FunctionGraphPts2D from '../../math/FunctionGraphPts2D.jsx';
 
 import { funcParserXT as funcParser } from '../../utils/funcParser.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -41,10 +40,6 @@ const initColors = {
     clearColor: '#f0f0f0',
     funcGraph: '#E53935'
 };
-
-const solutionCurveRadius = 0.1;
-
-const dragDebounceTime = 5;
 
 const initFuncStr = '4*e^(-(x-2*t)^2)+sin(x+t)-cos(x-t)'; //'2*e^(-(x-t)^2)+sin(x+t)-cos(x-t)';//'2*e^(-(x-t)^2)';
 
@@ -66,56 +61,6 @@ const initState = {
     gridShow: true,
     cameraData: Object.assign({}, initCameraData)
 };
-
-function shrinkState({
-    bounds,
-    funcStr,
-    gridQuadSize,
-    gridShow,
-    axesData: { show, showLabels, length, radius },
-    cameraData: { position, up }
-}) {
-    const { xMin, xMax, yMin, yMax } = bounds;
-
-    const newObj = {
-        b: [xMin, xMax, yMin, yMax],
-        fs: funcStr,
-        gqs: gridQuadSize,
-        gs: gridShow,
-        as: show,
-        sl: showLabels,
-        l: length,
-        r: radius,
-        cp: position.map((x) => round(x, 2)),
-        cu: up.map((x) => round(x, 2))
-    };
-    return newObj;
-}
-
-// f is a function applied to the string representing each array element
-
-function strArrayToArray(strArray, f = Number) {
-    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
-
-    return strArray.split(',').map((x) => f(x));
-}
-
-function expandState({ b, fs, gqs, gs, as, sl, l, r, cp, cu }) {
-    const bds = strArrayToArray(b, Number);
-
-    const cameraPos = strArrayToArray(cp, Number);
-    const cameraUp = strArrayToArray(cu, Number);
-
-    return {
-        bounds: { xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3] },
-        funcStr: fs,
-        func: funcParser(fs),
-        gridQuadSize: Number(gqs),
-        gridShow: Number(gs),
-        axesData: { show: as, showLabels: sl, length: Number(l), radius: Number(r) },
-        cameraData: { position: cameraPos, up: cameraUp }
-    };
-}
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
@@ -166,8 +111,6 @@ const animTime = 12;
 export default function App() {
     const [state, setState] = useState(Object.assign({}, initState));
 
-    const [colors, setColors] = useState(initColors);
-
     const [t0, setT0] = useState(0);
 
     const [planeMesh, setPlaneMesh] = useState(null);
@@ -178,7 +121,6 @@ export default function App() {
 
     const [timeline, setTimeline] = useState(null);
 
-    const [threeWidth, setThreeWidth] = useState(initThreeWidth);
     const threeSceneRef = useRef(null);
     const canvasRef = useRef(null);
 
@@ -231,50 +173,6 @@ export default function App() {
         yLabel: yLabelRef.current,
         color: initColors.axes
     });
-
-    //------------------------------------------------------------------------
-    //
-    // look at location.search
-
-    // want to: read in the query string, parse it into an object, merge that object with
-    // initState, then set all of the state with that merged object
-
-    // useEffect(() => {
-    //     const qs = window.location.search;
-
-    //     if (qs.length === 0) {
-    //         setState((s) => s);
-    //         return;
-    //     }
-
-    //     const newState = expandState(queryString.parse(qs.slice(1), { parseBooleans: true }));
-    //     setState(newState);
-
-    //     if (!threeCBs) return;
-
-    //     threeCBs.setCameraPosition(newState.cameraData.position);
-
-    //     //console.log('state is ', state);
-    //     //console.log('newState is ', newState);
-    //     //console.log('expandState(newState) is ', expandState(newState) );
-
-    //     //window.history.replaceState(null, null, '?'+queryString.stringify(state));
-    //     //window.history.replaceState(null, null, "?test");
-    // }, [threeCBs]);
-
-    // const saveButtonCB = useCallback(
-    //     () =>
-    //         window.history.replaceState(
-    //             null,
-    //             null,
-    //             '?' +
-    //                 queryString.stringify(shrinkState(state), {
-    //                     decode: false,
-    //                     arrayFormat: 'comma'
-    //                 })
-    //         ),
-    //     [state]
-    // );
 
     //------------------------------------------------------------------------
     //
@@ -509,22 +407,6 @@ export default function App() {
         }));
     }, []);
 
-    const cameraChangeCB = useCallback(
-        (position) => {
-            if (position) {
-                setState(({ cameraData, ...rest }) => ({
-                    cameraData: Object.assign(cameraData, { position }),
-                    ...rest
-                }));
-            }
-
-            if (!threeCBs) return;
-
-            threeCBs.setCameraPosition(position);
-        },
-        [threeCBs]
-    );
-
     // this is imperative because we are not updating cameraData
     const resetCameraCB = useCallback(() => {
         if (!threeCBs) return;
@@ -540,7 +422,7 @@ export default function App() {
     const pauseCB = useCallback(() => setPaused((p) => !p), []);
 
     return (
-        <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fonts}>
+        <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
             <Helmet>
                 <title>Vibrating string</title>
                 <meta name='viewport' content='width=device-width, user-scalable=no' />
@@ -567,7 +449,7 @@ export default function App() {
                     initCameraData={initCameraData}
                     controlsData={initControlsData}
                     controlsCB={controlsCB}
-                    width={threeWidth.toString() + '%'}
+                    width={initThreeWidth.toString() + '%'}
                 />
                 <canvas
                     className={styles.canvas}
@@ -579,13 +461,6 @@ export default function App() {
         </FullScreenBaseComponent>
     );
 }
-
-// <ResetCameraButton key="resetCameraButton"
-//                             onClickFunc={resetCameraCB}
-//                             color={colors.optionsDrawer}
-//                             userCss={{ top: '73%',
-//                                        left: '5%'}}/>
-//           <SaveButton onClickFunc={saveButtonCB}/>
 
 const animFactory = ({
     startTime,
