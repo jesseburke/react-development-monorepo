@@ -1,22 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-export default React.memo(function Input({ onC, initValue, size, userCss = {} }) {
-    const newCss = useRef(
-        Object.assign(
-            {
-                fontSize: '.75em'
-            },
-            userCss
-        )
-    );
+import styles from './Input.module.css';
 
-    const [intermediateValue, setIntermediateValue] = useState(initValue);
-
+export default React.memo(function Input({ onC, initValue, size }) {
     const inputElt = useRef(null);
-
-    useEffect(() => {
-        setIntermediateValue(initValue);
-    }, [initValue]);
 
     const handleBlur = useCallback(
         (event) => {
@@ -30,20 +17,19 @@ export default React.memo(function Input({ onC, initValue, size, userCss = {} })
     const handleKey = useCallback((event) => {
         if (event.key === 'Enter') {
             inputElt.current.blur();
+        } else if (event.key === 'Escape') {
+            inputElt.current.value = initValue;
         }
     }, []);
-
-    const handleChange = useCallback((event) => setIntermediateValue(event.target.value), []);
 
     return (
         <input
             type='text'
-            onChange={handleChange}
             onBlur={handleBlur}
-            onKeyPress={handleKey}
+            onKeyDown={handleKey}
             size={size}
-            value={intermediateValue}
-            style={newCss.current}
+            defaultValue={initValue}
+            className={styles.input}
             ref={inputElt}
         />
     );
