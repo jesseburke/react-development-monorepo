@@ -6,7 +6,6 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 import gsap from 'gsap';
 
 import { Helmet } from 'react-helmet';
-//import { queryString } from 'query-string';
 
 import styles from './App.module.css';
 
@@ -17,7 +16,7 @@ import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import { FunctionAndBoundsInputXT as FunctionAndBoundsInput } from '../../components/FunctionAndBoundsInput.jsx';
 import Slider from '../../components/Slider.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
+import TGGridAndOrigin from '../../TG/TGGridAndOrigin.jsx';
 import use3DAxes from '../../graphics/use3DAxes.jsx';
 import FunctionGraph3DGeom from '../../graphics/FunctionGraph3DGeom.jsx';
 import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.jsx';
@@ -111,6 +110,8 @@ const animTime = 12;
 export default function App() {
     const [state, setState] = useState(Object.assign({}, initState));
 
+    const [bounds, setBounds] = useState(initState.bounds);
+
     const [t0, setT0] = useState(0);
 
     const [planeMesh, setPlaneMesh] = useState(null);
@@ -133,33 +134,33 @@ export default function App() {
 
     const gridCenter = useRef([axesData.length - overhang, axesData.length - overhang]);
 
-    useGridAndOrigin({
-        threeCBs,
-        gridQuadSize: axesData.length,
-        gridShow: state.gridShow,
-        originRadius: 0,
-        center: gridCenter.current
-    });
+    // useGridAndOrigin({
+    //     threeCBs,
+    //     gridQuadSize: axesData.length,
+    //     gridShow: initState.gridShow,
+    //     originRadius: 0,
+    //     center: gridCenter.current
+    // });
 
     const axesBounds = useRef({
         xMin: -overhang,
-        xMax: state.bounds.xMax + overhang,
+        xMax: bounds.xMax + overhang,
         yMin: -overhang,
-        yMax: state.bounds.tMax + overhang,
-        zMin: state.bounds.zMin,
-        zMax: state.bounds.zMax
+        yMax: bounds.tMax + overhang,
+        zMin: bounds.zMin,
+        zMax: bounds.zMax
     });
 
     useEffect(() => {
         axesBounds.current = {
             xMin: -overhang,
-            xMax: state.bounds.xMax + overhang,
+            xMax: bounds.xMax + overhang,
             yMin: -overhang,
-            yMax: state.bounds.tMax + overhang,
-            zMin: state.bounds.zMin,
-            zMax: state.bounds.zMax
+            yMax: bounds.tMax + overhang,
+            zMin: bounds.zMin,
+            zMax: bounds.zMax
         };
-    }, [state.bounds]);
+    }, [bounds]);
 
     const yLabelRef = useRef('t');
 
@@ -194,13 +195,13 @@ export default function App() {
         };
 
         const newTl = animFactory({
-            startTime: t0 / state.bounds.tMax,
+            startTime: t0 / bounds.tMax,
             duration: animTime,
             repeatCB,
-            updateCB: (t) => setT0(t * state.bounds.tMax)
+            updateCB: (t) => setT0(t * bounds.tMax)
         });
         setTimeline(newTl);
-    }, [paused, state.bounds.tMax]);
+    }, [paused, bounds.tMax]);
 
     //------------------------------------------------------------------------
     //
@@ -226,10 +227,10 @@ export default function App() {
         use2DAxes({
             canvas: canvasRef.current,
             bounds: {
-                ...state.bounds,
-                xMin: -canvasXOverhang + state.bounds.xMin,
-                yMin: state.bounds.zMin,
-                yMax: state.bounds.zMax
+                ...bounds,
+                xMin: -canvasXOverhang + bounds.xMin,
+                yMin: bounds.zMin,
+                yMax: bounds.zMax
             },
             lineWidth: 5,
             color: initColors.controlBar,
@@ -241,22 +242,22 @@ export default function App() {
             func: (x) => state.func(x, t0),
             approxH: 0.01,
             bounds: {
-                xMin: state.bounds.xMin,
-                xMax: state.bounds.xMax,
-                yMin: state.bounds.zMin,
-                yMax: state.bounds.zMax
+                xMin: bounds.xMin,
+                xMax: bounds.xMax,
+                yMin: bounds.zMin,
+                yMax: bounds.zMax
             }
         });
 
         const newCtx = CurvedPathCanvas({
             compArray,
-            bounds: { ...state.bounds, xMin: -canvasXOverhang + state.bounds.xMin },
+            bounds: { ...bounds, xMin: -canvasXOverhang + bounds.xMin },
             lineWidth: 8,
             color: initColors.funcGraph
         });
 
         ctx.current.drawImage(newCtx.canvas, 0, 0);
-    }, [state.bounds, t0, state.func, canvasRef]);
+    }, [bounds, t0, state.func, canvasRef]);
 
     //------------------------------------------------------------------------
     //
@@ -273,7 +274,7 @@ export default function App() {
         ctx.lineWidth = 15;
 
         setTextureCanvas(ctx.canvas);
-    }, [state.bounds]);
+    }, [bounds]);
 
     useEffect(() => {
         if (!textureCanvas) return;
@@ -286,10 +287,10 @@ export default function App() {
         ctx.fillRect(0, 0, w, h);
 
         ctx.beginPath();
-        ctx.moveTo(0, (1 - t0 / (state.bounds.tMax - state.bounds.tMin)) * h);
-        ctx.lineTo(w, (1 - t0 / (state.bounds.tMax - state.bounds.tMin)) * h);
+        ctx.moveTo(0, (1 - t0 / (bounds.tMax - bounds.tMin)) * h);
+        ctx.lineTo(w, (1 - t0 / (bounds.tMax - bounds.tMin)) * h);
         ctx.stroke();
-    }, [t0, state.bounds, textureCanvas]);
+    }, [t0, bounds, textureCanvas]);
 
     //------------------------------------------------------------------------
     //
@@ -300,7 +301,7 @@ export default function App() {
 
         const geometry = FunctionGraph3DGeom({
             func: state.func,
-            bounds: { ...state.bounds, yMin: state.bounds.tMin, yMax: state.bounds.tMax },
+            bounds: { ...bounds, yMin: bounds.tMin, yMax: bounds.tMax },
             meshSize: 200
         });
 
@@ -338,7 +339,7 @@ export default function App() {
             material.dispose();
             if (texture) texture.dispose();
         };
-    }, [threeCBs, state.func, state.bounds, textureCanvas]);
+    }, [threeCBs, state.func, bounds, textureCanvas]);
 
     //------------------------------------------------------------------------
     //
@@ -355,12 +356,9 @@ export default function App() {
         material.transparent = true;
         material.opacity = 0.6;
         material.shininess = 0;
-        const geometry = new THREE.PlaneGeometry(
-            state.bounds.xMax + overhang,
-            state.bounds.zMax - state.bounds.zMin
-        );
+        const geometry = new THREE.PlaneGeometry(bounds.xMax + overhang, bounds.zMax - bounds.zMin);
         geometry.rotateX(Math.PI / 2);
-        geometry.translate(state.bounds.xMax / 2, t0, 0);
+        geometry.translate(bounds.xMax / 2, t0, 0);
 
         const mesh = new THREE.Mesh(geometry, material);
         threeCBs.add(mesh);
@@ -371,7 +369,7 @@ export default function App() {
             geometry.dispose();
             material.dispose();
         };
-    }, [threeCBs, state.bounds, t0]);
+    }, [threeCBs, bounds, t0]);
 
     const oldT0 = useRef(t0);
 
@@ -407,18 +405,6 @@ export default function App() {
         }));
     }, []);
 
-    // this is imperative because we are not updating cameraData
-    const resetCameraCB = useCallback(() => {
-        if (!threeCBs) return;
-        console.log(state.cameraData.position);
-        console.log(threeCBs.getControlsTarget());
-        setState(({ cameraData, ...rest }) => ({
-            cameraData: Object.assign({}, initCameraData),
-            ...rest
-        }));
-        threeCBs.setCameraPosition(initCameraData.position);
-    }, [threeCBs]);
-
     const pauseCB = useCallback(() => setPaused((p) => !p), []);
 
     return (
@@ -432,11 +418,11 @@ export default function App() {
                 <FunctionAndBoundsInput
                     onChangeFunc={funcAndBoundsInputCB}
                     initFuncStr={state.funcStr}
-                    initBounds={state.bounds}
+                    initBounds={bounds}
                     leftSideOfEquation='s(x,t) ='
                 />
                 <div className={styles.timeContainer}>
-                    <Slider value={t0} CB={sliderCB} label={'t0'} max={state.bounds.tMax} min={0} />
+                    <Slider value={t0} CB={sliderCB} label={'t0'} max={bounds.tMax} min={0} />
                     <span onClick={pauseCB} className={styles.playPauseButton}>
                         {paused ? '\u{25B6}' : '\u{23F8}'}
                     </span>
@@ -449,8 +435,14 @@ export default function App() {
                     initCameraData={initCameraData}
                     controlsData={initControlsData}
                     controlsCB={controlsCB}
-                    width={initThreeWidth.toString() + '%'}
-                />
+                    width={initThreeWidth.toString() + '%'}>
+                    <TGGridAndOrigin
+                        gridQuadSize={axesData.length}
+                        gridShow={initState.gridShow}
+                        originRadius={0}
+                        center={gridCenter.current}
+                    />
+                </ThreeSceneComp>
                 <canvas
                     className={styles.canvas}
                     width={1024}
