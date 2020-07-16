@@ -25,7 +25,8 @@ function ThreeScene(
         },
         height = '100%',
         width = '100%',
-        clearColor = '#f0f0f0'
+        clearColor = '#f0f0f0',
+        children
     },
     ref
 ) {
@@ -43,6 +44,125 @@ function ThreeScene(
             scrollCB
         })
     );
+
+    const threeCBs = useRef({
+        add: (mesh) => {
+            //console.log('threeCBs.add called with mesh = ', mesh);
+            threeScene.add(mesh);
+            threeScene.render();
+        },
+
+        remove: (mesh) => {
+            threeScene.remove(mesh);
+            threeScene.render();
+        },
+
+        render: () => threeScene.render(),
+
+        getCamera: () => threeScene.getCamera(),
+
+        // pos and up are three entry arrays, each representing a point
+        setCameraPosition: (pos, up) => {
+            //console.log('threeCBs.setcameraposition called with pos = ', pos);
+            threeScene.setCameraPosition(pos, up);
+        },
+
+        // pos is a three entry array representing a point
+        setCameraLookAt: (pos) => {
+            threeScene.setCameraLookAt(pos);
+        },
+
+        getCanvas: () => threeCanvasRef.current,
+
+        getMouseCoords: (e, mesh) => threeScene.getMouseCoords(e, mesh),
+
+        screenToWorldCoords: (screenX, screenY) => threeScene.screenToWorldCoords(screenX, screenY),
+
+        resetControls: () => threeScene.resetControls(),
+
+        changeControls: (newControlsData) => threeScene.changeControls(newControlsData),
+
+        getControlsTarget: () => threeScene.getControlsTarget(),
+
+        downloadGLTF: (fileName) => threeScene.downloadGLTF(fileName),
+
+        // labelObj = {pos, text, style}
+        // pos = array of three numbers
+        // test = string
+        // style = axesLabelStyle
+        //
+        // returns id to remove later
+        addLabel: (labelObj) => threeScene.addLabel(labelObj),
+
+        removeLabel: (id) => threeScene.removeLabel(id),
+
+        drawLabels: () => threeScene.drawLabels(),
+
+        // dragendCB is called with the object that is being dragged as argument
+        addDragControls: ({ meshArray, dragCB, dragendCB }) =>
+            threeScene.addDragControls({ meshArray, dragCB, dragendCB })
+    });
+
+    useEffect(() => {
+        threeCBs.current = {
+            add: (mesh) => {
+                //console.log('threeCBs.add called with mesh = ', mesh);
+                threeScene.add(mesh);
+                threeScene.render();
+            },
+
+            remove: (mesh) => {
+                threeScene.remove(mesh);
+                threeScene.render();
+            },
+
+            render: () => threeScene.render(),
+
+            getCamera: () => threeScene.getCamera(),
+
+            // pos and up are three entry arrays, each representing a point
+            setCameraPosition: (pos, up) => {
+                //console.log('threeCBs.setcameraposition called with pos = ', pos);
+                threeScene.setCameraPosition(pos, up);
+            },
+
+            // pos is a three entry array representing a point
+            setCameraLookAt: (pos) => {
+                threeScene.setCameraLookAt(pos);
+            },
+
+            getCanvas: () => threeCanvasRef.current,
+
+            getMouseCoords: (e, mesh) => threeScene.getMouseCoords(e, mesh),
+
+            screenToWorldCoords: (screenX, screenY) =>
+                threeScene.screenToWorldCoords(screenX, screenY),
+
+            resetControls: () => threeScene.resetControls(),
+
+            changeControls: (newControlsData) => threeScene.changeControls(newControlsData),
+
+            getControlsTarget: () => threeScene.getControlsTarget(),
+
+            downloadGLTF: (fileName) => threeScene.downloadGLTF(fileName),
+
+            // labelObj = {pos, text, style}
+            // pos = array of three numbers
+            // test = string
+            // style = axesLabelStyle
+            //
+            // returns id to remove later
+            addLabel: (labelObj) => threeScene.addLabel(labelObj),
+
+            removeLabel: (id) => threeScene.removeLabel(id),
+
+            drawLabels: () => threeScene.drawLabels(),
+
+            // dragendCB is called with the object that is being dragged as argument
+            addDragControls: ({ meshArray, dragCB, dragendCB }) =>
+                threeScene.addDragControls({ meshArray, dragCB, dragendCB })
+        };
+    }, [threeScene]);
 
     //------------------------------------------------------------------------
     //
@@ -113,11 +233,6 @@ function ThreeScene(
             threeScene.addDragControls({ meshArray, dragCB, dragendCB })
     }));
 
-    const cssRef = useRef({
-        width,
-        height
-    });
-
     return (
         <div
             className={classnames(styles.container, styles.noOutline)}
@@ -126,11 +241,20 @@ function ThreeScene(
                 className={classnames(styles.canvas, styles.noOutline)}
                 ref={(elt) => (threeCanvasRef.current = elt)}
             />
+            <div>{children}</div>
 
             <div className={styles.noOutline} ref={(elt) => (labelContainerRef.current = elt)} />
+            {children}
         </div>
     );
 }
+
+// {React.Children.map(children, (el) =>
+//                   React.cloneElement(
+//                       el,
+//                       threeCBs.current ? { threeCBs: threeCBs.current } : { threeCBs: null }
+//                   )
+//               )}
 
 export const ThreeSceneComp = React.memo(React.forwardRef(ThreeScene));
 
@@ -197,7 +321,7 @@ export function useThreeCBs(threeRef) {
             drawLabels,
             addDragControls
         });
-    }, [threeRef.current]);
+    }, [threeRef]);
 
     return threeCBs;
 }
