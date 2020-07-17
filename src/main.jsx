@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { Helmet } from 'react-helmet';
 
 import './index.css';
-import App from './pages/vibratingString/App.jsx';
+import App from './pages/vibratingString/App_test.jsx';
 
 function main() {
     const element = document.createElement('div');
