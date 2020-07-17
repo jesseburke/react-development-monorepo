@@ -264,43 +264,38 @@ export function useThreeCBs(threeRef) {
     useEffect(() => {
         if (!threeRef.current) return;
 
-        const getCanvas = () => threeRef.current.getCanvas();
+        const getCanvas = threeRef.current.getCanvas;
 
-        const getCamera = () => threeRef.current.getCamera();
+        const getCamera = threeRef.current.getCamera;
 
-        const setCameraPosition = (pos, up) => threeRef.current.setCameraPosition(pos, up);
+        const setCameraPosition = threeRef.current.setCameraPosition;
 
-        const setCameraLookAt = (pos) => threeRef.current.setCameraLookAt(pos);
+        const setCameraLookAt = threeRef.current.setCameraLookAt;
 
-        const getMouseCoords = (e, mesh) => threeRef.current.getMouseCoords(e, mesh);
+        const getMouseCoords = threeRef.current.getMouseCoords;
 
         // calculates where ray into the screen at (screenX, screenY) intersects mesh
-        const screenToWorldCoords = (screenX, screenY) =>
-            threeRef.current.screenToWorldCoords(screenX, screenY);
+        const screenToWorldCoords = threeRef.current.screenToWorldCoords;
 
-        const add = (m) => threeRef.current.add(m);
+        const add = threeRef.current.add;
 
         const remove = (m) => threeRef.current.remove(m);
 
-        const render = () => threeRef.current.render();
+        const render = threeRef.current.render;
 
-        const resetControls = () => threeRef.current.resetControls();
+        const resetControls = threeRef.current.resetControls;
 
-        const changeControls = (newControlsData) =>
-            threeRef.current.changeControls(newControlsData);
+        const changeControls = threeRef.current.changeControls;
 
-        const getControlsTarget = () => threeRef.current.getControlsTarget();
+        const getControlsTarget = threeRef.current.getControlsTarget;
 
-        const downloadGLTF = (filename) => threeRef.current.downloadGLTF(filename);
+        const addLabel = threeRef.current.addLabel;
 
-        const addLabel = (labelObj) => threeRef.current.addLabel(labelObj);
+        const removeLabel = threeRef.current.removeLabel;
 
-        const removeLabel = (id) => threeRef.current.removeLabel(id);
+        const drawLabels = threeRef.current.drawLabels;
 
-        const drawLabels = () => threeRef.current.drawLabels();
-
-        const addDragControls = ({ meshArray, dragCB, dragendCB }) =>
-            threeRef.current.addDragControls({ meshArray, dragCB, dragendCB });
+        const addDragControls = threeRef.current.addDragControls;
 
         setThreeCBs({
             getCanvas,
@@ -314,7 +309,6 @@ export function useThreeCBs(threeRef) {
             resetControls,
             changeControls,
             getControlsTarget,
-            downloadGLTF,
             screenToWorldCoords,
             addLabel,
             removeLabel,
