@@ -13,11 +13,12 @@ import ArrowGridOptions from '../../components/ArrowGridOptions.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import TexDisplayComp from '../../components/TexDisplayComp.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import FunctionGraph2DGeom from '../../graphics/FunctionGraph2DGeom.jsx';
-import ArrowGridGeom from '../../graphics/ArrowGridGeom.jsx';
-import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.jsx';
+import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
+import Axes2DTS from '../../ThreeSceneComps/Axes2DTS.jsx';
+import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2DTS.jsx';
+import ArrowGridTS from '../../ThreeSceneComps/ArrowGridTS.jsx';
+import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApproxTS.jsx';
+
 import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 
 import useDebounce from '../../hooks/useDebounce.jsx';
@@ -45,8 +46,6 @@ const xMin = -20,
 const yMin = -20,
     yMax = 20;
 const initBounds = { xMin, xMax, yMin, yMax };
-
-const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
 const frustumSize = 20;
@@ -96,11 +95,6 @@ const initAxesData = {
     labelStyle
 };
 
-const initGridData = {
-    show: true,
-    originColor: 0x3f405c
-};
-
 const initArrowGridData = {
     gridSqSize: 0.5,
     color: initColors.arrows,
@@ -137,10 +131,6 @@ const testFuncMaterial = new THREE.MeshBasicMaterial({
 testFuncMaterial.transparent = true;
 testFuncMaterial.opacity = 0.6;
 
-const testFuncRadius = 0.1;
-
-const testFuncH = 0.1;
-
 const initApproxHValue = 0.1;
 
 const LatexSepEquation = '\\frac{dy}{dx} = h(y) \\!\\cdot\\! g(x)';
@@ -150,6 +140,9 @@ const initXFunc = funcParser(initXFuncStr);
 
 const initYFuncStr = 'cos(y)';
 const initYFunc = funcParser(initYFuncStr);
+
+const initTestFuncStr = 'x^2';
+const initTestFunc = funcParser(initTestFuncStr);
 
 const initialInitialPt = [2, 2];
 
@@ -174,9 +167,7 @@ export default function App() {
 
     const [approxH, setApproxH] = useState(initApproxHValue);
 
-    const [testFunc, setTestFunc] = useState(null);
-
-    const [controlsEnabled, setControlsEnabled] = useState(false);
+    const [testFunc, setTestFunc] = useState({ func: initTestFunc });
 
     const [cbfsState] = useState(controlBarFontSize);
 
@@ -194,25 +185,6 @@ export default function App() {
     // initial effects
 
     const dbInitialPt = useDebounce(initialPt, dragDebounceTime);
-
-    useGridAndOrigin({
-        threeCBs,
-        bounds: gridBounds,
-        show: initGridData.show,
-        originColor: initGridData.originColor,
-        originRadius: 0.1
-    });
-
-    use2DAxes({
-        threeCBs,
-        bounds: bounds,
-        radius: initAxesData.radius,
-        color: initAxesData.color,
-        show: initAxesData.show,
-        showLabels: initAxesData.showLabels,
-        labelStyle,
-        xLabel: 't'
-    });
 
     //-------------------------------------------------------------------------
     //
@@ -275,88 +247,21 @@ export default function App() {
         }
     }, [threeCBs, meshArray, dbInitialPt]);
 
-    //------------------------------------------------------------------------
-    //
-    // solution effect
-
-    const clickCB = useCallback(
-        (pt) => {
-            if (controlsEnabled) {
-                setInitialPt((s) => s);
-                return;
-            }
-
-            // if user clicks too close to boundary, don't want to deal with it
-            if (pt.x > xMax - 0.25 || pt.x < xMin + 0.25) {
-                setInitialPt(null);
-                return;
-            }
-
-            setInitialPt([pt.x, pt.y]);
-        },
-        [controlsEnabled]
-    );
-
-    useEffect(() => {
-        if (!threeCBs || !initialPt) return;
-
-        const dfag = DirectionFieldApproxGeom({
-            func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y),
-            initialPt,
-            bounds,
-            h: approxH,
-            radius: solutionCurveRadius
-        });
-
-        if (!dfag) {
-            console.log('DirectionFieldApproxGeom return null object');
-            return null;
+    const clickCB = useCallback((pt) => {
+        // if user clicks too close to boundary, don't want to deal with it
+        if (pt.x > xMax - 0.25 || pt.x < xMin + 0.25) {
+            setInitialPt(null);
+            return;
         }
 
-        const mesh = new THREE.Mesh(dfag, solutionMaterial);
+        setInitialPt([pt.x, pt.y]);
+    }, []);
 
-        threeCBs.add(mesh);
-
-        return () => {
-            if (threeCBs) {
-                if (mesh) threeCBs.remove(mesh);
-            }
-
-            dfag.dispose();
-        };
-    }, [threeCBs, initialPt, bounds, xFunc, yFunc, approxH]);
-
-    //------------------------------------------------------------------------
-    //
-    //arrowGrid effect
+    const [func, setFunc] = useState({ func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y) });
 
     useEffect(() => {
-        if (!threeCBs) return;
-
-        const geometry = ArrowGridGeom({
-            arrowDensity: 1 / arrowGridData.gridSqSize,
-            color: arrowGridData.color,
-            arrowLength: arrowGridData.arrowLength,
-            bounds,
-            func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y)
-        });
-
-        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
-
-        const mesh = new THREE.Mesh(geometry, material);
-
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            geometry.dispose();
-            material.dispose();
-        };
-    }, [threeCBs, arrowGridData, xFunc, yFunc]);
-
-    //------------------------------------------------------------------------
-    //
-    // handles input for h(y) and g(x)
+        setFunc({ func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y) });
+    }, [xFunc, yFunc]);
 
     const xFuncInputCB = useCallback(
         (newXFuncStr) => setXFunc({ func: funcParser(newXFuncStr) }),
@@ -368,47 +273,9 @@ export default function App() {
         []
     );
 
-    //------------------------------------------------------------------------
-    //
-    // test graph effect
-
-    const testFuncInputCB = useCallback(
-        (newFunc) => {
-            setTestFunc({ func: newFunc });
-        },
-        [testFunc]
-    );
-
-    useEffect(() => {
-        if (!threeCBs || !testFunc) return;
-
-        const geom = FunctionGraph2DGeom({ func: testFunc.func, bounds, radius: testFuncRadius });
-
-        const mesh = new THREE.Mesh(geom, testFuncMaterial);
-
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            geom.dispose();
-        };
-    }, [threeCBs, testFunc, bounds]);
-
-    //------------------------------------------------------------------------
-    //
-
-    const resetCameraCB = useCallback(() => {
-        if (controlsEnabled) {
-            setControlsEnabled(false);
-            threeCBs.setCameraPosition(initCameraData.position, initCameraData.up);
-            threeCBs.resetControls();
-            threeCBs.changeControls(initControlsData);
-        } else {
-            setControlsEnabled(true);
-            //threeCBs.resetControls();
-            threeCBs.changeControls(secControlsData);
-        }
-    }, [controlsEnabled, threeCBs]);
+    const testFuncInputCB = useCallback((newFunc) => {
+        setTestFunc({ func: newFunc });
+    }, []);
 
     const css1 = useRef(
         {
@@ -481,12 +348,13 @@ export default function App() {
             <ControlBar
                 height={controlBarHeight}
                 fontSize={initFontSize * controlBarFontSize}
-                padding='.5em'>
+                padding='.5em'
+            >
                 <div style={css1.current} key='1'>
                     <span style={css7.current}>Test Function</span>
                     <FunctionInput
                         onChangeFunc={testFuncInputCB}
-                        initFuncStr={''}
+                        initFuncStr={initTestFuncStr}
                         totalWidth='12em'
                         inputSize={10}
                         leftSideOfEquation={'\u{00177}(x) ='}
@@ -541,7 +409,41 @@ export default function App() {
                     controlsData={initControlsData}
                     clearColor={initColors.clearColor}
                     key='threecomp'
-                />
+                >
+                    <GridAndOriginTS
+                        gridQuadSize={initAxesData.length}
+                        gridShow={true}
+                        originRadius={0}
+                    />
+                    <Axes2DTS
+                        bounds={bounds}
+                        radius={initAxesData.radius}
+                        show={initAxesData.show}
+                        showLabels={initAxesData.showLabels}
+                        labelStyle={labelStyle}
+                        yLabel='t'
+                        color={initColors.axes}
+                    />
+                    <FunctionGraph2DTS
+                        func={testFunc.func}
+                        bounds={bounds}
+                        color={initColors.testFunc}
+                    />
+                    <ArrowGridTS
+                        func={func.func}
+                        bounds={bounds}
+                        arrowDensity={1 / arrowGridData.gridSqSize}
+                        arrowLength={arrowGridData.arrowLength}
+                        color={colors.arrows}
+                    />
+                    <DirectionFieldApproxTS
+                        color={initColors.solution}
+                        initialPt={initialPt}
+                        bounds={bounds}
+                        func={func.func}
+                        approxH={approxH}
+                    />
+                </ThreeSceneComp>
                 <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} key='clickcomp' />
             </Main>
         </FullScreenBaseComponent>
