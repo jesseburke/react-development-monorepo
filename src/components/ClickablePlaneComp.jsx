@@ -1,67 +1,46 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 
+function ClickablePlaneComp({ threeCBs, clickCB, paused, xSize = 1000, ySize = 1000, mesh }) {
+    const [clickPlane, setClickPlane] = useState(null);
 
-
-function ClickablePlaneComp({ threeCBs,                                       
-                                             clickCB,
-                                             paused,
-                                             xSize = 1000,
-                                             ySize = 1000,
-                                             mesh }) {
-
-    const [clickPlane, setClickPlane] = useState(null);       
-
-    useEffect( () => {
-
+    useEffect(() => {
         let cl;
-        
-        if( !threeCBs )
-            setClickPlane(null);
-        
+
+        if (!threeCBs) setClickPlane(null);
         else {
             cl = ClickPlane({ threeCBs, clickCB, mesh, xSize, ySize });
-            setClickPlane( cl );
+            setClickPlane(cl);
         }
 
         return () => {
-
-            if( cl ) {
+            if (cl) {
                 cl.dispose();
             }
         };
-        
-    }, [threeCBs, clickCB] );
+    }, [threeCBs, clickCB]);
 
-    useEffect( () => {
-
-        if( !clickPlane ) {          
+    useEffect(() => {
+        if (!clickPlane) {
             return;
         }
-        
-        if( !paused ) {
+
+        if (!paused) {
             clickPlane.play();
             return;
-        }
-
-        else {
+        } else {
             clickPlane.pause();
         }
-
     }, [clickPlane, paused]);
 
-            
     return null;
 }
 
-
 function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
+    if (!threeCBs) return;
 
-    if( !threeCBs ) return;
-
-    const {getCanvas, add, remove, getMouseCoords} = threeCBs;
+    const { getCanvas, add, remove, getMouseCoords } = threeCBs;
     const canvas = getCanvas();
 
     let areChoosing = true;
@@ -70,9 +49,9 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
     //------------------------------------------------------------------------
     //
     // this is a transparent plane, used for mouse picking
-    
+
     const planeGeom = new THREE.PlaneBufferGeometry(xSize, ySize, 1, 1);
-    const mat = new THREE.MeshBasicMaterial( {color: 'rgba(0, 0, 0, 1)'} );
+    const mat = new THREE.MeshBasicMaterial({ color: 'rgba(0, 0, 0, 1)' });
 
     mat.transparent = true;
     mat.opacity = 0.0;
@@ -81,47 +60,37 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
 
     let planeMesh;
 
-    if( !mesh )
-        planeMesh = new THREE.Mesh( planeGeom, mat );
+    if (!mesh) planeMesh = new THREE.Mesh(planeGeom, mat);
+    else planeMesh = mesh;
 
-    else
-        planeMesh = mesh;
-
-    add( planeMesh );
+    add(planeMesh);
     //------------------------------------------------------------------------
-      
+
     function handleClick(e) {
-        
         if (!areChoosing) return;
-        
+
         //areChoosing = false;
 
-        endPt =  getMouseCoords(e, planeMesh);
+        endPt = getMouseCoords(e, planeMesh);
         // not sure why below is needed
         //endPt.y = -endPt.y;
 
-        clickCB( endPt );
+        clickCB(endPt);
     }
 
-    canvas.addEventListener( 'pointerdown', handleClick );
+    canvas.addEventListener('pointerdown', handleClick);
 
     function dispose() {
-        canvas.removeEventListener( 'pointerdown', handleClick );
+        canvas.removeEventListener('pointerdown', handleClick);
 
-        if( planeGeom )
-            planeGeom.dispose();
+        if (planeGeom) planeGeom.dispose();
 
-        if( mat )
-            mat.dispose();
+        if (mat) mat.dispose();
 
-        if( planeMesh && threeCBs)
-            remove(planeMesh);
+        if (planeMesh && threeCBs) remove(planeMesh);
     }
 
-    function reset() {
-
-    }
-
+    function reset() {}
 
     function getPt() {
         return endPt;
@@ -134,8 +103,8 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
     function play() {
         areChoosing = true;
     }
-    
-    return {dispose, reset, getPt, pause, play};
+
+    return { dispose, reset, getPt, pause, play };
 }
 
 export default React.memo(ClickablePlaneComp);
