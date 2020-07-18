@@ -13,7 +13,6 @@ import FunctionInput from '../../components/FunctionInput.jsx';
 import funcParser from '../../utils/funcParser.jsx';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 import Input from '../../components/Input.jsx';
-import SaveButton from '../../components/SaveButton.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
@@ -194,51 +193,11 @@ export default function App() {
 
     const [minuscbhState] = useState(100 - controlBarHeight);
 
-    const [controlsEnabled, setControlsEnabled] = useState(false);
-
     const threeSceneRef = useRef(null);
 
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
-    //------------------------------------------------------------------------
-    //
-    // initial effects
-
-    //------------------------------------------------------------------------
-    //
-    // look at location.search
-
-    // want to: read in the query string, parse it into an object, merge that object with
-    // initState, then set all of the state with that merged object
-
-    // need to change this -- get package, or do it by hand, to replace query-string
-    useEffect(() => {
-        // const qs = window.location.search;
-        // if (qs.length === 0) {
-        //     setState((s) => s);
-        //     return;
-        // }
-        // const newState = queryString.parse(qs.slice(1));
-        // setState((s) => expandState(newState));
-        // console.log('state is ', state);
-        // console.log('newState is ', newState);
-        // console.log('expandState(newState) is ', expandState(newState));
-        //window.history.replaceState(null, null, '?'+queryString.stringify(state));
-        //window.history.replaceState(null, null, "?test");
-    }, []);
-
-    const saveButtonCB = useCallback(() => null);
-    // window.history.replaceState(
-    //     null,
-    //     null,
-    //     '?' +
-    //         queryString.stringify(shrinkState(state), {
-    //             decode: false,
-    //             arrayFormat: 'comma'
-    //         })
-
-    //-------------------------------------------------------------------------
     //
     // make the mesh for the initial point
 
@@ -308,17 +267,9 @@ export default function App() {
         }));
     }, []);
 
-    const clickCB = useCallback(
-        (pt) => {
-            if (controlsEnabled) {
-                setState((s) => s);
-                return;
-            }
-
-            setState(({ initialPt, ...rest }) => ({ initialPt: [pt.x, pt.y], ...rest }));
-        },
-        [controlsEnabled]
-    );
+    const clickCB = useCallback((pt) => {
+        setState(({ initialPt, ...rest }) => ({ initialPt: [pt.x, pt.y], ...rest }));
+    }, []);
 
     const testFuncInputCB = useCallback(
         (newFunc, newFuncStr) =>
@@ -329,9 +280,6 @@ export default function App() {
             })),
         []
     );
-
-    //------------------------------------------------------------------------
-    //
 
     const approxInputCB = useCallback(
         (newA) => setState(({ approxH, ...rest }) => ({ approxH: Number(newA), ...rest })),
@@ -347,19 +295,6 @@ export default function App() {
         (newL) => setState(({ arrowLength, ...rest }) => ({ arrowLength: newL, ...rest })),
         []
     );
-
-    const resetCameraCB = useCallback(() => {
-        if (controlsEnabled) {
-            setControlsEnabled(false);
-            threeCBs.setCameraPosition(initCameraData.position, initCameraData.up);
-            threeCBs.resetControls();
-            threeCBs.changeControls(initControlsData);
-        } else {
-            setControlsEnabled(true);
-            //threeCBs.resetControls();
-            threeCBs.changeControls(secControlsData);
-        }
-    }, [controlsEnabled, threeCBs]);
 
     return (
         <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fontState}>
@@ -441,14 +376,13 @@ export default function App() {
                     />
                     <DirectionFieldApproxTS
                         color={initColors.solution}
-                        initialPoint={state.initialPoint}
+                        initialPt={state.initialPt}
                         bounds={state.bounds}
                         func={state.func}
                         approxH={state.approxH}
                     />
                 </ThreeSceneComp>
                 <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} />
-                <SaveButton onClickFunc={saveButtonCB} />
             </Main>
         </FullScreenBaseComponent>
     );

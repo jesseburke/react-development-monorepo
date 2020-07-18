@@ -22,7 +22,7 @@ export default function FunctionGraph2DTS({ threeCBs, func, bounds, color, show 
             threeCBs.remove(mesh);
             if (geom) geom.dispose();
         };
-    }, [threeCBs, func, bounds]);
+    }, [threeCBs, func, bounds, color]);
 
     return null;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 import * as THREE from 'three';
 
@@ -13,15 +13,24 @@ export default function DirectionFieldApproxTS({
     approxH = 0.01,
     radius = 0.05
 }) {
-    const mat = useRef(material(color));
+    const [mat, setMat] = useState();
 
     useEffect(() => {
-        mat.current = material(color);
-
-        return () => {
-            mat.current.dispose();
-        };
+        setMat(
+            new THREE.MeshBasicMaterial({
+                color: new THREE.Color(color),
+                side: THREE.FrontSide,
+                transparent: true,
+                opacity: 0.6
+            })
+        );
     }, [color]);
+
+    useEffect(() => {
+        return () => {
+            if (mat) mat.dispose();
+        };
+    }, [mat]);
 
     useEffect(() => {
         if (!threeCBs) return;
@@ -41,20 +50,9 @@ export default function DirectionFieldApproxTS({
         return () => {
             threeCBs.remove(mesh);
             if (dfag) dfag.dispose();
+            if (mat) mat.dispose();
         };
-    }, [threeCBs, initialPt, bounds, func, approxH]);
+    }, [threeCBs, initialPt, bounds, func, approxH, color, radius]);
 
     return null;
 }
-
-const material = (color) => {
-    const mat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(color),
-        side: THREE.FrontSide
-    });
-
-    mat.transparent = true;
-    mat.opacity = 0.6;
-
-    return mat;
-};

@@ -6,6 +6,7 @@ import CurvedPathGeom from './CurvedPathGeom.jsx';
 export default function FunctionGraph2DGeom({
     func,
     bounds,
+    color,
     approxH = 0.1,
     // this is the max no of line segments in a component
     maxSegLength = 20,
