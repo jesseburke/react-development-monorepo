@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import queryString from 'query-string';
+//import queryString from 'query-string';
 
 import * as THREE from 'three';
 
@@ -16,11 +16,12 @@ import Input from '../../components/Input.jsx';
 import SaveButton from '../../components/SaveButton.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import FunctionGraph2DGeom from '../../graphics/FunctionGraph2DGeom.jsx';
-import ArrowGridGeom from '../../graphics/ArrowGridGeom.jsx';
-import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.jsx';
+import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
+import Axes2DTS from '../../ThreeSceneComps/Axes2DTS.jsx';
+import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2DTS.jsx';
+import ArrowGridTS from '../../ThreeSceneComps/ArrowGridTS.jsx';
+import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApproxTS.jsx';
+
 import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
@@ -89,27 +90,14 @@ const controlBarHeight = 13;
 const fontSize = 1;
 const controlBarFontSize = 1;
 
-const solutionMaterial = new THREE.MeshBasicMaterial({
+const solutionCurveRadius = 0.1;
+
+const pointMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(initColors.solution),
     side: THREE.FrontSide
 });
-
-solutionMaterial.transparent = true;
-solutionMaterial.opacity = 0.6;
-
-const solutionCurveRadius = 0.1;
-
-const pointMaterial = solutionMaterial.clone();
 pointMaterial.transparent = false;
 pointMaterial.opacity = 0.8;
-
-const testFuncMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(initColors.testFunc),
-    side: THREE.FrontSide
-});
-
-testFuncMaterial.transparent = true;
-testFuncMaterial.opacity = 0.6;
 
 const testFuncRadius = 0.1;
 
@@ -189,8 +177,6 @@ function expandState({ b, ad, al, fs, tfs, ip, a }) {
     };
 }
 
-const gridBounds = initState.bounds;
-
 //------------------------------------------------------------------------
 
 export default function App() {
@@ -219,18 +205,6 @@ export default function App() {
     //
     // initial effects
 
-    useGridAndOrigin({ threeCBs, bounds: gridBounds, show: initGridData.show, originRadius: 0.1 });
-
-    use2DAxes({
-        threeCBs,
-        bounds: state.bounds,
-        radius: initAxesData.radius,
-        color: initColors.axes,
-        show: initAxesData.show,
-        showLabels: initAxesData.showLabels,
-        labelStyle
-    });
-
     //------------------------------------------------------------------------
     //
     // look at location.search
@@ -238,38 +212,31 @@ export default function App() {
     // want to: read in the query string, parse it into an object, merge that object with
     // initState, then set all of the state with that merged object
 
+    // need to change this -- get package, or do it by hand, to replace query-string
     useEffect(() => {
-        const qs = window.location.search;
-
-        if (qs.length === 0) {
-            setState((s) => s);
-            return;
-        }
-
-        const newState = queryString.parse(qs.slice(1));
-        setState((s) => expandState(newState));
-
-        console.log('state is ', state);
-        console.log('newState is ', newState);
-        console.log('expandState(newState) is ', expandState(newState));
-
+        // const qs = window.location.search;
+        // if (qs.length === 0) {
+        //     setState((s) => s);
+        //     return;
+        // }
+        // const newState = queryString.parse(qs.slice(1));
+        // setState((s) => expandState(newState));
+        // console.log('state is ', state);
+        // console.log('newState is ', newState);
+        // console.log('expandState(newState) is ', expandState(newState));
         //window.history.replaceState(null, null, '?'+queryString.stringify(state));
         //window.history.replaceState(null, null, "?test");
     }, []);
 
-    const saveButtonCB = useCallback(
-        () =>
-            window.history.replaceState(
-                null,
-                null,
-                '?' +
-                    queryString.stringify(shrinkState(state), {
-                        decode: false,
-                        arrayFormat: 'comma'
-                    })
-            ),
-        [state]
-    );
+    const saveButtonCB = useCallback(() => null);
+    // window.history.replaceState(
+    //     null,
+    //     null,
+    //     '?' +
+    //         queryString.stringify(shrinkState(state), {
+    //             decode: false,
+    //             arrayFormat: 'comma'
+    //         })
 
     //-------------------------------------------------------------------------
     //
@@ -333,10 +300,6 @@ export default function App() {
         }
     }, [threeCBs, meshArray, state.initialPt]);
 
-    //------------------------------------------------------------------------
-    //
-    // solution effect
-
     const funcInputCallback = useCallback((newFunc, newFuncStr) => {
         setState(({ func, funcStr, ...rest }) => ({
             func: newFunc,
@@ -357,60 +320,6 @@ export default function App() {
         [controlsEnabled]
     );
 
-    useEffect(() => {
-        if (!threeCBs || !state) return;
-
-        const dfag = DirectionFieldApproxGeom({
-            func: state.func,
-            initialPt: state.initialPt,
-            bounds: state.bounds,
-            h: state.approxH,
-            radius: solutionCurveRadius
-        });
-
-        const mesh = new THREE.Mesh(dfag, solutionMaterial);
-
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            if (dfag) dfag.dispose();
-        };
-    }, [threeCBs, state.initialPt, state.bounds, state.func, state.approxH]);
-
-    //------------------------------------------------------------------------
-    //
-    //arrowGrid effect
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        const geom = ArrowGridGeom({
-            arrowDensity: state.arrowDensity,
-            arrowLength: state.arrowLength,
-            bounds: state.bounds,
-            func: state.func
-        });
-
-        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
-        //material.transparent = true;
-        //material.opacity = .75;
-
-        const mesh = new THREE.Mesh(geom, material);
-
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            if (geom) geom.dispose();
-            if (material) material.dispose();
-        };
-    }, [threeCBs, state.arrowDensity, state.arrowLength, state.bounds, state.func]);
-
-    //------------------------------------------------------------------------
-    //
-    // test graph effect
-
     const testFuncInputCB = useCallback(
         (newFunc, newFuncStr) =>
             setState(({ testFunc, testFuncStr, ...rest }) => ({
@@ -420,25 +329,6 @@ export default function App() {
             })),
         []
     );
-
-    useEffect(() => {
-        if (!threeCBs || !state) return;
-
-        const geom = FunctionGraph2DGeom({
-            func: state.testFunc,
-            bounds: state.bounds,
-            radius: testFuncRadius
-        });
-
-        const mesh = new THREE.Mesh(geom, testFuncMaterial);
-
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            if (geom) geom.dispose();
-        };
-    }, [threeCBs, state.testFunc, state.bounds]);
 
     //------------------------------------------------------------------------
     //
@@ -522,7 +412,41 @@ export default function App() {
                     ref={threeSceneRef}
                     initCameraData={initCameraData}
                     controlsData={initControlsData}
-                />
+                >
+                    <GridAndOriginTS
+                        gridQuadSize={initAxesData.length}
+                        gridShow={initState.gridShow}
+                        originRadius={0}
+                    />
+                    <Axes2DTS
+                        bounds={state.bounds}
+                        radius={initAxesData.radius}
+                        show={initAxesData.show}
+                        showLabels={initAxesData.showLabels}
+                        labelStyle={labelStyle}
+                        yLabel='t'
+                        color={initColors.axes}
+                    />
+                    <FunctionGraph2DTS
+                        func={state.testFunc}
+                        bounds={state.bounds}
+                        color={initColors.testFunc}
+                    />
+                    <ArrowGridTS
+                        func={state.func}
+                        bounds={state.bounds}
+                        arrowDensity={state.arrowDensity}
+                        arrowLength={state.arrowLength}
+                        color={colors.arrows}
+                    />
+                    <DirectionFieldApproxTS
+                        color={initColors.solution}
+                        initialPoint={state.initialPoint}
+                        bounds={state.bounds}
+                        func={state.func}
+                        approxH={state.approxH}
+                    />
+                </ThreeSceneComp>
                 <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} />
                 <SaveButton onClickFunc={saveButtonCB} />
             </Main>
