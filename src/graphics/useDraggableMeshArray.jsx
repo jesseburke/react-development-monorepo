@@ -1,25 +1,16 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
-export default function useDraggableMeshArray({ threeCBs, meshArray, dragendCB, dragCB })
+export default function useDraggableMeshArray({ threeCBs, meshArray, dragendCB, dragCB }) {
+    useEffect(() => {
+        if (!threeCBs || !meshArray) return;
 
-{
-      useEffect( () => {
+        const nonNullMeshArray = meshArray.filter((m) => m);
 
-            if( !threeCBs || !meshArray ) return;
-            
-            const nonNullMeshArray = meshArray.filter( m => m );
+        if (nonNullMeshArray.length === 0) return;
 
-            if( nonNullMeshArray.length === 0 ) return;            
-
-            const controlsDisposeFunc = threeCBs.addDragControls({ meshArray,
-                                                                   dragCB,
-                                                                   dragendCB});
-            return () => {
-
-                if( controlsDisposeFunc ) controlsDisposeFunc();
-
-            };
-            
-        }, [threeCBs, meshArray, dragendCB, dragCB] );
-           
-};
+        const controlsDisposeFunc = threeCBs.addDragControls({ meshArray, dragCB, dragendCB });
+        return () => {
+            if (controlsDisposeFunc) controlsDisposeFunc();
+        };
+    }, [threeCBs, meshArray, dragendCB, dragCB]);
+}

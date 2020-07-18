@@ -72,8 +72,6 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
         //areChoosing = false;
 
         endPt = getMouseCoords(e, planeMesh);
-        // not sure why below is needed
-        //endPt.y = -endPt.y;
 
         clickCB(endPt);
     }
