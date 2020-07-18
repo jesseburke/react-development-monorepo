@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { Helmet } from 'react-helmet';
 
 import './index.css';
-import App from './pages/App_test.jsx';
+import App from './pages/df/App.jsx';
 
 function main() {
     const element = document.createElement('div');
