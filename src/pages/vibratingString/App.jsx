@@ -18,6 +18,7 @@ import Slider from '../../components/Slider.jsx';
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
 import Axes3DTS from '../../ThreeSceneComps/Axes3DTS.jsx';
 import FunctionGraph3DTS from '../../ThreeSceneComps/FunctionGraph3DTS.jsx';
+import AnimatedPlaneTS from '../../ThreeSceneComps/AnimatedPlane.jsx';
 
 import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.jsx';
 import use2DAxes from '../../graphics/use2DAxesCanvas.jsx';
@@ -115,19 +116,12 @@ export default function App() {
 
     const [t0, setT0] = useState(0);
 
-    const [planeMesh, setPlaneMesh] = useState(null);
-
-    const [textureCanvas, setTextureCanvas] = useState(null);
-
     const [paused, setPaused] = useState(true);
 
     const [timeline, setTimeline] = useState(null);
 
     const threeSceneRef = useRef(null);
     const canvasRef = useRef(null);
-
-    // following can be passed to components that need to draw
-    const threeCBs = useThreeCBs(threeSceneRef);
 
     //------------------------------------------------------------------------
     //
@@ -243,81 +237,6 @@ export default function App() {
 
     //------------------------------------------------------------------------
     //
-    // setup texture canvas
-
-    const texture = useRef();
-
-    useEffect(() => {
-        const ctx = document.createElement('canvas').getContext('2d');
-
-        ctx.canvas.width = 1024;
-        ctx.canvas.height = 1024;
-        ctx.strokeStyle = initColors.controlBar;
-        ctx.lineWidth = 15;
-
-        setTextureCanvas(ctx.canvas);
-    }, [bounds]);
-
-    useEffect(() => {
-        if (!textureCanvas) return;
-
-        const ctx = textureCanvas.getContext('2d');
-        const h = ctx.canvas.height;
-        const w = ctx.canvas.width;
-
-        ctx.fillStyle = initColors.clearColor; //'#AAA';
-        ctx.fillRect(0, 0, w, h);
-
-        ctx.beginPath();
-        ctx.moveTo(0, (1 - t0 / (bounds.tMax - bounds.tMin)) * h);
-        ctx.lineTo(w, (1 - t0 / (bounds.tMax - bounds.tMin)) * h);
-        ctx.stroke();
-    }, [t0, bounds, textureCanvas]);
-
-    //------------------------------------------------------------------------
-    //
-    // plane mesh
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        const material = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(initColors.plane),
-            side: THREE.DoubleSide
-        });
-
-        material.transparent = true;
-        material.opacity = 0.6;
-        material.shininess = 0;
-        const geometry = new THREE.PlaneGeometry(bounds.xMax + overhang, bounds.zMax - bounds.zMin);
-        geometry.rotateX(Math.PI / 2);
-        geometry.translate(bounds.xMax / 2, t0, 0);
-
-        const mesh = new THREE.Mesh(geometry, material);
-        threeCBs.add(mesh);
-        setPlaneMesh(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            geometry.dispose();
-            material.dispose();
-        };
-    }, [threeCBs, bounds, t0]);
-
-    const oldT0 = useRef(t0);
-
-    useEffect(() => {
-        if (!planeMesh) {
-            oldT0.current = t0;
-            return;
-        }
-
-        planeMesh.translateY(t0 - oldT0.current);
-        oldT0.current = t0;
-    }, [t0, planeMesh]);
-
-    //------------------------------------------------------------------------
-    //
     // callbacks
 
     const funcAndBoundsInputCB = useCallback((newBounds, newFuncStr) => {
@@ -330,13 +249,6 @@ export default function App() {
     }, []);
 
     const sliderCB = useCallback((newT0Str) => setT0(Number(newT0Str)), []);
-
-    const controlsCB = useCallback((position) => {
-        setState(({ cameraData, ...rest }) => ({
-            cameraData: Object.assign(cameraData, { position }),
-            ...rest
-        }));
-    }, []);
 
     const pauseCB = useCallback(() => setPaused((p) => !p), []);
 
@@ -391,6 +303,13 @@ export default function App() {
                         bounds={state.bounds}
                         color={initColors.testFunc}
                         key='func'
+                    />
+                    <AnimatedPlaneTS
+                        color={initColors.plane}
+                        width={bounds.xMax + overhang}
+                        height={bounds.zMax - bounds.zMin}
+                        centerX={bounds.xMax / 2}
+                        centerY={t0}
                     />
                 </ThreeSceneComp>
                 <canvas
