@@ -5,7 +5,13 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 import FunctionGraph3DGeom from '../graphics/FunctionGraph3DGeom.jsx';
 
-export default function FunctionGraph3DTS({ threeCBs, func, bounds, color, show = true }) {
+export default React.memo(function FunctionGraph3DTS({
+    threeCBs,
+    func,
+    bounds,
+    color,
+    show = true
+}) {
     useEffect(() => {
         if (!threeCBs) return;
 
@@ -43,4 +49,4 @@ export default function FunctionGraph3DTS({ threeCBs, func, bounds, color, show 
     }, [threeCBs, func, color, bounds]);
 
     return null;
-}
+});

@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export default function Axes2DTS({
+export default React.memo(function Axes2DTS({
     threeCBs,
     bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
     radius = 0.02,
@@ -126,8 +126,7 @@ export default function Axes2DTS({
     }, [threeCBs, showLabels, xMax, yMax, labelStyle]);
 
     return null;
-}
-
+});
 function RawTickGeometry(tickRadius) {
     const domeRadius = tickRadius;
     const domeWidthSubdivisions = 12;

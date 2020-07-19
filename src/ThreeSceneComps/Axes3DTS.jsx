@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export default function TG3DAxes({
+export default React.memo(function Axes3DTS({
     threeCBs,
     bounds,
     radius = 0.05,
@@ -14,9 +14,7 @@ export default function TG3DAxes({
     yLabel = 'y',
     zLabel = 'z',
     labelStyle,
-    tickDistance = 1,
-    tickRadius = 2.5,
-    tickColor = '#8BC34A'
+    tickRadius = 2.5
 }) {
     useEffect(() => {
         if (!threeCBs) return;
@@ -164,7 +162,7 @@ export default function TG3DAxes({
     }, [threeCBs, show, showLabels, bounds, labelStyle]);
 
     return null;
-}
+});
 
 function RawTickGeometry(tickRadius) {
     const domeRadius = tickRadius;
