@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import gsap from 'gsap';
 
@@ -16,9 +15,10 @@ import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import { FunctionAndBoundsInputXT as FunctionAndBoundsInput } from '../../components/FunctionAndBoundsInput.jsx';
 import Slider from '../../components/Slider.jsx';
 
-import TGGridAndOrigin from '../../TG/TGGridAndOrigin.jsx';
-import use3DAxes from '../../graphics/use3DAxes.jsx';
-import FunctionGraph3DGeom from '../../graphics/FunctionGraph3DGeom.jsx';
+import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
+import Axes3DTS from '../../ThreeSceneComps/Axes3DTS.jsx';
+import FunctionGraph3DTS from '../../ThreeSceneComps/FunctionGraph3DTS.jsx';
+
 import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.jsx';
 import use2DAxes from '../../graphics/use2DAxesCanvas.jsx';
 
@@ -81,6 +81,7 @@ const fonts = "'Helvetica', 'Hind', sans-serif";
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 15;
+const mainHeight = 85;
 
 // (relative) font sizes (first in em's)
 const initFontSize = 1;
@@ -134,14 +135,6 @@ export default function App() {
 
     const gridCenter = useRef([axesData.length - overhang, axesData.length - overhang]);
 
-    // useGridAndOrigin({
-    //     threeCBs,
-    //     gridQuadSize: axesData.length,
-    //     gridShow: initState.gridShow,
-    //     originRadius: 0,
-    //     center: gridCenter.current
-    // });
-
     const axesBounds = useRef({
         xMin: -overhang,
         xMax: bounds.xMax + overhang,
@@ -163,17 +156,6 @@ export default function App() {
     }, [bounds]);
 
     const yLabelRef = useRef('t');
-
-    use3DAxes({
-        threeCBs,
-        bounds: axesBounds.current,
-        radius: axesData.radius,
-        show: axesData.show,
-        showLabels: axesData.showLabels,
-        labelStyle,
-        yLabel: yLabelRef.current,
-        color: initColors.axes
-    });
 
     //------------------------------------------------------------------------
     //
@@ -294,55 +276,6 @@ export default function App() {
 
     //------------------------------------------------------------------------
     //
-    // funcGraph effect
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        const geometry = FunctionGraph3DGeom({
-            func: state.func,
-            bounds: { ...bounds, yMin: bounds.tMin, yMax: bounds.tMax },
-            meshSize: 200
-        });
-
-        const material = new THREE.MeshNormalMaterial({
-            color: initColors.funcGraph,
-            side: THREE.DoubleSide
-        });
-        material.shininess = 0;
-        //material.transparent = true;
-        //material.opacity = .6;
-        //material.wireframe = true;
-
-        let texture;
-
-        // if( textureCanvas ) {
-
-        //     texture = new THREE.CanvasTexture( textureCanvas );
-        //     material.map = texture;
-        // }
-
-        BufferGeometryUtils.computeTangents(geometry);
-
-        const mesh = new THREE.Mesh(geometry, material);
-        threeCBs.add(mesh);
-
-        const helper = new THREE.VertexNormalsHelper(mesh, 0.25, 0x000000, 10);
-        //threeCBs.add(helper);
-
-        //const helper1 = new VertexTangentsHelper( mesh, .25, 0x000000, 10 );
-        //threeCBs.add(helper1);
-
-        return () => {
-            threeCBs.remove(mesh);
-            geometry.dispose();
-            material.dispose();
-            if (texture) texture.dispose();
-        };
-    }, [threeCBs, state.func, bounds, textureCanvas]);
-
-    //------------------------------------------------------------------------
-    //
     // plane mesh
 
     useEffect(() => {
@@ -429,18 +362,36 @@ export default function App() {
                 </div>
             </ControlBar>
 
-            <Main height={100 - controlBarHeight} fontSize={initFontSize * percDrawer}>
+            <Main height={mainHeight} fontSize={initFontSize * percDrawer}>
                 <ThreeSceneComp
                     ref={threeSceneRef}
                     initCameraData={initCameraData}
                     controlsData={initControlsData}
                     controlsCB={controlsCB}
-                    width={initThreeWidth.toString() + '%'}>
-                    <TGGridAndOrigin
+                    width={initThreeWidth.toString() + '%'}
+                >
+                    <GridAndOriginTS
                         gridQuadSize={axesData.length}
                         gridShow={initState.gridShow}
                         originRadius={0}
                         center={gridCenter.current}
+                        key='grid'
+                    />
+                    <Axes3DTS
+                        bounds={axesBounds.current}
+                        radius={axesData.radius}
+                        show={axesData.show}
+                        showLabels={axesData.showLabels}
+                        labelStyle={labelStyle}
+                        yLabel='t'
+                        color={initColors.axes}
+                        key='axes'
+                    />
+                    <FunctionGraph3DTS
+                        func={state.func}
+                        bounds={state.bounds}
+                        color={initColors.testFunc}
+                        key='func'
                     />
                 </ThreeSceneComp>
                 <canvas
