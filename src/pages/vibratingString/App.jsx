@@ -367,7 +367,6 @@ export default function App() {
                     ref={threeSceneRef}
                     initCameraData={initCameraData}
                     controlsData={initControlsData}
-                    controlsCB={controlsCB}
                     width={initThreeWidth.toString() + '%'}
                 >
                     <GridAndOriginTS
