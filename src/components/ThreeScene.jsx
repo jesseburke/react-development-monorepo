@@ -136,6 +136,8 @@ function ThreeScene(
         threeScene.controlsPubSub.subscribe(controlsCB);
     }, [controlsCB, threeScene]);
 
+    //useTraceUpdate(children);
+
     return (
         <div
             className={classnames(styles.container, styles.noOutline)}
@@ -152,6 +154,22 @@ function ThreeScene(
 }
 
 export const ThreeSceneComp = React.memo(React.forwardRef(ThreeScene));
+
+function useTraceUpdate(props) {
+    const prev = useRef(props);
+    useEffect(() => {
+        const changedProps = Object.entries(props).reduce((ps, [k, v]) => {
+            if (prev.current[k] !== v) {
+                ps[k] = [prev.current[k], v];
+            }
+            return ps;
+        }, {});
+        if (Object.keys(changedProps).length > 0) {
+            console.log('Changed props:', changedProps);
+        }
+        prev.current = props;
+    });
+}
 
 export function useThreeCBs(threeRef) {
     const [threeCBs, setThreeCBs] = useState(null);

@@ -31,55 +31,9 @@ import { round } from '../../utils/BaseUtils.jsx';
 // initial data
 //
 
-const initColors = {
-    arrows: '#C2374F',
-    solution: '#C2374F',
-    firstPt: '#C2374F',
-    secPt: '#C2374F',
-    testFunc: '#E16962', //#DBBBB0',
-    axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0'
-};
-
 const aspectRatio = window.innerWidth / window.innerHeight;
 
 const frustumSize = 20;
-
-const initCameraData = {
-    position: [0, 0, 1],
-    up: [0, 0, 1],
-    //fov: 75,
-    near: -100,
-    far: 100,
-    rotation: { order: 'XYZ' },
-    orthographic: {
-        left: (frustumSize * aspectRatio) / -2,
-        right: (frustumSize * aspectRatio) / 2,
-        top: frustumSize / 2,
-        bottom: frustumSize / -2
-    }
-};
-
-const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
-    enableRotate: false,
-    enablePan: true,
-    enabled: true,
-    keyPanSpeed: 50,
-    screenSpaceSpanning: false
-};
-
-const secControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-    touches: { ONE: THREE.MOUSE.ROTATE, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.PAN },
-    enableRotate: true,
-    enablePan: true,
-    enabled: true,
-    keyPanSpeed: 50,
-    zoomSpeed: 1.25
-};
 
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -183,7 +137,7 @@ export default function App() {
 
     const [meshArray, setMeshArray] = useState(null);
 
-    const [colors] = useState(initColors);
+    const [colors] = useState(initColors.current);
 
     const [fontState] = useState(fonts);
 
@@ -198,20 +152,54 @@ export default function App() {
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
+    const initCameraData = useRef({
+        position: [0, 0, 1],
+        up: [0, 0, 1],
+        //fov: 75,
+        near: -100,
+        far: 100,
+        rotation: { order: 'XYZ' },
+        orthographic: {
+            left: (frustumSize * aspectRatio) / -2,
+            right: (frustumSize * aspectRatio) / 2,
+            top: frustumSize / 2,
+            bottom: frustumSize / -2
+        }
+    });
+
+    const initColors = {
+        arrows: '#C2374F',
+        solution: '#C2374F',
+        firstPt: '#C2374F',
+        secPt: '#C2374F',
+        testFunc: '#E16962', //#DBBBB0',
+        axes: '#0A2C3C',
+        controlBar: '#0A2C3C',
+        clearColor: '#f0f0f0'
+    };
+
+    const initControlsData = useRef({
+        mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
+        touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
+        enableRotate: false,
+        enablePan: true,
+        enabled: true,
+        keyPanSpeed: 50,
+        screenSpaceSpanning: false
+    });
+
     //
     // make the mesh for the initial point
-
-    // not listing state as a dependency on purpose; don't want this effect running on drag
 
     useEffect(() => {
         if (!threeCBs) return;
 
         const geometry = new THREE.SphereBufferGeometry(solutionCurveRadius * 2, 15, 15);
-        const material = new THREE.MeshBasicMaterial({ color: colors.solution });
+        const material = new THREE.MeshBasicMaterial({ color: initColors.current.solution });
 
         const mesh = new THREE.Mesh(geometry, material)
-            .translateX(state.initialPt[0])
-            .translateY(state.initialPt[1]);
+            .translateX(initState.initialPt[0])
+            .translateY(initState.initialPt[1]);
 
         threeCBs.add(mesh);
         setMeshArray([mesh]);
@@ -345,13 +333,12 @@ export default function App() {
             <Main height={minuscbhState} fontSize={fontSize * cbfsState}>
                 <ThreeSceneComp
                     ref={threeSceneRef}
-                    initCameraData={initCameraData}
-                    controlsData={initControlsData}
+                    initCameraData={initCameraData.current}
+                    controlsData={initControlsData.current}
                 >
                     <GridAndOriginTS
                         gridQuadSize={initAxesData.length}
                         gridShow={initState.gridShow}
-                        originRadius={0}
                     />
                     <Axes2DTS
                         bounds={state.bounds}
@@ -360,12 +347,12 @@ export default function App() {
                         showLabels={initAxesData.showLabels}
                         labelStyle={labelStyle}
                         yLabel='t'
-                        color={initColors.axes}
+                        color={initColors.current.axes}
                     />
                     <FunctionGraph2DTS
                         func={state.testFunc}
                         bounds={state.bounds}
-                        color={initColors.testFunc}
+                        color={initColors.current.testFunc}
                     />
                     <ArrowGridTS
                         func={state.func}
@@ -375,7 +362,7 @@ export default function App() {
                         color={colors.arrows}
                     />
                     <DirectionFieldApproxTS
-                        color={initColors.solution}
+                        color={initColors.current.solution}
                         initialPt={state.initialPt}
                         bounds={state.bounds}
                         func={state.func}
@@ -387,10 +374,3 @@ export default function App() {
         </FullScreenBaseComponent>
     );
 }
-
-/* <ResetCameraButton key="resetCameraButton" */
-/*                               onClickFunc={resetCameraCB} */
-/*                               color={controlsEnabled ? initColors.controlBar : null } */
-/*                               userCss={{ top: '85%', */
-/*                                          left: '5%', */
-/*                                          userSelect: 'none'}}/> */
