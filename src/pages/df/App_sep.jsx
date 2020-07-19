@@ -175,6 +175,12 @@ export default function App() {
 
     const [ifsState] = useState(initFontSize);
 
+    const [func, setFunc] = useState({ func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y) });
+
+    useEffect(() => {
+        setFunc({ func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y) });
+    }, [xFunc, yFunc]);
+
     const threeSceneRef = useRef(null);
 
     // following will be passed to components that need to draw
@@ -256,12 +262,6 @@ export default function App() {
 
         setInitialPt([pt.x, pt.y]);
     }, []);
-
-    const [func, setFunc] = useState({ func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y) });
-
-    useEffect(() => {
-        setFunc({ func: (x, y) => xFunc.func(x, 0) * yFunc.func(0, y) });
-    }, [xFunc, yFunc]);
 
     const xFuncInputCB = useCallback(
         (newXFuncStr) => setXFunc({ func: funcParser(newXFuncStr) }),
@@ -449,10 +449,3 @@ export default function App() {
         </FullScreenBaseComponent>
     );
 }
-
-// <ResetCameraButton key="resetCameraButton"
-//                              onClickFunc={resetCameraCB}
-//                              color={controlsEnabled ? colors.controlBar : null }
-//                              userCss={{ top: '85%',
-//                                         left: '5%',
-//                                         userSelect: 'none'}}/>

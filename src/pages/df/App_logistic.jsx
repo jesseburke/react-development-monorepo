@@ -11,10 +11,11 @@ import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js
 import TexDisplayComp from '../../components/TexDisplayComp.jsx';
 import Slider from '../../components/Slider.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import ArrowGridGeom from '../../graphics/ArrowGridGeom.jsx';
-import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.jsx';
+import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
+import Axes2DTS from '../../ThreeSceneComps/Axes2DTS.jsx';
+import ArrowGridTS from '../../ThreeSceneComps/ArrowGridTS.jsx';
+import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApproxTS.jsx';
+
 import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
@@ -40,8 +41,6 @@ const xMin = -20,
 const yMin = -20,
     yMax = 20;
 const initBounds = { xMin, xMax, yMin, yMax };
-
-const gridBounds = { xMin, xMax, yMin: xMin, yMax: xMax };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
 const frustumSize = 20;
@@ -71,16 +70,6 @@ const initControlsData = {
     screenSpaceSpanning: false
 };
 
-const secControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-    touches: { ONE: THREE.MOUSE.ROTATE, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.PAN },
-    enableRotate: true,
-    enablePan: true,
-    enabled: true,
-    keyPanSpeed: 50,
-    zoomSpeed: 1.25
-};
-
 const initAxesData = {
     radius: 0.01,
     color: initColors.axes,
@@ -89,11 +78,6 @@ const initAxesData = {
     show: true,
     showLabels: true,
     labelStyle
-};
-
-const initGridData = {
-    show: true,
-    originColor: 0x3f405c
 };
 
 const initArrowGridData = {
@@ -177,35 +161,10 @@ export default function App() {
 
     const [kVal, setKVal] = useState(initKVal);
 
-    const [controlsEnabled, setControlsEnabled] = useState(false);
-
     const threeSceneRef = useRef(null);
 
     // following passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
-
-    //------------------------------------------------------------------------
-    //
-    // initial effects
-
-    useGridAndOrigin({
-        threeCBs,
-        bounds: gridBounds,
-        show: initGridData.show,
-        originColor: initGridData.originColor,
-        originRadius: 0.1
-    });
-
-    use2DAxes({
-        threeCBs,
-        bounds: bounds,
-        radius: initAxesData.radius,
-        color: initAxesData.color,
-        show: initAxesData.show,
-        showLabels: initAxesData.showLabels,
-        labelStyle,
-        xLabel: 't'
-    });
 
     //-------------------------------------------------------------------------
     //
@@ -273,45 +232,8 @@ export default function App() {
         }
     }, [threeCBs, meshArray, initialPt]);
 
-    //------------------------------------------------------------------------
-    //
-    // arrowGrid effect
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        const geometry = ArrowGridGeom({
-            arrowDensity: 1 / arrowGridData.gridSqSize,
-            color: arrowGridData.color,
-            arrowLength: arrowGridData.arrowLength,
-            bounds,
-            func: func.func
-        });
-
-        const material = new THREE.MeshBasicMaterial({ color: colors.arrows });
-
-        const mesh = new THREE.Mesh(geometry, material);
-
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            geometry.dispose();
-            material.dispose();
-        };
-    }, [threeCBs, arrowGridData, func]);
-
-    //------------------------------------------------------------------------
-    //
-    // solution effect
-
     const clickCB = useCallback(
         (pt) => {
-            if (controlsEnabled) {
-                setInitialPt((s) => s);
-                return;
-            }
-
             // if user clicks too close to boundary, don't want to deal with it
             if (
                 pt.x > bounds.xMax ||
@@ -325,29 +247,8 @@ export default function App() {
 
             setInitialPt([pt.x, pt.y]);
         },
-        [controlsEnabled, bounds]
+        [bounds]
     );
-
-    useEffect(() => {
-        if (!threeCBs || !initialPt) return;
-
-        const dfag = DirectionFieldApproxGeom({
-            func: func.func,
-            initialPt,
-            bounds,
-            h: approxH,
-            radius: solutionCurveRadius
-        });
-
-        const mesh = new THREE.Mesh(dfag, solutionMaterial);
-
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            dfag.dispose();
-        };
-    }, [threeCBs, initialPt, func, approxH]);
 
     //------------------------------------------------------------------------
     //
@@ -384,19 +285,6 @@ export default function App() {
 
     //------------------------------------------------------------------------
     //
-
-    const resetCameraCB = useCallback(() => {
-        if (controlsEnabled) {
-            setControlsEnabled(false);
-            threeCBs.setCameraPosition(initCameraData.position, initCameraData.up);
-            threeCBs.resetControls();
-            threeCBs.changeControls(initControlsData);
-        } else {
-            setControlsEnabled(true);
-            //threeCBs.resetControls();
-            threeCBs.changeControls(secControlsData);
-        }
-    }, [controlsEnabled, threeCBs]);
 
     const css1 = useRef(
         {
@@ -459,7 +347,8 @@ export default function App() {
             <ControlBar
                 height={controlBarHeight}
                 fontSize={initFontSize * controlBarFontSize}
-                padding='.5em'>
+                padding='.5em'
+            >
                 <div style={css1.current}>
                     <div style={css2.current}>
                         <div style={css4.current}>Logistic equation</div>
@@ -511,16 +400,38 @@ export default function App() {
                     initCameraData={initCameraData}
                     controlsData={controlsData}
                     clearColor={initColors.clearColor}
-                />
+                >
+                    <GridAndOriginTS
+                        gridQuadSize={initAxesData.length}
+                        gridShow={true}
+                        originRadius={0}
+                    />
+                    <Axes2DTS
+                        bounds={bounds}
+                        radius={initAxesData.radius}
+                        show={initAxesData.show}
+                        showLabels={initAxesData.showLabels}
+                        labelStyle={labelStyle}
+                        yLabel='t'
+                        color={initColors.axes}
+                    />
+                    <ArrowGridTS
+                        func={func.func}
+                        bounds={bounds}
+                        arrowDensity={1 / arrowGridData.gridSqSize}
+                        arrowLength={arrowGridData.arrowLength}
+                        color={colors.arrows}
+                    />
+                    <DirectionFieldApproxTS
+                        color={initColors.solution}
+                        initialPt={initialPt}
+                        bounds={bounds}
+                        func={func.func}
+                        approxH={approxH}
+                    />
+                </ThreeSceneComp>
                 <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} />
             </Main>
         </FullScreenBaseComponent>
     );
 }
-
-// <ResetCameraButton key="resetCameraButton"
-//                              onClickFunc={resetCameraCB}
-//                              color={controlsEnabled ? colors.controlBar : null }
-//                              userCss={{ top: '85%',
-//                                         left: '5%',
-//                                         userSelect: 'none'}}/>
