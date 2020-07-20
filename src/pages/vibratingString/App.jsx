@@ -11,18 +11,20 @@ import styles from './App.module.css';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import { FunctionAndBoundsInputXT as FunctionAndBoundsInput } from '../../components/FunctionAndBoundsInput.jsx';
 import Slider from '../../components/Slider.jsx';
+
+import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
+import CanvasComp from '../../components/CanvasComp.jsx';
 
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
 import Axes3DTS from '../../ThreeSceneComps/Axes3DTS.jsx';
 import FunctionGraph3DTS from '../../ThreeSceneComps/FunctionGraph3DTS.jsx';
 import AnimatedPlaneTS from '../../ThreeSceneComps/AnimatedPlane.jsx';
 
-import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.jsx';
-import use2DAxes from '../../graphics/use2DAxesCanvas.jsx';
+import Axes2DC from '../../CanvasComps/Axes2DC.jsx';
 
+import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.jsx';
 import FunctionGraphPts2D from '../../math/FunctionGraphPts2D.jsx';
 
 import { funcParserXT as funcParser } from '../../utils/funcParser.jsx';
@@ -120,7 +122,6 @@ export default function App() {
 
     const [timeline, setTimeline] = useState(null);
 
-    const threeSceneRef = useRef(null);
     const canvasRef = useRef(null);
 
     //------------------------------------------------------------------------
@@ -181,62 +182,6 @@ export default function App() {
 
     //------------------------------------------------------------------------
     //
-    // draw on canvas
-
-    const ctx = useRef(null);
-
-    useEffect(() => {
-        if (!canvasRef.current) return;
-
-        ctx.current = canvasRef.current.getContext('2d');
-        ctx.current.fillStyle = initColors.clearColor; //'#AAA';
-        ctx.current.fillRect(0, 0, ctx.current.canvas.width, ctx.current.canvas.height);
-        ctx.current.lineJoin = 'round';
-    }, [canvasRef]);
-
-    useEffect(() => {
-        if (!canvasRef.current) return;
-
-        ctx.current.fillStyle = initColors.clearColor; //'#AAA';
-        ctx.current.fillRect(0, 0, ctx.current.canvas.width, ctx.current.canvas.height);
-
-        use2DAxes({
-            canvas: canvasRef.current,
-            bounds: {
-                ...bounds,
-                xMin: -canvasXOverhang + bounds.xMin,
-                yMin: bounds.zMin,
-                yMax: bounds.zMax
-            },
-            lineWidth: 5,
-            color: initColors.controlBar,
-            show: true,
-            yLabel: 'z'
-        });
-
-        const compArray = FunctionGraphPts2D({
-            func: (x) => state.func(x, t0),
-            approxH: 0.01,
-            bounds: {
-                xMin: bounds.xMin,
-                xMax: bounds.xMax,
-                yMin: bounds.zMin,
-                yMax: bounds.zMax
-            }
-        });
-
-        const newCtx = CurvedPathCanvas({
-            compArray,
-            bounds: { ...bounds, xMin: -canvasXOverhang + bounds.xMin },
-            lineWidth: 8,
-            color: initColors.funcGraph
-        });
-
-        ctx.current.drawImage(newCtx.canvas, 0, 0);
-    }, [bounds, t0, state.func, canvasRef]);
-
-    //------------------------------------------------------------------------
-    //
     // callbacks
 
     const funcAndBoundsInputCB = useCallback((newBounds, newFuncStr) => {
@@ -276,23 +221,18 @@ export default function App() {
 
             <Main height={mainHeight} fontSize={initFontSize * percDrawer}>
                 <ThreeSceneComp
-                    ref={threeSceneRef}
                     initCameraData={initCameraData}
                     controlsData={initControlsData}
                     width={initThreeWidth.toString() + '%'}
                 >
                     <GridAndOriginTS
                         gridQuadSize={axesData.length}
-                        gridShow={initState.gridShow}
                         originRadius={0}
                         center={gridCenter.current}
                         key='grid'
                     />
                     <Axes3DTS
                         bounds={axesBounds.current}
-                        radius={axesData.radius}
-                        show={axesData.show}
-                        showLabels={axesData.showLabels}
                         labelStyle={labelStyle}
                         yLabel='t'
                         color={initColors.axes}
@@ -312,12 +252,14 @@ export default function App() {
                         centerY={t0}
                     />
                 </ThreeSceneComp>
-                <canvas
-                    className={styles.canvas}
-                    width={1024}
-                    height={1024}
-                    ref={(elt) => (canvasRef.current = elt)}
-                />
+                <CanvasComp t0={t0}>
+                    <Axes2DC
+                        bounds={axesBounds.current}
+                        lineWidth={5}
+                        color={initColors.controlBar}
+                        yLabel='z'
+                    />
+                </CanvasComp>
             </Main>
         </FullScreenBaseComponent>
     );
