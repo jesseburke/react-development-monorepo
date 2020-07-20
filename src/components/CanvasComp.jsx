@@ -18,6 +18,8 @@ export default React.memo(function CanvasComp({
 
     const [drawArray, setDrawArray] = useState([]);
 
+    const [canvasSet, setCanvasSet] = useState(new Set());
+
     useEffect(() => {
         if (!canvasRef.current) {
             setCtx(null);
@@ -38,8 +40,26 @@ export default React.memo(function CanvasComp({
         []
     );
 
+    // drawing effect
     useEffect(() => {
         if (!ctx) return;
+
+        return () => {
+            if (ctx) {
+                ctx.fillStyle = clearColor; //'#AAA';
+                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            }
+        };
+    });
+
+    // drawing effect
+    useEffect(() => {
+        if (!ctx || canvasSet.length == 0) return;
+
+        [...canvasSet].forEach((c) => {
+            ctx.drawImage(c.canvas, 0, 0);
+        });
+        ctx.stroke();
 
         return () => {
             if (ctx) {
