@@ -147,7 +147,9 @@ function ThreeScene(
                 className={classnames(styles.canvas, styles.noOutline)}
                 ref={(elt) => (threeCanvasRef.current = elt)}
             />
-            <div>{React.Children.map(children, (el) => React.cloneElement(el, { threeCBs }))}</div>
+            <React.Fragment>
+                {React.Children.map(children, (el) => React.cloneElement(el, { threeCBs }))}
+            </React.Fragment>
             <div className={styles.noOutline} ref={(elt) => (labelContainerRef.current = elt)} />
         </div>
     );
