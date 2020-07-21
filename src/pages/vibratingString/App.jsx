@@ -17,15 +17,18 @@ import Slider from '../../components/Slider.jsx';
 import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import CanvasComp from '../../components/CanvasComp.jsx';
 
-import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
-import Axes3DTS from '../../ThreeSceneComps/Axes3DTS.jsx';
-import FunctionGraph3DTS from '../../ThreeSceneComps/FunctionGraph3DTS.jsx';
+import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
+import Axes3DTS from '../../ThreeSceneComps/Axes3D.jsx';
+import FunctionGraph3DTS from '../../ThreeSceneComps/FunctionGraph3D.jsx';
 import AnimatedPlaneTS from '../../ThreeSceneComps/AnimatedPlane.jsx';
 
-import Axes2DC from '../../CanvasComps/Axes2DC.jsx';
+import Axes2DC from '../../CanvasComps/Axes2D.jsx';
+
+// left off implementing this...start here; will help test if the canvas component is working
+import CurvedPathC from '../../CanvasComps/CurvedPath.jsx';
+import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';
 
 import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.jsx';
-import FunctionGraphPts2D from '../../math/FunctionGraphPts2D.jsx';
 
 import { funcParserXT as funcParser } from '../../utils/funcParser.jsx';
 
@@ -259,6 +262,19 @@ export default function App() {
                         color={initColors.controlBar}
                         yLabel='z'
                     />
+                    <CurvedPathC
+                        compArray={[
+                            [
+                                [1, 0],
+                                [1, 0],
+                                [1, 1],
+                                [0, 1]
+                            ]
+                        ]}
+                        lineWidth={100}
+                        bounds={axesBounds.current}
+                    />
+                    <FunctionGraph2D func={} lineWidth={100} bounds={axesBounds.current} />
                 </CanvasComp>
             </Main>
         </FullScreenBaseComponent>
