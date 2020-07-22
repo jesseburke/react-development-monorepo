@@ -7,31 +7,48 @@ export default React.memo(function FunctionGraph2D({
     func,
     bounds,
     color = '#8BC34A',
-    lineWidth = 1,
+    lineWidth = 5,
     addFunc,
     removeFunc
 }) {
-    const [ctx] = useState(document.createElement('canvas').getContext('2d'));
+    const [ctx] = useState(document.createElement('canvas').getContext('2d'), []);
 
     const [compArray, setCompArray] = useState();
-
-    useEffect(() => {
-        setCompArray(FunctionGraphPts2D({ func, bounds }));
-    }, [func, bounds]);
 
     useEffect(() => {
         if (!ctx) return;
 
         ctx.canvas.width = 1024;
         ctx.canvas.height = 1024;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth;
-    }, []);
-
-    console.log('CurvedPathComp called with bounds = ', bounds);
+    }, [ctx]);
 
     useEffect(() => {
-        // should clear context here
+        if (!ctx) return;
+
+        ctx.strokeStyle = color;
+    }, [color, ctx]);
+
+    useEffect(() => {
+        if (!ctx) return;
+
+        ctx.lineWidth = lineWidth;
+    }, [lineWidth, ctx]);
+
+    useEffect(() => {
+        setCompArray(FunctionGraphPts2D({ func, bounds }));
+    }, [func, bounds]);
+
+    const clearCanvas = useCallback(() => {
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }, [ctx]);
+
+    useEffect(() => {
+        if (!compArray || compArray.length === 0) return;
+
+        clearCanvas();
+
         const { xMin, xMax, zMin, zMax } = bounds;
 
         const xRange = xMax - xMin;
@@ -42,12 +59,7 @@ export default React.memo(function FunctionGraph2D({
 
         const stc = ([x, z]) => [((x - xMin) / xRange) * w, (1 - (z - zMin) / zRange) * h];
 
-        const oldColor = ctx.strokeStyle;
-        ctx.strokeStyle = color;
-        const oldLineWidth = ctx.lineWidth;
-        ctx.lineWidth = lineWidth;
-
-        let curve, curArray, nextPt, l, tempD;
+        let curArray, l;
 
         for (let i = 0; i < compArray.length; i++) {
             curArray = compArray[i];
@@ -59,8 +71,6 @@ export default React.memo(function FunctionGraph2D({
             for (let i = 1; i < l; i++) {
                 ctx.lineTo(...stc(curArray[i]));
             }
-
-            //ctx.closePath();
             ctx.stroke();
         }
         addFunc(ctx);
