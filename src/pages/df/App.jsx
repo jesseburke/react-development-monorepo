@@ -15,11 +15,11 @@ import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 import Input from '../../components/Input.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 
-import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
-import Axes2DTS from '../../ThreeSceneComps/Axes2DTS.jsx';
-import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2DTS.jsx';
-import ArrowGridTS from '../../ThreeSceneComps/ArrowGridTS.jsx';
-import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApproxTS.jsx';
+import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
+import Axes2DTS from '../../ThreeSceneComps/Axes2D.jsx';
+import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2D.jsx';
+import ArrowGridTS from '../../ThreeSceneComps/ArrowGrid.jsx';
+import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApprox.jsx';
 
 import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 
@@ -31,9 +31,44 @@ import { round } from '../../utils/BaseUtils.jsx';
 // initial data
 //
 
-const aspectRatio = window.innerWidth / window.innerHeight;
+const initColors = {
+    arrows: '#C2374F',
+    solution: '#C2374F',
+    firstPt: '#C2374F',
+    secPt: '#C2374F',
+    testFunc: '#E16962', //#DBBBB0',
+    axes: '#0A2C3C',
+    controlBar: '#0A2C3C',
+    clearColor: '#f0f0f0'
+};
 
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
+    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false
+};
+
+const aspectRatio = window.innerWidth / window.innerHeight;
 const frustumSize = 20;
+
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: { order: 'XYZ' },
+    orthographic: {
+        left: (frustumSize * aspectRatio) / -2,
+        right: (frustumSize * aspectRatio) / 2,
+        top: frustumSize / 2,
+        bottom: frustumSize / -2
+    }
+};
 
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
@@ -52,17 +87,11 @@ const pointMaterial = new THREE.MeshBasicMaterial({
 pointMaterial.transparent = false;
 pointMaterial.opacity = 0.8;
 
-const testFuncRadius = 0.1;
-
 const initAxesData = {
     radius: 0.01,
     show: true,
     showLabels: true,
     labelStyle
-};
-
-const initGridData = {
-    show: true
 };
 
 const funcStr = 'x*y*sin(x+y)/10';
@@ -137,56 +166,14 @@ export default function App() {
 
     const [meshArray, setMeshArray] = useState(null);
 
-    const [colors] = useState(initColors.current);
+    const [colors] = useState(initColors);
 
     const [fontState] = useState(fonts);
-
-    const [cbhState] = useState(controlBarHeight);
-
-    const [cbfsState] = useState(controlBarFontSize);
-
-    const [minuscbhState] = useState(100 - controlBarHeight);
 
     const threeSceneRef = useRef(null);
 
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
-
-    const initCameraData = useRef({
-        position: [0, 0, 1],
-        up: [0, 0, 1],
-        //fov: 75,
-        near: -100,
-        far: 100,
-        rotation: { order: 'XYZ' },
-        orthographic: {
-            left: (frustumSize * aspectRatio) / -2,
-            right: (frustumSize * aspectRatio) / 2,
-            top: frustumSize / 2,
-            bottom: frustumSize / -2
-        }
-    });
-
-    const initColors = {
-        arrows: '#C2374F',
-        solution: '#C2374F',
-        firstPt: '#C2374F',
-        secPt: '#C2374F',
-        testFunc: '#E16962', //#DBBBB0',
-        axes: '#0A2C3C',
-        controlBar: '#0A2C3C',
-        clearColor: '#f0f0f0'
-    };
-
-    const initControlsData = useRef({
-        mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-        touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
-        enableRotate: false,
-        enablePan: true,
-        enabled: true,
-        keyPanSpeed: 50,
-        screenSpaceSpanning: false
-    });
 
     //
     // make the mesh for the initial point
@@ -195,11 +182,11 @@ export default function App() {
         if (!threeCBs) return;
 
         const geometry = new THREE.SphereBufferGeometry(solutionCurveRadius * 2, 15, 15);
-        const material = new THREE.MeshBasicMaterial({ color: initColors.current.solution });
+        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
 
         const mesh = new THREE.Mesh(geometry, material)
-            .translateX(initState.initialPt[0])
-            .translateY(initState.initialPt[1]);
+            .translateX(state.initialPt[0])
+            .translateY(state.initialPt[1]);
 
         threeCBs.add(mesh);
         setMeshArray([mesh]);
@@ -210,6 +197,8 @@ export default function App() {
             if (material) material.dispose();
         };
     }, [threeCBs]);
+
+    //click and drag should be on any point in the plane
 
     //
     // make initial condition point draggable
@@ -225,27 +214,6 @@ export default function App() {
     }, [meshArray]);
 
     useDraggableMeshArray({ meshArray, threeCBs, dragCB, dragendCB: dragCB });
-
-    // change initial point mesh if initialPoint changes
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        if (!meshArray || !state) return;
-
-        let vec = new THREE.Vector3();
-
-        meshArray[0].getWorldPosition(vec);
-
-        const [d1, e1] = [vec.x - state.initialPt[0], vec.y - state.initialPt[1]];
-
-        if (d1 != 0) {
-            meshArray[0].translateX(-d1);
-        }
-        if (e1 != 0) {
-            meshArray[0].translateY(-e1);
-        }
-    }, [threeCBs, meshArray, state.initialPt]);
 
     const funcInputCallback = useCallback((newFunc, newFuncStr) => {
         setState(({ func, funcStr, ...rest }) => ({
@@ -286,7 +254,11 @@ export default function App() {
 
     return (
         <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fontState}>
-            <ControlBar height={cbhState} fontSize={fontSize * cbfsState} padding='0em'>
+            <ControlBar
+                height={controlBarHeight}
+                fontSize={fontSize * controlBarFontSize}
+                padding='0em'
+            >
                 <div className='center-flex-column border-right large-padding'>
                     <span className='text-align-center'>Test Function:</span>
                     <FunctionInput
@@ -330,11 +302,11 @@ export default function App() {
                 </div>
             </ControlBar>
 
-            <Main height={minuscbhState} fontSize={fontSize * cbfsState}>
+            <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
                 <ThreeSceneComp
                     ref={threeSceneRef}
-                    initCameraData={initCameraData.current}
-                    controlsData={initControlsData.current}
+                    initCameraData={initCameraData}
+                    controlsData={initControlsData}
                 >
                     <GridAndOriginTS
                         gridQuadSize={initAxesData.length}
@@ -347,12 +319,12 @@ export default function App() {
                         showLabels={initAxesData.showLabels}
                         labelStyle={labelStyle}
                         yLabel='t'
-                        color={initColors.current.axes}
+                        color={initColors.axes}
                     />
                     <FunctionGraph2DTS
                         func={state.testFunc}
                         bounds={state.bounds}
-                        color={initColors.current.testFunc}
+                        color={initColors.testFunc}
                     />
                     <ArrowGridTS
                         func={state.func}
@@ -362,7 +334,7 @@ export default function App() {
                         color={colors.arrows}
                     />
                     <DirectionFieldApproxTS
-                        color={initColors.current.solution}
+                        color={initColors.solution}
                         initialPt={state.initialPt}
                         bounds={state.bounds}
                         func={state.func}

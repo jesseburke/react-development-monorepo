@@ -23,12 +23,7 @@ import FunctionGraph3DTS from '../../ThreeSceneComps/FunctionGraph3D.jsx';
 import AnimatedPlaneTS from '../../ThreeSceneComps/AnimatedPlane.jsx';
 
 import Axes2DC from '../../CanvasComps/Axes2D.jsx';
-
-// left off implementing this...start here; will help test if the canvas component is working
-import CurvedPathC from '../../CanvasComps/CurvedPath.jsx';
 import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';
-
-import CurvedPathCanvas from '../../graphics/CurvedPathCanvas.jsx';
 
 import { funcParserXT as funcParser } from '../../utils/funcParser.jsx';
 
@@ -125,8 +120,6 @@ export default function App() {
 
     const [timeline, setTimeline] = useState(null);
 
-    const canvasRef = useRef(null);
-
     //------------------------------------------------------------------------
     //
     // init effects
@@ -152,8 +145,6 @@ export default function App() {
             zMax: bounds.zMax
         };
     }, [bounds]);
-
-    const yLabelRef = useRef('t');
 
     //------------------------------------------------------------------------
     //
@@ -182,6 +173,13 @@ export default function App() {
         });
         setTimeline(newTl);
     }, [paused, bounds.tMax]);
+
+    const twoFunc = useCallback((x) => state.func(x, t0), [t0, state.func]);
+
+    const boundMemo = React.useMemo(
+        () => ({ ...state.bounds, xMin: -canvasXOverhang + state.bounds.xMin }),
+        [state.bounds]
+    );
 
     //------------------------------------------------------------------------
     //
@@ -262,19 +260,7 @@ export default function App() {
                         color={initColors.controlBar}
                         yLabel='z'
                     />
-                    <CurvedPathC
-                        compArray={[
-                            [
-                                [1, 0],
-                                [1, 0],
-                                [1, 1],
-                                [0, 1]
-                            ]
-                        ]}
-                        lineWidth={100}
-                        bounds={axesBounds.current}
-                    />
-                    <FunctionGraph2D func={} lineWidth={100} bounds={axesBounds.current} />
+                    <FunctionGraph2D func={twoFunc} bounds={boundMemo} />
                 </CanvasComp>
             </Main>
         </FullScreenBaseComponent>
