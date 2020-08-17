@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import styles from './Input.module.css';
 
-export default React.memo(function Input({ onC, initValue, size }) {
+export default React.memo(function Input({ onC, initValue, size = 10 }) {
     const inputElt = useRef(null);
 
     const handleBlur = useCallback(
@@ -14,13 +14,22 @@ export default React.memo(function Input({ onC, initValue, size }) {
         [onC]
     );
 
-    const handleKey = useCallback((event) => {
-        if (event.key === 'Enter') {
-            inputElt.current.blur();
-        } else if (event.key === 'Escape') {
-            inputElt.current.value = initValue;
-        }
-    }, []);
+    const handleKey = useCallback(
+        (event) => {
+            if (event.key === 'Enter') {
+                inputElt.current.blur();
+            } else if (event.key === 'Escape') {
+                inputElt.current.value = initValue;
+            }
+        },
+        [initValue]
+    );
+
+    useEffect(() => {
+        if (!inputElt.current) return;
+
+        inputElt.current.value = initValue;
+    }, [initValue]);
 
     return (
         <input
@@ -29,7 +38,6 @@ export default React.memo(function Input({ onC, initValue, size }) {
             onKeyDown={handleKey}
             size={size}
             defaultValue={initValue}
-            className={styles.input}
             ref={inputElt}
         />
     );
