@@ -198,6 +198,8 @@ export default function App() {
 
     const pauseCB = useCallback(() => setPaused((p) => !p), []);
 
+    // make <FullScreenbasecomponent><Helmet>...</Helmet> into a component called 'Page'; pass it title string
+
     return (
         <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
             <Helmet>

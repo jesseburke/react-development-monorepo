@@ -10,10 +10,11 @@ import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import FunctionInput from '../../components/FunctionInput.jsx';
-import funcParser from '../../utils/funcParser.jsx';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 import Input from '../../components/Input.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+
+import funcParser from '../../utils/funcParser.jsx';
 
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2DTS from '../../ThreeSceneComps/Axes2D.jsx';
@@ -166,10 +167,6 @@ export default function App() {
 
     const [meshArray, setMeshArray] = useState(null);
 
-    const [colors] = useState(initColors);
-
-    const [fontState] = useState(fonts);
-
     const threeSceneRef = useRef(null);
 
     // following will be passed to components that need to draw
@@ -253,7 +250,7 @@ export default function App() {
     );
 
     return (
-        <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fontState}>
+        <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
             <ControlBar
                 height={controlBarHeight}
                 fontSize={fontSize * controlBarFontSize}
@@ -331,7 +328,7 @@ export default function App() {
                         bounds={state.bounds}
                         arrowDensity={state.arrowDensity}
                         arrowLength={state.arrowLength}
-                        color={colors.arrows}
+                        color={initColors.arrows}
                     />
                     <DirectionFieldApproxTS
                         color={initColors.solution}
