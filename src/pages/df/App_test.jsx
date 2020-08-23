@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-//import queryString from 'query-string';
-
 import * as THREE from 'three';
 
 import './styles.css';
@@ -18,14 +16,11 @@ import funcParser from '../../utils/funcParser.jsx';
 
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2DTS from '../../ThreeSceneComps/Axes2D.jsx';
-import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2D.jsx';
 import ArrowGridTS from '../../ThreeSceneComps/ArrowGrid.jsx';
 import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApprox.jsx';
-
-import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
+import SphereTS from '../../ThreeSceneComps/Sphere.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -79,8 +74,6 @@ const controlBarHeight = 13;
 const fontSize = 1;
 const controlBarFontSize = 1;
 
-const solutionCurveRadius = 0.1;
-
 const pointMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(initColors.solution),
     side: THREE.FrontSide
@@ -96,7 +89,6 @@ const initAxesData = {
 };
 
 const funcStr = 'x*y*sin(x+y)/10';
-const testFuncStr = 'sin(2*x)+1.5*sin(x)';
 
 const initState = {
     bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
@@ -104,113 +96,26 @@ const initState = {
     arrowLength: 0.7,
     funcStr,
     func: funcParser(funcStr),
-    testFuncStr,
-    testFunc: funcParser(testFuncStr),
     initialPt: [2, 2],
     approxH: 0.1
 };
-
-const roundConst = 3;
-
-function shrinkState({
-    bounds,
-    arrowDensity,
-    arrowLength,
-    funcStr,
-    testFuncStr,
-    initialPt,
-    approxH
-}) {
-    const { xMin, xMax, yMin, yMax } = bounds;
-
-    const newObj = {
-        b: [xMin, xMax, yMin, yMax],
-        ad: arrowDensity,
-        al: arrowLength,
-        fs: funcStr,
-        tfs: testFuncStr,
-        ip: initialPt.map((x) => round(x, roundConst)),
-        a: approxH
-    };
-
-    return newObj;
-}
-
-// f is a function applied to the string representing each array element
-
-function strArrayToArray(strArray, f = Number) {
-    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
-
-    return strArray.split(',').map((x) => f(x));
-}
-
-function expandState({ b, ad, al, fs, tfs, ip, a }) {
-    const bds = strArrayToArray(b, Number);
-
-    return {
-        bounds: { xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3] },
-        arrowDensity: Number(ad),
-        arrowLength: Number(al),
-        funcStr: fs,
-        func: funcParser(fs),
-        testFuncStr: tfs,
-        testFunc: funcParser(tfs),
-        initialPt: strArrayToArray(ip),
-        approxH: Number(a)
-    };
-}
 
 //------------------------------------------------------------------------
 
 export default function App() {
     const [state, setState] = useState({ ...initState });
 
-    const [meshArray, setMeshArray] = useState(null);
+    const dragCB = useCallback((event) => {
+        if (!event.object.getWorldPosition) {
+            setState((s) => s);
+            return;
+        }
 
-    const threeSceneRef = useRef(null);
-
-    // following will be passed to components that need to draw
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    //
-    // make the mesh for the initial point
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        const geometry = new THREE.SphereBufferGeometry(solutionCurveRadius * 2, 15, 15);
-        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
-
-        const mesh = new THREE.Mesh(geometry, material)
-            .translateX(state.initialPt[0])
-            .translateY(state.initialPt[1]);
-
-        threeCBs.add(mesh);
-        setMeshArray([mesh]);
-
-        return () => {
-            if (mesh) threeCBs.remove(mesh);
-            if (geometry) geometry.dispose();
-            if (material) material.dispose();
-        };
-    }, [threeCBs]);
-
-    //click and drag should be on any point in the plane
-
-    //
-    // make initial condition point draggable
-
-    // in this case there is no argument, because we know what is being dragged
-    const dragCB = useCallback(() => {
         const vec = new THREE.Vector3();
-
-        // this will be where new position is stored
-        meshArray[0].getWorldPosition(vec);
+        event.object.getWorldPosition(vec);
 
         setState(({ initialPt, ...rest }) => ({ initialPt: [vec.x, vec.y], ...rest }));
-    }, [meshArray]);
-
-    useDraggableMeshArray({ meshArray, threeCBs, dragCB, dragendCB: dragCB });
+    }, []);
 
     const funcInputCallback = useCallback((newFunc, newFuncStr) => {
         setState(({ func, funcStr, ...rest }) => ({
@@ -224,30 +129,13 @@ export default function App() {
         setState(({ initialPt, ...rest }) => ({ initialPt: [pt.x, pt.y], ...rest }));
     }, []);
 
-    const testFuncInputCB = useCallback(
-        (newFunc, newFuncStr) =>
-            setState(({ testFunc, testFuncStr, ...rest }) => ({
-                testFunc: newFunc,
-                testFuncStr: newFuncStr,
-                ...rest
-            })),
-        []
-    );
+    const ipxCB = useCallback((x) => {
+        setState(({ initialPt, ...rest }) => ({ initialPt: [Number(x), initialPt[1]], ...rest }));
+    }, []);
 
-    const approxInputCB = useCallback(
-        (newA) => setState(({ approxH, ...rest }) => ({ approxH: Number(newA), ...rest })),
-        []
-    );
-
-    const densityInputCB = useCallback(
-        (newD) => setState(({ arrowDensity, ...rest }) => ({ arrowDensity: newD, ...rest })),
-        []
-    );
-
-    const lengthInputCB = useCallback(
-        (newL) => setState(({ arrowLength, ...rest }) => ({ arrowLength: newL, ...rest })),
-        []
-    );
+    const ipyCB = useCallback((y) => {
+        setState(({ initialPt, ...rest }) => ({ initialPt: [initialPt[0], Number(y)], ...rest }));
+    }, []);
 
     return (
         <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
@@ -256,17 +144,6 @@ export default function App() {
                 fontSize={fontSize * controlBarFontSize}
                 padding='0em'
             >
-                <div className='center-flex-column border-right large-padding'>
-                    <span className='text-align-center'>Test Function:</span>
-                    <FunctionInput
-                        onChangeFunc={testFuncInputCB}
-                        initFuncStr={state.testFuncStr}
-                        totalWidth='12em'
-                        inputSize={20}
-                        leftSideOfEquation={'\u{00177}(x) ='}
-                    />
-                </div>
-
                 <div className='center-flex-row border-right'>
                     <FunctionInput
                         onChangeFunc={funcInputCallback}
@@ -274,37 +151,18 @@ export default function App() {
                         leftSideOfEquation='dy/dx ='
                     />
                 </div>
-
-                <div className='center-flex-row border-right med-padding'>
-                    <div className='center-flex-column med-padding'>
-                        <span className='text-align-center'>Arrows per unit:</span>
-                        <span className='med-padding'>
-                            <Input size={4} initValue={state.arrowDensity} onC={densityInputCB} />
-                        </span>
-                    </div>
-
-                    <div className='center-flex-column med-padding'>
-                        <span className='text-align-center'>Relative arrow length:</span>
-                        <span className='med-padding'>
-                            <Input size={4} initValue={state.arrowLength} onC={lengthInputCB} />
-                        </span>
-                    </div>
-                </div>
-
-                <div className='center-flex-column large-padding'>
-                    <div className='text-align-center'>Solution approximation constant:</div>
-                    <span className='med-padding'>
-                        <Input size={4} initValue={state.approxH} onC={approxInputCB} />
+                <div>
+                    <span>
+                        <span>Initial Point: </span>
+                        <Input initValue={state.initialPt[0]} onC={ipxCB} />
+                        <span> , </span>
+                        <Input initValue={state.initialPt[1]} onC={ipyCB} />
                     </span>
                 </div>
             </ControlBar>
 
             <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                <ThreeSceneComp
-                    ref={threeSceneRef}
-                    initCameraData={initCameraData}
-                    controlsData={initControlsData}
-                >
+                <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
                     <GridAndOriginTS
                         gridQuadSize={initAxesData.length}
                         gridShow={initState.gridShow}
@@ -317,11 +175,6 @@ export default function App() {
                         labelStyle={labelStyle}
                         yLabel='t'
                         color={initColors.axes}
-                    />
-                    <FunctionGraph2DTS
-                        func={state.testFunc}
-                        bounds={state.bounds}
-                        color={initColors.testFunc}
                     />
                     <ArrowGridTS
                         func={state.func}
@@ -337,8 +190,14 @@ export default function App() {
                         func={state.func}
                         approxH={state.approxH}
                     />
+                    <SphereTS
+                        color={initColors.solution}
+                        position={state.initialPt}
+                        dragCB={dragCB}
+                        radius={0.25}
+                    />
+                    <ClickablePlaneComp clickCB={clickCB} />
                 </ThreeSceneComp>
-                <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} />
             </Main>
         </FullScreenBaseComponent>
     );
