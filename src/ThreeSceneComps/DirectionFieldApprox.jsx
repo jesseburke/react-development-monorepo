@@ -24,13 +24,11 @@ export default function DirectionFieldApproxTS({
                 opacity: 0.6
             })
         );
-    }, [color]);
 
-    useEffect(() => {
         return () => {
             if (mat) mat.dispose();
         };
-    }, [mat]);
+    }, [color]);
 
     useEffect(() => {
         if (!threeCBs) return;
