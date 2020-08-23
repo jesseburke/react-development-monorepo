@@ -532,11 +532,7 @@ export default function useThreeScene({
 
     // dragendCB is called with the object that is being dragged as first argument
     function addDragControls({ meshArray, dragCB = null, dragDelay, dragendCB = null }) {
-        const controls = new DragControls(
-            [...meshArray],
-            camera.current,
-            renderer.current.domElement
-        );
+        const controls = new DragControls(meshArray, camera.current, renderer.current.domElement);
         controls.addEventListener('drag', render);
 
         const idArray = meshArray.map((mesh) => mesh.id);
@@ -566,6 +562,22 @@ export default function useThreeScene({
         return controls.dispose;
     }
 
+    // dragCB is called with one argument, event, and event.object is the mesh that is being dragged
+    function addDrag({ mesh, dragCB = null, dragendCB = null }) {
+        const controls = new DragControls([mesh], camera.current, renderer.current.domElement);
+        controls.addEventListener('drag', render);
+
+        if (dragCB) {
+            controls.addEventListener('drag', dragCB);
+        }
+
+        if (dragendCB) {
+            controls.addEventListener('dragend', dragendCB, dragendCB);
+        }
+
+        return controls.dispose;
+    }
+
     const getControlsTarget = () => controls.current.target;
 
     return {
@@ -586,7 +598,8 @@ export default function useThreeScene({
         resetControls,
         changeControls,
         getControlsTarget,
-        addDragControls
+        addDragControls,
+        addDrag
     };
 }
 
