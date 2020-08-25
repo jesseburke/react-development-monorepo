@@ -4,7 +4,7 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import FunctionInput from '../../components/FunctionInput.jsx';
