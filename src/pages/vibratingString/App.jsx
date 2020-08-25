@@ -15,7 +15,7 @@ import { FunctionAndBoundsInputXT as FunctionAndBoundsInput } from '../../compon
 import Slider from '../../components/Slider.jsx';
 
 import { ThreeSceneHalfWidthComp } from '../../components/ThreeSceneHalfWidth.jsx';
-import CanvasComp from '../../components/CanvasComp.jsx';
+import CanvasComp from '../../components/CanvasCompHalfWidth.jsx';
 
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes3DTS from '../../ThreeSceneComps/Axes3D.jsx';
