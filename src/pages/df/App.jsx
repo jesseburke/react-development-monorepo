@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-//import queryString from 'query-string';
+import Recoil from 'recoil';
+const { RecoilRoot, atom, selector, useRecoilState, useSetRecoilState, useRecoilValue } = Recoil;
 
 import * as THREE from 'three';
 
@@ -22,8 +23,6 @@ import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2D.jsx';
 import ArrowGridTS from '../../ThreeSceneComps/ArrowGrid.jsx';
 import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApprox.jsx';
 import SphereTS from '../../ThreeSceneComps/Sphere.jsx';
-
-import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
 import { round } from '../../utils/BaseUtils.jsx';
@@ -82,15 +81,6 @@ const initCameraData = {
 // (relative) font sizes (first in em's)
 const fontSize = 1;
 const controlBarFontSize = 1;
-
-const solutionCurveRadius = 0.1;
-
-const pointMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(initColors.solution),
-    side: THREE.FrontSide
-});
-pointMaterial.transparent = false;
-pointMaterial.opacity = 0.8;
 
 const initAxesData = {
     radius: 0.01,
@@ -169,52 +159,19 @@ function expandState({ b, ad, al, fs, tfs, ip, a }) {
 export default function App() {
     const [state, setState] = useState({ ...initState });
 
-    const [meshArray, setMeshArray] = useState(null);
-
     const threeSceneRef = useRef(null);
 
-    // following will be passed to components that need to draw
-    const threeCBs = useThreeCBs(threeSceneRef);
+    const dragCB = useCallback((event) => {
+        if (!event.object.getWorldPosition) {
+            setState((s) => s);
+            return;
+        }
 
-    //
-    // make the mesh for the initial point
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        const geometry = new THREE.SphereBufferGeometry(solutionCurveRadius * 2, 15, 15);
-        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
-
-        const mesh = new THREE.Mesh(geometry, material)
-            .translateX(state.initialPt[0])
-            .translateY(state.initialPt[1]);
-
-        threeCBs.add(mesh);
-        setMeshArray([mesh]);
-
-        return () => {
-            if (mesh) threeCBs.remove(mesh);
-            if (geometry) geometry.dispose();
-            if (material) material.dispose();
-        };
-    }, [threeCBs]);
-
-    //click and drag should be on any point in the plane
-
-    //
-    // make initial condition point draggable
-
-    // in this case there is no argument, because we know what is being dragged
-    const dragCB = useCallback(() => {
         const vec = new THREE.Vector3();
-
-        // this will be where new position is stored
-        meshArray[0].getWorldPosition(vec);
+        event.object.getWorldPosition(vec);
 
         setState(({ initialPt, ...rest }) => ({ initialPt: [vec.x, vec.y], ...rest }));
-    }, [meshArray]);
-
-    useDraggableMeshArray({ meshArray, threeCBs, dragCB, dragendCB: dragCB });
+    }, []);
 
     const funcInputCallback = useCallback((newFunc, newFuncStr) => {
         setState(({ func, funcStr, ...rest }) => ({
@@ -342,8 +299,14 @@ export default function App() {
                         func={state.func}
                         approxH={state.approxH}
                     />
+                    <SphereTS
+                        color={initColors.solution}
+                        position={state.initialPt}
+                        radius={0.25}
+                        dragCB={dragCB}
+                    />
+                    <ClickablePlaneComp clickCB={clickCB} />
                 </ThreeSceneComp>
-                <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} />
             </Main>
         </FullScreenBaseComponent>
     );
