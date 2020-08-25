@@ -22,7 +22,7 @@ import Axes3DTS from '../../ThreeSceneComps/Axes3D.jsx';
 import FunctionGraph3DTS from '../../ThreeSceneComps/FunctionGraph3D.jsx';
 import AnimatedPlaneTS from '../../ThreeSceneComps/AnimatedPlane.jsx';
 
-import Axes2DC from '../../CanvasComps/Axes2D.jsx';
+import Axes2D from '../../CanvasComps/Axes2D.jsx';
 import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';
 
 import { funcParserXT as funcParser } from '../../utils/funcParser.jsx';
@@ -223,11 +223,7 @@ export default function App() {
             </ControlBar>
 
             <Main height={mainHeight} fontSize={initFontSize * percDrawer}>
-                <ThreeSceneComp
-                    initCameraData={initCameraData}
-                    controlsData={initControlsData}
-                    width={initThreeWidth.toString() + '%'}
-                >
+                <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
                     <GridAndOriginTS
                         gridQuadSize={axesData.length}
                         originRadius={0}
@@ -255,8 +251,8 @@ export default function App() {
                         centerY={t0}
                     />
                 </ThreeSceneComp>
-                <CanvasComp t0={t0}>
-                    <Axes2DC
+                <CanvasComp>
+                    <Axes2D
                         bounds={axesBounds.current}
                         lineWidth={5}
                         color={initColors.controlBar}

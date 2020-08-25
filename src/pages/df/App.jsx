@@ -21,6 +21,7 @@ import Axes2DTS from '../../ThreeSceneComps/Axes2D.jsx';
 import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2D.jsx';
 import ArrowGridTS from '../../ThreeSceneComps/ArrowGrid.jsx';
 import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApprox.jsx';
+import SphereTS from '../../ThreeSceneComps/Sphere.jsx';
 
 import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 
@@ -53,7 +54,14 @@ const initControlsData = {
     screenSpaceSpanning: false
 };
 
+// percentage of screen appBar will take (at the top)
+// (should make this a certain minimum number of pixels?)
+const controlBarHeight = 13;
+
 const aspectRatio = window.innerWidth / window.innerHeight;
+const mainHeight = 100 - controlBarHeight;
+const aspectRatioOfMain = aspectRatio / (mainHeight / 100);
+
 const frustumSize = 20;
 
 const initCameraData = {
@@ -70,10 +78,6 @@ const initCameraData = {
         bottom: frustumSize / -2
     }
 };
-
-// percentage of screen appBar will take (at the top)
-// (should make this a certain minimum number of pixels?)
-const controlBarHeight = 13;
 
 // (relative) font sizes (first in em's)
 const fontSize = 1;
@@ -304,6 +308,7 @@ export default function App() {
                     ref={threeSceneRef}
                     initCameraData={initCameraData}
                     controlsData={initControlsData}
+                    aspectRatio={aspectRatioOfMain}
                 >
                     <GridAndOriginTS
                         gridQuadSize={initAxesData.length}
