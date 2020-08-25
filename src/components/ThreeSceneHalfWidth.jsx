@@ -156,7 +156,7 @@ function ThreeSceneHalfWidth(
     );
 }
 
-export const ThreeSceneHalfWidthComp = React.memo(React.forwardRef(ThreeSceneHalfWidth));
+export default React.memo(React.forwardRef(ThreeSceneHalfWidth));
 
 export function useThreeCBs(threeRef) {
     const [threeCBs, setThreeCBs] = useState(null);

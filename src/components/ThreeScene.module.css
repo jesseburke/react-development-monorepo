@@ -6,17 +6,10 @@
 .container {    
     position: absolute;
     height: 100%;
+    width: 100%;
     outline: 'none';
     display: 'block';
     background: gray;
-}
-
-.halfWidth {
-    width: 50%;
-}
-
-.fullWidth {
-    width: 100%;
 }
 
 .canvas {    

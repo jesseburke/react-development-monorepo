@@ -28,7 +28,6 @@ function ThreeScene(
         height = '100%',
         width = '100%',
         clearColor = '#f0f0f0',
-        halfWidth = false,
         aspectRatio = 1,
         children
     },
@@ -50,15 +49,7 @@ function ThreeScene(
     );
 
     const heightPxs = useRef(defaultHeightPxs);
-    const widthPxs = useRef();
-
-    useEffect(() => {
-        if (!halfWidth) {
-            widthPxs.current = heightPxs.current * aspectRatio;
-        } else {
-            widthPxs.current = heightPxs.current * aspectRatio * 2;
-        }
-    }, [halfWidth]);
+    const widthPxs = useRef(heightPxs.current * aspectRatio);
 
     // object to be passed to graphic component children; contains methods, e.g., add, remove, etc.
     // only slightly different than threeScene
@@ -152,18 +143,8 @@ function ThreeScene(
         threeScene.controlsPubSub.subscribe(controlsCB);
     }, [controlsCB, threeScene]);
 
-    const classNameRef = useRef();
-
-    useEffect(() => {
-        if (halfWidth) {
-            classNameRef.current = classnames(styles.container, styles.noOutline, styles.halfWidth);
-        } else {
-            classNameRef.current = classnames(styles.container, styles.noOutline, styles.fullWidth);
-        }
-    }, [halfWidth]);
-
     return (
-        <div className={classNameRef.current} ref={(elt) => (containerRef.current = elt)}>
+        <div className={styles.container} ref={(elt) => (containerRef.current = elt)}>
             <canvas
                 className={classnames(styles.canvas, styles.noOutline)}
                 width={widthPxs.current}
