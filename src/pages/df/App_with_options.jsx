@@ -238,7 +238,8 @@ export default function App() {
                     css={{
                         paddingLeft: '30%',
                         paddingRight: '10%'
-                    }}>
+                    }}
+                >
                     <FunctionInput
                         onChangeFunc={funcInputCallback}
                         initFuncStr={initFuncStr}
@@ -265,16 +266,19 @@ export default function App() {
                     toShow={showOptsDrawer}
                     width={optionsDrawerWidth}
                     color={colors.optionsDrawer}
-                    fontSize={'1.5em'}>
+                    fontSize={'1.5em'}
+                >
                     <ListItem
                         width={optionsDrawerWidth - 9}
-                        onClick={useCallback(() => setShowCoordOpts((s) => !s), [])}>
+                        onClick={useCallback(() => setShowCoordOpts((s) => !s), [])}
+                    >
                         Coordinates
                     </ListItem>
 
                     <ListItem
                         width={optionsDrawerWidth - 9}
-                        onClick={useCallback(() => setShowCameraOpts((s) => !s), [])}>
+                        onClick={useCallback(() => setShowCameraOpts((s) => !s), [])}
+                    >
                         Camera
                     </ListItem>
                 </RightDrawer>
@@ -290,7 +294,8 @@ export default function App() {
                     show={showCoordOpts}
                     key='axesModalWindow'
                     onClose={useCallback(() => setShowCoordOpts(false), [])}
-                    color={colors.optionsDrawer}>
+                    color={colors.optionsDrawer}
+                >
                     <CoordinateOptions
                         axesData={axesData}
                         gridData={gridData}
@@ -311,7 +316,8 @@ export default function App() {
                     onClose={useCallback(() => setShowCameraOpts(false), [])}
                     leftPerc={80}
                     topPerc={70}
-                    color={colors.optionsDrawer}>
+                    color={colors.optionsDrawer}
+                >
                     <CameraOptions cameraData={cameraData} onChangeFunc={cameraChangeCB} />
                 </Modal>
             </Main>
@@ -329,7 +335,8 @@ function ListItem({ children, onClick, toShow = true, width = '20' }) {
                 alignItems: 'flex-end',
                 width: width.toString() + 'em',
                 cursor: 'pointer'
-            }}>
+            }}
+        >
             <div>{children}</div>
             <div>{toShow ? '\u2699' : '\u274C'}</div>
         </div>
