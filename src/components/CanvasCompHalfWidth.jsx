@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import styles from './CanvasComp.module.css';
+import styles from './CanvasCompHalfWidth.module.css';
 
 import { useImmer } from 'use-immer';
 import { enableMapSet } from 'immer';
