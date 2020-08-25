@@ -9,7 +9,9 @@ export default React.memo(function FunctionGraph2D({
     color = '#8BC34A',
     lineWidth = 5,
     addFunc,
-    removeFunc
+    removeFunc,
+    canvasWidth = 1024,
+    canvasHeight = 1024
 }) {
     const [ctx] = useState(document.createElement('canvas').getContext('2d'), []);
 
@@ -18,8 +20,8 @@ export default React.memo(function FunctionGraph2D({
     useEffect(() => {
         if (!ctx) return;
 
-        ctx.canvas.width = 1024;
-        ctx.canvas.height = 1024;
+        ctx.canvas.width = canvasWidth;
+        ctx.canvas.height = canvasHeight;
     }, [ctx]);
 
     useEffect(() => {

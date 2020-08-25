@@ -15,15 +15,17 @@ export default React.memo(function Axes2DC({
     labelEps = 0.5,
     labelStyle,
     xLabel = 'x',
-    yLabel = 'y'
+    yLabel = 'y',
+    canvasWidth = 1024,
+    canvasHeight = 1024
 }) {
     const [ctx] = useState(document.createElement('canvas').getContext('2d'));
 
     useEffect(() => {
         if (!ctx) return;
 
-        ctx.canvas.width = 1024;
-        ctx.canvas.height = 1024;
+        ctx.canvas.width = canvasWidth;
+        ctx.canvas.height = canvasHeight;
         ctx.strokeStyle = color;
         ctx.lineWidth = lineWidth;
     }, []);
