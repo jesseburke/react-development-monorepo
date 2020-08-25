@@ -14,7 +14,6 @@ export default React.memo(function CanvasComp({
     height = '100%',
     width = '100%',
     clearColor = '#f0f0f0',
-    t0,
     children
 }) {
     const canvasRef = useRef(null);
@@ -54,7 +53,6 @@ export default React.memo(function CanvasComp({
         []
     );
 
-    // drawing effect
     // useEffect(() => {
     //     if (!ctx) return;
 
