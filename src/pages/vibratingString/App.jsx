@@ -14,7 +14,7 @@ import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js
 import { FunctionAndBoundsInputXT as FunctionAndBoundsInput } from '../../components/FunctionAndBoundsInput.jsx';
 import Slider from '../../components/Slider.jsx';
 
-import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
+import { ThreeSceneHalfWidthComp } from '../../components/ThreeSceneHalfWidth.jsx';
 import CanvasComp from '../../components/CanvasComp.jsx';
 
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
@@ -223,7 +223,10 @@ export default function App() {
             </ControlBar>
 
             <Main height={mainHeight} fontSize={initFontSize * percDrawer}>
-                <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
+                <ThreeSceneHalfWidthComp
+                    initCameraData={initCameraData}
+                    controlsData={initControlsData}
+                >
                     <GridAndOriginTS
                         gridQuadSize={axesData.length}
                         originRadius={0}
@@ -250,7 +253,7 @@ export default function App() {
                         centerX={bounds.xMax / 2}
                         centerY={t0}
                     />
-                </ThreeSceneComp>
+                </ThreeSceneHalfWidthComp>
                 <CanvasComp>
                     <Axes2D
                         bounds={axesBounds.current}
