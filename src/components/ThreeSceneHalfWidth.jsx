@@ -3,14 +3,14 @@ import * as THREE from 'three';
 
 import classnames from 'classnames';
 
-import styles from './ThreeScene.module.css';
+import styles from './ThreeSceneHalfWidth.module.css';
 
 import useThreeScene from '../graphics/useThree.jsx';
 
 //------------------------------------------------------------------------
 //
 
-function ThreeScene(
+function ThreeSceneHalfWidth(
     {
         controlsCB = null,
         scrollCB = null,
@@ -156,7 +156,7 @@ function ThreeScene(
     );
 }
 
-export const ThreeSceneComp = React.memo(React.forwardRef(ThreeScene));
+export const ThreeSceneHalfWidthComp = React.memo(React.forwardRef(ThreeSceneHalfWidth));
 
 export function useThreeCBs(threeRef) {
     const [threeCBs, setThreeCBs] = useState(null);
