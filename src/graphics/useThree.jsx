@@ -489,14 +489,27 @@ export default function useThreeScene({
         return camera.current;
     }
 
+    // this assumes that the canvas is the entire width of window, and
+    // that the bottom of the canvas is the bottom of the window
     function getMouseCoords(e, mesh) {
         const xperc = e.clientX / canvasRef.current.clientWidth;
-        // following accounts for fact that canvas might not be entire window
-        const yperc =
-            (e.clientY - canvasRef.current.offsetParent.offsetTop) / canvasRef.current.clientHeight;
-        const ncoords = [2 * xperc - 1, 1 - 2 * yperc];
 
-        raycaster.current.setFromCamera(new THREE.Vector2(ncoords[0], ncoords[1]), camera.current);
+        // following accounts for top of canvas being potentially
+        // different from top of window
+        //
+        // e.clientY is in terms of the entire window; we want to see
+        // how high the canvas is from the top of the window and subtract that.
+        // offsetParent gives the closest positioned ancestor element.
+        // in this case, the parent of the canvas is the container
+        // div, and this is contained in the main component, which is what we want
+        const yperc =
+            (e.clientY - canvasRef.current.offsetParent.offsetParent.offsetTop) /
+            canvasRef.current.clientHeight;
+
+        // normalized device coordinates, both in [-1,1]
+        const ncoords = new THREE.Vector2(2 * xperc - 1, -2 * yperc + 1);
+
+        raycaster.current.setFromCamera(ncoords, camera.current);
 
         const array = raycaster.current.intersectObject(mesh);
         return array[0].point;
