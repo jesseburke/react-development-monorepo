@@ -6,17 +6,17 @@ function ClickablePlaneComp({ threeCBs, clickCB, paused, xSize = 1000, ySize = 1
     const [clickPlane, setClickPlane] = useState(null);
 
     useEffect(() => {
-        let cl;
+        let cp;
 
         if (!threeCBs) setClickPlane(null);
         else {
-            cl = ClickPlane({ threeCBs, clickCB, mesh, xSize, ySize });
-            setClickPlane(cl);
+            cp = ClickPlane({ threeCBs, clickCB, mesh, xSize, ySize });
+            setClickPlane(cp);
         }
 
         return () => {
-            if (cl) {
-                cl.dispose();
+            if (cp) {
+                cp.dispose();
             }
         };
     }, [threeCBs, clickCB]);
