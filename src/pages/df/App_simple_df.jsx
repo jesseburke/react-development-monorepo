@@ -1,15 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Recoil from 'recoil';
-const {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue,
-    useSetRecoilState,
-    useRecoilCallback,
-    atomFamily
-} = Recoil;
+const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil;
 
 import * as THREE from 'three';
 
@@ -18,7 +9,7 @@ import './styles.css';
 import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
-import FunctionInput from '../../components/FunctionInput.jsx';
+import FunctionInput from '../../components/FunctionInputRecoil.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import Input from '../../components/Input.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
@@ -26,11 +17,11 @@ import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js
 import funcParser from '../../utils/funcParser.jsx';
 import { round } from '../../utils/BaseUtils.jsx';
 
-import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
-import Axes2DTS from '../../ThreeSceneComps/Axes2D.jsx';
-import ArrowGridTS from '../../ThreeSceneComps/ArrowGrid.jsx';
-import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApprox.jsx';
-import SphereTS from '../../ThreeSceneComps/Sphere.jsx';
+import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
+import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
+import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
+import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
+import Sphere from '../../ThreeSceneComps/Sphere.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
 
@@ -93,17 +84,6 @@ const initAxesData = {
     labelStyle
 };
 
-const funcStr = 'x*y*sin(x+y)/10';
-
-const initState = {
-    bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    arrowDensity: 1,
-    arrowLength: 0.7,
-    funcStr,
-    func: funcParser(funcStr),
-    approxH: 0.1
-};
-
 const ipAtom = atom({
     key: 'initialPosition',
     default: { x: 2, y: 2 }
@@ -119,19 +99,25 @@ const yselector = selector({
     set: ({ get, set }, newY) => set(ipAtom, { y: Number(newY), x: get(ipAtom).x })
 });
 
+const initFuncStr = 'x*y*sin(x+y)/10';
+
+const funcAtom = atom({
+    key: 'function',
+    default: { func: funcParser(initFuncStr) }
+});
+
+const initState = {
+    bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
+    arrowDensity: 1,
+    arrowLength: 0.7,
+    funcStr: initFuncStr,
+    func: funcParser(initFuncStr),
+    approxH: 0.1
+};
+
 //------------------------------------------------------------------------
 
 export default function App() {
-    const [state, setState] = useState({ ...initState });
-
-    const funcInputCallback = useCallback((newFunc, newFuncStr) => {
-        setState(({ func, funcStr, ...rest }) => ({
-            func: newFunc,
-            funcStr: newFuncStr,
-            ...rest
-        }));
-    }, []);
-
     return (
         <RecoilRoot>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
@@ -142,9 +128,9 @@ export default function App() {
                 >
                     <div className='center-flex-row border-right'>
                         <FunctionInput
-                            onChangeFunc={funcInputCallback}
-                            initFuncStr={state.funcStr}
+                            initFuncStr={initFuncStr}
                             leftSideOfEquation='dy/dx ='
+                            funcAtom={funcAtom}
                         />
                     </div>
                     <InitialPointDisplay
@@ -156,34 +142,33 @@ export default function App() {
 
                 <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
                     <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
-                        <GridAndOriginTS
+                        <GridAndOrigin
                             gridQuadSize={initAxesData.length}
                             gridShow={initState.gridShow}
                         />
-                        <Axes2DTS
-                            bounds={state.bounds}
+                        <Axes2D
+                            bounds={initState.bounds}
                             radius={initAxesData.radius}
                             show={initAxesData.show}
                             showLabels={initAxesData.showLabels}
                             labelStyle={labelStyle}
-                            yLabel='t'
                             color={initColors.axes}
                         />
-                        <ArrowGridTS
-                            func={state.func}
-                            bounds={state.bounds}
-                            arrowDensity={state.arrowDensity}
-                            arrowLength={state.arrowLength}
+                        <ArrowGrid
+                            funcAtom={funcAtom}
+                            bounds={initState.bounds}
+                            arrowDensity={initState.arrowDensity}
+                            arrowLength={initState.arrowLength}
                             color={initColors.arrows}
                         />
-                        <DirectionFieldApproxTS
+                        <DirectionFieldApprox
                             color={initColors.solution}
                             initialPtAtom={ipAtom}
-                            bounds={state.bounds}
-                            func={state.func}
-                            approxH={state.approxH}
+                            bounds={initState.bounds}
+                            funcAtom={funcAtom}
+                            approxH={initState.approxH}
                         />
-                        <SphereTS
+                        <Sphere
                             color={initColors.solution}
                             dragPositionAtom={ipAtom}
                             radius={0.25}
