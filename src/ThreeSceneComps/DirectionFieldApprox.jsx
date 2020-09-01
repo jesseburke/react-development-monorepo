@@ -14,7 +14,7 @@ import * as THREE from 'three';
 
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
 
-export default function DirectionFieldApproxTS({
+export default function DirectionFieldApprox({
     threeCBs,
     func,
     initialPtAtom = null,
