@@ -127,7 +127,14 @@ function ThreeScene(
                 threeScene.remove(mesh);
                 threeScene.render();
             },
-            getCanvas: () => threeCanvasRef.current
+            getCanvas: () => threeCanvasRef.current,
+            getMouseCoords: (e, mesh) => {
+                //console.log('new version of getMouseCoords called');
+                return threeScene.getMouseCoords(e, mesh);
+            },
+            // dragendCB is called with the object that is being dragged as argument
+            addDragControls: ({ meshArray, dragCB, dragendCB }) =>
+                threeScene.addDragControls({ meshArray, dragCB, dragendCB })
         });
 
         threeScene.render();
