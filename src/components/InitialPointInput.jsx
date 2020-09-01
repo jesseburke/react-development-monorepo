@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 
 import Recoil from 'recoil';
 const { useRecoilValue, useSetRecoilState } = Recoil;
@@ -12,8 +12,10 @@ export default function InitialPointInput({ ipAtom, xselector, yselector }) {
     const setXS = useSetRecoilState(xselector);
     const setYS = useSetRecoilState(yselector);
 
+    const cssRef = useRef({ paddingRight: '5em' }, []);
+
     return (
-        <div>
+        <div style={cssRef.current}>
             <span>
                 <span>Initial Point: </span>
                 <Input initValue={round(initialPoint.x, 3)} size={8} onC={setXS} />
