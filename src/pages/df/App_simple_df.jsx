@@ -11,11 +11,10 @@ import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import FunctionInput from '../../components/FunctionInputRecoil.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
-import Input from '../../components/Input.jsx';
+import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
@@ -133,7 +132,7 @@ export default function App() {
                             funcAtom={funcAtom}
                         />
                     </div>
-                    <InitialPointDisplay
+                    <InitialPointInput
                         ipAtom={ipAtom}
                         xselector={xselector}
                         yselector={yselector}
@@ -178,23 +177,5 @@ export default function App() {
                 </Main>
             </FullScreenBaseComponent>
         </RecoilRoot>
-    );
-}
-
-function InitialPointDisplay({ ipAtom, xselector, yselector }) {
-    const initialPoint = useRecoilValue(ipAtom);
-
-    const setXS = useSetRecoilState(xselector);
-    const setYS = useSetRecoilState(yselector);
-
-    return (
-        <div>
-            <span>
-                <span>Initial Point: </span>
-                <Input initValue={round(initialPoint.x, 3)} size={8} onC={setXS} />
-                <span> , </span>
-                <Input initValue={round(initialPoint.y, 3)} size={8} onC={setYS} />
-            </span>
-        </div>
     );
 }
