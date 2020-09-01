@@ -13,11 +13,11 @@ import ArrowGridOptions from '../../components/ArrowGridOptions.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import TexDisplayComp from '../../components/TexDisplayComp.jsx';
 
-import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
-import Axes2DTS from '../../ThreeSceneComps/Axes2DTS.jsx';
-import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2DTS.jsx';
-import ArrowGridTS from '../../ThreeSceneComps/ArrowGridTS.jsx';
-import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApproxTS.jsx';
+import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
+import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
+import FunctionGraph2D from '../../ThreeSceneComps/FunctionGraph2D.jsx';
+import ArrowGrid from '../../ThreeSceneComps/ArrowGrid.jsx';
+import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApprox.jsx';
 
 import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 
@@ -410,12 +410,12 @@ export default function App() {
                     clearColor={initColors.clearColor}
                     key='threecomp'
                 >
-                    <GridAndOriginTS
+                    <GridAndOrigin
                         gridQuadSize={initAxesData.length}
                         gridShow={true}
                         originRadius={0}
                     />
-                    <Axes2DTS
+                    <Axes2D
                         bounds={bounds}
                         radius={initAxesData.radius}
                         show={initAxesData.show}
@@ -424,19 +424,19 @@ export default function App() {
                         yLabel='t'
                         color={initColors.axes}
                     />
-                    <FunctionGraph2DTS
+                    <FunctionGraph2D
                         func={testFunc.func}
                         bounds={bounds}
                         color={initColors.testFunc}
                     />
-                    <ArrowGridTS
+                    <ArrowGrid
                         func={func.func}
                         bounds={bounds}
                         arrowDensity={1 / arrowGridData.gridSqSize}
                         arrowLength={arrowGridData.arrowLength}
                         color={colors.arrows}
                     />
-                    <DirectionFieldApproxTS
+                    <DirectionFieldApprox
                         color={initColors.solution}
                         initialPt={initialPt}
                         bounds={bounds}
