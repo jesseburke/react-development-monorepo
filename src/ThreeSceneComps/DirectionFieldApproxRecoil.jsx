@@ -19,15 +19,22 @@ export default function DirectionFieldApprox({
     funcAtom,
     initialPtAtom = null,
     color,
-    bounds = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
+    boundsAtom,
     approxH = 0.01,
-    radius = 0.05
+    radius = 0.05,
+    visibleAtom
 }) {
     const [mat, setMat] = useState();
+
+    const [meshState, setMeshState] = useState();
 
     const initialPt = useRecoilValue(initialPtAtom);
 
     const funcValue = useRecoilValue(funcAtom);
+
+    const visible = useRecoilValue(visibleAtom);
+
+    const bounds = useRecoilValue(boundsAtom);
 
     useEffect(() => {
         setMat(
@@ -45,7 +52,16 @@ export default function DirectionFieldApprox({
     }, [color]);
 
     useEffect(() => {
-        if (!threeCBs) return;
+        if (!threeCBs) {
+            setMeshState((s) => s);
+            return;
+        }
+
+        if (!visible) {
+            threeCBs.remove(meshState);
+            setMeshState(null);
+            return;
+        }
 
         const dfag = DirectionFieldApproxGeom({
             func: funcValue.func,
@@ -58,13 +74,14 @@ export default function DirectionFieldApprox({
         const mesh = new THREE.Mesh(dfag, mat);
 
         threeCBs.add(mesh);
+        setMeshState(mesh);
 
         return () => {
             threeCBs.remove(mesh);
             if (dfag) dfag.dispose();
             if (mat) mat.dispose();
         };
-    }, [threeCBs, initialPt, bounds, funcValue, approxH, mat, radius]);
+    }, [threeCBs, initialPt, bounds, funcValue, approxH, mat, radius, visible]);
 
     return null;
 }
