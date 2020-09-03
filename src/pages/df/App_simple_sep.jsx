@@ -4,6 +4,9 @@ const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil
 
 import * as THREE from 'three';
 
+import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Button } from 'reakit/Button';
+
 import './styles.css';
 
 import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
@@ -20,7 +23,7 @@ import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
-import Sphere from '../../ThreeSceneComps/Sphere.jsx';
+import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
 
@@ -112,8 +115,6 @@ const initState = {
     bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
     arrowDensity: 1,
     arrowLength: 0.7,
-    funcStr: initFuncStr,
-    func: funcParser(initFuncStr),
     approxH: 0.1
 };
 
@@ -138,6 +139,7 @@ export default function App() {
                         xselector={xselector}
                         yselector={yselector}
                     />
+                    <Example />
                 </ControlBar>
 
                 <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
@@ -178,5 +180,29 @@ export default function App() {
                 </Main>
             </FullScreenBaseComponent>
         </RecoilRoot>
+    );
+}
+
+function Example() {
+    const dialog = useDialogState();
+    return (
+        <>
+            <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+            <Dialog
+                {...dialog}
+                style={{
+                    transform: 'none',
+                    top: 'auto',
+                    left: 'auto',
+                    bottom: 0,
+                    right: 16,
+                    width: 200,
+                    height: 300
+                }}
+                aria-label='Welcome'
+            >
+                <Button onClick={dialog.hide}>Close</Button>
+            </Dialog>
+        </>
     );
 }
