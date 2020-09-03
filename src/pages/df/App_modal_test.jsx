@@ -24,6 +24,7 @@ import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import Input from '../../components/Input.jsx';
+import BoundsInput from '../../components/BoundsInput.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
 
@@ -116,11 +117,6 @@ const funcAtom = atom({
     default: { func: funcParser('(' + initXFuncStr + ')*(' + initYFuncStr + ')') }
 });
 
-const initState = {
-    bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    approxH: 0.1
-};
-
 const arrowDensityAtom = atom({
     key: 'arrow density',
     default: 1
@@ -137,9 +133,26 @@ const arrowColorAtom = atom({
 });
 
 const solutionVisibleAtom = atom({
-    key: 'solution display',
+    key: 'solution visible',
     default: true
 });
+
+const solutionVisibleSelector = selector({
+    key: 'solution visible selector',
+    set: ({ get, set }) => {
+        set(solutionVisibleAtom, !get(solutionVisibleAtom));
+    }
+});
+
+const boundsAtom = atom({
+    key: 'bounds',
+    default: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 }
+});
+
+const initState = {
+    bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
+    approxH: 0.1
+};
 
 //------------------------------------------------------------------------
 
@@ -185,7 +198,7 @@ export default function App() {
                             />
                             <ArrowGrid
                                 funcAtom={funcAtom}
-                                bounds={initState.bounds}
+                                boundsAtom={boundsAtom}
                                 arrowDensityAtom={arrowDensityAtom}
                                 arrowLengthAtom={arrowLengthAtom}
                                 arrowColorAtom={arrowColorAtom}
@@ -194,15 +207,16 @@ export default function App() {
                                 color={initColors.solution}
                                 initialPtAtom={ipAtom}
                                 bounds={initState.bounds}
+                                boundsAtom={boundsAtom}
                                 funcAtom={funcAtom}
                                 approxH={initState.approxH}
-                                visible={solutionVisibleAtom}
+                                visibleAtom={solutionVisibleAtom}
                             />
                             <Sphere
                                 color={initColors.solution}
                                 dragPositionAtom={ipAtom}
                                 radius={0.25}
-                                visible={solutionVisibleAtom}
+                                visibleAtom={solutionVisibleAtom}
                             />
                             <ClickablePlaneComp clickPositionAtom={ipAtom} />
                         </ThreeSceneComp>
@@ -243,6 +257,7 @@ function OptionsModal() {
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Solution curve</Tab>
+                        <Tab {...tab}>Bounds</Tab>
                     </TabList>
                     <TabPanel {...tab}>
                         <ArrowGridOptions
@@ -252,7 +267,13 @@ function OptionsModal() {
                         />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveOptions solutionVisibleAtom={solutionVisibleAtom} />
+                        <SolutionCurveOptions
+                            solutionVisibleAtom={solutionVisibleAtom}
+                            svSelector={solutionVisibleSelector}
+                        />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <BoundsOptions boundsAtom={boundsAtom} />
                     </TabPanel>
                 </>
             </Dialog>
@@ -292,13 +313,23 @@ function ArrowGridOptions({ arrowDensityAtom, arrowLengthAtom, arrowColorAtom })
     );
 }
 
-function SolutionCurveOptions({ solutionVisibleAtom }) {
-    const [checked, setChecked] = useRecoilState(solutionVisibleAtom);
-    const toggle = () => setChecked(!checked);
+function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
+    const checked = useRecoilValue(solutionVisibleAtom);
+
+    const toggle = useSetRecoilState(svSelector);
+
     return (
         <label>
             <Checkbox checked={checked} onChange={toggle} />
             <span className={styles['med-margin']}>Show solution curve</span>
         </label>
     );
+}
+
+function BoundsOptions({ boundsAtom }) {
+    const [bounds, setBounds] = useRecoilState(boundsAtom);
+
+    const cb = useCallback(() => null, []);
+
+    return <BoundsInput bounds={bounds} onChange={cb} />;
 }
