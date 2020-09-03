@@ -16,11 +16,8 @@ import styles from './SepEquationInput.module.css';
 import classnames from 'classnames';
 
 import Input from './Input.jsx';
-import TexDisplayComp from './TexDisplayComp.jsx';
 
 import funcParser from '../utils/funcParser.jsx';
-
-const LatexSepEquation = '\\frac{dy}{dx} = h(y) \\!\\cdot\\! g(x)';
 
 export default React.memo(function SepEquationInput({ funcAtom, initXFuncStr, initYFuncStr }) {
     const [xFuncStr, setXFuncStr] = useState(initXFuncStr);
@@ -28,8 +25,9 @@ export default React.memo(function SepEquationInput({ funcAtom, initXFuncStr, in
 
     const setFunc = useSetRecoilState(funcAtom);
 
-    const cssRef = useRef({ padding: '.5em 0' }, []);
+    const cssRef = useRef({ padding: '.25em' }, []);
     const cssRef2 = useRef({ paddingRight: '.5em' }, []);
+    const cssRef3 = useRef({ padding: '1em 0em' }, []);
 
     const xFuncInputCB = useCallback((str) => setXFuncStr(str), []);
     const yFuncInputCB = useCallback((str) => setYFuncStr(str), []);
@@ -48,11 +46,14 @@ export default React.memo(function SepEquationInput({ funcAtom, initXFuncStr, in
             className={classnames(
                 styles['center-flex-column'],
                 styles['right-border'],
-                styles['large-right-padding']
+                styles['large-right-padding'],
+                styles['med-top-bottom-padding']
             )}
         >
-            <TexDisplayComp userCss={cssRef.current} str={LatexSepEquation} />
-
+            <div style={cssRef3.current}>
+                dy/dx =<span style={cssRef.current}>h(y)</span>
+                <span style={cssRef.current}>g(x)</span>
+            </div>
             <div style={cssRef.current}>
                 <span style={cssRef2.current}>
                     <span style={cssRef2.current}>h(y) = </span>

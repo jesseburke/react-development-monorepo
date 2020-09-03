@@ -4,7 +4,14 @@ import React from 'react';
 
 // height is assumed to be number, giving percentage of screen appBar will take (at the top)
 
-function controlBar({ children, height, fontSize, padding = '1em', userCss = {} }) {
+function controlBar({
+    children,
+    height,
+    fontSize,
+    padding = '1em',
+    userCss = {},
+    backgroundColor = 'white'
+}) {
     const b = (100 - height).toString() + '%';
 
     const cssRef = React.useRef(
@@ -27,6 +34,7 @@ function controlBar({ children, height, fontSize, padding = '1em', userCss = {} 
                 justifyContent: 'space-around',
                 alignItems: 'center',
                 color: 'white',
+                backgroundColor,
                 fontSize: fontSize.toString() + 'em',
                 outlineOffset: 0,
                 overflow: 'auto'
