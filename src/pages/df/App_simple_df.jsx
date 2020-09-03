@@ -20,7 +20,7 @@ import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
-import Sphere from '../../ThreeSceneComps/Sphere.jsx';
+import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
 
