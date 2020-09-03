@@ -5,6 +5,7 @@ const {
     atom,
     selector,
     useRecoilState,
+    useRecoilValue,
     useSetRecoilState,
     useRecoilCallback,
     atomFamily
@@ -17,11 +18,14 @@ export default React.memo(function SphereTS({
     radius = 2,
     color = '#0A2C3C',
     dragCB = null,
-    dragPositionAtom = null
+    dragPositionAtom = null,
+    visibleAtom
 }) {
     const [meshState, setMeshState] = useState();
 
     const [position, setPosition] = useRecoilState(dragPositionAtom);
+
+    const visible = useRecoilValue(visibleAtom);
 
     //------------------------------------------------------------------------
     //
@@ -31,6 +35,12 @@ export default React.memo(function SphereTS({
     useEffect(() => {
         if (!threeCBs) {
             setMeshState((s) => s);
+            return;
+        }
+
+        if (!visible) {
+            if (meshState) threeCBs.remove(meshState);
+            setMeshState(null);
             return;
         }
 
@@ -49,7 +59,7 @@ export default React.memo(function SphereTS({
             if (geometry) geometry.dispose();
             if (material) material.dispose();
         };
-    }, [color, radius, threeCBs]);
+    }, [visible, color, radius, threeCBs]);
 
     //------------------------------------------------------------------------
     //
