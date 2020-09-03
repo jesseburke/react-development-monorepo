@@ -216,7 +216,7 @@ function OptionsModal() {
                     top: '15%',
                     left: 'auto',
                     right: 20,
-                    width: 300,
+                    width: 30,
                     height: 400
                 }}
                 aria-label='Welcome'
