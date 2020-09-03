@@ -1,18 +1,27 @@
 import React, { useRef } from 'react';
 
 import Recoil from 'recoil';
-const { useRecoilValue, useSetRecoilState } = Recoil;
+const { atom, useRecoilValue, useSetRecoilState } = Recoil;
 
 import Input from './Input.jsx';
 import { round } from '../utils/BaseUtils.jsx';
 
-export default function InitialPointInput({ ipAtom, xselector, yselector }) {
+export default function InitialPointInput({
+    ipAtom,
+    xselector,
+    yselector,
+    visibleAtom = atom({ key: 'default visible atom', default: true })
+}) {
     const initialPoint = useRecoilValue(ipAtom);
 
     const setXS = useSetRecoilState(xselector);
     const setYS = useSetRecoilState(yselector);
 
+    const visible = useRecoilValue(visibleAtom);
+
     const cssRef = useRef({ paddingRight: '5em' }, []);
+
+    if (!visible) return null;
 
     return (
         <div style={cssRef.current}>
