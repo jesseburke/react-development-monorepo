@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil;
-
-import { css } from 'emotion';
+const { RecoilRoot, atom, selector, useRecoilValue, useRecoilState, useSetRecoilState } = Recoil;
 
 import * as THREE from 'three';
 
@@ -11,10 +9,12 @@ import { Button } from 'reakit/Button';
 import { Portal } from 'reakit/Portal';
 import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
+import { Checkbox } from 'reakit/Checkbox';
 
 import * as system from 'reakit-system-bootstrap';
 
-import './styles.css';
+import classnames from 'classnames';
+import styles from './App_modal_test.module.css';
 
 import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
@@ -23,6 +23,7 @@ import SepEquationInput from '../../components/SepEquationInput.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+import Input from '../../components/Input.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
 
@@ -40,7 +41,6 @@ import { fonts, labelStyle } from './constants.jsx';
 //
 
 const initColors = {
-    arrows: '#C2374F',
     solution: '#C2374F',
     firstPt: '#C2374F',
     secPt: '#C2374F',
@@ -111,19 +111,35 @@ const yselector = selector({
 const initXFuncStr = 'x';
 const initYFuncStr = 'cos(y)';
 
-const initFuncStr = 'x*y*sin(x+y)/10';
-
 const funcAtom = atom({
     key: 'function',
-    default: { func: funcParser(initFuncStr) }
+    default: { func: funcParser('(' + initXFuncStr + ')*(' + initYFuncStr + ')') }
 });
 
 const initState = {
     bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    arrowDensity: 1,
-    arrowLength: 0.7,
     approxH: 0.1
 };
+
+const arrowDensityAtom = atom({
+    key: 'arrow density',
+    default: 1
+});
+
+const arrowLengthAtom = atom({
+    key: 'arrow length',
+    default: 0.75
+});
+
+const arrowColorAtom = atom({
+    key: 'arrow color',
+    default: '#C2374F'
+});
+
+const solutionVisibleAtom = atom({
+    key: 'solution display',
+    default: true
+});
 
 //------------------------------------------------------------------------
 
@@ -170,9 +186,9 @@ export default function App() {
                             <ArrowGrid
                                 funcAtom={funcAtom}
                                 bounds={initState.bounds}
-                                arrowDensity={initState.arrowDensity}
-                                arrowLength={initState.arrowLength}
-                                color={initColors.arrows}
+                                arrowDensityAtom={arrowDensityAtom}
+                                arrowLengthAtom={arrowLengthAtom}
+                                arrowColorAtom={arrowColorAtom}
                             />
                             <DirectionFieldApprox
                                 color={initColors.solution}
@@ -180,11 +196,13 @@ export default function App() {
                                 bounds={initState.bounds}
                                 funcAtom={funcAtom}
                                 approxH={initState.approxH}
+                                visible={solutionVisibleAtom}
                             />
                             <Sphere
                                 color={initColors.solution}
                                 dragPositionAtom={ipAtom}
                                 radius={0.25}
+                                visible={solutionVisibleAtom}
                             />
                             <ClickablePlaneComp clickPositionAtom={ipAtom} />
                         </ThreeSceneComp>
@@ -216,7 +234,7 @@ function OptionsModal() {
                     top: '15%',
                     left: 'auto',
                     right: 20,
-                    width: 30,
+                    width: 300,
                     height: 400
                 }}
                 aria-label='Welcome'
@@ -227,10 +245,14 @@ function OptionsModal() {
                         <Tab {...tab}>Solution curve</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <ArrowGridOptions />
+                        <ArrowGridOptions
+                            arrowDensityAtom={arrowDensityAtom}
+                            arrowLengthAtom={arrowLengthAtom}
+                            arrowColorAtom={arrowColorAtom}
+                        />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveOptions />
+                        <SolutionCurveOptions solutionVisibleAtom={solutionVisibleAtom} />
                     </TabPanel>
                 </>
             </Dialog>
@@ -238,10 +260,45 @@ function OptionsModal() {
     );
 }
 
-function ArrowGridOptions() {
-    return null;
+function ArrowGridOptions({ arrowDensityAtom, arrowLengthAtom, arrowColorAtom }) {
+    const [ad, setAd] = useRecoilState(arrowDensityAtom);
+    const [al, setAl] = useRecoilState(arrowLengthAtom);
+    const [ac, setAc] = useRecoilState(arrowColorAtom);
+
+    const adCb = useCallback((inputStr) => setAd(Number(inputStr)), [setAd]);
+    const alCb = useCallback((inputStr) => setAl(Number(inputStr)), [setAl]);
+    const acCb = useCallback((e) => setAc(e.target.value), [setAc]);
+
+    return (
+        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Arrows per unit:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={ad} onC={adCb} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Relative arrow length:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={al} onC={alCb} />
+                </span>
+            </div>
+
+            <div>
+                <input type='color' name='color' id='color' value={ac} onChange={acCb} />
+            </div>
+        </div>
+    );
 }
 
-function SolutionCurveOptions() {
-    return null;
+function SolutionCurveOptions({ solutionVisibleAtom }) {
+    const [checked, setChecked] = useRecoilState(solutionVisibleAtom);
+    const toggle = () => setChecked(!checked);
+    return (
+        <label>
+            <Checkbox checked={checked} onChange={toggle} />
+            <span className={styles['med-margin']}>Show solution curve</span>
+        </label>
+    );
 }
