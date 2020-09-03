@@ -20,11 +20,14 @@ export default function ArrowGrid({
     threeCBs,
     funcAtom,
     bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    arrowDensity,
-    arrowLength,
-    color = '#0A2C3C'
+    arrowDensityAtom,
+    arrowLengthAtom,
+    arrowColorAtom
 }) {
     const funcValue = useRecoilValue(funcAtom);
+    const arrowDensity = useRecoilValue(arrowDensityAtom);
+    const arrowLength = useRecoilValue(arrowLengthAtom);
+    const arrowColor = useRecoilValue(arrowColorAtom);
 
     useEffect(() => {
         if (!threeCBs) return;
@@ -36,7 +39,7 @@ export default function ArrowGrid({
             func: funcValue.func
         });
 
-        const material = new THREE.MeshBasicMaterial({ color });
+        const material = new THREE.MeshBasicMaterial({ color: arrowColor });
         //material.transparent = true;
         //material.opacity = .75;
 
@@ -49,7 +52,7 @@ export default function ArrowGrid({
             if (geom) geom.dispose();
             if (material) material.dispose();
         };
-    }, [threeCBs, arrowDensity, arrowLength, bounds, funcValue, color]);
+    }, [threeCBs, arrowDensity, arrowLength, bounds, funcValue, arrowColor]);
 
     return null;
 }
