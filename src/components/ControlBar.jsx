@@ -10,7 +10,7 @@ function controlBar({
     fontSize,
     padding = '1em',
     userCss = {},
-    backgroundColor = 'white'
+    backgroundColor
 }) {
     const b = (100 - height).toString() + '%';
 
