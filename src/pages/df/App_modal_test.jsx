@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Recoil from 'recoil';
 const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil;
 
+import { css } from 'emotion';
+
 import * as THREE from 'three';
 
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
 import { Button } from 'reakit/Button';
 import { Portal } from 'reakit/Portal';
 import { Provider } from 'reakit/Provider';
+import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 
 import * as system from 'reakit-system-bootstrap';
 
@@ -144,7 +147,7 @@ export default function App() {
                             xselector={xselector}
                             yselector={yselector}
                         />
-                        <Example />
+                        <OptionsModal />
                     </ControlBar>
 
                     <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
@@ -192,11 +195,16 @@ export default function App() {
     );
 }
 
-function Example() {
+function OptionsModal() {
     const dialog = useDialogState();
+    const tab = useTabState();
+
     return (
         <>
-            <DialogDisclosure {...dialog}>
+            <DialogDisclosure
+                style={{ backgroundColor: 'white', color: initColors.controlBar }}
+                {...dialog}
+            >
                 <span style={{ width: '8em' }}>
                     {!dialog.visible ? 'Show options' : 'Hide options'}
                 </span>
@@ -213,8 +221,27 @@ function Example() {
                 }}
                 aria-label='Welcome'
             >
-                <Button onClick={dialog.hide}>Close</Button>
+                <>
+                    <TabList {...tab} aria-label='Option tabs'>
+                        <Tab {...tab}>Arrow grid</Tab>
+                        <Tab {...tab}>Solution curve</Tab>
+                    </TabList>
+                    <TabPanel {...tab}>
+                        <ArrowGridOptions />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <SolutionCurveOptions />
+                    </TabPanel>
+                </>
             </Dialog>
         </>
     );
+}
+
+function ArrowGridOptions() {
+    return null;
+}
+
+function SolutionCurveOptions() {
+    return null;
 }
