@@ -19,7 +19,8 @@ import ArrowGridGeom from '../graphics/ArrowGridGeom.jsx';
 export default function ArrowGrid({
     threeCBs,
     funcAtom,
-    bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
+    //bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
+    boundsAtom,
     arrowDensityAtom,
     arrowLengthAtom,
     arrowColorAtom
@@ -28,6 +29,8 @@ export default function ArrowGrid({
     const arrowDensity = useRecoilValue(arrowDensityAtom);
     const arrowLength = useRecoilValue(arrowLengthAtom);
     const arrowColor = useRecoilValue(arrowColorAtom);
+
+    const bounds = useRecoilValue(boundsAtom);
 
     useEffect(() => {
         if (!threeCBs) return;
