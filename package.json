@@ -18,6 +18,8 @@
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
         "react-helmet": "^6.1.0",
+        "reakit": "^1.2.3",
+        "reakit-system-bootstrap": "^0.13.3",
         "recoil": "0.0.10",
         "three": "^0.110.0",
         "use-immer": "^0.4.1",
