@@ -4,9 +4,6 @@ const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil
 
 import * as THREE from 'three';
 
-import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
-import { Button } from 'reakit/Button';
-
 import './styles.css';
 
 import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
@@ -139,7 +136,6 @@ export default function App() {
                         xselector={xselector}
                         yselector={yselector}
                     />
-                    <Example />
                 </ControlBar>
 
                 <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
@@ -180,29 +176,5 @@ export default function App() {
                 </Main>
             </FullScreenBaseComponent>
         </RecoilRoot>
-    );
-}
-
-function Example() {
-    const dialog = useDialogState();
-    return (
-        <>
-            <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
-            <Dialog
-                {...dialog}
-                style={{
-                    transform: 'none',
-                    top: 'auto',
-                    left: 'auto',
-                    bottom: 0,
-                    right: 16,
-                    width: 200,
-                    height: 300
-                }}
-                aria-label='Welcome'
-            >
-                <Button onClick={dialog.hide}>Close</Button>
-            </Dialog>
-        </>
     );
 }
