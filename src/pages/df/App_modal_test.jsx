@@ -6,6 +6,10 @@ import * as THREE from 'three';
 
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
 import { Button } from 'reakit/Button';
+import { Portal } from 'reakit/Portal';
+import { Provider } from 'reakit/Provider';
+
+import * as system from 'reakit-system-bootstrap';
 
 import './styles.css';
 
@@ -123,62 +127,67 @@ const initState = {
 export default function App() {
     return (
         <RecoilRoot>
-            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <ControlBar
-                    height={controlBarHeight}
-                    fontSize={fontSize * controlBarFontSize}
-                    padding='0em'
-                >
-                    <SepEquationInput
-                        funcAtom={funcAtom}
-                        initXFuncStr={initXFuncStr}
-                        initYFuncStr={initYFuncStr}
-                    />
-                    <InitialPointInput
-                        ipAtom={ipAtom}
-                        xselector={xselector}
-                        yselector={yselector}
-                    />
-                    <Example />
-                </ControlBar>
+            <Provider unstable_system={system}>
+                <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={fontSize * controlBarFontSize}
+                        padding='0em'
+                    >
+                        <SepEquationInput
+                            funcAtom={funcAtom}
+                            initXFuncStr={initXFuncStr}
+                            initYFuncStr={initYFuncStr}
+                        />
+                        <InitialPointInput
+                            ipAtom={ipAtom}
+                            xselector={xselector}
+                            yselector={yselector}
+                        />
+                        <Example />
+                    </ControlBar>
 
-                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                    <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
-                        <GridAndOrigin
-                            gridQuadSize={initAxesData.length}
-                            gridShow={initState.gridShow}
-                        />
-                        <Axes2D
-                            bounds={initState.bounds}
-                            radius={initAxesData.radius}
-                            show={initAxesData.show}
-                            showLabels={initAxesData.showLabels}
-                            labelStyle={labelStyle}
-                            color={initColors.axes}
-                        />
-                        <ArrowGrid
-                            funcAtom={funcAtom}
-                            bounds={initState.bounds}
-                            arrowDensity={initState.arrowDensity}
-                            arrowLength={initState.arrowLength}
-                            color={initColors.arrows}
-                        />
-                        <DirectionFieldApprox
-                            color={initColors.solution}
-                            initialPtAtom={ipAtom}
-                            bounds={initState.bounds}
-                            funcAtom={funcAtom}
-                            approxH={initState.approxH}
-                        />
-                        <Sphere
-                            color={initColors.solution}
-                            dragPositionAtom={ipAtom}
-                            radius={0.25}
-                        />
-                        <ClickablePlaneComp clickPositionAtom={ipAtom} />
-                    </ThreeSceneComp>
-                </Main>
-            </FullScreenBaseComponent>
+                    <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
+                        <ThreeSceneComp
+                            initCameraData={initCameraData}
+                            controlsData={initControlsData}
+                        >
+                            <GridAndOrigin
+                                gridQuadSize={initAxesData.length}
+                                gridShow={initState.gridShow}
+                            />
+                            <Axes2D
+                                bounds={initState.bounds}
+                                radius={initAxesData.radius}
+                                show={initAxesData.show}
+                                showLabels={initAxesData.showLabels}
+                                labelStyle={labelStyle}
+                                color={initColors.axes}
+                            />
+                            <ArrowGrid
+                                funcAtom={funcAtom}
+                                bounds={initState.bounds}
+                                arrowDensity={initState.arrowDensity}
+                                arrowLength={initState.arrowLength}
+                                color={initColors.arrows}
+                            />
+                            <DirectionFieldApprox
+                                color={initColors.solution}
+                                initialPtAtom={ipAtom}
+                                bounds={initState.bounds}
+                                funcAtom={funcAtom}
+                                approxH={initState.approxH}
+                            />
+                            <Sphere
+                                color={initColors.solution}
+                                dragPositionAtom={ipAtom}
+                                radius={0.25}
+                            />
+                            <ClickablePlaneComp clickPositionAtom={ipAtom} />
+                        </ThreeSceneComp>
+                    </Main>
+                </FullScreenBaseComponent>
+            </Provider>
         </RecoilRoot>
     );
 }
@@ -187,17 +196,20 @@ function Example() {
     const dialog = useDialogState();
     return (
         <>
-            <DialogDisclosure {...dialog}>Open dialog</DialogDisclosure>
+            <DialogDisclosure {...dialog}>
+                <span style={{ width: '8em' }}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
+            </DialogDisclosure>
             <Dialog
                 {...dialog}
                 style={{
                     transform: 'none',
-                    top: 'auto',
+                    top: '15%',
                     left: 'auto',
-                    bottom: 0,
-                    right: 16,
-                    width: 200,
-                    height: 300
+                    right: 20,
+                    width: 300,
+                    height: 400
                 }}
                 aria-label='Welcome'
             >
