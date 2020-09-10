@@ -1,16 +1,7 @@
 import { useEffect } from 'react';
 
 import Recoil from 'recoil';
-const {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue,
-    useSetRecoilState,
-    useRecoilCallback,
-    atomFamily
-} = Recoil;
+const { useRecoilState, useRecoilValue } = Recoil;
 
 import * as THREE from 'three';
 
@@ -25,11 +16,10 @@ export default function ArrowGrid({
     arrowLengthAtom,
     arrowColorAtom
 }) {
-    const funcValue = useRecoilValue(funcAtom);
+    const [funcValue] = useRecoilState(funcAtom);
     const arrowDensity = useRecoilValue(arrowDensityAtom);
     const arrowLength = useRecoilValue(arrowLengthAtom);
     const arrowColor = useRecoilValue(arrowColorAtom);
-
     const bounds = useRecoilValue(boundsAtom);
 
     useEffect(() => {

@@ -53,7 +53,7 @@ export default React.memo(function Line({
         }
 
         const path = new THREE.LineCurve3(
-            new THREE.Vector3(-point1[0], point1[1]),
+            new THREE.Vector3(point1[0], point1[1]),
             new THREE.Vector3(point2[0], point2[1])
         );
 

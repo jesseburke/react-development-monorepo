@@ -131,14 +131,15 @@ const funcAtom = selector({
 const point1Atom = selector({
     key: 'first point on line',
     get: ({ get }) => {
-        const xMin = get(boundsAtom)[xMin];
+        const xMin = get(boundsAtom).xMin;
         const b = get(bAtom);
 
         return [xMin, b];
     }
 });
+
 const point2Atom = selector({
-    key: 'first point on line',
+    key: 'second point on line',
     get: ({ get }) => {
         const xMax = get(boundsAtom).xMax;
         const b = get(bAtom);
@@ -195,6 +196,12 @@ export default function App() {
                             xLabel='t'
                             color={initColors.axes}
                         />
+                        <Sphere
+                            color={initColors.solution}
+                            dragPositionAtom={ipAtom}
+                            radius={0.25}
+                            visibleAtom={solutionVisibleAtom}
+                        />
                         <ArrowGrid
                             funcAtom={funcAtom}
                             boundsAtom={boundsAtom}
@@ -209,12 +216,6 @@ export default function App() {
                             boundsAtom={boundsAtom}
                             funcAtom={funcAtom}
                             approxH={initState.approxH}
-                        />
-                        <Sphere
-                            color={initColors.solution}
-                            dragPositionAtom={ipAtom}
-                            radius={0.25}
-                            visibleAtom={solutionVisibleAtom}
                         />
                         <Line point1Atom={point1Atom} point2Atom={point2Atom} />
                         <ClickablePlaneComp clickPositionAtom={ipAtom} />
