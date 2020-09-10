@@ -231,6 +231,8 @@ export default function useThreeScene({
     }, []);
 
     const render = () => {
+        if (!renderer.current) return;
+
         renderer.current.render(scene.current, camera.current);
     };
 
