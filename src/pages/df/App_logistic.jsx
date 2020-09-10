@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, Provider } from 'jotai';
+import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 

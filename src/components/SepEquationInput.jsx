@@ -1,16 +1,6 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
 
-import Recoil from 'recoil';
-const {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue,
-    useSetRecoilState,
-    useRecoilCallback,
-    atomFamily
-} = Recoil;
+import { useAtom } from 'jotai';
 
 import styles from './SepEquationInput.module.css';
 import classnames from 'classnames';
@@ -23,7 +13,7 @@ export default React.memo(function SepEquationInput({ funcAtom, initXFuncStr, in
     const [xFuncStr, setXFuncStr] = useState(initXFuncStr);
     const [yFuncStr, setYFuncStr] = useState(initYFuncStr);
 
-    const setFunc = useSetRecoilState(funcAtom);
+    const [func, setFunc] = useAtom(funcAtom);
 
     const cssRef = useRef({ padding: '.25em' }, []);
     const cssRef2 = useRef({ paddingRight: '.5em' }, []);

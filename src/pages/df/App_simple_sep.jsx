@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
-import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useRecoilState, useSetRecoilState } = Recoil;
+
+import { atom, useAtom, Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -94,60 +94,34 @@ const initAxesData = {
     labelStyle
 };
 
-const ipAtom = atom({
-    key: 'initialPosition',
-    default: { x: 2, y: 2 }
-});
-
-const xselector = selector({
-    key: 'xselector',
-    set: ({ get, set }, newX) => set(ipAtom, { x: Number(newX), y: get(ipAtom).y })
-});
-
-const yselector = selector({
-    key: 'yselector',
-    set: ({ get, set }, newY) => set(ipAtom, { y: Number(newY), x: get(ipAtom).x })
-});
+const ipAtom = atom({ x: 2, y: 2 });
 
 const initXFuncStr = 'x';
 const initYFuncStr = 'cos(y)';
 
-const funcAtom = atom({
-    key: 'function',
-    default: { func: funcParser('(' + initXFuncStr + ')*(' + initYFuncStr + ')') }
-});
+const arrowDensityAtom = atom(1);
 
-const arrowDensityAtom = atom({
-    key: 'arrow density',
-    default: 1
-});
+const funcAtom = atom({ func: funcParser('(' + initXFuncStr + ')*(' + initYFuncStr + ')') });
 
-const arrowLengthAtom = atom({
-    key: 'arrow length',
-    default: 0.75
-});
+const arrowLengthAtom = atom(0.75);
 
-const arrowColorAtom = atom({
-    key: 'arrow color',
-    default: '#C2374F'
-});
+const arrowColorAtom = atom('#C2374F');
 
-const solutionVisibleAtom = atom({
-    key: 'solution visible',
-    default: true
-});
+const solutionVisibleAtom = atom(true);
 
-const solutionVisibleSelector = selector({
-    key: 'solution visible selector',
-    set: ({ get, set }) => {
-        set(solutionVisibleAtom, !get(solutionVisibleAtom));
-    }
-});
+const boundsAtom = atom({ xMin: -20, xMax: 20, yMin: -20, yMax: 20 });
 
-const boundsAtom = atom({
-    key: 'bounds',
-    default: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 }
-});
+// need to come back to these
+const xselector = atom(null, (get, set, newX) =>
+    set(ipAtom, { x: Number(newX), y: get(ipAtom).y })
+);
+const yselector = atom(null, (get, set, newY) =>
+    set(ipAtom, { x: get(ipAtom).x, y: Number(newY) })
+);
+
+const solutionVisibleSelector = atom(null, (get, set) =>
+    set(solutionVisibleAtom, !get(solutionVisibleAtom))
+);
 
 const initState = {
     bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
@@ -160,14 +134,14 @@ export default function App() {
     const threeSceneRef = useRef(null);
     const threeCBs = useThreeCBs(threeSceneRef);
 
-    useLayoutEffect(() => {
-        if (!threeCBs) return;
+    useEffect(() => {
+        if (!threeCBs || !threeSceneRef) return;
 
-        threeCBs.render();
-    });
+        window.dispatchEvent(new Event('resize'));
+    }, [threeCBs, threeSceneRef]);
 
     return (
-        <RecoilRoot>
+        <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
                 <Provider unstable_system={system}>
                     <ControlBar
@@ -233,13 +207,17 @@ export default function App() {
                     </ThreeSceneComp>
                 </Main>
             </FullScreenBaseComponent>
-        </RecoilRoot>
+        </JProvider>
     );
 }
 
 function OptionsModal() {
     const dialog = useDialogState();
     const tab = useTabState();
+
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
 
     return (
         <div zindex={-10}>
@@ -292,9 +270,9 @@ function OptionsModal() {
 }
 
 function ArrowGridOptions({ arrowDensityAtom, arrowLengthAtom, arrowColorAtom }) {
-    const [ad, setAd] = useRecoilState(arrowDensityAtom);
-    const [al, setAl] = useRecoilState(arrowLengthAtom);
-    const [ac, setAc] = useRecoilState(arrowColorAtom);
+    const [ad, setAd] = useAtom(arrowDensityAtom);
+    const [al, setAl] = useAtom(arrowLengthAtom);
+    const [ac, setAc] = useAtom(arrowColorAtom);
 
     const adCb = useCallback((inputStr) => setAd(Number(inputStr)), [setAd]);
     const alCb = useCallback((inputStr) => setAl(Number(inputStr)), [setAl]);
@@ -324,9 +302,9 @@ function ArrowGridOptions({ arrowDensityAtom, arrowLengthAtom, arrowColorAtom })
 }
 
 function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
-    const checked = useRecoilValue(solutionVisibleAtom);
+    const [checked] = useAtom(solutionVisibleAtom);
 
-    const toggle = useSetRecoilState(svSelector);
+    const [, toggle] = useAtom(svSelector);
 
     return (
         <label>
@@ -337,7 +315,7 @@ function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
 }
 
 function BoundsOptions({ boundsAtom }) {
-    const [bounds, setBounds] = useRecoilState(boundsAtom);
+    const [bounds, setBounds] = useAtom(boundsAtom);
 
     const cb = useCallback(() => null, []);
 
