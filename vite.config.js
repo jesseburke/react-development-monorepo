@@ -6,8 +6,9 @@ const reactPlugin = require('vite-plugin-react');
  */
 const config = {
     jsx: 'react',
-    plugins: [reactPlugin],
-    base: '/u/jburke/vibrating_string/'
+    plugins: [reactPlugin]
 };
+
+//base: '/u/jburke/sepGrapher/'
 
 module.exports = config;
