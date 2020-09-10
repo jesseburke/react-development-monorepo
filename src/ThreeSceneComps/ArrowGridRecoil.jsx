@@ -9,7 +9,6 @@ import ArrowGridGeom from '../graphics/ArrowGridGeom.jsx';
 export default function ArrowGrid({
     threeCBs,
     funcAtom,
-    //bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
     boundsAtom,
     arrowDensityAtom,
     arrowLengthAtom,
@@ -18,7 +17,7 @@ export default function ArrowGrid({
     const [arrowDensity] = useAtom(arrowDensityAtom);
     const [arrowLength] = useAtom(arrowLengthAtom);
     const [arrowColor] = useAtom(arrowColorAtom);
-    const [funcj] = useAtom(funcAtom);
+    const [func] = useAtom(funcAtom);
     const [bounds] = useAtom(boundsAtom);
 
     useEffect(() => {
@@ -28,7 +27,7 @@ export default function ArrowGrid({
             arrowDensity,
             arrowLength,
             bounds,
-            func: funcj.func //funcValue.func
+            func: func.func //funcValue.func
         });
 
         const material = new THREE.MeshBasicMaterial({ color: arrowColor });
@@ -44,7 +43,7 @@ export default function ArrowGrid({
             if (geom) geom.dispose();
             if (material) material.dispose();
         };
-    }, [threeCBs, arrowDensity, arrowLength, bounds, funcj, arrowColor]);
+    }, [threeCBs, arrowDensity, arrowLength, bounds, func, arrowColor]);
 
     return null;
 }

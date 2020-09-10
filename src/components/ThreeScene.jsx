@@ -150,12 +150,6 @@ function ThreeScene(
         threeScene.controlsPubSub.subscribe(controlsCB);
     }, [controlsCB, threeScene]);
 
-    useLayoutEffect(() => {
-        if (!threeScene || !threeScene.render) return;
-
-        threeScene.render();
-    }, [threeScene]);
-
     return (
         <div className={styles.container} ref={(elt) => (containerRef.current = elt)}>
             <canvas

@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
@@ -129,6 +129,16 @@ const initAxesData = {
 //------------------------------------------------------------------------
 
 export default function App() {
+    const threeSceneRef = useRef(null);
+
+    // following passed to components that need to draw
+    const threeCBs = useThreeCBs(threeSceneRef);
+
+    useEffect(() => {
+        if (!threeCBs || !threeSceneRef) return;
+        window.dispatchEvent(new Event('resize'));
+    }, [threeCBs, threeSceneRef]);
+
     return (
         <Provider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
@@ -142,6 +152,7 @@ export default function App() {
 
                 <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
                     <ThreeSceneComp
+                        ref={threeSceneRef}
                         initCameraData={initCameraData}
                         controlsData={initControlsData}
                         clearColor={initColors.clearColor}
