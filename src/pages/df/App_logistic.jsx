@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { atom as jatom, Provider } from 'jotai';
+import { atom, Provider } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -74,42 +74,42 @@ const controlBarHeight = 13;
 const initFontSize = 1;
 const controlBarFontSize = 1;
 
-const boundsJatom = jatom({ xMin: -20, xMax: 20, yMin: 0, yMax: 40 });
+const boundsAtom = atom({ xMin: -20, xMax: 20, yMin: 0, yMax: 40 });
 
-const ipAtom = jatom({ x: 2, y: 2 });
+const ipAtom = atom({ x: 2, y: 2 });
 
-const arrowDensityAtom = jatom(1);
+const arrowDensityAtom = atom(1);
 
-const arrowLengthAtom = jatom(0.75);
+const arrowLengthAtom = atom(0.75);
 
-const arrowColorAtom = jatom('#C2374F');
+const arrowColorAtom = atom('#C2374F');
 
-const solutionVisibleAtom = jatom(true);
+const solutionVisibleAtom = atom(true);
 
 const initBVal = 1.0;
 
-const bjatom = jatom(initBVal);
+const bAtom = atom(initBVal);
 
 const initKVal = 1.0;
 
-const kjatom = jatom(initKVal);
+const kAtom = atom(initKVal);
 
-const funcjatom = jatom((get) => {
-    const k = get(kjatom);
-    const b = get(bjatom);
+const funcAtom = atom((get) => {
+    const k = get(kAtom);
+    const b = get(bAtom);
     return { func: (x, y) => k * (1 - y / b) };
 });
 
-const point1Atom = jatom((get) => {
-    const xMin = get(boundsJatom).xMin;
-    const b = get(bjatom);
+const point1Atom = atom((get) => {
+    const xMin = get(boundsAtom).xMin;
+    const b = get(bAtom);
 
     return [xMin, b];
 });
 
-const point2Atom = jatom((get) => {
-    const xMax = get(boundsJatom).xMax;
-    const b = get(bjatom);
+const point2Atom = atom((get) => {
+    const xMax = get(boundsAtom).xMax;
+    const b = get(bAtom);
 
     return [xMax, b];
 });
@@ -147,7 +147,7 @@ export default function App() {
                     fontSize={initFontSize * controlBarFontSize}
                     padding='.5em'
                 >
-                    <LogisticEquationInput bAtom={bjatom} kAtom={kjatom} />
+                    <LogisticEquationInput bAtom={bAtom} kAtom={kAtom} />
                 </ControlBar>
 
                 <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
@@ -164,7 +164,7 @@ export default function App() {
                             originRadius={0.15}
                         />
                         <Axes2D
-                            boundsAtom={boundsJatom}
+                            boundsAtom={boundsAtom}
                             radius={initAxesData.radius}
                             show={initAxesData.show}
                             showLabels={initAxesData.showLabels}
@@ -180,8 +180,8 @@ export default function App() {
                             visibleAtom={solutionVisibleAtom}
                         />
                         <ArrowGrid
-                            funcAtom={funcjatom}
-                            boundsAtom={boundsJatom}
+                            funcAtom={funcAtom}
+                            boundsAtom={boundsAtom}
                             arrowDensityAtom={arrowDensityAtom}
                             arrowLengthAtom={arrowLengthAtom}
                             arrowColorAtom={arrowColorAtom}
@@ -190,8 +190,8 @@ export default function App() {
                             color={initColors.solution}
                             initialPtAtom={ipAtom}
                             visibleAtom={solutionVisibleAtom}
-                            boundsAtom={boundsJatom}
-                            funcAtom={funcjatom}
+                            boundsAtom={boundsAtom}
+                            funcAtom={funcAtom}
                             approxH={initState.approxH}
                         />
                         <Line point1Atom={point1Atom} point2Atom={point2Atom} />

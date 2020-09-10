@@ -17,7 +17,7 @@ let title = 'default title';
 //title = 'Direction field grapher';
 
 //import App from './pages/df/App_simple_sep.jsx';
-//import App from './pages/df/App_modal_test.jsx';
+// App from './pages/df/App_modal_test.jsx';
 //title = 'Separable equation direction field grapher';
 
 import App from './pages/df/App_logistic.jsx';
