@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 
 import classnames from 'classnames';
@@ -149,6 +149,12 @@ function ThreeScene(
 
         threeScene.controlsPubSub.subscribe(controlsCB);
     }, [controlsCB, threeScene]);
+
+    useLayoutEffect(() => {
+        if (!threeScene || !threeScene.render) return;
+
+        threeScene.render();
+    }, [threeScene]);
 
     return (
         <div className={styles.container} ref={(elt) => (containerRef.current = elt)}>
