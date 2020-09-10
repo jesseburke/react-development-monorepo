@@ -1,15 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import Recoil from 'recoil';
-const {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue,
-    useSetRecoilState,
-    useRecoilCallback,
-    atomFamily
-} = Recoil;
+
+import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -22,7 +13,7 @@ function ClickablePlaneComp({
     mesh
 }) {
     const [clickPlane, setClickPlane] = useState(null);
-    const [clickPosition, setClickPosition] = useRecoilState(clickPositionAtom);
+    const [clickPosition, setClickPosition] = useAtom(clickPositionAtom);
 
     useEffect(() => {
         let cp;

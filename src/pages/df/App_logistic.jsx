@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useRecoilState, useSetRecoilState } = Recoil;
+import { atom as jatom, Provider } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -75,77 +74,44 @@ const controlBarHeight = 13;
 const initFontSize = 1;
 const controlBarFontSize = 1;
 
-const boundsAtom = atom({
-    key: 'bounds',
-    default: { xMin: -20, xMax: 20, yMin: 0, yMax: 40 }
-});
+const boundsJatom = jatom({ xMin: -20, xMax: 20, yMin: 0, yMax: 40 });
 
-const ipAtom = atom({
-    key: 'initialPosition',
-    default: { x: 2, y: 2 }
-});
+const ipAtom = jatom({ x: 2, y: 2 });
 
-const arrowDensityAtom = atom({
-    key: 'arrow density',
-    default: 1
-});
+const arrowDensityAtom = jatom(1);
 
-const arrowLengthAtom = atom({
-    key: 'arrow length',
-    default: 0.75
-});
+const arrowLengthAtom = jatom(0.75);
 
-const arrowColorAtom = atom({
-    key: 'arrow color',
-    default: '#C2374F'
-});
+const arrowColorAtom = jatom('#C2374F');
 
-const solutionVisibleAtom = atom({
-    key: 'solution visible',
-    default: true
-});
+const solutionVisibleAtom = jatom(true);
 
 const initBVal = 1.0;
 
-const bAtom = atom({
-    key: 'b value',
-    default: initBVal
-});
+const bjatom = jatom(initBVal);
 
 const initKVal = 1.0;
 
-const kAtom = atom({
-    key: 'k value',
-    default: initKVal
+const kjatom = jatom(initKVal);
+
+const funcjatom = jatom((get) => {
+    const k = get(kjatom);
+    const b = get(bjatom);
+    return { func: (x, y) => k * (1 - y / b) };
 });
 
-const funcAtom = selector({
-    key: 'function',
-    get: ({ get }) => {
-        const k = get(kAtom);
-        const b = get(bAtom);
-        return { func: (x, y) => k * (1 - y / b) };
-    }
+const point1Atom = jatom((get) => {
+    const xMin = get(boundsJatom).xMin;
+    const b = get(bjatom);
+
+    return [xMin, b];
 });
 
-const point1Atom = selector({
-    key: 'first point on line',
-    get: ({ get }) => {
-        const xMin = get(boundsAtom).xMin;
-        const b = get(bAtom);
+const point2Atom = jatom((get) => {
+    const xMax = get(boundsJatom).xMax;
+    const b = get(bjatom);
 
-        return [xMin, b];
-    }
-});
-
-const point2Atom = selector({
-    key: 'second point on line',
-    get: ({ get }) => {
-        const xMax = get(boundsAtom).xMax;
-        const b = get(bAtom);
-
-        return [xMax, b];
-    }
+    return [xMax, b];
 });
 
 const initState = {
@@ -164,14 +130,14 @@ const initAxesData = {
 
 export default function App() {
     return (
-        <RecoilRoot>
+        <Provider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
                 <ControlBar
                     height={controlBarHeight}
                     fontSize={initFontSize * controlBarFontSize}
                     padding='.5em'
                 >
-                    <LogisticEquationInput bAtom={bAtom} kAtom={kAtom} />
+                    <LogisticEquationInput bAtom={bjatom} kAtom={kjatom} />
                 </ControlBar>
 
                 <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
@@ -187,7 +153,7 @@ export default function App() {
                             originRadius={0.15}
                         />
                         <Axes2D
-                            boundsAtom={boundsAtom}
+                            boundsAtom={boundsJatom}
                             radius={initAxesData.radius}
                             show={initAxesData.show}
                             showLabels={initAxesData.showLabels}
@@ -203,8 +169,8 @@ export default function App() {
                             visibleAtom={solutionVisibleAtom}
                         />
                         <ArrowGrid
-                            funcAtom={funcAtom}
-                            boundsAtom={boundsAtom}
+                            funcAtom={funcjatom}
+                            boundsAtom={boundsJatom}
                             arrowDensityAtom={arrowDensityAtom}
                             arrowLengthAtom={arrowLengthAtom}
                             arrowColorAtom={arrowColorAtom}
@@ -213,8 +179,8 @@ export default function App() {
                             color={initColors.solution}
                             initialPtAtom={ipAtom}
                             visibleAtom={solutionVisibleAtom}
-                            boundsAtom={boundsAtom}
-                            funcAtom={funcAtom}
+                            boundsAtom={boundsJatom}
+                            funcAtom={funcjatom}
                             approxH={initState.approxH}
                         />
                         <Line point1Atom={point1Atom} point2Atom={point2Atom} />
@@ -222,6 +188,6 @@ export default function App() {
                     </ThreeSceneComp>
                 </Main>
             </FullScreenBaseComponent>
-        </RecoilRoot>
+        </Provider>
     );
 }

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useRecoilState, useSetRecoilState } = Recoil;
+import { useAtom } from 'jotai';
 
 import TexDisplayComp from './TexDisplayComp.jsx';
 import Slider from './Slider.jsx';
@@ -10,21 +9,21 @@ const precision = 3;
 const logisticEquationTex = '\\frac{dx}{dt} = kx (1 - \\frac{x}{b})';
 
 export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
-    const [bVal, setBVal] = useRecoilState(bAtom);
-    const [kVal, setKVal] = useRecoilState(kAtom);
+    const [b, setB] = useAtom(bAtom);
+    const [k, setK] = useAtom(kAtom);
 
     const bCB = useCallback(
         (num) => {
-            setBVal(Number.parseFloat(num));
+            setB(Number.parseFloat(num));
         },
-        [setBVal]
+        [setB]
     );
 
     const kCB = useCallback(
         (num) => {
-            setKVal(Number.parseFloat(num));
+            setK(Number.parseFloat(num));
         },
-        [setKVal]
+        [setK]
     );
 
     const css1 = useRef(
@@ -67,7 +66,7 @@ export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
             <div>
                 <Slider
                     userCss={css3.current}
-                    value={bVal}
+                    value={b}
                     CB={bCB}
                     label={'b'}
                     max={20}
@@ -78,7 +77,7 @@ export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
             <div>
                 <Slider
                     userCss={css3.current}
-                    value={kVal}
+                    value={k}
                     CB={kCB}
                     label={'k'}
                     max={20}

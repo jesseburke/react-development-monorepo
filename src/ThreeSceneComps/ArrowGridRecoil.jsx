@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
-import Recoil from 'recoil';
-const { useRecoilState, useRecoilValue } = Recoil;
+import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -16,11 +15,11 @@ export default function ArrowGrid({
     arrowLengthAtom,
     arrowColorAtom
 }) {
-    const [funcValue] = useRecoilState(funcAtom);
-    const arrowDensity = useRecoilValue(arrowDensityAtom);
-    const arrowLength = useRecoilValue(arrowLengthAtom);
-    const arrowColor = useRecoilValue(arrowColorAtom);
-    const bounds = useRecoilValue(boundsAtom);
+    const [arrowDensity] = useAtom(arrowDensityAtom);
+    const [arrowLength] = useAtom(arrowLengthAtom);
+    const [arrowColor] = useAtom(arrowColorAtom);
+    const [funcj] = useAtom(funcAtom);
+    const [bounds] = useAtom(boundsAtom);
 
     useEffect(() => {
         if (!threeCBs) return;
@@ -29,7 +28,7 @@ export default function ArrowGrid({
             arrowDensity,
             arrowLength,
             bounds,
-            func: funcValue.func
+            func: funcj.func //funcValue.func
         });
 
         const material = new THREE.MeshBasicMaterial({ color: arrowColor });
@@ -45,7 +44,7 @@ export default function ArrowGrid({
             if (geom) geom.dispose();
             if (material) material.dispose();
         };
-    }, [threeCBs, arrowDensity, arrowLength, bounds, funcValue, arrowColor]);
+    }, [threeCBs, arrowDensity, arrowLength, bounds, funcj, arrowColor]);
 
     return null;
 }

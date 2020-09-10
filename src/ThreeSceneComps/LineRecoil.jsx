@@ -1,21 +1,12 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import Recoil from 'recoil';
-const {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue,
-    useSetRecoilState,
-    useRecoilCallback,
-    atomFamily
-} = Recoil;
+
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-const defaultVisibleAtom = atom({ key: 'default visible atom for line', default: true });
+const defaultVisibleAtom = atom(true);
 
-const defaultColorAtom = atom({ key: 'default color atom for line', default: '#3285ab' });
+const defaultColorAtom = atom('#3285ab');
 
 export default React.memo(function Line({
     threeCBs,
@@ -27,13 +18,13 @@ export default React.memo(function Line({
 }) {
     const [meshState, setMeshState] = useState();
 
-    const visible = useRecoilValue(visibleAtom);
+    const [visible] = useAtom(visibleAtom);
 
-    const color = useRecoilValue(colorAtom);
+    const [color] = useAtom(colorAtom);
 
-    const point1 = useRecoilValue(point1Atom);
+    const [point1] = useAtom(point1Atom);
 
-    const point2 = useRecoilValue(point2Atom);
+    const [point2] = useAtom(point2Atom);
 
     //------------------------------------------------------------------------
     //

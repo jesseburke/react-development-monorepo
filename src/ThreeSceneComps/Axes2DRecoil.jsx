@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 
-import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useRecoilState, useSetRecoilState } = Recoil;
+import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -21,7 +20,7 @@ export default React.memo(function Axes2DTS({
     xLabel = 'x',
     yLabel = 'y'
 }) {
-    const bounds = useRecoilValue(boundsAtom);
+    const [bounds] = useAtom(boundsAtom);
     const { xMin, xMax, yMin, yMax } = bounds;
 
     useEffect(() => {

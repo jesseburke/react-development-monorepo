@@ -1,15 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import Recoil from 'recoil';
-const {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue,
-    useSetRecoilState,
-    useRecoilCallback,
-    atomFamily
-} = Recoil;
+
+import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -23,9 +14,9 @@ export default React.memo(function SphereTS({
 }) {
     const [meshState, setMeshState] = useState();
 
-    const [position, setPosition] = useRecoilState(dragPositionAtom);
+    const [position, setPosition] = useAtom(dragPositionAtom);
 
-    const visible = useRecoilValue(visibleAtom);
+    const [visible] = useAtom(visibleAtom);
 
     //------------------------------------------------------------------------
     //

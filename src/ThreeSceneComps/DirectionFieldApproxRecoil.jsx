@@ -1,14 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import Recoil from 'recoil';
-const {
-    RecoilRoot,
-    atom,
-    selector,
-    useRecoilState,
-    useRecoilValue,
-    useRecoilCallback,
-    atomFamily
-} = Recoil;
+
+import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -28,13 +20,13 @@ export default function DirectionFieldApprox({
 
     const [meshState, setMeshState] = useState();
 
-    const initialPt = useRecoilValue(initialPtAtom);
+    const [initialPt] = useAtom(initialPtAtom);
 
-    const funcValue = useRecoilValue(funcAtom);
+    const [visible] = useAtom(visibleAtom);
 
-    const visible = useRecoilValue(visibleAtom);
+    const [func] = useAtom(funcAtom);
 
-    const bounds = useRecoilValue(boundsAtom);
+    const [bounds] = useAtom(boundsAtom);
 
     useEffect(() => {
         setMat(
@@ -64,7 +56,7 @@ export default function DirectionFieldApprox({
         }
 
         const dfag = DirectionFieldApproxGeom({
-            func: funcValue.func,
+            func: func.func,
             initialPt: [initialPt.x, initialPt.y],
             bounds,
             h: approxH,
@@ -81,7 +73,7 @@ export default function DirectionFieldApprox({
             if (dfag) dfag.dispose();
             if (mat) mat.dispose();
         };
-    }, [threeCBs, initialPt, bounds, funcValue, approxH, mat, radius, visible]);
+    }, [threeCBs, initialPt, bounds, func, approxH, mat, radius, visible]);
 
     return null;
 }
