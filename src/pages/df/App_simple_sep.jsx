@@ -1,23 +1,35 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil;
+const { RecoilRoot, atom, selector, useRecoilValue, useRecoilState, useSetRecoilState } = Recoil;
 
 import * as THREE from 'three';
 
-import './styles.css';
+import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Button } from 'reakit/Button';
+import { Portal } from 'reakit/Portal';
+import { Provider } from 'reakit/Provider';
+import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
+import { Checkbox } from 'reakit/Checkbox';
 
-import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
+import * as system from 'reakit-system-bootstrap';
+
+import classnames from 'classnames';
+import styles from './App_modal_test.module.css';
+
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import SepEquationInput from '../../components/SepEquationInput.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+import Input from '../../components/Input.jsx';
+import BoundsInput from '../../components/BoundsInput.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
-import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
+import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
 import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
@@ -30,7 +42,6 @@ import { fonts, labelStyle } from './constants.jsx';
 //
 
 const initColors = {
-    arrows: '#C2374F',
     solution: '#C2374F',
     firstPt: '#C2374F',
     secPt: '#C2374F',
@@ -101,51 +112,95 @@ const yselector = selector({
 const initXFuncStr = 'x';
 const initYFuncStr = 'cos(y)';
 
-const initFuncStr = 'x*y*sin(x+y)/10';
-
 const funcAtom = atom({
     key: 'function',
-    default: { func: funcParser(initFuncStr) }
+    default: { func: funcParser('(' + initXFuncStr + ')*(' + initYFuncStr + ')') }
+});
+
+const arrowDensityAtom = atom({
+    key: 'arrow density',
+    default: 1
+});
+
+const arrowLengthAtom = atom({
+    key: 'arrow length',
+    default: 0.75
+});
+
+const arrowColorAtom = atom({
+    key: 'arrow color',
+    default: '#C2374F'
+});
+
+const solutionVisibleAtom = atom({
+    key: 'solution visible',
+    default: true
+});
+
+const solutionVisibleSelector = selector({
+    key: 'solution visible selector',
+    set: ({ get, set }) => {
+        set(solutionVisibleAtom, !get(solutionVisibleAtom));
+    }
+});
+
+const boundsAtom = atom({
+    key: 'bounds',
+    default: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 }
 });
 
 const initState = {
     bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    arrowDensity: 1,
-    arrowLength: 0.7,
     approxH: 0.1
 };
 
 //------------------------------------------------------------------------
 
 export default function App() {
+    const threeSceneRef = useRef(null);
+    const threeCBs = useThreeCBs(threeSceneRef);
+
+    useLayoutEffect(() => {
+        if (!threeCBs) return;
+
+        threeCBs.render();
+    });
+
     return (
         <RecoilRoot>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <ControlBar
-                    height={controlBarHeight}
-                    fontSize={fontSize * controlBarFontSize}
-                    padding='0em'
-                >
-                    <SepEquationInput
-                        funcAtom={funcAtom}
-                        initXFuncStr={initXFuncStr}
-                        initYFuncStr={initYFuncStr}
-                    />
-                    <InitialPointInput
-                        ipAtom={ipAtom}
-                        xselector={xselector}
-                        yselector={yselector}
-                    />
-                </ControlBar>
+                <Provider unstable_system={system}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={fontSize * controlBarFontSize}
+                        padding='0em'
+                    >
+                        <SepEquationInput
+                            funcAtom={funcAtom}
+                            initXFuncStr={initXFuncStr}
+                            initYFuncStr={initYFuncStr}
+                        />
+                        <InitialPointInput
+                            ipAtom={ipAtom}
+                            xselector={xselector}
+                            yselector={yselector}
+                        />
+                        <OptionsModal />
+                    </ControlBar>
+                </Provider>
 
                 <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                    <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
+                    <ThreeSceneComp
+                        initCameraData={initCameraData}
+                        controlsData={initControlsData}
+                        ref={threeSceneRef}
+                    >
                         <GridAndOrigin
                             gridQuadSize={initAxesData.length}
                             gridShow={initState.gridShow}
                         />
                         <Axes2D
-                            bounds={initState.bounds}
+                            boundsAtom={boundsAtom}
                             radius={initAxesData.radius}
                             show={initAxesData.show}
                             showLabels={initAxesData.showLabels}
@@ -154,22 +209,25 @@ export default function App() {
                         />
                         <ArrowGrid
                             funcAtom={funcAtom}
-                            bounds={initState.bounds}
-                            arrowDensity={initState.arrowDensity}
-                            arrowLength={initState.arrowLength}
-                            color={initColors.arrows}
+                            boundsAtom={boundsAtom}
+                            arrowDensityAtom={arrowDensityAtom}
+                            arrowLengthAtom={arrowLengthAtom}
+                            arrowColorAtom={arrowColorAtom}
                         />
                         <DirectionFieldApprox
                             color={initColors.solution}
                             initialPtAtom={ipAtom}
                             bounds={initState.bounds}
+                            boundsAtom={boundsAtom}
                             funcAtom={funcAtom}
                             approxH={initState.approxH}
+                            visibleAtom={solutionVisibleAtom}
                         />
                         <Sphere
                             color={initColors.solution}
                             dragPositionAtom={ipAtom}
                             radius={0.25}
+                            visibleAtom={solutionVisibleAtom}
                         />
                         <ClickablePlaneComp clickPositionAtom={ipAtom} />
                     </ThreeSceneComp>
@@ -177,4 +235,111 @@ export default function App() {
             </FullScreenBaseComponent>
         </RecoilRoot>
     );
+}
+
+function OptionsModal() {
+    const dialog = useDialogState();
+    const tab = useTabState();
+
+    return (
+        <div zindex={-10}>
+            <DialogDisclosure
+                style={{ backgroundColor: 'white', color: initColors.controlBar }}
+                {...dialog}
+            >
+                <span style={{ width: '8em' }}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
+            </DialogDisclosure>
+            <Dialog
+                {...dialog}
+                style={{
+                    transform: 'none',
+                    top: '15%',
+                    left: 'auto',
+                    right: 20,
+                    width: 300,
+                    height: 400
+                }}
+                aria-label='Welcome'
+            >
+                <>
+                    <TabList {...tab} aria-label='Option tabs'>
+                        <Tab {...tab}>Arrow grid</Tab>
+                        <Tab {...tab}>Solution curve</Tab>
+                        <Tab {...tab}>Bounds</Tab>
+                    </TabList>
+                    <TabPanel {...tab}>
+                        <ArrowGridOptions
+                            arrowDensityAtom={arrowDensityAtom}
+                            arrowLengthAtom={arrowLengthAtom}
+                            arrowColorAtom={arrowColorAtom}
+                        />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <SolutionCurveOptions
+                            solutionVisibleAtom={solutionVisibleAtom}
+                            svSelector={solutionVisibleSelector}
+                        />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <BoundsOptions boundsAtom={boundsAtom} />
+                    </TabPanel>
+                </>
+            </Dialog>
+        </div>
+    );
+}
+
+function ArrowGridOptions({ arrowDensityAtom, arrowLengthAtom, arrowColorAtom }) {
+    const [ad, setAd] = useRecoilState(arrowDensityAtom);
+    const [al, setAl] = useRecoilState(arrowLengthAtom);
+    const [ac, setAc] = useRecoilState(arrowColorAtom);
+
+    const adCb = useCallback((inputStr) => setAd(Number(inputStr)), [setAd]);
+    const alCb = useCallback((inputStr) => setAl(Number(inputStr)), [setAl]);
+    const acCb = useCallback((e) => setAc(e.target.value), [setAc]);
+
+    return (
+        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Arrows per unit:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={ad} onC={adCb} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Relative arrow length:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={al} onC={alCb} />
+                </span>
+            </div>
+
+            <div>
+                <input type='color' name='color' id='color' value={ac} onChange={acCb} />
+            </div>
+        </div>
+    );
+}
+
+function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
+    const checked = useRecoilValue(solutionVisibleAtom);
+
+    const toggle = useSetRecoilState(svSelector);
+
+    return (
+        <label>
+            <Checkbox checked={checked} onChange={toggle} />
+            <span className={styles['med-margin']}>Show solution curve</span>
+        </label>
+    );
+}
+
+function BoundsOptions({ boundsAtom }) {
+    const [bounds, setBounds] = useRecoilState(boundsAtom);
+
+    const cb = useCallback(() => null, []);
+
+    return <BoundsInput bounds={bounds} onChange={cb} />;
 }
