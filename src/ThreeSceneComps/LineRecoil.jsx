@@ -8,13 +8,16 @@ const defaultVisibleAtom = atom(true);
 
 const defaultColorAtom = atom('#3285ab');
 
+const defaultLabelAtom = atom(null);
+
 export default React.memo(function Line({
     threeCBs,
     radius = 0.1,
     colorAtom = defaultColorAtom,
     point1Atom,
     point2Atom,
-    visibleAtom = defaultVisibleAtom
+    visibleAtom = defaultVisibleAtom,
+    labelAtom = defaultLabelAtom
 }) {
     const [meshState, setMeshState] = useState();
 
@@ -25,6 +28,8 @@ export default React.memo(function Line({
     const [point1] = useAtom(point1Atom);
 
     const [point2] = useAtom(point2Atom);
+
+    const [labelObj] = useAtom(labelAtom);
 
     //------------------------------------------------------------------------
     //
@@ -62,6 +67,25 @@ export default React.memo(function Line({
             if (material) material.dispose();
         };
     }, [visible, color, radius, threeCBs, point1, point2]);
+
+    useEffect(() => {
+        if (!threeCBs || !labelObj) return;
+
+        console.log('labelObj is ', labelObj);
+
+        let labelID = threeCBs.addLabel(labelObj);
+
+        threeCBs.drawLabels();
+        threeCBs.render();
+
+        return () => {
+            if (labelID) {
+                threeCBs.removeLabel(labelID);
+            }
+
+            //threeCBs.drawLabels();
+        };
+    }, [threeCBs, labelObj]);
 
     return null;
 });

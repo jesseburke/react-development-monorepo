@@ -69,8 +69,8 @@ export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
                     value={b}
                     CB={bCB}
                     label={'b'}
-                    max={20}
-                    min={0.001}
+                    max={40}
+                    min={0.01}
                     precision={precision}
                 />
             </div>
@@ -80,8 +80,8 @@ export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
                     value={k}
                     CB={kCB}
                     label={'k'}
-                    max={20}
-                    min={0.001}
+                    max={100}
+                    min={0.01}
                     precision={precision}
                 />
             </div>

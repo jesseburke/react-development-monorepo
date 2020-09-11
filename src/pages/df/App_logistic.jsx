@@ -40,12 +40,14 @@ const initColors = {
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-const frustumSize = 20;
+const frustumSize = 45;
+
+const yCameraTarget = 20;
 
 const initCameraData = {
-    position: [0, 0, 1],
-    up: [0, 0, 1],
-    //fov: 75,
+    position: [0, yCameraTarget, 1],
+    up: [0, yCameraTarget, 1],
+    fov: 75,
     near: -100,
     far: 100,
     rotation: { order: 'XYZ' },
@@ -64,7 +66,8 @@ const initControlsData = {
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    screenSpaceSpanning: false
+    screenSpaceSpanning: false,
+    target: new THREE.Vector3(0, yCameraTarget, 0)
 };
 
 // percentage of sbcreen appBar will take (at the top)
@@ -75,7 +78,8 @@ const controlBarHeight = 13;
 const initFontSize = 1;
 const controlBarFontSize = 1;
 
-const boundsAtom = atom({ xMin: -20, xMax: 20, yMin: 0, yMax: 40 });
+const initBounds = { xMin: -20, xMax: 20, yMin: 0, yMax: 40 };
+const boundsAtom = atom(initBounds);
 
 const ipAtom = atom({ x: 2, y: 2 });
 
@@ -83,11 +87,13 @@ const arrowDensityAtom = atom(1);
 
 const arrowLengthAtom = atom(0.75);
 
-const arrowColorAtom = atom('#C2374F');
+const initArrowColor = '#C2374F';
+
+const arrowColorAtom = atom(initArrowColor);
 
 const solutionVisibleAtom = atom(true);
 
-const initBVal = 1.0;
+const initBVal = 10.0;
 
 const bAtom = atom(initBVal);
 
@@ -115,12 +121,32 @@ const point2Atom = atom((get) => {
     return [xMax, b];
 });
 
+const lineColor = '#3285ab';
+
+const lineColorAtom = atom(lineColor);
+
+export const lineLabelStyle = {
+    color: lineColor,
+    padding: '.1em',
+    margin: '.5em',
+    padding: '.4em',
+    fontSize: '1.5em'
+};
+
+const lineLabelAtom = atom((get) => {
+    return {
+        pos: [initBounds.xMax - 5, get(bAtom) + 3, 0],
+        text: 'x = ' + get(bAtom),
+        style: lineLabelStyle
+    };
+});
+
 const initState = {
     approxH: 0.1
 };
 
 const initAxesData = {
-    radius: 0.01,
+    radius: 0.05,
     color: initColors.axes,
     show: true,
     showLabels: true,
@@ -195,7 +221,12 @@ export default function App() {
                             funcAtom={funcAtom}
                             approxH={initState.approxH}
                         />
-                        <Line point1Atom={point1Atom} point2Atom={point2Atom} />
+                        <Line
+                            point1Atom={point1Atom}
+                            point2Atom={point2Atom}
+                            labelAtom={lineLabelAtom}
+                            colorAtom={lineColorAtom}
+                        />
                         <ClickablePlaneComp clickPositionAtom={ipAtom} />
                     </ThreeSceneComp>
                 </Main>

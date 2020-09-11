@@ -122,7 +122,6 @@ function ThreeScene(
                 threeScene.add(mesh);
                 threeScene.render();
             },
-
             remove: (mesh) => {
                 threeScene.remove(mesh);
                 threeScene.render();
