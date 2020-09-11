@@ -12,10 +12,12 @@ export default function ArrowGrid({
     boundsAtom,
     arrowDensityAtom,
     arrowLengthAtom,
-    arrowColorAtom
+    arrowColorAtom,
+    arrowThicknessAtom
 }) {
     const [arrowDensity] = useAtom(arrowDensityAtom);
     const [arrowLength] = useAtom(arrowLengthAtom);
+    const [arrowThickness] = useAtom(arrowThicknessAtom);
     const [arrowColor] = useAtom(arrowColorAtom);
     const [func] = useAtom(funcAtom);
     const [bounds] = useAtom(boundsAtom);
@@ -26,6 +28,7 @@ export default function ArrowGrid({
         const geom = ArrowGridGeom({
             arrowDensity,
             arrowLength,
+            arrowThickness,
             bounds,
             func: func.func //funcValue.func
         });
@@ -43,7 +46,7 @@ export default function ArrowGrid({
             if (geom) geom.dispose();
             if (material) material.dispose();
         };
-    }, [threeCBs, arrowDensity, arrowLength, bounds, func, arrowColor]);
+    }, [threeCBs, arrowDensity, arrowLength, arrowThickness, bounds, func, arrowColor]);
 
     return null;
 }

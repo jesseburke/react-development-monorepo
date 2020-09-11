@@ -14,7 +14,7 @@ import { Checkbox } from 'reakit/Checkbox';
 import * as system from 'reakit-system-bootstrap';
 
 import classnames from 'classnames';
-import styles from './App_modal_test.module.css';
+import styles from './App_simple_sep.module.css';
 
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
@@ -24,7 +24,7 @@ import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import Input from '../../components/Input.jsx';
-import BoundsInput from '../../components/BoundsInput.jsx';
+import BoundsInput from '../../components/BoundsInputRecoil.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
 
@@ -43,12 +43,8 @@ import { fonts, labelStyle } from './constants.jsx';
 
 const initColors = {
     solution: '#C2374F',
-    firstPt: '#C2374F',
-    secPt: '#C2374F',
-    testFunc: '#E16962', //#DBBBB0',
     axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0'
+    controlBar: '#0A2C3C'
 };
 
 const initControlsData = {
@@ -96,22 +92,6 @@ const initAxesData = {
 
 const ipAtom = atom({ x: 2, y: 2 });
 
-const initXFuncStr = 'x';
-const initYFuncStr = 'cos(y)';
-
-const arrowDensityAtom = atom(1);
-
-const funcAtom = atom({ func: funcParser('(' + initXFuncStr + ')*(' + initYFuncStr + ')') });
-
-const arrowLengthAtom = atom(0.75);
-
-const arrowColorAtom = atom('#C2374F');
-
-const solutionVisibleAtom = atom(true);
-
-const boundsAtom = atom({ xMin: -20, xMax: 20, yMin: -20, yMax: 20 });
-
-// need to come back to these
 const xselector = atom(null, (get, set, newX) =>
     set(ipAtom, { x: Number(newX), y: get(ipAtom).y })
 );
@@ -119,12 +99,28 @@ const yselector = atom(null, (get, set, newY) =>
     set(ipAtom, { x: get(ipAtom).x, y: Number(newY) })
 );
 
+const initXFuncStr = 'x';
+const initYFuncStr = 'cos(y)';
+
+const funcAtom = atom({ func: funcParser('(' + initXFuncStr + ')*(' + initYFuncStr + ')') });
+
+const arrowDensityAtom = atom(1);
+
+const arrowLengthAtom = atom(0.75);
+
+const arrowThicknessAtom = atom(1);
+
+const arrowColorAtom = atom('#C2374F');
+
+const boundsAtom = atom({ xMin: -20, xMax: 20, yMin: -20, yMax: 20 });
+
+const solutionVisibleAtom = atom(true);
+
 const solutionVisibleSelector = atom(null, (get, set) =>
     set(solutionVisibleAtom, !get(solutionVisibleAtom))
 );
 
 const initState = {
-    bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
     approxH: 0.1
 };
 
@@ -186,6 +182,7 @@ export default function App() {
                             boundsAtom={boundsAtom}
                             arrowDensityAtom={arrowDensityAtom}
                             arrowLengthAtom={arrowLengthAtom}
+                            arrowThicknessAtom={arrowThicknessAtom}
                             arrowColorAtom={arrowColorAtom}
                         />
                         <DirectionFieldApprox
@@ -251,6 +248,7 @@ function OptionsModal() {
                         <ArrowGridOptions
                             arrowDensityAtom={arrowDensityAtom}
                             arrowLengthAtom={arrowLengthAtom}
+                            arrowThicknessAtom={arrowThicknessAtom}
                             arrowColorAtom={arrowColorAtom}
                         />
                     </TabPanel>
@@ -261,7 +259,7 @@ function OptionsModal() {
                         />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <BoundsOptions boundsAtom={boundsAtom} />
+                        <BoundsInput boundsAtom={boundsAtom} />
                     </TabPanel>
                 </>
             </Dialog>
@@ -269,13 +267,20 @@ function OptionsModal() {
     );
 }
 
-function ArrowGridOptions({ arrowDensityAtom, arrowLengthAtom, arrowColorAtom }) {
+function ArrowGridOptions({
+    arrowDensityAtom,
+    arrowLengthAtom,
+    arrowColorAtom,
+    arrowThicknessAtom
+}) {
     const [ad, setAd] = useAtom(arrowDensityAtom);
     const [al, setAl] = useAtom(arrowLengthAtom);
+    const [at, setAt] = useAtom(arrowThicknessAtom);
     const [ac, setAc] = useAtom(arrowColorAtom);
 
     const adCb = useCallback((inputStr) => setAd(Number(inputStr)), [setAd]);
     const alCb = useCallback((inputStr) => setAl(Number(inputStr)), [setAl]);
+    const atCb = useCallback((inputStr) => setAt(Number(inputStr)), [setAt]);
     const acCb = useCallback((e) => setAc(e.target.value), [setAc]);
 
     return (
@@ -291,6 +296,13 @@ function ArrowGridOptions({ arrowDensityAtom, arrowLengthAtom, arrowColorAtom })
                 <span className={styles['text-align-center']}>Relative arrow length:</span>
                 <span className={styles['med-padding']}>
                     <Input size={4} initValue={al} onC={alCb} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Arrow thickness:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={at} onC={atCb} />
                 </span>
             </div>
 
@@ -312,12 +324,4 @@ function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
             <span className={styles['med-margin']}>Show solution curve</span>
         </label>
     );
-}
-
-function BoundsOptions({ boundsAtom }) {
-    const [bounds, setBounds] = useAtom(boundsAtom);
-
-    const cb = useCallback(() => null, []);
-
-    return <BoundsInput bounds={bounds} onChange={cb} />;
 }

@@ -16,12 +16,11 @@ let title = 'default title';
 //import App from './pages/df/App_simple_df.jsx';
 //title = 'Direction field grapher';
 
-//import App from './pages/df/App_simple_sep.jsx';
-// App from './pages/df/App_modal_test.jsx';
-//title = 'Separable equation direction field grapher';
+import App from './pages/df/App_simple_sep.jsx';
+title = 'Separable equation direction field grapher';
 
-import App from './pages/df/App_logistic.jsx';
-title = 'Logistic equation';
+//import App from './pages/df/App_logistic.jsx';
+//title = 'Logistic equation';
 
 //import App from './pages/df/modal-test.jsx';
 

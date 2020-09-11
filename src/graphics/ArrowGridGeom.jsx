@@ -5,7 +5,13 @@ import ArrowGeometry from './ArrowGeometry.jsx';
 
 // arrowLength*aGridSqSize will be actual arrow length
 
-export default function ArrowGridGeom({ arrowDensity, arrowLength, bounds = {}, func }) {
+export default function ArrowGridGeom({
+    arrowDensity,
+    arrowLength,
+    arrowThickness,
+    bounds = {},
+    func
+}) {
     const { xMin, xMax, yMin, yMax } = bounds;
 
     const gridSqSize = 1 / arrowDensity;
@@ -22,7 +28,7 @@ export default function ArrowGridGeom({ arrowDensity, arrowLength, bounds = {}, 
 
         const theta = Math.asin(slope / Math.sqrt(slope * slope + 1));
 
-        return ArrowGeometry({ length: arrowLength })
+        return ArrowGeometry({ length: arrowLength, thickness: arrowThickness })
             .rotateZ(theta - Math.PI / 2)
             .translate(x, y, 0);
     });
