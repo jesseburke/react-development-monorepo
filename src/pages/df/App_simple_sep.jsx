@@ -90,6 +90,9 @@ const initAxesData = {
     labelStyle
 };
 
+const initBounds = { xMin: -20, xMax: 20, yMin: 0, yMax: 40 };
+const boundsAtom = atom(initBounds);
+
 const ipAtom = atom({ x: 2, y: 2 });
 
 const xselector = atom(null, (get, set, newX) =>
@@ -111,8 +114,6 @@ const arrowLengthAtom = atom(0.75);
 const arrowThicknessAtom = atom(1);
 
 const arrowColorAtom = atom('#C2374F');
-
-const boundsAtom = atom({ xMin: -20, xMax: 20, yMin: -20, yMax: 20 });
 
 const solutionVisibleAtom = atom(true);
 
@@ -233,8 +234,8 @@ function OptionsModal() {
                     top: '15%',
                     left: 'auto',
                     right: 20,
-                    width: 300,
-                    height: 400
+                    width: 400,
+                    height: 250
                 }}
                 aria-label='Welcome'
             >
@@ -306,8 +307,11 @@ function ArrowGridOptions({
                 </span>
             </div>
 
-            <div>
-                <input type='color' name='color' id='color' value={ac} onChange={acCb} />
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Color:</span>
+                <span className={styles['med-padding']}>
+                    <input type='color' name='color' id='color' value={ac} onChange={acCb} />
+                </span>
             </div>
         </div>
     );
