@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 
-import { useAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
 import ArrowGridGeom from '../graphics/ArrowGridGeom.jsx';
+
+const defaultArrowThicknessAtom = atom(1);
 
 export default function ArrowGrid({
     threeCBs,
@@ -13,7 +15,7 @@ export default function ArrowGrid({
     arrowDensityAtom,
     arrowLengthAtom,
     arrowColorAtom,
-    arrowThicknessAtom
+    arrowThicknessAtom = defaultArrowThicknessAtom
 }) {
     const [arrowDensity] = useAtom(arrowDensityAtom);
     const [arrowLength] = useAtom(arrowLengthAtom);

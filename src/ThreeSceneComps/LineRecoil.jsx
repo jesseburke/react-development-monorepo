@@ -71,8 +71,6 @@ export default React.memo(function Line({
     useEffect(() => {
         if (!threeCBs || !labelObj) return;
 
-        console.log('labelObj is ', labelObj);
-
         let labelID = threeCBs.addLabel(labelObj);
 
         threeCBs.drawLabels();

@@ -1,9 +1,20 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { atom, Provider } from 'jotai';
-import { useAtom } from 'jotai';
+import { atom, useAtom, Provider as JProvider } from 'jotai';
+
+import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Button } from 'reakit/Button';
+import { Portal } from 'reakit/Portal';
+import { Provider } from 'reakit/Provider';
+import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
+import { Checkbox } from 'reakit/Checkbox';
+
+import * as system from 'reakit-system-bootstrap';
 
 import * as THREE from 'three';
+
+import classnames from 'classnames';
+import styles from './App_simple_sep.module.css';
 
 import './styles.css';
 
@@ -13,6 +24,8 @@ import Main from '../../components/Main.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import LogisticEquationInput from '../../components/LogisticEquationInput.jsx';
+import BoundsInput from '../../components/BoundsInputRecoil.jsx';
+import Input from '../../components/Input.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
@@ -85,6 +98,8 @@ const ipAtom = atom({ x: 2, y: 2 });
 
 const arrowDensityAtom = atom(1);
 
+const arrowThicknessAtom = atom(1);
+
 const arrowLengthAtom = atom(0.75);
 
 const initArrowColor = '#C2374F';
@@ -92,6 +107,10 @@ const initArrowColor = '#C2374F';
 const arrowColorAtom = atom(initArrowColor);
 
 const solutionVisibleAtom = atom(true);
+
+const solutionVisibleSelector = atom(null, (get, set) =>
+    set(solutionVisibleAtom, !get(solutionVisibleAtom))
+);
 
 const initBVal = 10.0;
 
@@ -107,14 +126,17 @@ const funcAtom = atom((get) => {
     return { func: (x, y) => k * (1 - y / b) };
 });
 
-const point1Atom = atom((get) => {
+const xLabelAtom = atom('t');
+const yLabelAtom = atom('x');
+
+const linePoint1Atom = atom((get) => {
     const xMin = get(boundsAtom).xMin;
     const b = get(bAtom);
 
     return [xMin, b];
 });
 
-const point2Atom = atom((get) => {
+const linePoint2Atom = atom((get) => {
     const xMax = get(boundsAtom).xMax;
     const b = get(bAtom);
 
@@ -136,7 +158,7 @@ export const lineLabelStyle = {
 const lineLabelAtom = atom((get) => {
     return {
         pos: [initBounds.xMax - 5, get(bAtom) + 3, 0],
-        text: 'x = ' + get(bAtom),
+        text: get(yLabelAtom) + '= ' + get(bAtom),
         style: lineLabelStyle
     };
 });
@@ -167,15 +189,23 @@ export default function App() {
     }, [threeCBs, threeSceneRef]);
 
     return (
-        <Provider>
+        <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <ControlBar
-                    height={controlBarHeight}
-                    fontSize={initFontSize * controlBarFontSize}
-                    padding='.5em'
-                >
-                    <LogisticEquationInput bAtom={bAtom} kAtom={kAtom} />
-                </ControlBar>
+                <Provider unstable_system={system}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={initFontSize * controlBarFontSize}
+                        padding='.5em'
+                    >
+                        <LogisticEquationInput
+                            bAtom={bAtom}
+                            kAtom={kAtom}
+                            xLabelAtom={xLabelAtom}
+                            yLabelAtom={yLabelAtom}
+                        />
+                        <OptionsModal />
+                    </ControlBar>
+                </Provider>
 
                 <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
                     <ThreeSceneComp
@@ -196,8 +226,8 @@ export default function App() {
                             show={initAxesData.show}
                             showLabels={initAxesData.showLabels}
                             labelStyle={labelStyle}
-                            yLabel='x'
-                            xLabel='t'
+                            xLabelAtom={xLabelAtom}
+                            yLabelAtom={yLabelAtom}
                             color={initColors.axes}
                         />
                         <Sphere
@@ -211,6 +241,7 @@ export default function App() {
                             boundsAtom={boundsAtom}
                             arrowDensityAtom={arrowDensityAtom}
                             arrowLengthAtom={arrowLengthAtom}
+                            arrowThicknessAtom={arrowThicknessAtom}
                             arrowColorAtom={arrowColorAtom}
                         />
                         <DirectionFieldApprox
@@ -222,8 +253,8 @@ export default function App() {
                             approxH={initState.approxH}
                         />
                         <Line
-                            point1Atom={point1Atom}
-                            point2Atom={point2Atom}
+                            point1Atom={linePoint1Atom}
+                            point2Atom={linePoint2Atom}
                             labelAtom={lineLabelAtom}
                             colorAtom={lineColorAtom}
                         />
@@ -231,6 +262,161 @@ export default function App() {
                     </ThreeSceneComp>
                 </Main>
             </FullScreenBaseComponent>
-        </Provider>
+        </JProvider>
+    );
+}
+
+function OptionsModal() {
+    const dialog = useDialogState();
+    const tab = useTabState();
+
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
+
+    return (
+        <div zindex={-10}>
+            <DialogDisclosure
+                style={{ backgroundColor: 'white', color: initColors.controlBar }}
+                {...dialog}
+            >
+                <span style={{ width: '8em' }}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
+            </DialogDisclosure>
+            <Dialog
+                {...dialog}
+                style={{
+                    transform: 'none',
+                    top: '15%',
+                    left: 'auto',
+                    right: 20,
+                    width: 400,
+                    height: 250
+                }}
+                aria-label='Welcome'
+            >
+                <>
+                    <TabList {...tab} aria-label='Option tabs'>
+                        <Tab {...tab}>Arrow grid</Tab>
+                        <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Variables</Tab>
+                    </TabList>
+                    <TabPanel {...tab}>
+                        <ArrowGridOptions
+                            arrowDensityAtom={arrowDensityAtom}
+                            arrowLengthAtom={arrowLengthAtom}
+                            arrowThicknessAtom={arrowThicknessAtom}
+                            arrowColorAtom={arrowColorAtom}
+                        />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <BoundsInput
+                            boundsAtom={boundsAtom}
+                            xLabelAtom={xLabelAtom}
+                            yLabelAtom={yLabelAtom}
+                        />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <VariablesOptions xLabelAtom={xLabelAtom} yLabelAtom={yLabelAtom} />
+                    </TabPanel>
+                </>
+            </Dialog>
+        </div>
+    );
+}
+
+// <TabPanel {...tab}>
+//                         <SolutionCurveOptions
+//                             solutionVisibleAtom={solutionVisibleAtom}
+//                             svSelector={solutionVisibleSelector}
+//                         />
+//                     </TabPanel>
+
+function ArrowGridOptions({
+    arrowDensityAtom,
+    arrowLengthAtom,
+    arrowColorAtom,
+    arrowThicknessAtom
+}) {
+    const [ad, setAd] = useAtom(arrowDensityAtom);
+    const [al, setAl] = useAtom(arrowLengthAtom);
+    const [at, setAt] = useAtom(arrowThicknessAtom);
+    const [ac, setAc] = useAtom(arrowColorAtom);
+
+    const adCb = useCallback((inputStr) => setAd(Number(inputStr)), [setAd]);
+    const alCb = useCallback((inputStr) => setAl(Number(inputStr)), [setAl]);
+    const atCb = useCallback((inputStr) => setAt(Number(inputStr)), [setAt]);
+    const acCb = useCallback((e) => setAc(e.target.value), [setAc]);
+
+    return (
+        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Arrows per unit:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={ad} onC={adCb} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Relative arrow length:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={al} onC={alCb} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Arrow thickness:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={at} onC={atCb} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Color:</span>
+                <span className={styles['med-padding']}>
+                    <input type='color' name='color' id='color' value={ac} onChange={acCb} />
+                </span>
+            </div>
+        </div>
+    );
+}
+
+function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
+    const [checked] = useAtom(solutionVisibleAtom);
+
+    const [, toggle] = useAtom(svSelector);
+
+    return (
+        <label>
+            <Checkbox checked={checked} onChange={toggle} />
+            <span className={styles['med-margin']}>Show solution curve</span>
+        </label>
+    );
+}
+
+function VariablesOptions({ xLabelAtom, yLabelAtom }) {
+    const [xLabel, setXLabel] = useAtom(xLabelAtom);
+    const [yLabel, setYLabel] = useAtom(yLabelAtom);
+
+    const xCB = useCallback((inputStr) => setXLabel(inputStr), [setXLabel]);
+    const yCB = useCallback((inputStr) => setYLabel(inputStr), [setYLabel]);
+
+    return (
+        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Independent variable</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={xLabel} onC={xCB} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Dependent variable:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={yLabel} onC={yCB} />
+                </span>
+            </div>
+        </div>
     );
 }

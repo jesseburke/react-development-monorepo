@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 
-import { useAtom } from 'jotai';
+import { useAtom, atom } from 'jotai';
 
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+
+const defaultXLabelAtom = atom('x');
+const defaultYLabelAtom = atom('y');
 
 export default React.memo(function Axes2DTS({
     threeCBs,
@@ -17,11 +20,14 @@ export default React.memo(function Axes2DTS({
     tickRadius = 1.25,
     tickColor = '#8BC34A',
     labelStyle,
-    xLabel = 'x',
-    yLabel = 'y'
+    xLabelAtom = defaultXLabelAtom,
+    yLabelAtom = defaultYLabelAtom
 }) {
     const [bounds] = useAtom(boundsAtom);
     const { xMin, xMax, yMin, yMax } = bounds;
+
+    const [xLabel] = useAtom(xLabelAtom);
+    const [yLabel] = useAtom(yLabelAtom);
 
     useEffect(() => {
         if (!threeCBs) return;
@@ -127,7 +133,7 @@ export default React.memo(function Axes2DTS({
 
             threeCBs.drawLabels();
         };
-    }, [threeCBs, showLabels, xMax, yMax, labelStyle]);
+    }, [threeCBs, showLabels, xMax, yMax, labelStyle, xLabel, yLabel]);
 
     return null;
 });

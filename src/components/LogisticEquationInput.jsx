@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { useAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import TexDisplayComp from './TexDisplayComp.jsx';
 import Slider from './Slider.jsx';
@@ -8,9 +8,37 @@ import Slider from './Slider.jsx';
 const precision = 3;
 const logisticEquationTex = '\\frac{dx}{dt} = kx (1 - \\frac{x}{b})';
 
-export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
+const defaultXLabelAtom = atom('t');
+const defaultYLabelAtom = atom('x');
+
+export default React.memo(function LogisticEquationInput({
+    bAtom,
+    kAtom,
+    xLabelAtom = defaultXLabelAtom,
+    yLabelAtom = defaultYLabelAtom
+}) {
     const [b, setB] = useAtom(bAtom);
     const [k, setK] = useAtom(kAtom);
+    const [xLabel] = useAtom(xLabelAtom);
+    const [yLabel] = useAtom(yLabelAtom);
+
+    const [texStr, setTexStr] = useState(
+        '\\frac{d' + yLabel + '}{d' + xLabel + '} = k' + yLabel + '(1 - \\frac{' + yLabel + '}{b})'
+    );
+
+    useEffect(() => {
+        setTexStr(
+            '\\frac{d' +
+                yLabel +
+                '}{d' +
+                xLabel +
+                '} = k' +
+                yLabel +
+                '(1 - \\frac{' +
+                yLabel +
+                '}{b})'
+        );
+    }, [xLabel, yLabel]);
 
     const bCB = useCallback(
         (num) => {
@@ -35,7 +63,6 @@ export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
             height: '100%',
             padding: '.5em 1em',
             fontSize: '1.25em',
-            borderRight: '1px solid',
             flex: 5
         },
         []
@@ -61,7 +88,7 @@ export default React.memo(function LogisticEquationInput({ bAtom, kAtom }) {
         <div style={css1.current}>
             <div style={css2.current}>
                 <div style={css4.current}>Logistic equation</div>
-                <TexDisplayComp userCss={css3.current} str={logisticEquationTex} />
+                <TexDisplayComp userCss={css3.current} str={texStr} />
             </div>
             <div>
                 <Slider
