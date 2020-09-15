@@ -6,21 +6,14 @@ import * as THREE from 'three';
 
 import ArrowGridGeom from '../graphics/ArrowGridGeom.jsx';
 
-const defaultArrowThicknessAtom = atom(1);
+export default function ArrowGrid({ threeCBs, funcAtom, boundsAtom, arrowGridDisplayAtom }) {
+    // const [density] = useAtom(arrowDensityAtom);
+    // const [length] = useAtom(arrowLengthAtom);
+    // const [thickness] = useAtom(arrowThicknessAtom);
+    // const [color] = useAtom(arrowColorAtom);
 
-export default function ArrowGrid({
-    threeCBs,
-    funcAtom,
-    boundsAtom,
-    arrowDensityAtom,
-    arrowLengthAtom,
-    arrowColorAtom,
-    arrowThicknessAtom = defaultArrowThicknessAtom
-}) {
-    const [arrowDensity] = useAtom(arrowDensityAtom);
-    const [arrowLength] = useAtom(arrowLengthAtom);
-    const [arrowThickness] = useAtom(arrowThicknessAtom);
-    const [arrowColor] = useAtom(arrowColorAtom);
+    const { density, length, thickness, color } = useAtom(arrowGridDisplayAtom)[0];
+
     const [func] = useAtom(funcAtom);
     const [bounds] = useAtom(boundsAtom);
 
@@ -28,14 +21,14 @@ export default function ArrowGrid({
         if (!threeCBs) return;
 
         const geom = ArrowGridGeom({
-            arrowDensity,
-            arrowLength,
-            arrowThickness,
+            arrowDensity: density,
+            arrowLength: length,
+            arrowThickness: thickness,
             bounds,
             func: func.func //funcValue.func
         });
 
-        const material = new THREE.MeshBasicMaterial({ color: arrowColor });
+        const material = new THREE.MeshBasicMaterial({ color });
         //material.transparent = true;
         //material.opacity = .75;
 
@@ -48,7 +41,7 @@ export default function ArrowGrid({
             if (geom) geom.dispose();
             if (material) material.dispose();
         };
-    }, [threeCBs, arrowDensity, arrowLength, arrowThickness, bounds, func, arrowColor]);
+    }, [threeCBs, density, length, thickness, bounds, func, color]);
 
     return null;
 }

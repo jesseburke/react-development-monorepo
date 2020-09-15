@@ -96,7 +96,7 @@ export default React.memo(function LogisticEquationInput({
                     value={b}
                     CB={bCB}
                     label={'b'}
-                    max={40}
+                    max={210}
                     min={0.01}
                     precision={precision}
                 />

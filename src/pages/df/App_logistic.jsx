@@ -34,6 +34,8 @@ import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxReco
 import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
 import Line from '../../ThreeSceneComps/LineRecoil.jsx';
 
+import { arrowGridDisplayAtom, ArrowGridOptions } from './App_logistic_data.jsx';
+
 import { fonts, labelStyle } from './constants.jsx';
 
 //------------------------------------------------------------------------
@@ -42,7 +44,6 @@ import { fonts, labelStyle } from './constants.jsx';
 //
 
 const initColors = {
-    arrows: '#C2374F',
     solution: '#C2374F',
     firstPt: '#C2374F',
     secPt: '#C2374F',
@@ -95,16 +96,6 @@ const initBounds = { xMin: -20, xMax: 20, yMin: 0, yMax: 40 };
 const boundsAtom = atom(initBounds);
 
 const ipAtom = atom({ x: 2, y: 2 });
-
-const arrowDensityAtom = atom(1);
-
-const arrowThicknessAtom = atom(1);
-
-const arrowLengthAtom = atom(0.75);
-
-const initArrowColor = '#C2374F';
-
-const arrowColorAtom = atom(initArrowColor);
 
 const solutionVisibleAtom = atom(true);
 
@@ -183,6 +174,7 @@ export default function App() {
     // following passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
+    // this is a hack to get three scene drawn initially
     useEffect(() => {
         if (!threeCBs || !threeSceneRef) return;
         window.dispatchEvent(new Event('resize'));
@@ -239,10 +231,7 @@ export default function App() {
                         <ArrowGrid
                             funcAtom={funcAtom}
                             boundsAtom={boundsAtom}
-                            arrowDensityAtom={arrowDensityAtom}
-                            arrowLengthAtom={arrowLengthAtom}
-                            arrowThicknessAtom={arrowThicknessAtom}
-                            arrowColorAtom={arrowColorAtom}
+                            arrowGridDisplayAtom={arrowGridDisplayAtom}
                         />
                         <DirectionFieldApprox
                             color={initColors.solution}
@@ -303,12 +292,7 @@ function OptionsModal() {
                         <Tab {...tab}>Variables</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <ArrowGridOptions
-                            arrowDensityAtom={arrowDensityAtom}
-                            arrowLengthAtom={arrowLengthAtom}
-                            arrowThicknessAtom={arrowThicknessAtom}
-                            arrowColorAtom={arrowColorAtom}
-                        />
+                        <ArrowGridOptions />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <BoundsInput
@@ -332,55 +316,6 @@ function OptionsModal() {
 //                             svSelector={solutionVisibleSelector}
 //                         />
 //                     </TabPanel>
-
-function ArrowGridOptions({
-    arrowDensityAtom,
-    arrowLengthAtom,
-    arrowColorAtom,
-    arrowThicknessAtom
-}) {
-    const [ad, setAd] = useAtom(arrowDensityAtom);
-    const [al, setAl] = useAtom(arrowLengthAtom);
-    const [at, setAt] = useAtom(arrowThicknessAtom);
-    const [ac, setAc] = useAtom(arrowColorAtom);
-
-    const adCb = useCallback((inputStr) => setAd(Number(inputStr)), [setAd]);
-    const alCb = useCallback((inputStr) => setAl(Number(inputStr)), [setAl]);
-    const atCb = useCallback((inputStr) => setAt(Number(inputStr)), [setAt]);
-    const acCb = useCallback((e) => setAc(e.target.value), [setAc]);
-
-    return (
-        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
-            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                <span className={styles['text-align-center']}>Arrows per unit:</span>
-                <span className={styles['med-padding']}>
-                    <Input size={4} initValue={ad} onC={adCb} />
-                </span>
-            </div>
-
-            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                <span className={styles['text-align-center']}>Relative arrow length:</span>
-                <span className={styles['med-padding']}>
-                    <Input size={4} initValue={al} onC={alCb} />
-                </span>
-            </div>
-
-            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                <span className={styles['text-align-center']}>Arrow thickness:</span>
-                <span className={styles['med-padding']}>
-                    <Input size={4} initValue={at} onC={atCb} />
-                </span>
-            </div>
-
-            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                <span className={styles['text-align-center']}>Color:</span>
-                <span className={styles['med-padding']}>
-                    <input type='color' name='color' id='color' value={ac} onChange={acCb} />
-                </span>
-            </div>
-        </div>
-    );
-}
 
 function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
     const [checked] = useAtom(solutionVisibleAtom);
