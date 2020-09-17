@@ -3,56 +3,40 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom, Provider as JProvider } from 'jotai';
 
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Button } from 'reakit/Button';
+import { Portal } from 'reakit/Portal';
 import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import { Checkbox } from 'reakit/Checkbox';
 
 import * as system from 'reakit-system-bootstrap';
 
-import queryString from 'query-string-esm';
-
 import * as THREE from 'three';
 
 import classnames from 'classnames';
 import styles from './App_simple_sep.module.css';
 
+import './styles.css';
+
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
+import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import LogisticEquationInput from '../../components/LogisticEquationInput.jsx';
+import BoundsInput from '../../components/BoundsInputRecoil.jsx';
+import Input from '../../components/Input.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
+import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
 import Line from '../../ThreeSceneComps/LineRecoil.jsx';
-import ClickablePlane from '../../ThreeSceneComps/ClickablePlane.jsx';
+
+import { arrowGridDisplayAtom, ArrowGridOptions } from './App_logistic_data.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
-
-import {
-    decode,
-    encode,
-    atomArray,
-    arrowGridOptionsAtom,
-    ArrowGridOptionsInput,
-    boundsAtom,
-    BoundsInput,
-    lineLabelAtom,
-    bAtom,
-    kAtom,
-    initialPointAtom,
-    funcAtom,
-    xLabelAtom,
-    yLabelAtom,
-    linePoint1Atom,
-    linePoint2Atom,
-    lineColorAtom,
-    solutionCurveOptionsAtom,
-    SolutionCurveOptionsInput,
-    VariablesOptionsInput
-} from './App_logistic_data.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -60,6 +44,10 @@ import {
 //
 
 const initColors = {
+    solution: '#C2374F',
+    firstPt: '#C2374F',
+    secPt: '#C2374F',
+    testFunc: '#E16962', //#DBBBB0',
     axes: '#0A2C3C',
     controlBar: '#0A2C3C',
     clearColor: '#f0f0f0'
@@ -104,6 +92,72 @@ const controlBarHeight = 13;
 const initFontSize = 1;
 const controlBarFontSize = 1;
 
+const initBounds = { xMin: -20, xMax: 20, yMin: 0, yMax: 40 };
+const boundsAtom = atom(initBounds);
+
+const ipAtom = atom({ x: 2, y: 2 });
+
+const solutionVisibleAtom = atom(true);
+
+const solutionVisibleSelector = atom(null, (get, set) =>
+    set(solutionVisibleAtom, !get(solutionVisibleAtom))
+);
+
+const initBVal = 10.0;
+
+const bAtom = atom(initBVal);
+
+const initKVal = 1.0;
+
+const kAtom = atom(initKVal);
+
+const funcAtom = atom((get) => {
+    const k = get(kAtom);
+    const b = get(bAtom);
+    return { func: (x, y) => k * (1 - y / b) };
+});
+
+const xLabelAtom = atom('t');
+const yLabelAtom = atom('x');
+
+const linePoint1Atom = atom((get) => {
+    const xMin = get(boundsAtom).xMin;
+    const b = get(bAtom);
+
+    return [xMin, b];
+});
+
+const linePoint2Atom = atom((get) => {
+    const xMax = get(boundsAtom).xMax;
+    const b = get(bAtom);
+
+    return [xMax, b];
+});
+
+const lineColor = '#3285ab';
+
+const lineColorAtom = atom(lineColor);
+
+export const lineLabelStyle = {
+    color: lineColor,
+    padding: '.1em',
+    margin: '.5em',
+    padding: '.4em',
+    fontSize: '1.5em'
+};
+
+const lineLabelAtom = atom((get) => {
+    return {
+        pos: [initBounds.xMax - 5, get(bAtom) + 3, 0],
+        text: get(yLabelAtom) + '= ' + get(bAtom),
+        style: lineLabelStyle
+    };
+});
+
+const initState = {
+    approxH: 0.1
+};
+
 const initAxesData = {
     radius: 0.05,
     color: initColors.axes,
@@ -111,6 +165,8 @@ const initAxesData = {
     showLabels: true,
     labelStyle
 };
+
+//------------------------------------------------------------------------
 
 export default function App() {
     const threeSceneRef = useRef(null);
@@ -162,20 +218,28 @@ export default function App() {
                             show={initAxesData.show}
                             showLabels={initAxesData.showLabels}
                             labelStyle={labelStyle}
-                            color={initColors.axes}
                             xLabelAtom={xLabelAtom}
                             yLabelAtom={yLabelAtom}
+                            color={initColors.axes}
+                        />
+                        <Sphere
+                            color={initColors.solution}
+                            dragPositionAtom={ipAtom}
+                            radius={0.25}
+                            visibleAtom={solutionVisibleAtom}
                         />
                         <ArrowGrid
                             funcAtom={funcAtom}
                             boundsAtom={boundsAtom}
-                            arrowGridDisplayAtom={arrowGridOptionsAtom}
+                            arrowGridDisplayAtom={arrowGridDisplayAtom}
                         />
                         <DirectionFieldApprox
-                            initialPointAtom={initialPointAtom}
+                            color={initColors.solution}
+                            initialPtAtom={ipAtom}
+                            visibleAtom={solutionVisibleAtom}
                             boundsAtom={boundsAtom}
                             funcAtom={funcAtom}
-                            solutionCurveOptionsAtom={solutionCurveOptionsAtom}
+                            approxH={initState.approxH}
                         />
                         <Line
                             point1Atom={linePoint1Atom}
@@ -183,103 +247,17 @@ export default function App() {
                             labelAtom={lineLabelAtom}
                             colorAtom={lineColorAtom}
                         />
-                        <ClickablePlane clickPointAtom={initialPointAtom} />
+                        <ClickablePlaneComp clickPositionAtom={ipAtom} />
                     </ThreeSceneComp>
-                    <SaveStateComp encode={encode} atomArray={atomArray} />
                 </Main>
             </FullScreenBaseComponent>
         </JProvider>
     );
 }
 
-const identity = (x) => x;
-
-function strArrayToArray(strArray, f = identity) {
-    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
-    // f is a function applied to the string representing each array element
-
-    return strArray.split(',').map((x) => f(x));
-}
-
-function SaveStateComp({ encode, atomArray, children }) {
-    const atomValueArray = atomArray.map((a) => useAtom(a)[0]);
-    const atomSetterArray = atomArray.map((a) => useAtom(a)[1]);
-
-    useEffect(() => {
-        const qs = window.location.search;
-
-        if (qs.length === 0) {
-            //setState((s) => s);
-            return;
-        }
-
-        let { state: newStateArray } = queryString.parse(qs.slice(1));
-
-        newStateArray = decode(strArrayToArray(newStateArray));
-
-        for (let i = 0; i < newStateArray.length; i++) {
-            atomSetterArray[i](newStateArray[i]);
-        }
-    }, []);
-
-    const cb = useCallback(() => {
-        const stateStr = encode(atomValueArray);
-
-        window.history.replaceState(
-            null,
-            null,
-            '?' +
-                queryString.stringify(
-                    { state: stateStr },
-                    {
-                        decode: true,
-                        arrayFormat: 'comma'
-                    }
-                )
-        );
-    }, [encode, atomValueArray]);
-
-    const cssRef = useRef({
-        position: 'absolute',
-        top: '85%',
-        left: '5%',
-        padding: '1%',
-        border: '1px',
-        borderStyle: 'solid',
-        borderRadius: '50%',
-        fontSize: initFontSize.toString() + 'em',
-        // next line stops cursor from changing to text selection on hover
-        cursor: 'pointer',
-        backgroundColor: initColors.clearColor
-    });
-
-    const cssRef2 = useRef({ padding: '.15em', fontSize: '2rem' });
-
-    const component = children ? (
-        React.cloneElement(children[0], { onClick: cb })
-    ) : (
-        <div style={cssRef.current} onClick={cb}>
-            <span style={cssRef2.current}>{'\u{1F4BE}'}</span>
-        </div>
-    );
-
-    return component;
-}
-
 function OptionsModal() {
     const dialog = useDialogState();
     const tab = useTabState();
-
-    const cssRef = useRef({ backgroundColor: 'white', color: initColors.controlBar, width: '8em' });
-
-    const cssRef1 = useRef({
-        transform: 'none',
-        top: '15%',
-        left: 'auto',
-        right: 20,
-        width: 400,
-        height: 250
-    });
 
     useEffect(() => {
         window.dispatchEvent(new Event('resize'));
@@ -287,31 +265,93 @@ function OptionsModal() {
 
     return (
         <div zindex={-10}>
-            <DialogDisclosure style={cssRef.current} {...dialog}>
-                <span>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
+            <DialogDisclosure
+                style={{ backgroundColor: 'white', color: initColors.controlBar }}
+                {...dialog}
+            >
+                <span style={{ width: '8em' }}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
             </DialogDisclosure>
-            <Dialog {...dialog} style={cssRef1.current} aria-label='Welcome'>
+            <Dialog
+                {...dialog}
+                style={{
+                    transform: 'none',
+                    top: '15%',
+                    left: 'auto',
+                    right: 20,
+                    width: 400,
+                    height: 250
+                }}
+                aria-label='Welcome'
+            >
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Bounds</Tab>
-                        <Tab {...tab}>Solution Curve</Tab>
                         <Tab {...tab}>Variables</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <ArrowGridOptionsInput />
+                        <ArrowGridOptions />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <BoundsInput />
+                        <BoundsInput
+                            boundsAtom={boundsAtom}
+                            xLabelAtom={xLabelAtom}
+                            yLabelAtom={yLabelAtom}
+                        />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveOptionsInput />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <VariablesOptionsInput />
+                        <VariablesOptions xLabelAtom={xLabelAtom} yLabelAtom={yLabelAtom} />
                     </TabPanel>
                 </>
             </Dialog>
+        </div>
+    );
+}
+
+// <TabPanel {...tab}>
+//                         <SolutionCurveOptions
+//                             solutionVisibleAtom={solutionVisibleAtom}
+//                             svSelector={solutionVisibleSelector}
+//                         />
+//                     </TabPanel>
+
+function SolutionCurveOptions({ solutionVisibleAtom, svSelector }) {
+    const [checked] = useAtom(solutionVisibleAtom);
+
+    const [, toggle] = useAtom(svSelector);
+
+    return (
+        <label>
+            <Checkbox checked={checked} onChange={toggle} />
+            <span className={styles['med-margin']}>Show solution curve</span>
+        </label>
+    );
+}
+
+function VariablesOptions({ xLabelAtom, yLabelAtom }) {
+    const [xLabel, setXLabel] = useAtom(xLabelAtom);
+    const [yLabel, setYLabel] = useAtom(yLabelAtom);
+
+    const xCB = useCallback((inputStr) => setXLabel(inputStr), [setXLabel]);
+    const yCB = useCallback((inputStr) => setYLabel(inputStr), [setYLabel]);
+
+    return (
+        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Independent variable</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={xLabel} onC={xCB} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Dependent variable:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={yLabel} onC={yCB} />
+                </span>
+            </div>
         </div>
     );
 }

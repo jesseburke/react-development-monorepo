@@ -1,31 +1,32 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
-import Sphere from './SphereRecoil.jsx';
 
 export default function DirectionFieldApprox({
     threeCBs,
     funcAtom,
-    initialPointAtom = null,
+    initialPtAtom = null,
+    color,
     boundsAtom,
-    solutionCurveOptionsAtom,
-    radius = 0.05
+    approxH = 0.01,
+    radius = 0.05,
+    visibleAtom
 }) {
     const [mat, setMat] = useState();
 
     const [meshState, setMeshState] = useState();
 
-    const [initialPt] = useAtom(initialPointAtom);
+    const [initialPt] = useAtom(initialPtAtom);
+
+    const [visible] = useAtom(visibleAtom);
 
     const [func] = useAtom(funcAtom);
 
     const [bounds] = useAtom(boundsAtom);
-
-    const { visible, color, approxH } = useAtom(solutionCurveOptionsAtom)[0];
 
     useEffect(() => {
         setMat(
@@ -74,12 +75,5 @@ export default function DirectionFieldApprox({
         };
     }, [threeCBs, initialPt, bounds, func, approxH, mat, radius, visible]);
 
-    return (
-        <Sphere
-            threeCBs={threeCBs}
-            color={color}
-            dragPositionAtom={initialPointAtom}
-            radius={0.25}
-        />
-    );
+    return null;
 }
