@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
 import Sphere from './SphereRecoil.jsx';
 
+const defaultWidth = 0.1;
+
 export default function DirectionFieldApprox({
     threeCBs,
     funcAtom,
@@ -25,7 +27,7 @@ export default function DirectionFieldApprox({
 
     const [bounds] = useAtom(boundsAtom);
 
-    const { visible, color, approxH } = useAtom(solutionCurveOptionsAtom)[0];
+    const { visible, color, approxH, width } = useAtom(solutionCurveOptionsAtom)[0];
 
     useEffect(() => {
         setMat(
@@ -59,7 +61,7 @@ export default function DirectionFieldApprox({
             initialPt: [initialPt.x, initialPt.y],
             bounds,
             h: approxH,
-            radius
+            radius: width
         });
 
         const mesh = new THREE.Mesh(dfag, mat);
@@ -72,7 +74,7 @@ export default function DirectionFieldApprox({
             if (dfag) dfag.dispose();
             if (mat) mat.dispose();
         };
-    }, [threeCBs, initialPt, bounds, func, approxH, mat, radius, visible]);
+    }, [threeCBs, initialPt, bounds, func, width, approxH, mat, radius, visible]);
 
     return (
         <Sphere

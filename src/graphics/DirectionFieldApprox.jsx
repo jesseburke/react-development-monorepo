@@ -34,8 +34,6 @@ export default function DirectionFieldApproxGeom({
         path.add(new THREE.LineCurve3(pointArray[i], pointArray[i + 1]));
     }
 
-    let geom;
-
     if (path.curves.length === 0) {
         return null;
     }

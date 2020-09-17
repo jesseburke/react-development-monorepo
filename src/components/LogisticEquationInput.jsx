@@ -15,12 +15,15 @@ export default React.memo(function LogisticEquationInput({
     bAtom,
     kAtom,
     xLabelAtom = defaultXLabelAtom,
-    yLabelAtom = defaultYLabelAtom
+    yLabelAtom = defaultYLabelAtom,
+    boundsAtom
 }) {
     const [b, setB] = useAtom(bAtom);
     const [k, setK] = useAtom(kAtom);
     const [xLabel] = useAtom(xLabelAtom);
     const [yLabel] = useAtom(yLabelAtom);
+
+    const { yMax } = useAtom(boundsAtom)[0];
 
     const [texStr, setTexStr] = useState(
         '\\frac{d' + yLabel + '}{d' + xLabel + '} = k' + yLabel + '(1 - \\frac{' + yLabel + '}{b})'
@@ -96,7 +99,7 @@ export default React.memo(function LogisticEquationInput({
                     value={b}
                     CB={bCB}
                     label={'b'}
-                    max={210}
+                    max={yMax}
                     min={0.01}
                     precision={precision}
                 />

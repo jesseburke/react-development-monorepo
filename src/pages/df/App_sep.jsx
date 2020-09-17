@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 
 import { atom, useAtom, Provider as JProvider } from 'jotai';
+
+import * as THREE from 'three';
 
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
 import { Provider } from 'reakit/Provider';
@@ -8,21 +10,19 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 
 import * as system from 'reakit-system-bootstrap';
 
-import * as THREE from 'three';
-
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
+import SepEquationInput from '../../components/SepEquationInput.jsx';
+import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
+import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import LogisticEquationInput from '../../components/LogisticEquationInput.jsx';
 import SaveStateComp from '../../components/SaveStateComp.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
-import Line from '../../ThreeSceneComps/LineRecoil.jsx';
-import ClickablePlane from '../../ThreeSceneComps/ClickablePlane.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
 
@@ -34,20 +34,16 @@ import {
     ArrowGridOptionsInput,
     boundsAtom,
     BoundsInput,
-    lineLabelAtom,
-    bAtom,
-    kAtom,
     initialPointAtom,
     funcAtom,
+    xFuncStrAtom,
+    yFuncStrAtom,
     xLabelAtom,
     yLabelAtom,
-    linePoint1Atom,
-    linePoint2Atom,
-    lineColorAtom,
     solutionCurveOptionsAtom,
     SolutionCurveOptionsInput,
     VariablesOptionsInput
-} from './App_logistic_data.jsx';
+} from './App_sep_data.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -55,20 +51,28 @@ import {
 //
 
 const initColors = {
+    solution: '#C2374F',
     axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0'
+    controlBar: '#0A2C3C'
+};
+
+const initControlsData = {
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
+    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
+    enableRotate: false,
+    enablePan: true,
+    enabled: true,
+    keyPanSpeed: 50,
+    screenSpaceSpanning: false
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-const frustumSize = 45;
-
-const yCameraTarget = 20;
+const frustumSize = 20;
 
 const initCameraData = {
-    position: [0, yCameraTarget, 1],
-    up: [0, yCameraTarget, 1],
-    fov: 75,
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
     near: -100,
     far: 100,
     rotation: { order: 'XYZ' },
@@ -80,42 +84,30 @@ const initCameraData = {
     }
 };
 
-const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
-    enableRotate: false,
-    enablePan: true,
-    enabled: true,
-    keyPanSpeed: 50,
-    screenSpaceSpanning: false,
-    target: new THREE.Vector3(0, yCameraTarget, 0)
-};
-
-// percentage of sbcreen appBar will take (at the top)
+// percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 13;
 
 // (relative) font sizes (first in em's)
-const initFontSize = 1;
+const fontSize = 1;
 const controlBarFontSize = 1;
 
 const initAxesData = {
-    radius: 0.05,
-    color: initColors.axes,
+    radius: 0.01,
     show: true,
     showLabels: true,
     labelStyle
 };
 
+//------------------------------------------------------------------------
+
 export default function App() {
     const threeSceneRef = useRef(null);
-
-    // following passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
-    // this is a hack to get three scene drawn initially
     useEffect(() => {
         if (!threeCBs || !threeSceneRef) return;
+
         window.dispatchEvent(new Event('resize'));
     }, [threeCBs, threeSceneRef]);
 
@@ -125,33 +117,27 @@ export default function App() {
                 <Provider unstable_system={system}>
                     <ControlBar
                         height={controlBarHeight}
-                        fontSize={initFontSize * controlBarFontSize}
-                        padding='.5em'
+                        fontSize={fontSize * controlBarFontSize}
+                        padding='0em'
                     >
-                        <LogisticEquationInput
-                            bAtom={bAtom}
-                            kAtom={kAtom}
-                            boundsAtom={boundsAtom}
+                        <SepEquationInput
+                            xFuncStrAtom={xFuncStrAtom}
+                            yFuncStrAtom={yFuncStrAtom}
                             xLabelAtom={xLabelAtom}
                             yLabelAtom={yLabelAtom}
                         />
+                        <InitialPointInput initialPointAtom={initialPointAtom} />
                         <OptionsModal />
                     </ControlBar>
                 </Provider>
 
-                <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
+                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
                     <ThreeSceneComp
-                        ref={threeSceneRef}
                         initCameraData={initCameraData}
                         controlsData={initControlsData}
-                        clearColor={initColors.clearColor}
+                        ref={threeSceneRef}
                     >
-                        <GridAndOrigin
-                            gridQuadSize={initAxesData.length}
-                            gridShow={true}
-                            center={[0, 20]}
-                            originRadius={0.15}
-                        />
+                        <GridAndOrigin gridQuadSize={initAxesData.length} gridShow={true} />
                         <Axes2D
                             boundsAtom={boundsAtom}
                             radius={initAxesData.radius}
@@ -173,13 +159,7 @@ export default function App() {
                             funcAtom={funcAtom}
                             solutionCurveOptionsAtom={solutionCurveOptionsAtom}
                         />
-                        <Line
-                            point1Atom={linePoint1Atom}
-                            point2Atom={linePoint2Atom}
-                            labelAtom={lineLabelAtom}
-                            colorAtom={lineColorAtom}
-                        />
-                        <ClickablePlane clickPointAtom={initialPointAtom} />
+                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
                     <SaveStateComp decode={decode} encode={encode} atomArray={atomArray} />
                 </Main>
@@ -192,9 +172,11 @@ function OptionsModal() {
     const dialog = useDialogState();
     const tab = useTabState();
 
-    const cssRef = useRef({ backgroundColor: 'white', color: initColors.controlBar, width: '8em' });
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
 
-    const cssRef1 = useRef({
+    const cssRef = useRef({
         transform: 'none',
         top: '15%',
         left: 'auto',
@@ -203,22 +185,23 @@ function OptionsModal() {
         height: 250
     });
 
-    useEffect(() => {
-        window.dispatchEvent(new Event('resize'));
-    });
+    const cssRef1 = useRef({ width: '8em' });
+
+    const cssRef2 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
 
     return (
         <div zindex={-10}>
-            <DialogDisclosure style={cssRef.current} {...dialog}>
-                <span>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
+            <DialogDisclosure style={cssRef2.current} {...dialog}>
+                <span style={cssRef1.current}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
             </DialogDisclosure>
-            <Dialog {...dialog} style={cssRef1.current} aria-label='Welcome'>
+            <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Bounds</Tab>
-                        <Tab {...tab}>Solution Curve</Tab>
-                        <Tab {...tab}>Variables</Tab>
+                        <Tab {...tab}>Solution curve</Tab>
                     </TabList>
                     <TabPanel {...tab}>
                         <ArrowGridOptionsInput />
@@ -228,9 +211,6 @@ function OptionsModal() {
                     </TabPanel>
                     <TabPanel {...tab}>
                         <SolutionCurveOptionsInput />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <VariablesOptionsInput />
                     </TabPanel>
                 </>
             </Dialog>

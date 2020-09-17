@@ -1,20 +1,21 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
 import Input from './Input.jsx';
 import { round } from '../utils/BaseUtils.jsx';
 
-export default function InitialPointInput({
-    ipAtom,
-    xselector,
-    yselector,
-    visibleAtom = atom(true)
-}) {
-    const [initialPoint] = useAtom(ipAtom);
+const defaultVisibleAtom = atom(true);
 
-    const [, setXS] = useAtom(xselector);
-    const [, setYS] = useAtom(yselector);
+export default function InitialPointInput({ initialPointAtom, visibleAtom = defaultVisibleAtom }) {
+    const [initialPoint, setInitialPoint] = useAtom(initialPointAtom);
+
+    const setX = useCallback((newX) => setInitialPoint((old) => ({ ...old, x: newX })), [
+        setInitialPoint
+    ]);
+    const setY = useCallback((newY) => setInitialPoint((old) => ({ ...old, y: newY })), [
+        setInitialPoint
+    ]);
 
     const [visible] = useAtom(visibleAtom);
 
@@ -26,9 +27,9 @@ export default function InitialPointInput({
         <div style={cssRef.current}>
             <span>
                 <span>Initial Point: </span>
-                <Input initValue={round(initialPoint.x, 3)} size={8} onC={setXS} />
+                <Input initValue={round(initialPoint.x, 3)} size={8} onC={setX} />
                 <span> , </span>
-                <Input initValue={round(initialPoint.y, 3)} size={8} onC={setYS} />
+                <Input initValue={round(initialPoint.y, 3)} size={8} onC={setY} />
             </span>
         </div>
     );

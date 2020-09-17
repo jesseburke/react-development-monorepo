@@ -1,35 +1,32 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
 
-import { useAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import styles from './SepEquationInput.module.css';
 import classnames from 'classnames';
 
 import Input from './Input.jsx';
 
-import funcParser from '../utils/funcParser.jsx';
+const defaultXLabelAtom = atom('x');
+const defaultYLabelAtom = atom('y');
 
-export default React.memo(function SepEquationInput({ funcAtom, initXFuncStr, initYFuncStr }) {
-    const [xFuncStr, setXFuncStr] = useState(initXFuncStr);
-    const [yFuncStr, setYFuncStr] = useState(initYFuncStr);
+export default React.memo(function SepEquationInput({
+    xFuncStrAtom,
+    yFuncStrAtom,
+    xLabelAtom = defaultXLabelAtom,
+    yLabelAtom = defaultYLabelAtom
+}) {
+    const [xFuncStr, setXFuncStr] = useAtom(xFuncStrAtom);
+    const [yFuncStr, setYFuncStr] = useAtom(yFuncStrAtom);
+    const [xLabel] = useAtom(xLabelAtom);
+    const [yLabel] = useAtom(yLabelAtom);
 
-    const [func, setFunc] = useAtom(funcAtom);
-
-    const cssRef = useRef({ padding: '.25em' }, []);
+    const cssRef = useRef({ padding: '.05em' }, []);
     const cssRef2 = useRef({ paddingRight: '.5em' }, []);
     const cssRef3 = useRef({ padding: '1em 0em' }, []);
 
-    const xFuncInputCB = useCallback((str) => setXFuncStr(str), []);
-    const yFuncInputCB = useCallback((str) => setYFuncStr(str), []);
-
-    useEffect(() => {
-        if (!xFuncStr || !yFuncStr) return;
-
-        const xFunc = funcParser(xFuncStr);
-        const yFunc = funcParser(yFuncStr);
-
-        setFunc({ func: (x, y) => xFunc(x, 0) * yFunc(0, y) });
-    }, [xFuncStr, yFuncStr, setFunc]);
+    const xFuncInputCB = useCallback((str) => setXFuncStr(str), [setXFuncStr]);
+    const yFuncInputCB = useCallback((str) => setYFuncStr(str), [setYFuncStr]);
 
     return (
         <div
@@ -41,17 +38,18 @@ export default React.memo(function SepEquationInput({ funcAtom, initXFuncStr, in
             )}
         >
             <div style={cssRef3.current}>
-                dy/dx =<span style={cssRef.current}>h(y)</span>
-                <span style={cssRef.current}>g(x)</span>
+                d{yLabel}/d{xLabel} =<span style={cssRef.current}>h({yLabel})</span>
+                <span style={cssRef.current}>{'\u{00B7}'}</span>
+                <span style={cssRef.current}>g({xLabel})</span>
             </div>
             <div style={cssRef.current}>
                 <span style={cssRef2.current}>
-                    <span style={cssRef2.current}>h(y) = </span>
-                    <Input size={10} initValue={initYFuncStr} onC={yFuncInputCB} />
+                    <span style={cssRef2.current}>h({yLabel}) = </span>
+                    <Input size={10} initValue={yFuncStr} onC={yFuncInputCB} />
                 </span>
                 <span>
-                    <span css={cssRef2.current}>g(x) = </span>
-                    <Input size={10} initValue={initXFuncStr} onC={xFuncInputCB} />
+                    <span css={cssRef2.current}>g({xLabel}) = </span>
+                    <Input size={10} initValue={xFuncStr} onC={xFuncInputCB} />
                 </span>
             </div>
         </div>

@@ -10,38 +10,31 @@ import ArrowGridData from '../../data/ArrowGridData.jsx';
 import BoundsData from '../../data/BoundsData.jsx';
 import CurveData from '../../data/CurveData.jsx';
 
+import funcParser from '../../utils/funcParser.jsx';
+
 //------------------------------------------------------------------------
 //
 // initial constants
 
 const initArrowData = { density: 1, thickness: 1, length: 0.75, color: '#C2374F' };
 
-const initBounds = { xMin: -20, xMax: 20, yMin: 0, yMax: 40 };
+const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
-const initXLabel = 't';
+const initXLabel = 'x';
 
-const initYLabel = 'x';
+const initYLabel = 'y';
 
 const initialInitialPoint = { x: 2, y: 2 };
 
 const initSolutionCurveData = {
     color: '#C2374F',
     approxH: 0.1,
-    visible: true
+    visible: true,
+    width: 0.1
 };
 
-const initBVal = 10.0;
-const initKVal = 1.0;
-
-const initLineColor = '#3285ab';
-
-const lineLabelStyle = {
-    color: initLineColor,
-    padding: '.1em',
-    margin: '.5em',
-    padding: '.4em',
-    fontSize: '1.5em'
-};
+const initXFuncStr = 'sin(x)';
+const initYFuncStr = 'cos(y)';
 
 //------------------------------------------------------------------------
 //
@@ -53,9 +46,8 @@ export const yLabelAtom = atom(initYLabel);
 
 export const initialPointAtom = atom(initialInitialPoint);
 
-export const bAtom = atom(initBVal);
-
-export const kAtom = atom(initKVal);
+export const xFuncStrAtom = atom(initXFuncStr);
+export const yFuncStrAtom = atom(initYFuncStr);
 
 export const {
     atom: arrowGridOptionsAtom,
@@ -99,8 +91,8 @@ export const atomArray = [
     xLabelAtom,
     yLabelAtom,
     initialPointAtom,
-    bAtom,
-    kAtom
+    xFuncStrAtom,
+    yFuncStrAtom
 ];
 
 // should be pure function
@@ -112,8 +104,8 @@ export const encode = ([
     xLabel,
     yLabel,
     initialPoint,
-    b,
-    k
+    xFuncStr,
+    yFuncStr
 ]) => {
     const agoe = arrowGridOptionsEncode(arrowGridOptions);
 
@@ -121,7 +113,17 @@ export const encode = ([
 
     const scoe = solutionCurveOptionsEncode(solutionCurveOptions);
 
-    return [...agoe, ...be, ...scoe, xLabel, yLabel, initialPoint.x, initialPoint.y, b, k];
+    return [
+        ...agoe,
+        ...be,
+        ...scoe,
+        xLabel,
+        yLabel,
+        initialPoint.x,
+        initialPoint.y,
+        xFuncStr,
+        yFuncStr
+    ];
 };
 
 // this function expects an array in the form returned by encode,
@@ -142,8 +144,8 @@ export function decode(valueArray) {
         valueArray[n],
         valueArray[n + 1],
         { x: Number(valueArray[n + 2]), y: Number(valueArray[n + 3]) },
-        Number(valueArray[n + 4]),
-        Number(valueArray[n + 5])
+        valueArray[n + 4],
+        valueArray[n + 5]
     ];
 }
 
@@ -151,35 +153,9 @@ export function decode(valueArray) {
 //
 // derived atoms
 
-export const funcAtom = atom((get) => {
-    const k = get(kAtom);
-    const b = get(bAtom);
-    return { func: (x, y) => k * (1 - y / b) };
-});
-
-export const linePoint1Atom = atom((get) => {
-    const xMin = get(boundsAtom).xMin;
-    const b = get(bAtom);
-
-    return [xMin, b];
-});
-
-export const linePoint2Atom = atom((get) => {
-    const xMax = get(boundsAtom).xMax;
-    const b = get(bAtom);
-
-    return [xMax, b];
-});
-
-export const lineColorAtom = atom(initLineColor);
-
-export const lineLabelAtom = atom((get) => {
-    return {
-        pos: [initBounds.xMax - 5, get(bAtom) + 3, 0],
-        text: get(yLabelAtom) + '= ' + get(bAtom),
-        style: lineLabelStyle
-    };
-});
+export const funcAtom = atom((get) => ({
+    func: funcParser('(' + get(xFuncStrAtom) + ')*(' + get(yFuncStrAtom) + ')')
+}));
 
 //------------------------------------------------------------------------
 
