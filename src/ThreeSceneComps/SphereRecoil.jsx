@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 
-import { useAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
+
+const defaultVisibleAtom = atom(true);
 
 export default React.memo(function SphereTS({
     threeCBs,
@@ -10,7 +12,7 @@ export default React.memo(function SphereTS({
     color = '#0A2C3C',
     dragCB = null,
     dragPositionAtom = null,
-    visibleAtom
+    visibleAtom = defaultVisibleAtom
 }) {
     const [meshState, setMeshState] = useState();
 
