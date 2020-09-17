@@ -32,7 +32,8 @@ function Slider({
             />
             <br />
             <label style={css1.current} htmlFor='range_n'>
-                {label + ' = ' + value.toPrecision(precision)}
+                <span> {label + ' = '}</span>{' '}
+                <input type='text' onChange={cb} value={value} size={4} />
             </label>
         </div>
     );
