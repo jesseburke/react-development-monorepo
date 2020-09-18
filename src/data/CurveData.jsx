@@ -42,8 +42,6 @@ export default function CurveData(initData = {}) {
 
         const { color, approxH, visible, width } = data;
 
-        console.log('width is ', width);
-
         const colorCB = useCallback(
             (e) => setData((oldData) => ({ ...oldData, color: e.target.value })),
             [setData]

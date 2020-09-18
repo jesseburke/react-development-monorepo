@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import styles from './base_styles.module.css';
 
 import Input from '../../components/Input.jsx';
+import TexDisplayComp from '../../components/TexDisplayComp.jsx';
 
 import ArrowGridData from '../../data/ArrowGridData.jsx';
 import BoundsData from '../../data/BoundsData.jsx';
@@ -12,6 +13,7 @@ import CurveData from '../../data/CurveData.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
 import { round } from '../../utils/BaseUtils.jsx';
+
 //------------------------------------------------------------------------
 //
 // initial constants
@@ -33,8 +35,8 @@ const initSolutionCurveData = {
     width: 0.1
 };
 
-const initXFuncStr = 'sin(x)';
-const initYFuncStr = 'cos(y)';
+const initPXFuncStr = '4*x/(x^2+1)';
+const initQXFuncStr = '12*x/(x^2+1)';
 
 //------------------------------------------------------------------------
 //
@@ -46,8 +48,8 @@ export const yLabelAtom = atom(initYLabel);
 
 export const initialPointAtom = atom(initialInitialPoint);
 
-export const xFuncStrAtom = atom(initXFuncStr);
-export const yFuncStrAtom = atom(initYFuncStr);
+export const pxFuncStrAtom = atom(initPXFuncStr);
+export const qxFuncStrAtom = atom(initQXFuncStr);
 
 export const {
     atom: arrowGridOptionsAtom,
@@ -91,8 +93,8 @@ export const atomArray = [
     xLabelAtom,
     yLabelAtom,
     initialPointAtom,
-    xFuncStrAtom,
-    yFuncStrAtom
+    pxFuncStrAtom,
+    qxFuncStrAtom
 ];
 
 // should be pure function
@@ -104,8 +106,8 @@ export const encode = ([
     xLabel,
     yLabel,
     initialPoint,
-    xFuncStr,
-    yFuncStr
+    pxFuncStr,
+    qxFuncStr
 ]) => {
     const agoe = arrowGridOptionsEncode(arrowGridOptions);
 
@@ -121,8 +123,8 @@ export const encode = ([
         yLabel,
         initialPoint.x,
         initialPoint.y,
-        xFuncStr,
-        yFuncStr
+        pxFuncStr,
+        qxFuncStr
     ];
 };
 
@@ -154,48 +156,50 @@ export function decode(valueArray) {
 // derived atoms
 
 export const funcAtom = atom((get) => ({
-    func: funcParser('(' + get(xFuncStrAtom) + ')*(' + get(yFuncStrAtom) + ')')
+    func: funcParser('-(' + get(pxFuncStrAtom) + ')*y + (' + get(qxFuncStrAtom) + ')')
 }));
 
 //------------------------------------------------------------------------
 //
 // input components
 
-export const SepEquationInput = React.memo(function SepEquationI({}) {
-    const [xFuncStr, setXFuncStr] = useAtom(xFuncStrAtom);
-    const [yFuncStr, setYFuncStr] = useAtom(yFuncStrAtom);
-    const [xLabel] = useAtom(xLabelAtom);
-    const [yLabel] = useAtom(yLabelAtom);
+const LatexSepEquation = '\\frac{dy}{dx} + p(x)y = q(x)';
 
-    const cssRef = useRef({ padding: '.05em' }, []);
-    const cssRef2 = useRef({ paddingRight: '.5em' }, []);
-    const cssRef3 = useRef({ padding: '1em 0em' }, []);
+export const LinearEquationInput = React.memo(function LinearEquationI({}) {
+    const [pxFuncStr, setPXFuncStr] = useAtom(pxFuncStrAtom);
+    const [qxFuncStr, setQXFuncStr] = useAtom(qxFuncStrAtom);
 
-    const xFuncInputCB = useCallback((str) => setXFuncStr(str), [setXFuncStr]);
-    const yFuncInputCB = useCallback((str) => setYFuncStr(str), [setYFuncStr]);
+    const pxCB = useCallback((newStr) => setPXFuncStr(newStr), []);
+
+    const qxCB = useCallback((newStr) => setQXFuncStr(newStr), []);
+
+    const css2 = useRef({ padding: '.25em 0', textAlign: 'center' });
+
+    const css3 = useRef({
+        margin: '1em',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        padding: '.5em 2em'
+    });
+
+    const css4 = useRef({ paddingRight: '1em' });
+
+    const css5 = useRef({ paddingTop: '.5em' });
 
     return (
-        <div
-            className={classnames(
-                styles['center-flex-column'],
-                styles['right-border'],
-                styles['large-right-padding'],
-                styles['med-top-bottom-padding']
-            )}
-        >
-            <div style={cssRef3.current}>
-                d{yLabel}/d{xLabel} =<span style={cssRef.current}>h({yLabel})</span>
-                <span style={cssRef.current}>{'\u{00B7}'}</span>
-                <span style={cssRef.current}>q({xLabel})</span>
-            </div>
-            <div style={cssRef.current}>
-                <span style={cssRef2.current}>
-                    <span style={cssRef2.current}>h({yLabel}) = </span>
-                    <Input size={10} initValue={yFuncStr} onC={yFuncInputCB} />
+        <div style={css3.current}>
+            <TexDisplayComp userCss={css2.current} str={LatexSepEquation} />
+            <div style={css5.current}>
+                <span style={css4.current}>
+                    <span style={css4.current}>p(x) = </span>
+                    <Input size={15} initValue={pxFuncStr} onC={pxCB} />
                 </span>
                 <span>
-                    <span css={cssRef2.current}>g({xLabel}) = </span>
-                    <Input size={10} initValue={xFuncStr} onC={xFuncInputCB} />
+                    <span style={css4.current}>g(x) = </span>
+                    <Input size={15} initValue={qxFuncStr} onC={qxCB} />
                 </span>
             </div>
         </div>

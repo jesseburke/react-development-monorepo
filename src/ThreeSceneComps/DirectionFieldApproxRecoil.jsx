@@ -21,11 +21,11 @@ export default function DirectionFieldApprox({
 
     const [meshState, setMeshState] = useState();
 
-    const [initialPt] = useAtom(initialPointAtom);
+    const initialPt = useAtom(initialPointAtom)[0];
 
-    const [func] = useAtom(funcAtom);
+    const func = useAtom(funcAtom)[0];
 
-    const [bounds] = useAtom(boundsAtom);
+    const bounds = useAtom(boundsAtom)[0];
 
     const { visible, color, approxH, width } = useAtom(solutionCurveOptionsAtom)[0];
 
@@ -76,12 +76,12 @@ export default function DirectionFieldApprox({
         };
     }, [threeCBs, initialPt, bounds, func, width, approxH, mat, radius, visible]);
 
-    return (
+    return visible ? (
         <Sphere
             threeCBs={threeCBs}
             color={color}
             dragPositionAtom={initialPointAtom}
-            radius={0.25}
+            radius={(0.25 * width) / 0.1}
         />
-    );
+    ) : null;
 }

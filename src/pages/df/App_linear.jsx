@@ -2,26 +2,44 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
+import { atom, useAtom, Provider as JProvider } from 'jotai';
+
+import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Provider } from 'reakit/Provider';
+import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
+import * as system from 'reakit-system-bootstrap';
+
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
-import FunctionInput from '../../components/FunctionInput.jsx';
-import funcParser from '../../utils/funcParser.jsx';
-import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
-import Input from '../../components/Input.jsx';
-import ArrowGridOptions from '../../components/ArrowGridOptions.jsx';
+import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import TexDisplayComp from '../../components/TexDisplayComp.jsx';
+import SaveStateComp from '../../components/SaveStateComp.jsx';
 
-import GridAndOriginTS from '../../ThreeSceneComps/GridAndOriginTS.jsx';
-import Axes2DTS from '../../ThreeSceneComps/Axes2DTS.jsx';
-import FunctionGraph2DTS from '../../ThreeSceneComps/FunctionGraph2DTS.jsx';
-import ArrowGridTS from '../../ThreeSceneComps/ArrowGridTS.jsx';
-import DirectionFieldApproxTS from '../../ThreeSceneComps/DirectionFieldApproxTS.jsx';
-
-import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
+import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
+import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
+import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
+import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
+
+import {
+    decode,
+    encode,
+    atomArray,
+    arrowGridOptionsAtom,
+    ArrowGridOptionsInput,
+    boundsAtom,
+    BoundsInput,
+    initialPointAtom,
+    InitialPointInput,
+    LinearEquationInput,
+    funcAtom,
+    xLabelAtom,
+    yLabelAtom,
+    solutionCurveOptionsAtom,
+    SolutionCurveOptionsInput
+} from './App_linear_data.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -33,17 +51,10 @@ const initColors = {
     solution: '#C2374F',
     firstPt: '#C2374F',
     secPt: '#C2374F',
-    testFunc: '#E16962', //#DBBBB0',
     axes: '#0A2C3C',
     controlBar: '#0A2C3C',
     clearColor: '#f0f0f0'
 };
-
-const xMin = -20,
-    xMax = 20;
-const yMin = -20,
-    yMax = 20;
-const initBounds = { xMin, xMax, yMin, yMax };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
 const frustumSize = 20;
@@ -83,17 +94,6 @@ const initAxesData = {
     labelStyle
 };
 
-const initGridData = {
-    show: true,
-    originColor: 0x3f405c
-};
-
-const initArrowGridData = {
-    gridSqSize: 0.5,
-    color: initColors.arrows,
-    arrowLength: 0.75
-};
-
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
 const controlBarHeight = 13;
@@ -102,310 +102,122 @@ const controlBarHeight = 13;
 const initFontSize = 1;
 const controlBarFontSize = 1;
 
-const solutionMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(initColors.solution),
-    side: THREE.FrontSide
-});
-
-solutionMaterial.transparent = true;
-solutionMaterial.opacity = 0.6;
-
-const solutionCurveRadius = 0.1;
-
-const pointMaterial = solutionMaterial.clone();
-pointMaterial.transparent = false;
-pointMaterial.opacity = 0.8;
-
-const testFuncMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(initColors.testFunc),
-    side: THREE.FrontSide
-});
-
-testFuncMaterial.transparent = true;
-testFuncMaterial.opacity = 0.6;
-
-const initApproxHValue = 0.1;
-
-const LatexSepEquation = '\\frac{dy}{dx} + p(x)y = q(x)';
-
-const initPXFuncStr = '4*x/(x^2+1)';
-const initPXFunc = funcParser(initPXFuncStr);
-
-const initQXFuncStr = '12*x/(x^2+1)';
-const initQXFunc = funcParser(initQXFuncStr);
-
-const initTestFuncStr = 'x^2';
-const initTestFunc = funcParser(initTestFuncStr);
-
-const initialInitialPt = [2, 2];
-
 //------------------------------------------------------------------------
 
 export default function App() {
-    const [arrowGridData, setArrowGridData] = useState(initArrowGridData);
-
-    const [bounds, setBounds] = useState(initBounds);
-
-    const [pxFunc, setPXFunc] = useState({ func: initPXFunc });
-
-    const [qxFunc, setQXFunc] = useState({ func: initQXFunc });
-
-    const [controlsData, setControlsData] = useState(initControlsData);
-
-    const [initialPt, setInitialPt] = useState(initialInitialPt);
-
-    const [meshArray, setMeshArray] = useState(null);
-
-    const [approxH, setApproxH] = useState(initApproxHValue);
-
-    const [testFunc, setTestFunc] = useState({ func: initTestFunc });
-
-    const [colors, setColors] = useState(initColors);
-
-    const [func, setFunc] = useState({
-        func: (x, y) => -pxFunc.func(x, 0) * y + qxFunc.func(x, 0)
-    });
-
-    useEffect(() => {
-        setFunc({ func: (x, y) => -pxFunc.func(x, 0) * y + qxFunc.func(x, 0) });
-    }, [pxFunc, qxFunc]);
-
     const threeSceneRef = useRef(null);
-
-    // following will be passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
-    //-------------------------------------------------------------------------
-    //
-    // make the mesh for the initial point
-
+    // following is hacky way to get three displayed on render
     useEffect(() => {
-        if (!threeCBs) return;
+        if (!threeCBs || !threeSceneRef) return;
 
-        const geometry = new THREE.SphereBufferGeometry(solutionCurveRadius * 2, 15, 15);
-        const material = new THREE.MeshBasicMaterial({ color: initColors.solution });
-
-        const mesh = new THREE.Mesh(geometry, material)
-            .translateX(initialInitialPt[0])
-            .translateY(initialInitialPt[1]);
-
-        threeCBs.add(mesh);
-        setMeshArray([mesh]);
-
-        return () => {
-            if (mesh) threeCBs.remove(mesh);
-            geometry.dispose();
-            material.dispose();
-        };
-    }, [threeCBs]);
-
-    //-------------------------------------------------------------------------
-    //
-    // make initial condition point draggable
-
-    // in this case there is no argument, because we know what is being dragged
-    const dragCB = useCallback(() => {
-        const vec = new THREE.Vector3();
-
-        // this will be where new position is stored
-        meshArray[0].getWorldPosition(vec);
-
-        setInitialPt([vec.x, vec.y]);
-    }, [meshArray]);
-
-    useDraggableMeshArray({ meshArray, threeCBs, dragCB, dragendCB: dragCB });
-
-    // change initial point mesh if initialPoint changes
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        if (!meshArray || !initialPt) return;
-
-        let vec = new THREE.Vector3();
-
-        meshArray[0].getWorldPosition(vec);
-
-        const [d1, e1] = [vec.x - initialPt[0], vec.y - initialPt[1]];
-
-        if (d1 != 0) {
-            meshArray[0].translateX(-d1);
-        }
-        if (e1 != 0) {
-            meshArray[0].translateY(-e1);
-        }
-    }, [threeCBs, meshArray, initialPt]);
-
-    const clickCB = useCallback(
-        (pt) => {
-            // if user clicks too close to boundary, don't want to deal with it
-            if (
-                pt.x > bounds.xMax ||
-                pt.x < bounds.xMin ||
-                pt.y > bounds.yMax ||
-                pt.y < bounds.yMin
-            ) {
-                setInitialPt(initialInitialPt);
-                return;
-            }
-
-            setInitialPt([pt.x, pt.y]);
-        },
-        [bounds]
-    );
-
-    //------------------------------------------------------------------------
-    //
-    // handles input for p(x) and q(x)
-
-    const pxFuncInputCB = useCallback(
-        (newPXFuncStr) => setPXFunc({ func: funcParser(newPXFuncStr) }),
-        []
-    );
-
-    const qxFuncInputCB = useCallback(
-        (newQXFuncStr) => setQXFunc({ func: funcParser(newQXFuncStr) }),
-        []
-    );
-
-    const testFuncInputCB = useCallback(
-        (newFunc) => {
-            setTestFunc({ func: newFunc });
-        },
-        [testFunc]
-    );
-
-    const css1 = useRef({
-        margin: 0,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        padding: '.5em 1em',
-        borderRight: '1px solid',
-        flex: 5
-    });
-
-    const css2 = useRef({ padding: '.25em 0', textAlign: 'center' });
-
-    const css3 = useRef({
-        margin: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        padding: '.5em 1em',
-        borderRight: '1px solid',
-        flex: 4
-    });
-
-    const css4 = useRef({ paddingRight: '1em' });
-
-    const css5 = useRef({ paddingTop: '.5em' });
-
-    const css6 = useRef({
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 5,
-        padding: '.5em 1em'
-    });
+        window.dispatchEvent(new Event('resize'));
+    }, [threeCBs, threeSceneRef]);
 
     return (
-        <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fonts}>
-            <ControlBar
-                height={controlBarHeight}
-                fontSize={initFontSize * controlBarFontSize}
-                padding='.5em'
-            >
-                <div style={css1.current}>
-                    <span style={css2.current}>Test Function</span>
-                    <div style={{ padding: '0em' }}>
-                        <FunctionInput
-                            onChangeFunc={testFuncInputCB}
-                            initFuncStr={initTestFuncStr}
-                            totalWidth='12em'
-                            inputSize={10}
-                            leftSideOfEquation={'\u{00177}(x) ='}
+        <JProvider>
+            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
+                <Provider unstable_system={system}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={initFontSize * controlBarFontSize}
+                        padding='.5em'
+                    >
+                        <LinearEquationInput />
+                        <InitialPointInput />
+                        <OptionsModal />
+                    </ControlBar>
+                </Provider>
+
+                <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
+                    <ThreeSceneComp
+                        ref={threeSceneRef}
+                        initCameraData={initCameraData}
+                        controlsData={initControlsData}
+                        clearColor={initColors.clearColor}
+                    >
+                        <GridAndOrigin
+                            gridQuadSize={initAxesData.length}
+                            gridShow={true}
+                            originRadius={0}
                         />
-                    </div>
-                </div>
-
-                <div style={css3.current}>
-                    <TexDisplayComp userCss={css2.current} str={LatexSepEquation} />
-                    <div style={css5.current}>
-                        <span style={css4.current}>
-                            <span style={css4.current}>p(x) = </span>
-                            <Input size={10} initValue={initPXFuncStr} onC={pxFuncInputCB} />
-                        </span>
-                        <span>
-                            <span style={css4.current}>g(x) = </span>
-                            <Input size={10} initValue={initQXFuncStr} onC={qxFuncInputCB} />
-                        </span>
-                    </div>
-                </div>
-
-                <ArrowGridOptions
-                    userCss={css6.current}
-                    initDensity={1 / arrowGridData.gridSqSize}
-                    initLength={arrowGridData.arrowLength}
-                    initApproxH={approxH}
-                    densityCB={useCallback(
-                        (val) =>
-                            setArrowGridData((agd) => ({ ...agd, gridSqSize: Number(1 / val) })),
-                        []
-                    )}
-                    lengthCB={useCallback(
-                        (val) => setArrowGridData((agd) => ({ ...agd, arrowLength: Number(val) })),
-                        []
-                    )}
-                    approxHCB={useCallback((val) => setApproxH(Number(val)), [])}
-                />
-            </ControlBar>
-
-            <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
-                <ThreeSceneComp
-                    ref={threeSceneRef}
-                    initCameraData={initCameraData}
-                    controlsData={controlsData}
-                    clearColor={initColors.clearColor}
-                >
-                    <GridAndOriginTS
-                        gridQuadSize={initAxesData.length}
-                        gridShow={true}
-                        originRadius={0}
-                    />
-                    <Axes2DTS
-                        bounds={bounds}
-                        radius={initAxesData.radius}
-                        show={initAxesData.show}
-                        showLabels={initAxesData.showLabels}
-                        labelStyle={labelStyle}
-                        yLabel='t'
-                        color={initColors.axes}
-                    />
-                    <FunctionGraph2DTS
-                        func={testFunc.func}
-                        bounds={bounds}
-                        color={initColors.testFunc}
-                    />
-                    <ArrowGridTS
-                        func={func.func}
-                        bounds={bounds}
-                        arrowDensity={1 / arrowGridData.gridSqSize}
-                        arrowLength={arrowGridData.arrowLength}
-                        color={colors.arrows}
-                    />
-                    <DirectionFieldApproxTS
-                        color={initColors.solution}
-                        initialPt={initialPt}
-                        bounds={bounds}
-                        func={func.func}
-                        approxH={approxH}
-                    />
-                </ThreeSceneComp>
-                <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} />
-            </Main>
-        </FullScreenBaseComponent>
+                        <Axes2D
+                            boundsAtom={boundsAtom}
+                            radius={initAxesData.radius}
+                            show={initAxesData.show}
+                            showLabels={initAxesData.showLabels}
+                            labelStyle={labelStyle}
+                            color={initColors.axes}
+                            xLabelAtom={xLabelAtom}
+                            yLabelAtom={yLabelAtom}
+                        />
+                        <ArrowGrid
+                            funcAtom={funcAtom}
+                            boundsAtom={boundsAtom}
+                            arrowGridOptionsAtom={arrowGridOptionsAtom}
+                        />
+                        <DirectionFieldApprox
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
+                            funcAtom={funcAtom}
+                            solutionCurveOptionsAtom={solutionCurveOptionsAtom}
+                        />
+                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
+                    </ThreeSceneComp>
+                    <SaveStateComp decode={decode} encode={encode} atomArray={atomArray} />
+                </Main>
+            </FullScreenBaseComponent>
+        </JProvider>
     );
 }
+
+const OptionsModal = React.memo(() => {
+    const dialog = useDialogState();
+    const tab = useTabState();
+
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
+
+    const cssRef = useRef({
+        transform: 'none',
+        top: '15%',
+        left: 'auto',
+        right: 20,
+        width: 400,
+        height: 250
+    });
+
+    const cssRef1 = useRef({ width: '8em' });
+
+    const cssRef2 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
+
+    return (
+        <div zindex={-10}>
+            <DialogDisclosure style={cssRef2.current} {...dialog}>
+                <span style={cssRef1.current}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
+            </DialogDisclosure>
+            <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
+                <>
+                    <TabList {...tab} aria-label='Option tabs'>
+                        <Tab {...tab}>Arrow grid</Tab>
+                        <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Solution curve</Tab>
+                    </TabList>
+                    <TabPanel {...tab}>
+                        <ArrowGridOptionsInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <BoundsInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <SolutionCurveOptionsInput />
+                    </TabPanel>
+                </>
+            </Dialog>
+        </div>
+    );
+});

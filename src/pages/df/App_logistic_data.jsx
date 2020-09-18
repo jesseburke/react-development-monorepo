@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import classnames from 'classnames';
-import styles from './App_simple_sep.module.css';
+import styles from './base_styles.module.css';
 
 import Input from '../../components/Input.jsx';
 

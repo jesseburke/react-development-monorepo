@@ -13,9 +13,8 @@ import * as system from 'reakit-system-bootstrap';
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
-import SepEquationInput from '../../components/SepEquationInput.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
-import InitialPointInput from '../../components/InitialPointInput.jsx';
+//import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import SaveStateComp from '../../components/SaveStateComp.jsx';
 
@@ -35,14 +34,13 @@ import {
     boundsAtom,
     BoundsInput,
     initialPointAtom,
+    InitialPointInput,
     funcAtom,
-    xFuncStrAtom,
-    yFuncStrAtom,
     xLabelAtom,
     yLabelAtom,
     solutionCurveOptionsAtom,
     SolutionCurveOptionsInput,
-    VariablesOptionsInput
+    SepEquationInput
 } from './App_sep_data.jsx';
 
 //------------------------------------------------------------------------
@@ -120,13 +118,8 @@ export default function App() {
                         fontSize={fontSize * controlBarFontSize}
                         padding='0em'
                     >
-                        <SepEquationInput
-                            xFuncStrAtom={xFuncStrAtom}
-                            yFuncStrAtom={yFuncStrAtom}
-                            xLabelAtom={xLabelAtom}
-                            yLabelAtom={yLabelAtom}
-                        />
-                        <InitialPointInput initialPointAtom={initialPointAtom} />
+                        <SepEquationInput />
+                        <InitialPointInput />
                         <OptionsModal />
                     </ControlBar>
                 </Provider>
