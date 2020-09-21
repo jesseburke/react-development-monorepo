@@ -8,9 +8,6 @@ import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import TexDisplayCompR from '../../components/TexDisplayCompRecoil.jsx';
-import TexDisplayComp from '../../components/TexDisplayComp.jsx';
-import InitialCondsComp from '../../components/InitialCondsComp.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOriginRecoil.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
@@ -18,7 +15,6 @@ import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
 import FunctionGraph2D from '../../ThreeSceneComps/FunctionGraph2DRecoil.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
-import { processNum } from '../../utils/BaseUtils.jsx';
 
 import {
     decode,
@@ -40,7 +36,9 @@ import {
     yLabelAtom,
     texEquationAtom,
     solutionCurveOptionsAtom,
-    SolutionCurveOptionsInput
+    SolutionCurveOptionsInput,
+    SolutionDisplayComp,
+    TitleEquationComp
 } from './App_sec_order_data.jsx';
 
 //------------------------------------------------------------------------
@@ -99,34 +97,15 @@ const initAxesData = {
 
 // percentage of sbcreen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
-const controlBarHeight = 15;
+const controlBarHeight = 17;
 
 // (relative) font sizes (first in em's)
 const initFontSize = 1;
 const controlBarFontSize = 0.85;
 
-const initAVal = 0.2;
-const initBVal = 3.0;
-
-const initInitConds = [
-    [4, 7],
-    [7, 5]
-];
-
-const initPrecision = 4;
-
 //------------------------------------------------------------------------
 
 export default function App() {
-    const [aVal, setAVal] = useState(processNum(initAVal, initPrecision));
-
-    // this init value should be between the min and max for b
-    const [bVal, setBVal] = useState(processNum(initBVal, initPrecision));
-
-    const [initialConds, setInitialConds] = useState(initInitConds);
-
-    //----------------------------------------
-
     const threeSceneRef = useRef(null);
 
     // following passed to components that need to draw
@@ -139,99 +118,13 @@ export default function App() {
         window.dispatchEvent(new Event('resize'));
     }, [threeCBs, threeSceneRef]);
 
-    const css1 = useRef(
-        {
-            margin: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            padding: '.5em .5em',
-            fontSize: '1.25em',
-            borderRight: '1px solid',
-            flex: 5
-        },
-        []
-    );
-
-    const css2 = useRef({ padding: '.25em 0', fontSize: '1.25em' }, []);
-
-    const css3 = useRef(
-        {
-            margin: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '0em 2em'
-        },
-        []
-    );
-
-    const css4 = useRef({ padding: '.25em 0', textAlign: 'center' }, []);
-
-    const css6 = useRef(
-        {
-            margin: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '0em 2em',
-            flex: 5,
-            height: '100%',
-            borderRight: '1px solid'
-        },
-        []
-    );
-
-    const css7 = useRef(
-        {
-            padding: '.5em 0',
-            fontSize: '1.00em',
-            whiteSpace: 'nowrap'
-        },
-        []
-    );
-
     return (
         <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <ControlBar
-                    height={controlBarHeight}
-                    fontSize={initFontSize * controlBarFontSize}
-                    padding='.5em'
-                >
-                    <div style={css1.current}>
-                        <div style={css3.current}>
-                            <div style={css4.current}>
-                                2nd order linear, w/ constant coefficients
-                            </div>
-                            <div style={{ whiteSpace: 'nowrap' }}>
-                                <TexDisplayCompR userCss={css2.current} strAtom={texEquationAtom} />
-                            </div>
-                        </div>
-
-                        <CoefficientInput />
-                    </div>
-
-                    <div style={css6.current}>
-                        <div style={css4.current}>
-                            <TexDisplayComp
-                                userCss={css2.current}
-                                str={`a^2 - 4b = ${
-                                    processNum(
-                                        Number.parseFloat(aVal.str) * Number.parseFloat(aVal.str) -
-                                            4 * Number.parseFloat(bVal.str),
-                                        initPrecision
-                                    ).texStr
-                                }`}
-                            />
-                        </div>
-                        <div style={css7.current}>
-                            <TexDisplayCompR userCss={css2.current} strAtom={solnTexStrAtom} />
-                        </div>
-                    </div>
+                <ControlBar height={controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
+                    <TitleEquationComp />
+                    <CoefficientInput />
+                    <SolutionDisplayComp />
                     <InitialPointsInput />
                 </ControlBar>
 

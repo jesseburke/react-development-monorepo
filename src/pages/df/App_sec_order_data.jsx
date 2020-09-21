@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import styles from './base_styles.module.css';
 
 import Input from '../../components/Input.jsx';
-import TexDisplayComp from '../../components/TexDisplayComp.jsx';
+import TexDisplayCompR from '../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../components/Slider.jsx';
 
 import BoundsData from '../../data/BoundsData.jsx';
@@ -171,9 +171,7 @@ export const bStrAtom = atom((get) => processNum(get(bValAtom), initPrecision).s
 //
 // input components
 
-// this isn't ideal to build with because the display is fixed, e.g., the 'Initial Point: '
-
-const InitialPointInput = React.memo(({ ipAtom }) => {
+const useInitialPoint = (ipAtom) => {
     const [initialPoint, setInitialPoint] = useAtom(ipAtom);
 
     const setX = useCallback((newX) => setInitialPoint((old) => ({ ...old, x: Number(newX) })), [
@@ -183,38 +181,35 @@ const InitialPointInput = React.memo(({ ipAtom }) => {
         setInitialPoint
     ]);
 
-    const cssRef = useRef({ paddingRight: '5em' }, []);
-
-    return (
-        <div style={cssRef.current}>
-            <span>
-                <span>Initial Point: </span>
-                <Input initValue={round(initialPoint.x, 3)} size={8} onC={setX} />
-                <span> , </span>
-                <Input initValue={round(initialPoint.y, 3)} size={8} onC={setY} />
-            </span>
-        </div>
-    );
-});
-
-const useInitialPoint = React.memo(({ ipAtom }) => {
-    const [initialPoint, setInitialPoint] = useAtom(ipAtom);
-
-    const setX = useCallback((newX) => setInitialPoint((old) => ({ ...old, x: Number(newX) })), [
-        setInitialPoint
-    ]);
-    const setY = useCallback((newY) => setInitialPoint((old) => ({ ...old, y: Number(newY) })), [
-        setInitialPoint
-    ]);
-
-    return [initialPoint, setX, setY];
-});
+    return { initialPoint, setX, setY };
+};
 
 export const InitialPointsInput = React.memo(({}) => {
+    const { initialPoint: ip1, setX: ip1setX, setY: ip1setY } = useInitialPoint(initialPoint1Atom);
+    const { initialPoint: ip2, setX: ip2setX, setY: ip2setY } = useInitialPoint(initialPoint2Atom);
     return (
-        <div>
-            <InitialPointInput ipAtom={initialPoint1Atom} />
-            <InitialPointInput ipAtom={initialPoint2Atom} />
+        <div
+            className={classnames(
+                styles['center-flex-column'],
+                styles['zero-large-top-side-padding'],
+                styles['font-size-med-large']
+            )}
+        >
+            <fieldset>
+                <legend>Initial Conditions</legend>
+
+                <div className={classnames(styles['med-vlarge-top-side-padding'])}>
+                    <span>y(</span>
+                    <Input initValue={ip1.x} onC={ip1setX} size={4} /> <span>) = </span>
+                    <Input initValue={ip1.y} onC={ip1setY} size={4} />
+                </div>
+                <div className={classnames(styles['med-vlarge-top-side-padding'])}>
+                    <span>{'\u{1e8f}'}(</span>
+                    <Input initValue={ip2.x} onC={ip2setX} size={4} />
+                    <span>) = </span>
+                    <Input initValue={ip2.y} onC={ip2setY} size={4} />
+                </div>
+            </fieldset>
         </div>
     );
 });
@@ -249,6 +244,59 @@ export const CoefficientInput = React.memo(function CoeffInput({}) {
                 max={(aVal * aVal + abBound) / 4}
                 precision={sliderPrecision}
             />
+        </div>
+    );
+});
+
+export const TitleEquationComp = React.memo(({}) => {
+    return (
+        <div
+            className={classnames(
+                styles['center-flex-column'],
+                styles['zero-large-top-side-padding'],
+                styles['font-size-med-large']
+            )}
+        >
+            <div
+                className={classnames(
+                    styles['small-zero-top-side-padding'],
+                    styles['text-align-center']
+                )}
+            >
+                2nd order linear, w/ constant coefficients
+            </div>
+            <div
+                className={classnames(
+                    styles['white-space-no-wrap'],
+                    styles['small-zero-top-side-padding'],
+                    styles['font-size-med-large']
+                )}
+            >
+                <TexDisplayCompR strAtom={texEquationAtom} />
+            </div>
+        </div>
+    );
+});
+
+export const SolutionDisplayComp = React.memo(({}) => {
+    return (
+        <div
+            className={classnames(
+                styles['med-zero-top-side-padding'],
+                styles['center-flex-column'],
+                styles['font-size-med-large'],
+                styles['fixed-width-twelve-em']
+            )}
+        >
+            <div>Solution:</div>
+            <div
+                className={classnames(
+                    styles['white-space-no-wrap'],
+                    styles['small-zero-top-side-padding']
+                )}
+            >
+                <TexDisplayCompR strAtom={solnTexStrAtom} />
+            </div>
         </div>
     );
 });

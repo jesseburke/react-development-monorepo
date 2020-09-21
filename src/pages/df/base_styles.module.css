@@ -18,22 +18,65 @@
     text-align: center;
 }
 
-.med-padding {
+.fixed-width-twelve-em {
+    width: 12em;
+}
+
+.small-padding {
     padding: .25em;
+}
+.med-padding {
+    padding: .5em;
 }
 
 .large-padding {
     padding: 2em;
 }
 
-
 .border-right {
     border-right: 1px solid;
+}
+
+.border-left {
+    border-left: 1px solid;
 }
 
 .med-margin {
     margin: 1em;
 }
+
+.med-large-top-side-padding {
+    padding: .5em 1em;
+}
+
+.med-vlarge-top-side-padding {
+    padding: .5em 2.5em;
+}
+
+.zero-large-top-side-padding {
+    padding: 0em 1em;
+}
+
+.small-zero-top-side-padding {
+    padding: .25em 0em;
+}
+
+.med-zero-top-side-padding {
+    padding: .5em 0em;
+}
+
+.font-size-med-large {
+    font-size: 1.25em;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.white-space-no-wrap {
+    white-space: no-wrap;
+}
+
 
 /* 2 = med-padding, 5 =   { */
 /*             margin: 0, */

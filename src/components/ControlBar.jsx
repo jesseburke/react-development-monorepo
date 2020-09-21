@@ -8,7 +8,7 @@ function controlBar({
     children,
     height,
     fontSize,
-    padding = '1em',
+    padding = '.5em',
     userCss = {},
     backgroundColor
 }) {
