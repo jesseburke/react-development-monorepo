@@ -6,10 +6,12 @@ import * as THREE from 'three';
 
 const defaultVisibleAtom = atom(true);
 
+const defaultColorAtom = atom('#0A2C3C');
+
 export default React.memo(function SphereTS({
     threeCBs,
     radius = 2,
-    color = '#0A2C3C',
+    colorAtom = defaultColorAtom,
     dragCB = null,
     dragPositionAtom = null,
     visibleAtom = defaultVisibleAtom
@@ -19,6 +21,8 @@ export default React.memo(function SphereTS({
     const [position, setPosition] = useAtom(dragPositionAtom);
 
     const [visible] = useAtom(visibleAtom);
+
+    const color = useAtom(colorAtom)[0];
 
     //------------------------------------------------------------------------
     //

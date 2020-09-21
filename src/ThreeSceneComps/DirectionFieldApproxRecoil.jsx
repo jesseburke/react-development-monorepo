@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 
-import { useAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -28,6 +28,8 @@ export default function DirectionFieldApprox({
     const bounds = useAtom(boundsAtom)[0];
 
     const { visible, color, approxH, width } = useAtom(solutionCurveOptionsAtom)[0];
+
+    const sphereColorAtom = atom((get) => get(solutionCurveOptionsAtom).color);
 
     useEffect(() => {
         setMat(
@@ -79,7 +81,7 @@ export default function DirectionFieldApprox({
     return visible ? (
         <Sphere
             threeCBs={threeCBs}
-            color={color}
+            colorAtom={sphereColorAtom}
             dragPositionAtom={initialPointAtom}
             radius={(0.25 * width) / 0.1}
         />
