@@ -1,6 +1,10 @@
 import * as React from 'react';
 
+import { atom, useAtom } from 'jotai';
+
 import * as THREE from 'three';
+
+import GridGeometry from '../graphics/GridGeometry.js';
 
 export default React.memo(function GridAndOriginTS({
     threeCBs,
@@ -12,16 +16,12 @@ export default React.memo(function GridAndOriginTS({
     originRadius = 0.25,
     gridCB = () => null
 }) {
+    const { xMax, xMin, yMax, yMin } = useAtom(boundsAtom)[0];
+
     React.useEffect(() => {
         if (!gridShow || !threeCBs) return;
 
-        const grid = new THREE.GridHelper(2 * gridQuadSize, 2 * gridQuadSize);
-
-        grid.material.opacity = 0.4;
-        grid.material.transparent = true;
-        grid.translateX(center[0]);
-        grid.translateY(center[1]);
-        grid.rotateX(Math.PI / 2);
+        const grid = GridGeometry({ length: yMax - yMin, width: xMax - xMin, llc: [xMin, yMin] });
 
         threeCBs.add(grid);
 
@@ -42,7 +42,19 @@ export default React.memo(function GridAndOriginTS({
             geometry.dispose();
             material.dispose();
         };
-    }, [threeCBs, gridQuadSize, center, gridShow, originColor]);
+    }, [
+        threeCBs,
+        gridQuadSize,
+        center,
+        gridShow,
+        originColor,
+        gridCB,
+        originRadius,
+        xMax,
+        xMin,
+        yMax,
+        yMin
+    ]);
 
     return null;
 });

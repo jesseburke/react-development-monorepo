@@ -7,10 +7,10 @@ const reactPlugin = require('vite-plugin-react');
 const config = {
     jsx: 'react',
     plugins: [reactPlugin],
-    base: '/u/jburke/sepGrapher/'
+    base: '/u/jburke/logisticGrapher/'
 };
 
 //base: '/u/jburke/linearGrapher/'
-//base: '/u/jburke/logisticGrapher/'
+//base: '/u/jburke/sepGrapher/'
 
 module.exports = config;

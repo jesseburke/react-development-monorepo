@@ -18,7 +18,7 @@ import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import SaveStateComp from '../../components/SaveStateComp.jsx';
 
-import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
+import GridAndOrigin from '../../ThreeSceneComps/GridAndOriginRecoil.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
@@ -130,7 +130,11 @@ export default function App() {
                         controlsData={initControlsData}
                         ref={threeSceneRef}
                     >
-                        <GridAndOrigin gridQuadSize={initAxesData.length} gridShow={true} />
+                        <GridAndOrigin
+                            boundsAtom={boundsAtom}
+                            gridQuadSize={initAxesData.length}
+                            gridShow={true}
+                        />
                         <Axes2D
                             boundsAtom={boundsAtom}
                             radius={initAxesData.radius}

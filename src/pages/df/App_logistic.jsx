@@ -16,7 +16,7 @@ import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js
 import LogisticEquationInput from '../../components/LogisticEquationInput.jsx';
 import SaveStateComp from '../../components/SaveStateComp.jsx';
 
-import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
+import GridAndOrigin from '../../ThreeSceneComps/GridAndOriginRecoil.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
@@ -69,7 +69,7 @@ const initCameraData = {
     up: [0, yCameraTarget, 1],
     fov: 75,
     near: -100,
-    far: 100,
+    far: 1000,
     rotation: { order: 'XYZ' },
     orthographic: {
         left: (frustumSize * aspectRatio) / -2,
@@ -146,10 +146,9 @@ export default function App() {
                         clearColor={initColors.clearColor}
                     >
                         <GridAndOrigin
+                            boundsAtom={boundsAtom}
                             gridQuadSize={initAxesData.length}
                             gridShow={true}
-                            center={[0, 20]}
-                            originRadius={0.15}
                         />
                         <Axes2D
                             boundsAtom={boundsAtom}
