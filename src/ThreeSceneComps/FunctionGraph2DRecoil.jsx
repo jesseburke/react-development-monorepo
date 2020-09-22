@@ -22,6 +22,8 @@ export default function FunctionGraph2D({ threeCBs, funcAtom, boundsAtom, curveO
             bounds
         });
 
+        if (!geom) return;
+
         const mesh = new THREE.Mesh(geom, testFuncMaterial(color));
 
         threeCBs.add(mesh);
