@@ -7,22 +7,18 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 import FunctionGraph2DGeom from '../graphics/FunctionGraph2DGeom.jsx';
 
-export default function FunctionGraph2D({
-    threeCBs,
-    funcAtom,
-    boundsAtom,
-    curveOptionsAtom,
-    show = true
-}) {
+export default function FunctionGraph2D({ threeCBs, funcAtom, boundsAtom, curveOptionsAtom }) {
     const func = useAtom(funcAtom)[0];
     const bounds = useAtom(boundsAtom)[0];
-    const { color } = useAtom(curveOptionsAtom)[0];
+    const { color, approxH, width, visible } = useAtom(curveOptionsAtom)[0];
 
     useEffect(() => {
-        if (!threeCBs || !func) return;
+        if (!threeCBs || !visible || !func) return;
 
         const geom = FunctionGraph2DGeom({
             func: func.func,
+            approxH,
+            radius: width,
             bounds
         });
 
@@ -34,7 +30,7 @@ export default function FunctionGraph2D({
             threeCBs.remove(mesh);
             if (geom) geom.dispose();
         };
-    }, [threeCBs, func, bounds, color]);
+    }, [threeCBs, func, bounds, color, visible, width, approxH]);
 
     return null;
 }

@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { throttle } from '../utils/BaseUtils.jsx';
-
 function Slider({
     value,
     step = 0.1,
@@ -17,7 +15,7 @@ function Slider({
         CB(e.target.value);
     }, []);
 
-    const css1 = React.useRef({ padding: '0em .5em', whiteSpace: 'nowrap' }, []);
+    const css1 = React.useRef({ whiteSpace: 'nowrap' }, []);
 
     return (
         <div style={userCss}>
@@ -40,9 +38,3 @@ function Slider({
 }
 
 export default React.memo(Slider);
-
-function round(x, n = 2) {
-    // x = -2.336596841557143
-
-    return Number((x * Math.pow(10, n)) / Math.pow(10, n)).toFixed(n);
-}

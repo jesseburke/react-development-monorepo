@@ -51,9 +51,6 @@ const aStep = 0.1;
 const initPrecision = 4;
 const sliderPrecision = 3;
 
-const texEquation = '\\ddot{y} + a \\cdot \\dot{y} + b \\cdot y  = 0';
-//'(\\frac{d}{dx})^2(y) + a \\cdot \\frac{d}{dx}(y) + b \\cdot y  = 0';
-
 //------------------------------------------------------------------------
 //
 // primitive atoms
@@ -90,8 +87,6 @@ export const {
     length: scoel
 } = CurveData(initSolutionCurveData);
 
-export const texEquationAtom = atom(texEquation);
-
 //------------------------------------------------------------------------
 //
 // encode and decode functions for primitive atoms
@@ -102,6 +97,8 @@ export const texEquationAtom = atom(texEquation);
 export const atomArray = [
     boundsAtom,
     solutionCurveOptionsAtom,
+    aValAtom,
+    bValAtom,
     xLabelAtom,
     yLabelAtom,
     initialPoint1Atom,
@@ -113,17 +110,29 @@ export const atomArray = [
 export const encode = ([
     bounds,
     solutionCurveOptions,
+    aVal,
+    bVal,
     xLabel,
     yLabel,
-    initialPoint,
-    pxFuncStr,
-    qxFuncStr
+    initialPoint1,
+    initialPoint2
 ]) => {
     const be = boundsEncode(bounds);
 
     const scoe = solutionCurveOptionsEncode(solutionCurveOptions);
 
-    return [...be, ...scoe, xLabel, yLabel, initialPoint.x, initialPoint.y, pxFuncStr, qxFuncStr];
+    return [
+        ...be,
+        ...scoe,
+        aVal,
+        bVal,
+        xLabel,
+        yLabel,
+        initialPoint1.x,
+        initialPoint1.y,
+        initialPoint2.x,
+        initialPoint2.y
+    ];
 };
 
 // this function expects an array in the form returned by encode,
@@ -139,11 +148,12 @@ export function decode(valueArray) {
     return [
         boundsDecode(ba),
         solutionCurveOptionsDecode(scoa),
-        valueArray[n],
-        valueArray[n + 1],
-        { x: Number(valueArray[n + 2]), y: Number(valueArray[n + 3]) },
-        valueArray[n + 4],
-        valueArray[n + 5]
+        Number(valueArray[n]),
+        Number(valueArray[n + 1]),
+        valueArray[n + 2],
+        valueArray[n + 3],
+        { x: Number(valueArray[n + 4]), y: Number(valueArray[n + 5]) },
+        { x: Number(valueArray[n + 6]), y: Number(valueArray[n + 7]) }
     ];
 }
 
@@ -151,13 +161,23 @@ export function decode(valueArray) {
 //
 // derived atoms
 
+export const texEquationAtom = atom(
+    (get) =>
+        '\\ddot{' +
+        get(yLabelAtom) +
+        '} + a \\cdot \\dot{' +
+        get(yLabelAtom) +
+        '} + b \\cdot ' +
+        get(yLabelAtom) +
+        '  = 0'
+);
+
 export const solnStrsAtom = atom((get) =>
     solnStrs(Number.parseFloat(get(aValAtom)), Number.parseFloat(get(bValAtom)), [
         [get(initialPoint1Atom).x, get(initialPoint1Atom).y],
         [get(initialPoint2Atom).x, get(initialPoint2Atom).y]
     ])
 );
-
 export const solnTexStrAtom = atom((get) => get(solnStrsAtom).texStr);
 
 export const funcAtom = atom((get) => ({
@@ -187,6 +207,9 @@ const useInitialPoint = (ipAtom) => {
 export const InitialPointsInput = React.memo(({}) => {
     const { initialPoint: ip1, setX: ip1setX, setY: ip1setY } = useInitialPoint(initialPoint1Atom);
     const { initialPoint: ip2, setX: ip2setX, setY: ip2setY } = useInitialPoint(initialPoint2Atom);
+
+    const yLabel = useAtom(yLabelAtom)[0];
+
     return (
         <div
             className={classnames(
@@ -199,12 +222,12 @@ export const InitialPointsInput = React.memo(({}) => {
                 <legend>Initial Conditions</legend>
 
                 <div className={classnames(styles['med-vlarge-top-side-padding'])}>
-                    <span>y(</span>
+                    <span>{yLabel + '('}</span>
                     <Input initValue={ip1.x} onC={ip1setX} size={4} /> <span>) = </span>
                     <Input initValue={ip1.y} onC={ip1setY} size={4} />
                 </div>
                 <div className={classnames(styles['med-vlarge-top-side-padding'])}>
-                    <span>{'\u{1e8f}'}(</span>
+                    <span>{yLabel + '\u{0307}'}(</span>
                     <Input initValue={ip2.x} onC={ip2setX} size={4} />
                     <span>) = </span>
                     <Input initValue={ip2.y} onC={ip2setY} size={4} />
@@ -253,8 +276,8 @@ export const TitleEquationComp = React.memo(({}) => {
         <div
             className={classnames(
                 styles['center-flex-column'],
-                styles['zero-large-top-side-padding'],
-                styles['font-size-med-large']
+                styles['font-size-med-large'],
+                styles['zero-margin']
             )}
         >
             <div
@@ -284,7 +307,6 @@ export const SolutionDisplayComp = React.memo(({}) => {
             className={classnames(
                 styles['med-zero-top-side-padding'],
                 styles['center-flex-column'],
-                styles['font-size-med-large'],
                 styles['fixed-width-twelve-em']
             )}
         >
@@ -296,6 +318,32 @@ export const SolutionDisplayComp = React.memo(({}) => {
                 )}
             >
                 <TexDisplayCompR strAtom={solnTexStrAtom} />
+            </div>
+        </div>
+    );
+});
+
+export const VariablesOptionsInput = React.memo(function VariablesOptions({}) {
+    const [xLabel, setXLabel] = useAtom(xLabelAtom);
+    const [yLabel, setYLabel] = useAtom(yLabelAtom);
+
+    const xCB = useCallback((inputStr) => setXLabel(inputStr), [setXLabel]);
+    const yCB = useCallback((inputStr) => setYLabel(inputStr), [setYLabel]);
+
+    return (
+        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Independent variable</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={xLabel} onC={xCB} />
+                </span>
+            </div>
+
+            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                <span className={styles['text-align-center']}>Dependent variable:</span>
+                <span className={styles['med-padding']}>
+                    <Input size={4} initValue={yLabel} onC={yCB} />
+                </span>
             </div>
         </div>
     );

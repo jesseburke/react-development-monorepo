@@ -1,13 +1,19 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
+import { atom, useAtom, Provider as JProvider } from 'jotai';
+
 import * as THREE from 'three';
 
-import { atom, useAtom, Provider as JProvider } from 'jotai';
+import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Provider } from 'reakit/Provider';
+import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
+import * as system from 'reakit-system-bootstrap';
 
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+import SaveStateComp from '../../components/SaveStateComp.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOriginRecoil.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
@@ -38,7 +44,8 @@ import {
     solutionCurveOptionsAtom,
     SolutionCurveOptionsInput,
     SolutionDisplayComp,
-    TitleEquationComp
+    TitleEquationComp,
+    VariablesOptionsInput
 } from './App_sec_order_data.jsx';
 
 //------------------------------------------------------------------------
@@ -121,12 +128,17 @@ export default function App() {
     return (
         <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <ControlBar height={controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
-                    <TitleEquationComp />
-                    <CoefficientInput />
-                    <SolutionDisplayComp />
-                    <InitialPointsInput />
-                </ControlBar>
+                <Provider unstable_system={system}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={initFontSize * controlBarFontSize}
+                    >
+                        <TitleEquationComp />
+                        <CoefficientInput />
+                        <InitialPointsInput />
+                        <OptionsModal />
+                    </ControlBar>
+                </Provider>
 
                 <Main height={100 - controlBarHeight} fontSize={initFontSize * controlBarFontSize}>
                     <ThreeSceneComp
@@ -166,8 +178,55 @@ export default function App() {
                             curveOptionsAtom={solutionCurveOptionsAtom}
                         />
                     </ThreeSceneComp>
+                    <SaveStateComp decode={decode} encode={encode} atomArray={atomArray} />
                 </Main>
             </FullScreenBaseComponent>
         </JProvider>
     );
 }
+
+const OptionsModal = React.memo(({}) => {
+    const dialog = useDialogState();
+    const tab = useTabState();
+
+    const cssRef = useRef({ backgroundColor: 'white', color: initColors.controlBar, width: '8em' });
+
+    const cssRef1 = useRef({
+        transform: 'none',
+        top: '15%',
+        left: 'auto',
+        right: 20,
+        width: 400,
+        height: 250
+    });
+
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
+
+    return (
+        <div zindex={-10}>
+            <DialogDisclosure style={cssRef.current} {...dialog}>
+                <span>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
+            </DialogDisclosure>
+            <Dialog {...dialog} style={cssRef1.current} aria-label='Welcome'>
+                <>
+                    <TabList {...tab} aria-label='Option tabs'>
+                        <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Solution Curve</Tab>
+                        <Tab {...tab}>Variables</Tab>
+                    </TabList>
+                    <TabPanel {...tab}>
+                        <BoundsInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <SolutionCurveOptionsInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <VariablesOptionsInput />
+                    </TabPanel>
+                </>
+            </Dialog>
+        </div>
+    );
+});

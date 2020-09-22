@@ -5,7 +5,7 @@ import MatrixFactory from '../../math/MatrixFactory.jsx';
 //
 // returns an object of the form {str, texStr}
 
-export function solnStrs(a, b, initialConds, precision) {
+export function solnStrs(a, b, initialConds, precision = 3) {
     const [[x0, y0], [x1, y1]] = initialConds;
 
     let returnVal;

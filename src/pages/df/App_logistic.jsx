@@ -186,7 +186,7 @@ export default function App() {
     );
 }
 
-function OptionsModal() {
+const OptionsModal = React.memo(({}) => {
     const dialog = useDialogState();
     const tab = useTabState();
 
@@ -234,4 +234,4 @@ function OptionsModal() {
             </Dialog>
         </div>
     );
-}
+});
