@@ -28,6 +28,9 @@ let title = 'default title';
 import App from './pages/df/App_sec_order.jsx';
 title = 'Second order linear equations';
 
+//import App from './pages/df/App_sec_order_cases.jsx';
+//title = 'Second order linear equations';
+
 function main() {
     const element = document.createElement('div');
     ReactDOM.render(

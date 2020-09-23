@@ -172,20 +172,17 @@ export const texEquationAtom = atom(
         '  = 0'
 );
 
-export const solnStrsAtom = atom((get) =>
-    solnStrs(Number.parseFloat(get(aValAtom)), Number.parseFloat(get(bValAtom)), [
+export const solnStrsAtom = atom((get) => {
+    const ss = solnStrs(Number.parseFloat(get(aValAtom)), Number.parseFloat(get(bValAtom)), [
         [get(initialPoint1Atom).x, get(initialPoint1Atom).y],
         [get(initialPoint2Atom).x, get(initialPoint2Atom).y]
-    ])
-);
+    ]);
+
+    const func = funcParser(ss.str);
+
+    return Object.assign({ func, a: get(aValAtom), b: get(bValAtom) }, ss);
+});
 export const solnTexStrAtom = atom((get) => get(solnStrsAtom).texStr);
-
-export const funcAtom = atom((get) => ({
-    func: funcParser(get(solnStrsAtom).str)
-}));
-
-export const aStrAtom = atom((get) => processNum(get(aValAtom), initPrecision).str);
-export const bStrAtom = atom((get) => processNum(get(bValAtom), initPrecision).str);
 
 //------------------------------------------------------------------------
 //
@@ -241,16 +238,21 @@ export const CoefficientInput = React.memo(function CoeffInput({}) {
     const [aVal, setAVal] = useAtom(aValAtom);
     const [bVal, setBVal] = useAtom(bValAtom);
 
-    const [aStr] = useAtom(aStrAtom);
-    const [bStr] = useAtom(bStrAtom);
-
     const aCB = useCallback((val) => setAVal(Number.parseFloat(val)), [setAVal]);
+    const aInputCB = useCallback(
+        (str) => {
+            setAVal(Number(str));
+        },
+        [setAVal]
+    );
+
     const bCB = useCallback((val) => setBVal(Number.parseFloat(val)), [setBVal]);
+    const bInputCB = useCallback((str) => setBVal(Number(str)), [setBVal]);
 
     return (
         <div className={classnames(styles['center-flex-column'])}>
             <Slider
-                value={aStr}
+                value={aVal}
                 label={'a'}
                 CB={aCB}
                 max={aMax}
@@ -258,15 +260,22 @@ export const CoefficientInput = React.memo(function CoeffInput({}) {
                 step={aStep}
                 precision={sliderPrecision}
             />
-
+            <div>
+                <span>a = </span>
+                <Input onC={aInputCB} initValue={aVal} size={4} />
+            </div>
             <Slider
-                value={bStr}
+                value={bVal}
                 label={'b'}
                 CB={bCB}
                 min={(aVal * aVal - abBound) / 4}
                 max={(aVal * aVal + abBound) / 4}
                 precision={sliderPrecision}
             />
+            <div>
+                <span>b = </span>
+                <Input onC={bInputCB} initValue={bVal} size={4} />
+            </div>
         </div>
     );
 });
@@ -348,3 +357,28 @@ export const VariablesOptionsInput = React.memo(function VariablesOptions({}) {
         </div>
     );
 });
+
+export const DebugComp = (debugAtomArray = atomArray) => {
+    useDebug([funcAtom]);
+
+    return null;
+};
+
+export const useDebug = (debugAtomArray = atomArray) => {
+    debugAtomArray.forEach((atm) => {
+        //console.log('debugAtomArray element ', atm, 'inside useDebug');
+        useTrackAtom(atm);
+    });
+};
+
+const useTrackAtom = (atom) => {
+    const atomValue = useAtom(atom)[0];
+
+    useEffect(() => {
+        console.log('atom ', atom, 'changed to ', atomValue);
+
+        return () => {
+            console.log('returrn: atom ', atom, 'changed from ', atomValue);
+        };
+    }, [atomValue, atom]);
+};

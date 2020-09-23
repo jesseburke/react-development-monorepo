@@ -28,10 +28,7 @@ import {
     atomArray,
     boundsAtom,
     BoundsInput,
-    aValAtom,
-    bValAtom,
-    funcAtom,
-    solnTexStrAtom,
+    solnStrsAtom,
     initialPoint1Atom,
     initialPoint2Atom,
     initialPoint1ColorAtom,
@@ -45,7 +42,8 @@ import {
     SolutionCurveOptionsInput,
     SolutionDisplayComp,
     TitleEquationComp,
-    VariablesOptionsInput
+    VariablesOptionsInput,
+    DebugComp
 } from './App_sec_order_data.jsx';
 
 //------------------------------------------------------------------------
@@ -173,7 +171,7 @@ export default function App() {
                             radius={0.25}
                         />
                         <FunctionGraph2D
-                            funcAtom={funcAtom}
+                            funcAtom={solnStrsAtom}
                             boundsAtom={boundsAtom}
                             curveOptionsAtom={solutionCurveOptionsAtom}
                         />

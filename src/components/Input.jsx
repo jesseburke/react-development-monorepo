@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-import styles from './Input.module.css';
-
 export default React.memo(function Input({ onC, initValue, size = 10 }) {
     const inputElt = useRef(null);
 
