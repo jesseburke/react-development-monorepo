@@ -32,17 +32,17 @@ import {
     initialPoint2Atom,
     initialPoint1ColorAtom,
     initialPoint2ColorAtom,
-    InitialPointsInput,
-    CoefficientInput,
+    CaseDisplay,
     xLabelAtom,
     yLabelAtom,
+    texEquationAtom,
     solnAtom,
     solutionCurveOptionsAtom,
     SolutionCurveOptionsInput,
     SolutionDisplayComp,
     TitleEquationComp,
     VariablesOptionsInput
-} from './App_sec_order_data.jsx';
+} from './App_sec_order_cases_data.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -130,8 +130,7 @@ export default function App() {
                         fontSize={initFontSize * controlBarFontSize}
                     >
                         <TitleEquationComp />
-                        <CoefficientInput />
-                        <InitialPointsInput />
+                        <CaseDisplay />
                         <OptionsModal />
                     </ControlBar>
                 </Provider>

@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import styles from './base_styles.module.css';
 
 import Input from '../../components/Input.jsx';
+import TexDisplayComp from '../../components/TexDisplayComp.jsx';
 import TexDisplayCompR from '../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../components/Slider.jsx';
 
@@ -281,36 +282,6 @@ export const CoefficientInput = React.memo(function CoeffInput({}) {
     );
 });
 
-export const TitleEquationComp = React.memo(({}) => {
-    return (
-        <div
-            className={classnames(
-                styles['center-flex-column'],
-                styles['font-size-med-large'],
-                styles['zero-margin']
-            )}
-        >
-            <div
-                className={classnames(
-                    styles['small-zero-top-side-padding'],
-                    styles['text-align-center']
-                )}
-            >
-                2nd order linear, w/ constant coefficients
-            </div>
-            <div
-                className={classnames(
-                    styles['white-space-no-wrap'],
-                    styles['small-zero-top-side-padding'],
-                    styles['font-size-med-large']
-                )}
-            >
-                <TexDisplayCompR strAtom={texEquationAtom} />
-            </div>
-        </div>
-    );
-});
-
 export const SolutionDisplayComp = React.memo(({}) => {
     return (
         <div
@@ -354,6 +325,149 @@ export const VariablesOptionsInput = React.memo(function VariablesOptions({}) {
                 <span className={styles['med-padding']}>
                     <Input size={4} initValue={yLabel} onC={yCB} />
                 </span>
+            </div>
+        </div>
+    );
+});
+
+export const TitleEquationComp = React.memo(({}) => {
+    const yLabel = useAtom(yLabelAtom)[0];
+
+    return (
+        <div
+            className={classnames(
+                styles['center-flex-column'],
+                styles['font-size-med-large'],
+                styles['zero-margin']
+            )}
+        >
+            <div
+                className={classnames(
+                    styles['small-zero-top-side-padding'],
+                    styles['text-align-center']
+                )}
+            >
+                2nd order linear, w/ constant coefficients
+            </div>
+            <div
+                className={classnames(
+                    styles['white-space-no-wrap'],
+                    styles['small-zero-top-side-padding']
+                )}
+            >
+                <TexDisplayCompR strAtom={texEquationAtom} />
+            </div>
+            <div
+                className={classnames(
+                    styles['white-space-no-wrap'],
+                    styles['small-zero-top-side-padding'],
+                    styles['font-size-med-large']
+                )}
+            >
+                <SecOrderInput labelAtom={yLabelAtom} />
+            </div>
+        </div>
+    );
+});
+
+// <span>{yLabel + '\u{0308} + a' + yLabel + '\u{0307}'}</span>
+
+const SecOrderInput = React.memo(({ labelAtom }) => {
+    const varStr = useAtom(labelAtom)[0];
+
+    const [aVal, setAVal] = useAtom(aValAtom);
+    const [bVal, setBVal] = useAtom(bValAtom);
+
+    const [texStrArr, setTexStrArr] = useState([]);
+
+    const aCB = useCallback(
+        (val) => {
+            setAVal(val);
+        },
+        [setAVal]
+    );
+    const bCB = useCallback((val) => setBVal(val), [setBVal]);
+
+    useEffect(() => {
+        setTexStrArr([
+            '\\ddot{' + varStr + '}\\, + \\,',
+            '\\dot{' + varStr + '}\\, + \\,',
+            varStr + '  = 0'
+        ]);
+    }, [varStr]);
+
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
+
+    return (
+        <span>
+            <TexDisplayComp str={texStrArr[0]} />
+            <Input initValue={aVal} onC={aCB} size={4} />
+            <span className={styles['zero-small-top-side-padding']}>
+                <TexDisplayComp str={texStrArr[1]} />
+            </span>
+            <Input initValue={bVal} onC={bCB} size={4} />
+            <span className={styles['zero-small-top-side-padding']}>
+                <TexDisplayComp str={texStrArr[2]} />
+            </span>
+        </span>
+    );
+});
+
+export const CaseDisplay = React.memo(() => {
+    const a = useAtom(aValAtom)[0];
+    const b = useAtom(bValAtom)[0];
+
+    const [str, setStr] = useState();
+    const [texStr, setTexStr] = useState();
+    const [cse, setCase] = useState();
+
+    useEffect(() => {
+        const n = a ^ (2 - 4 * b);
+
+        if (n > 0) {
+            setCase(1);
+            setStr('a^2 - 4b = ' + (a ^ (2 - 4 * b)) + ' > 0');
+            return;
+        }
+
+        if (n < 0) {
+            setCase(2);
+            setStr('a^2 - 4b = ' + (a ^ (2 - 4 * b)) + ' < 0');
+            return;
+        }
+
+        if (n === 0) {
+            setCase(3);
+            setStr('a^2 - 4b = ' + (a ^ (2 - 4 * b)) + ' = 0');
+            return;
+        }
+    }, [a, b]);
+
+    return (
+        <div
+            className={classnames(
+                styles['center-flex-column'],
+                styles['font-size-med-large'],
+                styles['zero-margin']
+            )}
+        >
+            <div
+                className={classnames(
+                    styles['small-zero-top-side-padding'],
+                    styles['text-align-center']
+                )}
+            >
+                <TexDisplayComp str={str} />
+            </div>
+            <div
+                className={classnames(
+                    styles['small-zero-top-side-padding'],
+                    styles['text-align-center']
+                )}
+            >
+                <span>Case {cse}</span>
             </div>
         </div>
     );
