@@ -11,10 +11,10 @@ let title = 'default title';
 
 //import App from './pages/df/App_canvas_test.jsx';
 
-//import App from './pages/df/App.jsx';
+import App from './pages/df/App_df.jsx';
 
 //import App from './pages/df/App_simple_df.jsx';
-//title = 'Direction field grapher';
+title = 'Direction field grapher';
 
 //import App from './pages/df/App_sep.jsx';
 //title = 'Separable equation direction field grapher';
@@ -25,8 +25,8 @@ let title = 'default title';
 //import App from './pages/df/App_linear.jsx';
 //title = 'Linear equation';
 
-import App from './pages/df/App_sec_order.jsx';
-title = 'Second order linear equation';
+//import App from './pages/df/App_sec_order.jsx';
+//title = 'Second order linear equation';
 
 //import App from './pages/df/App_sec_order_cases.jsx';
 //title = 'Second order linear equations';

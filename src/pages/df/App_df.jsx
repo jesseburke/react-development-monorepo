@@ -1,33 +1,55 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+
 import Recoil from 'recoil';
 const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil;
 
+import { atom as jatom, useAtom, Provider as JProvider } from 'jotai';
+
 import * as THREE from 'three';
+
+import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Provider } from 'reakit/Provider';
+import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
+
+import * as system from 'reakit-system-bootstrap';
 
 import './styles.css';
 
-import { ThreeSceneComp } from '../../components/ThreeScene.jsx';
+import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
-import FunctionInput from '../../components/FunctionInputRecoil.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
-import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+import SaveStateComp from '../../components/SaveStateComp.jsx';
 
-import funcParser from '../../utils/funcParser.jsx';
-
-import GridAndOrigin from '../../ThreeSceneComps/GridAndOrigin.jsx';
-import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
+import Grid from '../../ThreeSceneComps/Grid.jsx';
+import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
-import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
 
-//------------------------------------------------------------------------
-//
-// initial data
-//
+import {
+    decode,
+    encode,
+    atomArray,
+    arrowGridOptionsAtom,
+    ArrowGridOptionsInput,
+    boundsAtom,
+    BoundsInput,
+    initialPointAtom,
+    InitialPointInput,
+    funcAtom,
+    xLabelAtom,
+    yLabelAtom,
+    solutionCurveOptionsAtom,
+    SolutionCurveOptionsInput,
+    EquationInput,
+    axesDataAtom,
+    Axes2DDataInput
+} from './App_df_data.jsx';
+
+const tickLabelStyle = Object.assign(labelStyle, { fontSize: '1em', color: '#e19662' });
 
 const initColors = {
     arrows: '#C2374F',
@@ -76,106 +98,122 @@ const controlBarHeight = 13;
 const fontSize = 1;
 const controlBarFontSize = 1;
 
-const initAxesData = {
-    radius: 0.01,
-    show: true,
-    showLabels: true,
-    labelStyle
-};
-
-const ipAtom = atom({
-    key: 'initialPosition',
-    default: { x: 2, y: 2 }
-});
-
-const xselector = selector({
-    key: 'xselector',
-    set: ({ get, set }, newX) => set(ipAtom, { x: Number(newX), y: get(ipAtom).y })
-});
-
-const yselector = selector({
-    key: 'yselector',
-    set: ({ get, set }, newY) => set(ipAtom, { y: Number(newY), x: get(ipAtom).x })
-});
-
-const initFuncStr = 'x*y*sin(x+y)/10';
-
-const funcAtom = atom({
-    key: 'function',
-    default: { func: funcParser(initFuncStr) }
-});
-
-const initState = {
-    bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    arrowDensity: 1,
-    arrowLength: 0.7,
-    funcStr: initFuncStr,
-    func: funcParser(initFuncStr),
-    approxH: 0.1
-};
-
 //------------------------------------------------------------------------
 
 export default function App() {
+    const threeSceneRef = useRef(null);
+    const threeCBs = useThreeCBs(threeSceneRef);
+
+    useEffect(() => {
+        if (!threeCBs || !threeSceneRef) return;
+
+        window.dispatchEvent(new Event('resize'));
+    }, [threeCBs, threeSceneRef]);
+
     return (
-        <RecoilRoot>
+        <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <ControlBar
-                    height={controlBarHeight}
-                    fontSize={fontSize * controlBarFontSize}
-                    padding='0em'
-                >
-                    <div className='center-flex-row border-right'>
-                        <FunctionInput
-                            initFuncStr={initFuncStr}
-                            leftSideOfEquation='dy/dx ='
-                            funcAtom={funcAtom}
-                        />
-                    </div>
-                    <InitialPointInput
-                        ipAtom={ipAtom}
-                        xselector={xselector}
-                        yselector={yselector}
-                    />
-                </ControlBar>
+                <Provider unstable_system={system}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={fontSize * controlBarFontSize}
+                        padding='0em'
+                    >
+                        <div className='center-flex-row'>
+                            <EquationInput />
+                        </div>
+                        <InitialPointInput />
+                        <OptionsModal />
+                    </ControlBar>
+                </Provider>
 
                 <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                    <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
-                        <GridAndOrigin
-                            gridQuadSize={initAxesData.length}
-                            gridShow={initState.gridShow}
-                        />
+                    <ThreeSceneComp
+                        initCameraData={initCameraData}
+                        controlsData={initControlsData}
+                        ref={threeSceneRef}
+                    >
+                        <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
-                            bounds={initState.bounds}
-                            radius={initAxesData.radius}
-                            show={initAxesData.show}
-                            showLabels={initAxesData.showLabels}
+                            tickLabelDistance={1}
+                            boundsAtom={boundsAtom}
+                            axesDataAtom={axesDataAtom}
                             labelStyle={labelStyle}
+                            tickLabelStyle={tickLabelStyle}
                             color={initColors.axes}
+                            xLabelAtom={xLabelAtom}
+                            yLabelAtom={yLabelAtom}
                         />
                         <ArrowGrid
                             funcAtom={funcAtom}
-                            bounds={initState.bounds}
-                            arrowDensity={initState.arrowDensity}
-                            arrowLength={initState.arrowLength}
-                            color={initColors.arrows}
+                            boundsAtom={boundsAtom}
+                            arrowGridOptionsAtom={arrowGridOptionsAtom}
                         />
                         <DirectionFieldApprox
-                            color={initColors.solution}
-                            initialPtAtom={ipAtom}
-                            bounds={initState.bounds}
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
                             funcAtom={funcAtom}
-                            approxH={initState.approxH}
+                            solutionCurveOptionsAtom={solutionCurveOptionsAtom}
                         />
-                        <Sphere
-                            color={initColors.solution}
-                            dragPositionAtom={ipAtom}
-                            radius={0.25}
-                        />
-                        <ClickablePlaneComp clickPositionAtom={ipAtom} />
+                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
+                    <SaveStateComp decode={decode} encode={encode} atomArray={atomArray} />
                 </Main>
             </FullScreenBaseComponent>
-        </RecoilRoot>
+        </JProvider>
+    );
+}
+
+function OptionsModal() {
+    const dialog = useDialogState();
+    const tab = useTabState();
+
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
+
+    const cssRef = useRef({
+        transform: 'none',
+        top: '15%',
+        left: 'auto',
+        right: 20,
+        width: 400,
+        height: 250
+    });
+
+    const cssRef1 = useRef({ width: '8em' });
+
+    const cssRef2 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
+
+    return (
+        <div zindex={-10}>
+            <DialogDisclosure style={cssRef2.current} {...dialog}>
+                <span style={cssRef1.current}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
+            </DialogDisclosure>
+            <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
+                <>
+                    <TabList {...tab} aria-label='Option tabs'>
+                        <Tab {...tab}>Arrow grid</Tab>
+                        <Tab {...tab}>Axes</Tab>
+                        <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Solution curve</Tab>
+                    </TabList>
+                    <TabPanel {...tab}>
+                        <ArrowGridOptionsInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <Axes2DDataInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <BoundsInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <SolutionCurveOptionsInput />
+                    </TabPanel>
+                </>
+            </Dialog>
+        </div>
     );
 }
