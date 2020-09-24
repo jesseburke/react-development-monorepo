@@ -61,6 +61,10 @@
     padding: 0em .25em;
 }
 
+.zero-med-top-side-padding {
+    padding: 0em .5em;
+}
+
 .zero-large-top-side-padding {
     padding: 0em 1em;
 }

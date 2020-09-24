@@ -184,7 +184,32 @@ export const solnAtom = atom((get) => {
     // a and b are for debugging
     return Object.assign({ func, a: get(aValAtom), b: get(bValAtom) }, ss);
 });
-export const solnTexStrAtom = atom((get) => get(solnAtom).texStr);
+
+// cesAtom = characteristic equation solution atom
+export const cesAtom = atom((get) => {
+    const a = get(aValAtom);
+    const b = get(bValAtom);
+
+    const n = a * a - 4 * b;
+
+    if (n > 0) {
+        let sr = Math.sqrt(n);
+
+        return { t: 'r', arr: [(-a + sr) / 2, (-a - sr) / 2] };
+    }
+
+    if (n === 0) {
+        return { t: 'r', arr: [-a / 2, -a / 2] };
+    }
+
+    if (n < 0) {
+        let sr = Math.sqrt(-n);
+
+        return { t: 'i', arr: [-a / 2, sr] };
+    }
+
+    return null;
+});
 
 //------------------------------------------------------------------------
 //
@@ -283,6 +308,8 @@ export const CoefficientInput = React.memo(function CoeffInput({}) {
 });
 
 export const SolutionDisplayComp = React.memo(({}) => {
+    const str = useAtom(solnAtom)[0].texStr;
+
     return (
         <div
             className={classnames(
@@ -298,7 +325,7 @@ export const SolutionDisplayComp = React.memo(({}) => {
                     styles['small-zero-top-side-padding']
                 )}
             >
-                <TexDisplayCompR strAtom={solnTexStrAtom} />
+                <TexDisplayComp str={str} />
             </div>
         </div>
     );
@@ -420,30 +447,53 @@ export const CaseDisplay = React.memo(() => {
     const b = useAtom(bValAtom)[0];
 
     const [str, setStr] = useState();
-    const [texStr, setTexStr] = useState();
     const [cse, setCase] = useState();
 
     useEffect(() => {
-        const n = a ^ (2 - 4 * b);
+        const n = a * a - 4 * b;
 
         if (n > 0) {
             setCase(1);
-            setStr('a^2 - 4b = ' + (a ^ (2 - 4 * b)) + ' > 0');
+            setStr('a^2 - 4b = ' + n + ' > 0');
             return;
         }
 
         if (n < 0) {
             setCase(2);
-            setStr('a^2 - 4b = ' + (a ^ (2 - 4 * b)) + ' < 0');
+            setStr('a^2 - 4b = ' + n + ' < 0');
             return;
         }
 
         if (n === 0) {
             setCase(3);
-            setStr('a^2 - 4b = ' + (a ^ (2 - 4 * b)) + ' = 0');
+            setStr('a^2 - 4b = ' + n + ' = 0');
             return;
         }
     }, [a, b]);
+
+    return (
+        <div
+            className={classnames(
+                styles['small-zero-top-side-padding'],
+                styles['text-align-center'],
+                styles['font-size-med-large']
+            )}
+        >
+            <TexDisplayComp str={str} />
+            <span>, Case {cse}</span>
+        </div>
+    );
+});
+
+export const CharEquationRootDisplay = React.memo(() => {
+    const a = useAtom(aValAtom)[0];
+    const b = useAtom(bValAtom)[0];
+
+    const { t, arr } = useAtom(cesAtom)[0];
+
+    const [inputComp, setInputComp] = useState();
+
+    const texStr = useRef('m^2 + am + b = 0:');
 
     return (
         <div
@@ -459,7 +509,7 @@ export const CaseDisplay = React.memo(() => {
                     styles['text-align-center']
                 )}
             >
-                <TexDisplayComp str={str} />
+                Solutions of the characteristic equation
             </div>
             <div
                 className={classnames(
@@ -467,8 +517,77 @@ export const CaseDisplay = React.memo(() => {
                     styles['text-align-center']
                 )}
             >
-                <span>Case {cse}</span>
+                <TexDisplayComp str={texStr.current} />
             </div>
+            <InputComp t={t} arr={arr} />
+        </div>
+    );
+});
+
+const InputComp = React.memo(({ t, arr }) => {
+    if (t === 'r') {
+        return <Case1Input m1={arr[0]} m2={arr[1]} />;
+    }
+    if (t === 'i') {
+        return <Case2Input r={arr[0]} i={arr[1]} />;
+    }
+});
+
+const case1InputSize = 8;
+const Case1Input = React.memo(({ m1, m2 }) => {
+    return (
+        <div
+            className={classnames(
+                styles['white-space-no-wrap'],
+                styles['small-zero-top-side-padding']
+            )}
+        >
+            <span className={styles['zero-med-top-side-padding']}>
+                <span className={styles['zero-small-top-side-padding']}>
+                    <TexDisplayComp str={'m_1 = '} />
+                </span>
+                <Input initValue={m1} size={case1InputSize} />
+            </span>
+            <span className={styles['zero-med-top-side-padding']}>
+                <span className={styles['zero-small-top-side-padding']}>
+                    <TexDisplayComp str={'m_2 = '} />
+                </span>
+                <Input initValue={m2} size={case1InputSize} />
+            </span>
+        </div>
+    );
+});
+
+const case2InputSize = 4;
+
+const Case2Input = React.memo(({ r, i }) => {
+    return (
+        <div
+            className={classnames(
+                styles['white-space-no-wrap'],
+                styles['small-zero-top-side-padding']
+            )}
+        >
+            <span className={styles['zero-med-top-side-padding']}>
+                <span className={styles['zero-small-top-side-padding']}>
+                    <TexDisplayComp str={'m_1 = '} />
+                </span>
+                <Input initValue={r} size={case2InputSize} />
+                <span className={styles['zero-small-top-side-padding']}>
+                    <TexDisplayComp str={'+ i'} />
+                </span>
+                <Input initValue={i} size={case2InputSize} />
+            </span>
+            <span className={styles['zero-med-top-side-padding']}>
+                <span className={styles['zero-small-top-side-padding']}>
+                    <TexDisplayComp str={'m_1 = '} />
+                </span>
+                <Input initValue={r} size={case2InputSize} />
+                <span className={styles['zero-small-top-side-padding']}>
+                    <TexDisplayComp str={'+ i'} />
+                </span>
+                <Input initValue={-i} size={case2InputSize} />
+            </span>
         </div>
     );
 });

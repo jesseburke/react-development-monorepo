@@ -41,7 +41,8 @@ import {
     SolutionCurveOptionsInput,
     SolutionDisplayComp,
     TitleEquationComp,
-    VariablesOptionsInput
+    VariablesOptionsInput,
+    CharEquationRootDisplay
 } from './App_sec_order_cases_data.jsx';
 
 //------------------------------------------------------------------------
@@ -131,7 +132,7 @@ export default function App() {
                     >
                         <TitleEquationComp />
                         <CaseDisplay />
-                        <OptionsModal />
+                        <CharEquationRootDisplay />
                     </ControlBar>
                 </Provider>
 

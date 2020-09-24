@@ -41,7 +41,8 @@ import {
     SolutionCurveOptionsInput,
     SolutionDisplayComp,
     TitleEquationComp,
-    VariablesOptionsInput
+    VariablesOptionsInput,
+    CaseDisplay
 } from './App_sec_order_data.jsx';
 
 //------------------------------------------------------------------------
@@ -131,6 +132,7 @@ export default function App() {
                     >
                         <TitleEquationComp />
                         <CoefficientInput />
+                        <CaseDisplay />
                         <InitialPointsInput />
                         <OptionsModal />
                     </ControlBar>

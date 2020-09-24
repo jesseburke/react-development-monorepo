@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import styles from './base_styles.module.css';
 
 import Input from '../../components/Input.jsx';
+import TexDisplayComp from '../../components/TexDisplayComp.jsx';
 import TexDisplayCompR from '../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../components/Slider.jsx';
 
@@ -354,6 +355,63 @@ export const VariablesOptionsInput = React.memo(function VariablesOptions({}) {
                 <span className={styles['med-padding']}>
                     <Input size={4} initValue={yLabel} onC={yCB} />
                 </span>
+            </div>
+        </div>
+    );
+});
+
+export const CaseDisplay = React.memo(() => {
+    const a = useAtom(aValAtom)[0];
+    const b = useAtom(bValAtom)[0];
+
+    const [str, setStr] = useState();
+    const [cse, setCase] = useState();
+
+    useEffect(() => {
+        const n = round(a * a - 4 * b);
+
+        if (n > 0) {
+            setCase(1);
+            setStr('a^2 - 4b = ' + n + ' > 0');
+            return;
+        }
+
+        if (n < 0) {
+            setCase(2);
+            setStr('a^2 - 4b = ' + n + ' < 0');
+            return;
+        }
+
+        if (n === 0) {
+            setCase(3);
+            setStr('a^2 - 4b = ' + n + ' = 0');
+            return;
+        }
+    }, [a, b]);
+
+    return (
+        <div
+            className={classnames(
+                styles['center-flex-column'],
+                styles['font-size-med-large'],
+                styles['zero-margin']
+            )}
+        >
+            <div
+                className={classnames(
+                    styles['small-zero-top-side-padding'],
+                    styles['text-align-center']
+                )}
+            >
+                <TexDisplayComp str={str} />
+            </div>
+            <div
+                className={classnames(
+                    styles['small-zero-top-side-padding'],
+                    styles['text-align-center']
+                )}
+            >
+                <span>Case {cse}</span>
             </div>
         </div>
     );
