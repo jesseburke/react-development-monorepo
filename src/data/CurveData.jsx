@@ -22,7 +22,7 @@ const encode = ({ color, approxH, visible, width }) => [color, approxH, Number(v
 const decode = ([c, a, v, w]) => ({
     color: c,
     approxH: Number(a),
-    visible: v === 0 ? false : true,
+    visible: v === '0' ? false : true,
     width: w
 });
 

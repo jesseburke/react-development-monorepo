@@ -17,7 +17,13 @@ import { round } from '../../utils/BaseUtils.jsx';
 //
 // initial constants
 
-const initArrowData = { density: 1, thickness: 1, length: 0.75, color: '#C2374F' };
+const colors = {
+    arrows: '#B01A46', //'#C2374F'
+    solutionCurve: '#4e6d87', //'#C2374F'
+    tick: '#e19662'
+};
+
+const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
 
 const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
@@ -28,7 +34,7 @@ const initYLabel = 'y';
 const initialInitialPoint = { x: 2, y: 2 };
 
 const initSolutionCurveData = {
-    color: '#C2374F',
+    color: colors.solutionCurve,
     approxH: 0.1,
     visible: true,
     width: 0.1
@@ -39,8 +45,22 @@ const initFuncStr = 'x*y*sin(x+y)/10';
 const initAxesData = {
     radius: 0.01,
     show: true,
-    showLabels: true
+    showLabels: true,
+    tickRadiusMultiple: 5
 };
+
+export const labelStyle = {
+    color: 'black',
+    padding: '.1em',
+    margin: '.5em',
+    padding: '.4em',
+    fontSize: '1.5em'
+};
+
+const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
+    fontSize: '1em',
+    color: colors.tick
+});
 
 //------------------------------------------------------------------------
 //
@@ -55,10 +75,10 @@ export const initialPointAtom = atom(initialInitialPoint);
 export const funcStrAtom = atom(initFuncStr);
 
 export const {
-    atom: arrowGridOptionsAtom,
-    component: ArrowGridOptionsInput,
-    encode: arrowGridOptionsEncode,
-    decode: arrowGridOptionsDecode,
+    atom: arrowGridDataAtom,
+    component: ArrowGridDataInput,
+    encode: arrowGridDataEncode,
+    decode: arrowGridDataDecode,
     length: agoel // agoel = arrow grid options encode length
 } = ArrowGridData(initArrowData);
 
@@ -68,7 +88,7 @@ export const {
     encode: axes2DDataEncode,
     decode: axes2DDataDecode,
     length: adel // agoel = arrow grid options encode length
-} = AxesData(initAxesData);
+} = AxesData({ ...initAxesData, tickLabelStyle });
 
 export const {
     atom: boundsAtom,
@@ -98,7 +118,7 @@ export const {
 // everything depends on order of following:
 
 export const atomArray = [
-    arrowGridOptionsAtom,
+    arrowGridDataAtom,
     boundsAtom,
     solutionCurveOptionsAtom,
     xLabelAtom,
@@ -118,7 +138,7 @@ export const encode = ([
     initialPoint,
     funcStr
 ]) => {
-    const agoe = arrowGridOptionsEncode(arrowGridOptions);
+    const agoe = arrowGridDataEncode(arrowGridOptions);
 
     const be = boundsEncode(bounds);
 
@@ -138,8 +158,10 @@ export function decode(valueArray) {
 
     const n = agoel + bel + scoel;
 
+    console.log(scoa);
+
     return [
-        arrowGridOptionsDecode(aga),
+        arrowGridDataDecode(aga),
         boundsDecode(ba),
         solutionCurveOptionsDecode(scoa),
         valueArray[n],

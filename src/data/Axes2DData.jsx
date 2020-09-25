@@ -14,9 +14,9 @@ export const defaultLabelStyle = {
     fontSize: '1.5em'
 };
 
-export const defaultTickLabelStyle = Object.assign(defaultLabelStyle, {
+const defaultTickLabelStyle = Object.assign(Object.assign({}, defaultLabelStyle), {
     fontSize: '1em',
-    color: '#DBBBB0'
+    color: '#e19662'
 });
 
 const defaultInitValues = {
@@ -62,20 +62,6 @@ export default function Axes2DData(args) {
         return (
             <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
                 <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Width of axis:</span>
-                    <span className={styles['med-padding']}>
-                        <Input size={4} initValue={radius} onC={radiusCB} />
-                    </span>
-                </div>
-
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Distance between labels:</span>
-                    <span className={styles['med-padding']}>
-                        <Input size={4} initValue={tickLabelDistance} onC={tickLabelDistanceCB} />
-                    </span>
-                </div>
-
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
                     <span className={styles['text-align-center']}>Color:</span>
                     <span className={styles['med-padding']}>
                         <input
@@ -85,6 +71,18 @@ export default function Axes2DData(args) {
                             value={color}
                             onChange={colorCB}
                         />
+                    </span>
+                </div>
+                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                    <span className={styles['text-align-center']}>Distance between labels:</span>
+                    <span className={styles['med-padding']}>
+                        <Input size={4} initValue={tickLabelDistance} onC={tickLabelDistanceCB} />
+                    </span>
+                </div>
+                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
+                    <span className={styles['text-align-center']}>Width of axis:</span>
+                    <span className={styles['med-padding']}>
+                        <Input size={4} initValue={radius} onC={radiusCB} />
                     </span>
                 </div>
             </div>

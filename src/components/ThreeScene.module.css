@@ -17,7 +17,17 @@
     height: 100%;
     width: 100%;
     left: 0%;
-    outline: 'none';
+    outline: none;
     display: 'block';
 }
 
+.photo-button {
+     position: absolute;
+     top: 75%;
+     left: 5%;
+     padding: 1%;
+     border: 1px;
+     border-style: solid;
+     border-radius: 50%;
+     cursor: pointer
+};

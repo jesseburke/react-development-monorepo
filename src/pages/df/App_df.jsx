@@ -33,8 +33,8 @@ import {
     decode,
     encode,
     atomArray,
-    arrowGridOptionsAtom,
-    ArrowGridOptionsInput,
+    arrowGridDataAtom,
+    ArrowGridDataInput,
     boundsAtom,
     BoundsInput,
     initialPointAtom,
@@ -48,8 +48,6 @@ import {
     axesDataAtom,
     Axes2DDataInput
 } from './App_df_data.jsx';
-
-const tickLabelStyle = Object.assign(labelStyle, { fontSize: '1em', color: '#e19662' });
 
 const initColors = {
     arrows: '#C2374F',
@@ -73,7 +71,8 @@ const initControlsData = {
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-const frustumSize = 20;
+//const frustumSize = 20;
+const frustumSize = 3.8;
 
 const initCameraData = {
     position: [0, 0, 1],
@@ -138,22 +137,19 @@ export default function App() {
                             tickLabelDistance={1}
                             boundsAtom={boundsAtom}
                             axesDataAtom={axesDataAtom}
-                            labelStyle={labelStyle}
-                            tickLabelStyle={tickLabelStyle}
-                            color={initColors.axes}
                             xLabelAtom={xLabelAtom}
                             yLabelAtom={yLabelAtom}
                         />
                         <ArrowGrid
                             funcAtom={funcAtom}
                             boundsAtom={boundsAtom}
-                            arrowGridOptionsAtom={arrowGridOptionsAtom}
+                            arrowGridDataAtom={arrowGridDataAtom}
                         />
                         <DirectionFieldApprox
                             initialPointAtom={initialPointAtom}
                             boundsAtom={boundsAtom}
                             funcAtom={funcAtom}
-                            solutionCurveOptionsAtom={solutionCurveOptionsAtom}
+                            curveOptionsAtom={solutionCurveOptionsAtom}
                         />
                         <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
@@ -201,7 +197,7 @@ function OptionsModal() {
                         <Tab {...tab}>Solution curve</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <ArrowGridOptionsInput />
+                        <ArrowGridDataInput />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <Axes2DDataInput />

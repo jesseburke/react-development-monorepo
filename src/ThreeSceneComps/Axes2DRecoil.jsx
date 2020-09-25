@@ -22,7 +22,7 @@ export default React.memo(function Axes2DTS({
     boundsAtom,
     axesDataAtom = defaultAxesDataAtom,
     show = true,
-    tickLabelDistanceFromEnds = 2,
+    tickLabelDistanceFromEnds = 1,
     xLabelAtom = defaultXLabelAtom,
     yLabelAtom = defaultYLabelAtom
 }) {

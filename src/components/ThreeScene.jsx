@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import classnames from 'classnames';
 
 import styles from './ThreeScene.module.css';
+//import styles from '../base_styles.module.css';
 
 import useThreeScene from '../graphics/useThree.jsx';
 
@@ -139,6 +140,23 @@ function ThreeScene(
         threeScene.render();
     }, [threeScene]);
 
+    // const download = useCallback(() => {
+    //     if (!threeCanvasRef) return;
+
+    //     let downloadLink = document.createElement('a');
+    //     downloadLink.setAttribute('download', 'CanvasAsImage.png');
+
+    //     threeCanvasRef.current.toBlob(function (blob) {
+    //         let url = URL.createObjectURL(blob);
+    //         downloadLink.setAttribute('href', url);
+    //         downloadLink.click();
+    //     });
+    // }, [threeCanvasRef]);
+
+    // useEffect(() => {
+    //     download();
+    // }, [download]);
+
     //------------------------------------------------------------------------
     //
     // subscribe to controlsPubSub
@@ -161,6 +179,9 @@ function ThreeScene(
                 {React.Children.map(children, (el) => React.cloneElement(el, { threeCBs }))}
             </React.Fragment>
             <div className={styles.noOutline} ref={(elt) => (labelContainerRef.current = elt)} />
+            <div className={styles['photo-button']} onClick={threeScene.downloadPicture}>
+                <span>Photo!</span>
+            </div>
         </div>
     );
 }

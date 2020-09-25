@@ -14,7 +14,7 @@ export default function DirectionFieldApprox({
     funcAtom,
     initialPointAtom = null,
     boundsAtom,
-    solutionCurveOptionsAtom,
+    curveOptionsAtom,
     radius = 0.05
 }) {
     const [mat, setMat] = useState();
@@ -27,9 +27,11 @@ export default function DirectionFieldApprox({
 
     const bounds = useAtom(boundsAtom)[0];
 
-    const { visible, color, approxH, width } = useAtom(solutionCurveOptionsAtom)[0];
+    const { visible, color, approxH, width } = useAtom(curveOptionsAtom)[0];
 
-    const sphereColorAtom = atom((get) => get(solutionCurveOptionsAtom).color);
+    console.log('visible is ', visible);
+
+    const sphereColorAtom = atom((get) => get(curveOptionsAtom).color);
 
     useEffect(() => {
         setMat(
