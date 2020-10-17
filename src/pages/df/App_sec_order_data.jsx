@@ -9,6 +9,7 @@ import TexDisplayComp from '../../components/TexDisplayComp.jsx';
 import TexDisplayCompR from '../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../components/Slider.jsx';
 
+import AxesData from '../../data/Axes2DData.jsx';
 import BoundsData from '../../data/BoundsData.jsx';
 import CurveData from '../../data/CurveData.jsx';
 
@@ -22,6 +23,15 @@ import { solnStrs } from '../../math/differentialEquations/secOrderConstantCoeff
 //
 // initial constants
 
+const colors = {
+    arrows: '#B01A46', //'#C2374F'
+    solutionCurve: '#4e6d87', //'#C2374F'
+    tick: '#e19662',
+    solutionCurve: '#C2374F',
+    point1: '#C2374F',
+    point2: '#C2374F'
+};
+
 const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
 const initXLabel = 'x';
@@ -33,14 +43,18 @@ const initBVal = 3.0;
 const initialInitialPoint1 = { x: 4, y: 7 };
 const initialInitialPoint2 = { x: 7, y: 5 };
 
-const initialPoint1Color = '#C2374F';
-const initialPoint2Color = '#C2374F';
-
 const initSolutionCurveData = {
-    color: '#C2374F',
+    color: colors.solutionCurve,
     approxH: 0.1,
     visible: true,
     width: 0.1
+};
+
+const initAxesData = {
+    radius: 0.01,
+    show: true,
+    showLabels: true,
+    tickRadiusMultiple: 5
 };
 
 // will have -abBound < a^2 - 4b > abBound
@@ -51,6 +65,19 @@ const aStep = 0.1;
 
 const initPrecision = 4;
 const sliderPrecision = 3;
+
+export const labelStyle = {
+    color: 'black',
+    padding: '.1em',
+    margin: '.5em',
+    padding: '.4em',
+    fontSize: '1.5em'
+};
+
+const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
+    fontSize: '1em',
+    color: colors.tick
+});
 
 //------------------------------------------------------------------------
 //
@@ -65,19 +92,29 @@ export const bValAtom = atom(initBVal);
 export const initialPoint1Atom = atom(initialInitialPoint1);
 export const initialPoint2Atom = atom(initialInitialPoint2);
 
-export const initialPoint1ColorAtom = atom(initialPoint1Color);
-export const initialPoint2ColorAtom = atom(initialPoint2Color);
+export const initialPoint1ColorAtom = atom(colors.point1);
+export const initialPoint2ColorAtom = atom(colors.point2);
 
 export const {
     atom: boundsAtom,
     component: BoundsInput,
     encode: boundsEncode,
     decode: boundsDecode,
-    length: bel
+    length: boundsDataLength
 } = BoundsData({
     initBounds,
     xLabelAtom,
     yLabelAtom
+});
+
+export const {
+    atom: axesDataAtom,
+    component: Axes2DDataInput,
+    encode: axesDataEncode,
+    decode: axesDataDecode
+} = AxesData({
+    ...initAxesData,
+    tickLabelStyle
 });
 
 export const {
@@ -141,10 +178,10 @@ export const encode = ([
 // value of each atom (this has to be done in react)
 export function decode(valueArray) {
     // aga = arrow grid array
-    const ba = valueArray.slice(0, bel);
-    const scoa = valueArray.slice(bel, bel + scoel);
+    const ba = valueArray.slice(0, boundsDataLength);
+    const scoa = valueArray.slice(boundsDataLength, boundsDataLength + scoel);
 
-    const n = bel + scoel;
+    const n = boundsDataLength + scoel;
 
     return [
         boundsDecode(ba),

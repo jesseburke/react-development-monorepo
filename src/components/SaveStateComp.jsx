@@ -44,6 +44,7 @@ export default React.memo(function SaveStateComp({ decode, encode, atomArray, ch
                     { state: stateStr },
                     {
                         decode: true,
+                        encode: true,
                         arrayFormat: 'comma'
                     }
                 )

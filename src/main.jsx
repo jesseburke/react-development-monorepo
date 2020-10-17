@@ -14,7 +14,7 @@ let title = 'default title';
 import App from './pages/df/App_df.jsx';
 
 //import App from './pages/df/App_simple_df.jsx';
-title = 'Direction field grapher';
+//title = 'Direction field grapher';
 
 //import App from './pages/df/App_sep.jsx';
 //title = 'Separable equation direction field grapher';
@@ -26,10 +26,12 @@ title = 'Direction field grapher';
 //title = 'Linear equation';
 
 //import App from './pages/df/App_sec_order.jsx';
-//title = 'Second order linear equation';
+title = 'Second order linear equation';
 
 //import App from './pages/df/App_sec_order_cases.jsx';
 //title = 'Second order linear equations';
+
+//import App from './pages/fg/App_fg_new.jsx';
 
 function main() {
     const element = document.createElement('div');

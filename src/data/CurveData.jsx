@@ -18,8 +18,13 @@ const defaultInitData = {
 
 const l = Object.keys(defaultInitData).length;
 
-const encode = ({ color, approxH, visible, width }) => [color, approxH, Number(visible), width];
-const decode = ([c, a, v, w]) => ({
+const encode = ({ color, approxH, visible, width }) => ({
+    c: color,
+    a: approxH,
+    v: Number(visible),
+    w: width
+});
+const decode = ({ c, a, v, w }) => ({
     color: c,
     approxH: Number(a),
     visible: v === '0' ? false : true,

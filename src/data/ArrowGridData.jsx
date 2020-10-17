@@ -20,9 +20,14 @@ function strArrayToArray(strArray, f = Number) {
     return strArray.split(',').map((x) => f(x));
 }
 
-const encode = ({ density, thickness, length, color }) => [density, thickness, length, color];
+const encode = ({ density, thickness, length, color }) => ({
+    d: density,
+    t: thickness,
+    l: length,
+    c: color
+});
 
-const decode = ([d, t, l, c]) => {
+const decode = ({ d, t, l, c }) => {
     return { density: Number(d), thickness: Number(t), length: Number(l), color: c };
 };
 

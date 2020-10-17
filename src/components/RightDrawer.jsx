@@ -1,28 +1,26 @@
 import React from 'react';
 
-import { jsx } from '@emotion/core';
-
 // width is expected in em's
-function rightDrawer({toShow, width = 25, children, color, fontSize='1em'}) {
+function rightDrawer({ toShow, width = 25, children, color, fontSize = '1em' }) {
+    const r = toShow ? 0 : (-width).toString() + 'em';
 
-    const r = toShow ? 0 : (-width).toString()+'em';
-
-    
-    return  <div
-              css={{
-                  position: 'absolute',                  
-                  top: '0',
-                  right: r,
-                  width: width.toString()+'em',
-                  padding: '1em 1.5em',
-                  zIndex: '100',
-                  backgroundColor: color,
-                  fontSize,
-                  userSelect: 'none'
-              }}             
-            >
-              {children}
-            </div>;
+    return (
+        <div
+            css={{
+                position: 'absolute',
+                top: '0',
+                right: r,
+                width: width.toString() + 'em',
+                padding: '1em 1.5em',
+                zIndex: '100',
+                backgroundColor: color,
+                fontSize,
+                userSelect: 'none'
+            }}
+        >
+            {children}
+        </div>
+    );
 }
 
 const RightDrawer = React.memo(rightDrawer);
@@ -43,20 +41,18 @@ export default RightDrawer;
 //         }
 //     });
 
-    
 //     return  <animated.div
 //               css={{
-//                   position: 'absolute',                  
+//                   position: 'absolute',
 //                   top: '0',
 //                   right: '0',
 //                   width: width.toString()+'em',
 //                   padding: '1em 1.5em',
 //                   zIndex: '100',
-//                   backgroundColor: '#9E9E9E',      
+//                   backgroundColor: '#9E9E9E',
 //               }}
 //               style={contentProps}
 //             >
 //               {children}
 //             </animated.div>;
 // }
-

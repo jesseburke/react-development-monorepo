@@ -30,9 +30,13 @@ const defaultInitValues = {
     tickLabelStyle: defaultTickLabelStyle
 };
 
-const encode = ({ radius, color, tickLabelDistance }) => [radius, color, tickLabelDistance];
+const encode = ({ radius, color, tickLabelDistance }) => ({
+    r: radius,
+    c: color,
+    tld: tickLabelDistance
+});
 
-const decode = ([r, c, tld]) => {
+const decode = ({ r, c, tld }) => {
     return { radius: Number(r), tickLabelDistance: Number(tld), color: c };
 };
 
@@ -94,6 +98,6 @@ export default function Axes2DData(args) {
         component: Axes2DDataInput,
         encode,
         decode,
-        length: 4
+        length: 3
     };
 }

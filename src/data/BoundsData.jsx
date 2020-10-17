@@ -19,8 +19,8 @@ function strArrayToArray(strArray, f = Number) {
     return strArray.split(',').map((x) => f(x));
 }
 
-const encode = ({ xMin, xMax, yMin, yMax }) => [xMin, xMax, yMin, yMax];
-const decode = ([xm, xmx, ym, ymx]) => ({
+const encode = ({ xMin, xMax, yMin, yMax }) => ({ xm: xMin, xp: xMax, ym: yMin, yp: yMax });
+const decode = ({ xm, xmx, ym, ymx }) => ({
     xMin: Number(xm),
     xMax: Number(xmx),
     yMin: Number(ym),

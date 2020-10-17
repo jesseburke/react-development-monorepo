@@ -32,6 +32,7 @@ import {
     initialPoint2Atom,
     initialPoint1ColorAtom,
     initialPoint2ColorAtom,
+    InitialPointsInput,
     CaseDisplay,
     xLabelAtom,
     yLabelAtom,
@@ -110,17 +111,9 @@ const controlBarFontSize = 0.85;
 //------------------------------------------------------------------------
 
 export default function App() {
-    const threeSceneRef = useRef(null);
+    const threeSceneRef = useRef();
 
-    // following passed to components that need to draw
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    // following is hacky way to get three displayed on render
-    useEffect(() => {
-        if (!threeCBs || !threeSceneRef) return;
-
-        window.dispatchEvent(new Event('resize'));
-    }, [threeCBs, threeSceneRef]);
+    useHackyThreeInitDisplay(threeSceneRef);
 
     return (
         <JProvider>
@@ -132,6 +125,7 @@ export default function App() {
                     >
                         <TitleEquationComp />
                         <CaseDisplay />
+                        <InitialPointsInput />
                         <CharEquationRootDisplay />
                     </ControlBar>
                 </Provider>
@@ -179,6 +173,26 @@ export default function App() {
             </FullScreenBaseComponent>
         </JProvider>
     );
+}
+
+function useHackyThreeInitDisplay(threeSceneRef) {
+    // following is very hacky way to get three displayed on initial render
+    const threeCBs = useThreeCBs(threeSceneRef);
+
+    const [loadAgain, setLoadAgain] = useState(0);
+
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        window.dispatchEvent(new Event('resize'));
+        setLoadAgain(1);
+    }, [threeCBs]);
+
+    useEffect(() => {
+        if (loadAgain < 1) return;
+
+        window.dispatchEvent(new Event('resize'));
+    }, [loadAgain]);
 }
 
 const OptionsModal = React.memo(({}) => {

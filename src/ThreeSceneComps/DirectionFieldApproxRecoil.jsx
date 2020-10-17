@@ -29,8 +29,6 @@ export default function DirectionFieldApprox({
 
     const { visible, color, approxH, width } = useAtom(curveOptionsAtom)[0];
 
-    console.log('visible is ', visible);
-
     const sphereColorAtom = atom((get) => get(curveOptionsAtom).color);
 
     useEffect(() => {

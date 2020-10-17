@@ -46,7 +46,7 @@ import {
     SolutionCurveOptionsInput,
     EquationInput,
     axesDataAtom,
-    Axes2DDataInput
+    AxesDataInput
 } from './App_df_data.jsx';
 
 const initColors = {
@@ -100,15 +100,9 @@ const controlBarFontSize = 1;
 //------------------------------------------------------------------------
 
 export default function App() {
-    const threeSceneRef = useRef(null);
-    const threeCBs = useThreeCBs(threeSceneRef);
+    const threeSceneRef = useRef();
 
-    useEffect(() => {
-        if (!threeCBs || !threeSceneRef) return;
-
-        window.dispatchEvent(new Event('resize'));
-    }, [threeCBs, threeSceneRef]);
-
+    useHackyThreeInitDisplay(threeSceneRef);
     return (
         <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
@@ -130,7 +124,7 @@ export default function App() {
                     <ThreeSceneComp
                         initCameraData={initCameraData}
                         controlsData={initControlsData}
-                        ref={threeSceneRef}
+                        ref={(elt) => (threeSceneRef.current = elt)}
                     >
                         <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
@@ -158,6 +152,26 @@ export default function App() {
             </FullScreenBaseComponent>
         </JProvider>
     );
+}
+
+function useHackyThreeInitDisplay(threeSceneRef) {
+    // following is very hacky way to get three displayed on initial render
+    const threeCBs = useThreeCBs(threeSceneRef);
+
+    const [loadAgain, setLoadAgain] = useState(0);
+
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        window.dispatchEvent(new Event('resize'));
+        setLoadAgain(1);
+    }, [threeCBs]);
+
+    useEffect(() => {
+        if (loadAgain < 1) return;
+
+        window.dispatchEvent(new Event('resize'));
+    }, [loadAgain]);
 }
 
 function OptionsModal() {
@@ -200,7 +214,7 @@ function OptionsModal() {
                         <ArrowGridDataInput />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <Axes2DDataInput />
+                        <AxesDataInput />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <BoundsInput />

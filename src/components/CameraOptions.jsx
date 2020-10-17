@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { Button } from '@jesseburke/basic-react-components';
+import Button from './Button.jsx';
 
 export default function CameraOptions({ cameraData: { position }, onChangeFunc }) {
     const [change, setChange] = useState(false);
@@ -30,7 +30,8 @@ function DisplayCameraPositionComp({ position, onClickFunc }) {
                 justifyContent: 'center',
                 padding: '.5em',
                 userSelect: 'none'
-            }}>
+            }}
+        >
             <div
                 css={{
                     paddingTop: '2.5em',
@@ -41,7 +42,8 @@ function DisplayCameraPositionComp({ position, onClickFunc }) {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     alignItems: 'center'
-                }}>
+                }}
+            >
                 <div>Camera position: </div>
                 <div> x = {roundTwoPlaces(position[0].toString())} </div>
                 <div> y = {roundTwoPlaces(position[1].toString())} </div>
@@ -54,7 +56,8 @@ function DisplayCameraPositionComp({ position, onClickFunc }) {
                     paddingLeft: '1.5em',
                     paddingBottom: '1em',
                     paddingRight: '3em'
-                }}>
+                }}
+            >
                 <Button onClickFunc={onClickFunc} fontSize='.8'>
                     Change position
                 </Button>
@@ -78,11 +81,13 @@ function ChangeCameraComp({ cbFunc, startingPosition }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '2em'
-            }}>
+            }}
+        >
             <div
                 css={{
                     padding: '1em'
-                }}>
+                }}
+            >
                 New camera position:
             </div>
 
@@ -105,7 +110,8 @@ function ChangeCameraComp({ cbFunc, startingPosition }) {
                         paddingLeft: '1em',
                         paddingBottom: '1em',
                         paddingRight: '2em'
-                    }}>
+                    }}
+                >
                     <Button
                         onClickFunc={() =>
                             cbFunc([
@@ -114,7 +120,8 @@ function ChangeCameraComp({ cbFunc, startingPosition }) {
                                 eval(Number(zinput.current.value))
                             ])
                         }
-                        fontSize='1'>
+                        fontSize='1'
+                    >
                         Set
                     </Button>
                 </div>

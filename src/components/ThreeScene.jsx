@@ -180,7 +180,7 @@ function ThreeScene(
             </React.Fragment>
             <div className={styles.noOutline} ref={(elt) => (labelContainerRef.current = elt)} />
             <div className={styles['photo-button']} onClick={threeScene.downloadPicture}>
-                <span>Photo!</span>
+                <span>{'\u{1f4f7}'}</span>
             </div>
         </div>
     );

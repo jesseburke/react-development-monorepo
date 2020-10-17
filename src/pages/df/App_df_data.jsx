@@ -45,8 +45,7 @@ const initFuncStr = 'x*y*sin(x+y)/10';
 const initAxesData = {
     radius: 0.01,
     show: true,
-    showLabels: true,
-    tickRadiusMultiple: 5
+    tickLabelDistance: 5
 };
 
 export const labelStyle = {
@@ -67,7 +66,6 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 // primitive atoms
 
 export const xLabelAtom = atom(initXLabel);
-
 export const yLabelAtom = atom(initYLabel);
 
 export const initialPointAtom = atom(initialInitialPoint);
@@ -79,23 +77,26 @@ export const {
     component: ArrowGridDataInput,
     encode: arrowGridDataEncode,
     decode: arrowGridDataDecode,
-    length: agoel // agoel = arrow grid options encode length
+    length: arrowGridDataLength
 } = ArrowGridData(initArrowData);
 
 export const {
     atom: axesDataAtom,
-    component: Axes2DDataInput,
-    encode: axes2DDataEncode,
-    decode: axes2DDataDecode,
-    length: adel // agoel = arrow grid options encode length
-} = AxesData({ ...initAxesData, tickLabelStyle });
+    component: AxesDataInput,
+    encode: axesDataEncode,
+    decode: axesDataDecode,
+    length: axesDataLength
+} = AxesData({
+    ...initAxesData,
+    tickLabelStyle
+});
 
 export const {
     atom: boundsAtom,
     component: BoundsInput,
-    encode: boundsEncode,
-    decode: boundsDecode,
-    length: bel
+    length: boundsDataLength,
+    encode: boundsDataEncode,
+    decode: boundsDataDecode
 } = BoundsData({
     initBounds,
     xLabelAtom,
@@ -105,9 +106,9 @@ export const {
 export const {
     atom: solutionCurveOptionsAtom,
     component: SolutionCurveOptionsInput,
-    encode: solutionCurveOptionsEncode,
-    decode: solutionCurveOptionsDecode,
-    length: scoel
+    length: curveDataLength,
+    encode: curveDataEncode,
+    decode: curveDataDecode
 } = CurveData(initSolutionCurveData);
 
 //------------------------------------------------------------------------
@@ -119,6 +120,7 @@ export const {
 
 export const atomArray = [
     arrowGridDataAtom,
+    axesDataAtom,
     boundsAtom,
     solutionCurveOptionsAtom,
     xLabelAtom,
@@ -129,45 +131,48 @@ export const atomArray = [
 
 // should be pure function
 
-export const encode = ([
-    arrowGridOptions,
-    bounds,
-    solutionCurveOptions,
+export function encode([
+    arrowGridData,
+    axesData,
+    boundsData,
+    solutionCurveData,
     xLabel,
     yLabel,
     initialPoint,
     funcStr
-]) => {
-    const agoe = arrowGridDataEncode(arrowGridOptions);
+]) {
+    const agd = arrowGridDataEncode(arrowGridData);
 
-    const be = boundsEncode(bounds);
+    const ad = axesDataEncode(axesData);
 
-    const scoe = solutionCurveOptionsEncode(solutionCurveOptions);
+    const bd = boundsDataEncode(boundsData);
 
-    return [...agoe, ...be, ...scoe, xLabel, yLabel, initialPoint.x, initialPoint.y, funcStr];
-};
+    const scd = curveDataEncode(solutionCurveData);
 
-// this function expects an array in the form returned by encode,
+    return { agd, ad, bd, scd, xl: xLabel, yl: yLabel, ip: initialPoint, fs: funcStr };
+}
+
+// this function expects an object, in the form returned by encode,
 // returns an array that can be cycled through and used to set the
 // value of each atom (this has to be done in react)
-export function decode(valueArray) {
+export function decode(objectToDecode) {
     // aga = arrow grid array
-    const aga = valueArray.slice(0, agoel);
-    const ba = valueArray.slice(agoel, agoel + bel);
-    const scoa = valueArray.slice(agoel + bel, agoel + bel + scoel);
+    const agd = objectToDecode.agd;
+    const ad = objectToDecode.ad;
+    const bd = objectToDecode.bd;
+    const scd = objectToDecode.scd;
 
-    const n = agoel + bel + scoel;
-
-    console.log(scoa);
+    const l = arrowGridDataLength + axesDataLength + boundsDataLength + curveDataLength;
 
     return [
-        arrowGridDataDecode(aga),
-        boundsDecode(ba),
-        solutionCurveOptionsDecode(scoa),
-        valueArray[n],
-        valueArray[n + 1],
-        { x: Number(valueArray[n + 2]), y: Number(valueArray[n + 3]) },
-        valueArray[n + 4]
+        arrowGridDataDecode(agd),
+        axesDataDecode(ad),
+        boundsDataDecode(bd),
+        curveDataDecode(scd),
+        objectToDecode.xl,
+        objectToDecode.yl,
+        objectToDecode.ip,
+        objectToDecode.fs
     ];
 }
 
@@ -190,8 +195,6 @@ export const EquationInput = React.memo(function SepEquationI({}) {
     const [xLabel] = useAtom(xLabelAtom);
     const [yLabel] = useAtom(yLabelAtom);
 
-    const cssRef = useRef({ padding: '.05em' }, []);
-    const cssRef2 = useRef({ paddingRight: '.5em' }, []);
     const cssRef3 = useRef({ padding: '1em 0em' }, []);
 
     const funcInputCB = useCallback((str) => setFuncStr(str), [setFuncStr]);
