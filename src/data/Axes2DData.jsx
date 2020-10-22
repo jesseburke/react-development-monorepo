@@ -41,10 +41,19 @@ const decode = ({ r, c, tld }) => {
 };
 
 export default function Axes2DData(args) {
-    const axesOptionsAtom = atom({ ...defaultInitValues, ...args });
+    const aoAtom = atom({ ...defaultInitValues, ...args });
+    const aoStringRepAtom = atom((get) => {
+        const { radius, color, tickLabelDistance } = get(aoAtom);
+
+        return JSON.stringify({
+            r: radius,
+            c: color,
+            tld: tickLabelDistance
+        });
+    });
 
     function Axes2DDataInput() {
-        const [ao, setAo] = useAtom(axesOptionsAtom);
+        const [ao, setAo] = useAtom(aoAtom);
 
         const { radius, color, tickLabelDistance } = ao;
 
@@ -94,7 +103,8 @@ export default function Axes2DData(args) {
     }
 
     return {
-        atom: axesOptionsAtom,
+        atom: aoAtom,
+        stringRepAtom: aoStringRepAtom,
         component: Axes2DDataInput,
         encode,
         decode,

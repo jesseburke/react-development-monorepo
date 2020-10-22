@@ -33,6 +33,10 @@ export default function BoundsData({
     initBounds = {}
 } = {}) {
     const boundsAtom = atom({ ...defaultInitBounds, ...initBounds });
+    const bStringRepAtom = atom((get) => {
+        const { xMin, xMax, yMin, yMax } = get(boundsAtom);
+        return JSON.stringify({ xm: xMin, xp: xMax, ym: yMin, yp: yMax });
+    });
 
     const component = React.memo(function BoundsInput({}) {
         const [bounds, setBounds] = useAtom(boundsAtom);
@@ -92,5 +96,12 @@ export default function BoundsData({
         );
     });
 
-    return { atom: boundsAtom, component, encode, decode, length: 4 };
+    return {
+        atom: boundsAtom,
+        stringRepAtom: bStringRepAtom,
+        component,
+        encode,
+        decode,
+        length: 4
+    };
 }

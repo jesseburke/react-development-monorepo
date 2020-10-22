@@ -34,14 +34,18 @@ const decode = ({ c, a, v, w }) => ({
 //console.log(decode(encode(defaultInitData)));
 
 export default function CurveData(initData = {}) {
-    const curveDataAtom = atom({ ...defaultInitData, ...initData });
+    const cdAtom = atom({ ...defaultInitData, ...initData });
+    const cdStringRepAtom = atom((get) => {
+        const { color, approxH, visible, width } = get(cdAtom);
+        JSON.stringify({ c: color, a: approxH, v: visible, w: width });
+    });
 
     const toggleVisibleAtom = atom(null, (get, set) =>
-        set(curveDataAtom, { ...get(curveDataAtom), visible: !get(curveDataAtom).visible })
+        set(cdAtom, { ...get(cdAtom), visible: !get(cdAtom).visible })
     );
 
     const component = React.memo(function CurveOptionsInput({}) {
-        const [data, setData] = useAtom(curveDataAtom);
+        const [data, setData] = useAtom(cdAtom);
 
         const toggleVisible = useAtom(toggleVisibleAtom)[1];
 
@@ -101,5 +105,5 @@ export default function CurveData(initData = {}) {
         );
     });
 
-    return { component, atom: curveDataAtom, encode, decode, length: l };
+    return { component, atom: cdAtom, stringRepAtom: cdStringRepAtom, encode, decode, length: l };
 }

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
+import { Provider } from 'jotai';
+
 import './index.css';
 
 let title = 'default title';
@@ -11,7 +13,9 @@ let title = 'default title';
 
 //import App from './pages/df/App_canvas_test.jsx';
 
-import App from './pages/df/App_df.jsx';
+//import App from './pages/df/App_df.jsx';
+
+import App from './pages/df/App_df_test.jsx';
 
 //import App from './pages/df/App_simple_df.jsx';
 //title = 'Direction field grapher';
@@ -36,14 +40,14 @@ title = 'Second order linear equation';
 function main() {
     const element = document.createElement('div');
     ReactDOM.render(
-        <React.Fragment>
+        <Provider>
             <Helmet>
                 <meta name='viewport' content='width=device-width, user-scalable=no' />
                 <title>{title}</title>
             </Helmet>
 
             <App />
-        </React.Fragment>,
+        </Provider>,
         element
     );
 

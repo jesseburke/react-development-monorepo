@@ -34,10 +34,19 @@ const decode = ({ d, t, l, c }) => {
 //console.log(decode(encode(defaultInitValues)));
 
 export default function ArrowGridData(args) {
-    const arrowGridOptionsAtom = atom({ ...defaultInitValues, ...args });
+    const agAtom = atom({ ...defaultInitValues, ...args });
+    const stringRepAtom = atom((get) => {
+        const { density, thickness, length, color } = get(agAtom);
+        return JSON.stringify({
+            d: density,
+            t: thickness,
+            l: length,
+            c: color
+        });
+    });
 
     function ArrowGridOptionsInput() {
-        const [agda, setAgda] = useAtom(arrowGridOptionsAtom);
+        const [agda, setAgda] = useAtom(agAtom);
 
         const { density, thickness, length, color } = agda;
 
@@ -101,7 +110,8 @@ export default function ArrowGridData(args) {
     }
 
     return {
-        atom: arrowGridOptionsAtom,
+        atom: agAtom,
+        stringRepAtom,
         component: ArrowGridOptionsInput,
         encode,
         decode,
