@@ -20,21 +20,15 @@ import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import SaveStateComp from '../../components/SaveStateComp.jsx';
 
 import Grid from '../../ThreeSceneComps/Grid.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
 
 import {
-    decode,
-    encode,
-    atomArray,
     arrowGridDataAtom,
-    agStringRepAtom,
     ArrowGridDataInput,
     boundsAtom,
     BoundsInput,
@@ -43,8 +37,8 @@ import {
     funcAtom,
     xLabelAtom,
     yLabelAtom,
-    solutionCurveOptionsAtom,
-    SolutionCurveOptionsInput,
+    solutionCurveDataAtom,
+    SolutionCurveDataInput,
     EquationInput,
     axesDataAtom,
     AxesDataInput,
@@ -102,12 +96,6 @@ const controlBarFontSize = 1;
 //------------------------------------------------------------------------
 
 export default function App() {
-    const [stringRep] = useAtom(agStringRepAtom);
-
-    // useEffect(() => {
-    //     console.log(stringRep);
-    // }, [stringRep]);
-
     return (
         <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
             <Provider unstable_system={system}>
@@ -192,7 +180,7 @@ function OptionsModal() {
                         <BoundsInput />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveOptionsInput />
+                        <SolutionCurveDataInput />
                     </TabPanel>
                 </>
             </Dialog>

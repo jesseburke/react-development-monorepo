@@ -2,28 +2,36 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
+import queryString from 'query-string-esm';
+
 import { Checkbox } from 'reakit/Checkbox';
 
 import classnames from 'classnames';
 import styles from './CurveData.module.css';
 
 import Input from '../components/Input.jsx';
+import { diffObjects } from '../utils/BaseUtils.jsx';
 
-const defaultInitData = {
+const defaultInitValues = {
     color: '#C2374F',
     approxH: 0.1,
     visible: true,
     width: 0.1
 };
 
-const l = Object.keys(defaultInitData).length;
+const encode = (newObj) => {
+    const { color, approxH, visible, width } = diffObjects(newObj, defaultInitValues);
 
-const encode = ({ color, approxH, visible, width }) => ({
-    c: color,
-    a: approxH,
-    v: Number(visible),
-    w: width
-});
+    let ro = {};
+
+    if (color) ro.c = color;
+    if (approxH) ro.a = approxH;
+    if (visible) ro.v = visible;
+    if (width) ro.w = width;
+
+    return queryString.stringify(ro);
+};
+
 const decode = ({ c, a, v, w }) => ({
     color: c,
     approxH: Number(a),
@@ -34,11 +42,7 @@ const decode = ({ c, a, v, w }) => ({
 //console.log(decode(encode(defaultInitData)));
 
 export default function CurveData(initData = {}) {
-    const cdAtom = atom({ ...defaultInitData, ...initData });
-    const cdStringRepAtom = atom((get) => {
-        const { color, approxH, visible, width } = get(cdAtom);
-        JSON.stringify({ c: color, a: approxH, v: visible, w: width });
-    });
+    const cdAtom = atom({ ...defaultInitValues, ...initData });
 
     const toggleVisibleAtom = atom(null, (get, set) =>
         set(cdAtom, { ...get(cdAtom), visible: !get(cdAtom).visible })
@@ -105,5 +109,5 @@ export default function CurveData(initData = {}) {
         );
     });
 
-    return { component, atom: cdAtom, stringRepAtom: cdStringRepAtom, encode, decode, length: l };
+    return { component, atom: cdAtom, encode, decode };
 }

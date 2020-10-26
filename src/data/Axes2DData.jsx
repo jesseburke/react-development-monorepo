@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
+import queryString from 'query-string-esm';
+
 import Input from '../components/Input.jsx';
+import { diffObjects } from '../utils/BaseUtils.jsx';
 
 import classnames from 'classnames';
 import styles from './ArrowGridData.module.css';
@@ -30,11 +33,20 @@ const defaultInitValues = {
     tickLabelStyle: defaultTickLabelStyle
 };
 
-const encode = ({ radius, color, tickLabelDistance }) => ({
-    r: radius,
-    c: color,
-    tld: tickLabelDistance
-});
+// function that diffs two objects? e.g., return all the fields and
+// values of the seoncd that do not occur in the first.
+
+function encode(newObj) {
+    const { radius, color, tickLabelDistance } = diffObjects(newObj, defaultInitValues);
+
+    let ro = {};
+
+    if (radius) ro.r = radius;
+    if (color) ro.c = color;
+    if (tickLabelDistance) ro.tld = tickLabelDistance;
+
+    return queryString.stringify(ro);
+}
 
 const decode = ({ r, c, tld }) => {
     return { radius: Number(r), tickLabelDistance: Number(tld), color: c };
@@ -42,15 +54,6 @@ const decode = ({ r, c, tld }) => {
 
 export default function Axes2DData(args) {
     const aoAtom = atom({ ...defaultInitValues, ...args });
-    const aoStringRepAtom = atom((get) => {
-        const { radius, color, tickLabelDistance } = get(aoAtom);
-
-        return JSON.stringify({
-            r: radius,
-            c: color,
-            tld: tickLabelDistance
-        });
-    });
 
     function Axes2DDataInput() {
         const [ao, setAo] = useAtom(aoAtom);
@@ -104,10 +107,8 @@ export default function Axes2DData(args) {
 
     return {
         atom: aoAtom,
-        stringRepAtom: aoStringRepAtom,
         component: Axes2DDataInput,
         encode,
-        decode,
-        length: 3
+        decode
     };
 }

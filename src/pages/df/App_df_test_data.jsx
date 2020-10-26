@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 import { useAtomCallback } from 'jotai/utils';
 
+import queryString from 'query-string-esm';
+
 import classnames from 'classnames';
 import styles from './base_styles.module.css';
 
@@ -14,6 +16,7 @@ import CurveData from '../../data/CurveData.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
 import { round } from '../../utils/BaseUtils.jsx';
+
 //------------------------------------------------------------------------
 //
 // initial constants
@@ -66,45 +69,26 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-const makeDataFromSingleValue = (value, stringToValueFunc) => {
-    const a = atom(value);
-    const sra = atom((get) => get(a).toString());
+export const xLabelAtom = atom(initXLabel);
 
-    return { atom: a, stringRepAtom: sra };
-};
+export const yLabelAtom = atom(initYLabel);
 
-export const { atom: xLabelAtom, stringRepAtom: xlStringRepAtom } = makeDataFromSingleValue(
-    initXLabel
-);
+export const initialPointAtom = atom(initialInitialPoint);
 
-export const { atom: yLabelAtom, stringRepAtom: ylStringRepAtom } = makeDataFromSingleValue(
-    initYLabel
-);
-
-export const { atom: initialPointAtom, stringRepAtom: ipStringRepAtom } = makeDataFromSingleValue(
-    initialInitialPoint
-);
-
-export const { atom: funcStrAtom, stringRepAtom: fStringRepAtom } = makeDataFromSingleValue(
-    initFuncStr
-);
+export const funcStrAtom = atom(initFuncStr);
 
 export const {
     atom: arrowGridDataAtom,
-    stringRepAtom: agStringRepAtom,
     component: ArrowGridDataInput,
     encode: arrowGridDataEncode,
-    decode: arrowGridDataDecode,
-    length: arrowGridDataLength
+    decode: arrowGridDataDecode
 } = ArrowGridData(initArrowData);
 
 export const {
     atom: axesDataAtom,
-    stringRepAtom: axStringRepAtom,
     component: AxesDataInput,
     encode: axesDataEncode,
-    decode: axesDataDecode,
-    length: axesDataLength
+    decode: axesDataDecode
 } = AxesData({
     ...initAxesData,
     tickLabelStyle
@@ -112,9 +96,7 @@ export const {
 
 export const {
     atom: boundsAtom,
-    stringRepAtom: bStringRepAtom,
     component: BoundsInput,
-    length: boundsDataLength,
     encode: boundsDataEncode,
     decode: boundsDataDecode
 } = BoundsData({
@@ -124,44 +106,82 @@ export const {
 });
 
 export const {
-    atom: solutionCurveOptionsAtom,
-    stringRepAtom: scStringRepAtom,
-    component: SolutionCurveOptionsInput,
-    length: curveDataLength,
+    atom: solutionCurveDataAtom,
+    component: SolutionCurveDataInput,
     encode: curveDataEncode,
     decode: curveDataDecode
 } = CurveData(initSolutionCurveData);
 
 //------------------------------------------------------------------------
 
-const stringAtomStore = {
-    xl: xlStringRepAtom,
-    yl: ylStringRepAtom,
-    ip: ipStringRepAtom,
-    f: fStringRepAtom,
-    ag: agStringRepAtom,
-    ax: axStringRepAtom,
-    b: bStringRepAtom,
-    sc: scStringRepAtom
+// the first entry in each array is the atom; the second is a function to
+// turn the atom value into a string;
+
+const atomStore = {
+    xl: [xLabelAtom, (x) => (x ? x.toString() : null)],
+    yl: [yLabelAtom, (x) => (x ? x.toString() : null)],
+    ip: [initialPointAtom, JSON.stringify],
+    fs: [funcStrAtom, (x) => (x ? x.toString() : null)],
+    ag: [arrowGridDataAtom, arrowGridDataEncode],
+    ax: [axesDataAtom, axesDataEncode],
+    bd: [boundsAtom, boundsDataEncode],
+    sc: [solutionCurveDataAtom, curveDataEncode]
 };
 
-export function SaveComp({ children }) {
+// function will take as input an object like the atomStore
+// above. will return saveCB
+
+function useSaveToAddressBar(atomStore) {
+    const [saveStr, setSaveStr] = useState();
+
     const readAtoms = useAtomCallback(
         useCallback((get) => {
-            const xLabel = get(axesDataAtom);
+            const objToReturn = {};
 
-            return xLabel;
+            Object.entries(atomStore).map(([abbrev, [at, func]]) => {
+                const newValue = func(get(at));
+
+                // don't need to put empty strings in address bar
+                if (!newValue || newValue.length === 0) return;
+
+                objToReturn[abbrev] = newValue;
+            });
+
+            //console.log(returnObj);
+            //console.log(queryString.stringify(returnObj));
+            //console.log(queryString.parse(queryString.stringify(returnObj)));
+
+            return queryString.stringify(objToReturn);
         }, [])
     );
 
-    const testcb = useCallback(
-        () =>
-            setTimeout(async () => {
-                console.log(await readAtoms());
-            }, 1000),
-        []
-    );
+    const saveCB = useCallback(() => {
+        readAtoms().then((str) => setSaveStr(str));
+    }, [readAtoms]);
 
+    // whenever saveStr changes, update the search bar
+    useEffect(() => {
+        if (!saveStr || saveStr.length === 0) return;
+
+        window.history.replaceState(null, null, '?' + saveStr);
+    }, [saveStr]);
+
+    return saveCB;
+}
+
+export function SaveComp({ children }) {
+    const saveCB = useSaveToAddressBar(atomStore);
+
+    // on load parse the address bar data and dole it out to atoms
+    useEffect(() => {
+        const qsObj = queryString.parse(window.location.search.slice(1));
+
+        console.log(qsObj);
+    }, []);
+
+    // could put following into 'default save button' component, if
+    // wanted to make this component smaller (e.g., if add code to
+    // write to atoms
     const cssRef = useRef({
         position: 'absolute',
         top: '85%',
@@ -177,76 +197,14 @@ export function SaveComp({ children }) {
     const cssRef2 = useRef({ padding: '.15em', fontSize: '2rem' });
 
     const component = children ? (
-        React.cloneElement(children[0], { onClick: testcb })
+        React.cloneElement(children[0], { onClick: saveCB })
     ) : (
-        <div style={cssRef.current} onClick={testcb}>
+        <div style={cssRef.current} onClick={saveCB}>
             <span style={cssRef2.current}>{'\u{1F4BE}'}</span>
         </div>
     );
 
     return component;
-}
-
-//------------------------------------------------------------------------
-//
-// older approach to saving
-
-export const atomArray = [
-    arrowGridDataAtom,
-    axesDataAtom,
-    boundsAtom,
-    solutionCurveOptionsAtom,
-    xLabelAtom,
-    yLabelAtom,
-    initialPointAtom,
-    funcStrAtom
-];
-
-// should be pure function
-
-export function encode([
-    arrowGridData,
-    axesData,
-    boundsData,
-    solutionCurveData,
-    xLabel,
-    yLabel,
-    initialPoint,
-    funcStr
-]) {
-    const agd = arrowGridDataEncode(arrowGridData);
-
-    const ad = axesDataEncode(axesData);
-
-    const bd = boundsDataEncode(boundsData);
-
-    const scd = curveDataEncode(solutionCurveData);
-
-    return { agd, ad, bd, scd, xl: xLabel, yl: yLabel, ip: initialPoint, fs: funcStr };
-}
-
-// this function expects an object, in the form returned by encode,
-// returns an array that can be cycled through and used to set the
-// value of each atom (this has to be done in react)
-export function decode(objectToDecode) {
-    // aga = arrow grid array
-    const agd = objectToDecode.agd;
-    const ad = objectToDecode.ad;
-    const bd = objectToDecode.bd;
-    const scd = objectToDecode.scd;
-
-    const l = arrowGridDataLength + axesDataLength + boundsDataLength + curveDataLength;
-
-    return [
-        arrowGridDataDecode(agd),
-        axesDataDecode(ad),
-        boundsDataDecode(bd),
-        curveDataDecode(scd),
-        objectToDecode.xl,
-        objectToDecode.yl,
-        objectToDecode.ip,
-        objectToDecode.fs
-    ];
 }
 
 //------------------------------------------------------------------------

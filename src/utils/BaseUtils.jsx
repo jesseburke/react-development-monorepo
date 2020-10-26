@@ -161,6 +161,42 @@ const radToDeg = (rad) => rad * 57.2958;
 
 const degToRad = (deg) => deg * 0.0174533;
 
+//------------------------------------------------------------------------
+
+export function diffObjects(ob1, ob2) {
+    let result = {};
+    let keys1 = Object.keys(ob1);
+    let keys2 = Object.keys(ob2);
+
+    keys1.forEach((k) => {
+        if (keys2.includes(k)) {
+            if (!(ob1[k] === ob2[k])) result[k] = ob1[k];
+        }
+    });
+
+    return result;
+}
+
+// called on
+
+// const ob1 = {
+//     '48': '{"sid":"48","name":"title 1"}',
+//     '77': '{"sid":"77","name":"The blahblah title"}',
+//     '83': '{"sid":"83","name":"The blahblah derp"}',
+//     '87': '{"sid":"87","name":"The derpy title 4"}'
+// };
+
+// const obj2 = {
+//     '48': '{"sid":"48","name":"title 1"}',
+//     '77': '{"sid":"77","name":"The blahblah title"}'
+// };
+
+// // should return
+// const ob = {
+//     '83': '{"sid":"83","name":"The blahblah derp"}',
+//     '87': '{"sid":"87","name":"The derpy title 4"}'
+// };
+
 export {
     isZero,
     scalarMultiply,

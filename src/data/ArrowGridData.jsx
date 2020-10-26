@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
+import queryString from 'query-string-esm';
+
 import Input from '../components/Input.jsx';
 
 import classnames from 'classnames';
 import styles from './ArrowGridData.module.css';
+
+import { diffObjects } from '../utils/BaseUtils.jsx';
 
 const defaultInitValues = {
     density: 1,
@@ -20,12 +24,19 @@ function strArrayToArray(strArray, f = Number) {
     return strArray.split(',').map((x) => f(x));
 }
 
-const encode = ({ density, thickness, length, color }) => ({
-    d: density,
-    t: thickness,
-    l: length,
-    c: color
-});
+const encode = (newObj) => {
+    const { density, thickness, length, color } = diffObjects(newObj, defaultInitValues);
+
+    let ro = {};
+
+    if (density) ro.d = density;
+    if (thickness) ro.t = thickness;
+    if (length) ro.l = length;
+    if (color) ro.c = color;
+
+    return queryString.stringify(ro);
+    //queryString.stringify({ d: density, t: thickness, l: length, c: color });
+};
 
 const decode = ({ d, t, l, c }) => {
     return { density: Number(d), thickness: Number(t), length: Number(l), color: c };
@@ -35,15 +46,6 @@ const decode = ({ d, t, l, c }) => {
 
 export default function ArrowGridData(args) {
     const agAtom = atom({ ...defaultInitValues, ...args });
-    const stringRepAtom = atom((get) => {
-        const { density, thickness, length, color } = get(agAtom);
-        return JSON.stringify({
-            d: density,
-            t: thickness,
-            l: length,
-            c: color
-        });
-    });
 
     function ArrowGridOptionsInput() {
         const [agda, setAgda] = useAtom(agAtom);
@@ -111,10 +113,8 @@ export default function ArrowGridData(args) {
 
     return {
         atom: agAtom,
-        stringRepAtom,
         component: ArrowGridOptionsInput,
         encode,
-        decode,
-        length: 4
+        decode
     };
 }

@@ -5,21 +5,30 @@ import { atom, useAtom } from 'jotai';
 import classnames from 'classnames';
 import styles from './BoundsData.module.css';
 
+import queryString from 'query-string-esm';
+
 import Input from '../components/Input.jsx';
+
+import { diffObjects } from '../utils/BaseUtils.jsx';
 
 const defaultXLabelAtom = atom('x');
 const defaultYLabelAtom = atom('y');
 
 const defaultInitBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
-function strArrayToArray(strArray, f = Number) {
-    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
-    // f is a function applied to the string representing each array element
+const encode = (newObj) => {
+    const { xMin, xMax, yMin, yMax } = diffObjects(newObj, defaultInitBounds);
 
-    return strArray.split(',').map((x) => f(x));
-}
+    let ro = {};
 
-const encode = ({ xMin, xMax, yMin, yMax }) => ({ xm: xMin, xp: xMax, ym: yMin, yp: yMax });
+    if (xMax) ro.xp = xMax;
+    if (xMin) ro.xm = xMin;
+    if (yMax) ro.yp = yMax;
+    if (yMin) ro.ym = yMin;
+
+    return queryString.stringify(ro);
+};
+
 const decode = ({ xm, xmx, ym, ymx }) => ({
     xMin: Number(xm),
     xMax: Number(xmx),
@@ -33,10 +42,6 @@ export default function BoundsData({
     initBounds = {}
 } = {}) {
     const boundsAtom = atom({ ...defaultInitBounds, ...initBounds });
-    const bStringRepAtom = atom((get) => {
-        const { xMin, xMax, yMin, yMax } = get(boundsAtom);
-        return JSON.stringify({ xm: xMin, xp: xMax, ym: yMin, yp: yMax });
-    });
 
     const component = React.memo(function BoundsInput({}) {
         const [bounds, setBounds] = useAtom(boundsAtom);
@@ -98,10 +103,8 @@ export default function BoundsData({
 
     return {
         atom: boundsAtom,
-        stringRepAtom: bStringRepAtom,
         component,
         encode,
-        decode,
-        length: 4
+        decode
     };
 }
