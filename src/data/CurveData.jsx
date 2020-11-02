@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
+import { atomWithReset } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
@@ -19,30 +20,41 @@ const defaultInitValues = {
     width: 0.1
 };
 
-const encode = (newObj) => {
-    const { color, approxH, visible, width } = diffObjects(newObj, defaultInitValues);
-
-    let ro = {};
-
-    if (color) ro.c = color;
-    if (approxH) ro.a = approxH;
-    if (visible) ro.v = visible;
-    if (width) ro.w = width;
-
-    return queryString.stringify(ro);
-};
-
-const decode = ({ c, a, v, w }) => ({
-    color: c,
-    approxH: Number(a),
-    visible: v === '0' ? false : true,
-    width: w
-});
-
-//console.log(decode(encode(defaultInitData)));
-
 export default function CurveData(initData = {}) {
-    const cdAtom = atom({ ...defaultInitValues, ...initData });
+    const encode = (newObj) => {
+        const { color, approxH, visible, width } = diffObjects(newObj, defaultInitValues);
+
+        let ro = {};
+
+        if (color) ro.c = color;
+        if (approxH) ro.a = approxH;
+        if (visible) ro.v = visible;
+        if (width) ro.w = width;
+
+        return queryString.stringify(ro);
+    };
+
+    const decode = (objStr) => {
+        if (!objStr || !objStr.length || objStr.length === 0)
+            return { ...defaultInitValues, ...initData };
+
+        const rawObj = queryString.parse(objStr);
+
+        const newKeys = Object.keys(rawObj);
+
+        const ro = {};
+
+        if (newKeys.includes('a')) ro.approxH = Number(rawObj.a);
+        if (newKeys.includes('v')) ro.visible = rawObj.v === 0 ? false : true;
+        if (newKeys.includes('w')) ro.width = Number(rawObj.w);
+        if (newKeys.includes('c')) ro.color = rawObj.c;
+
+        return { ...defaultInitValues, ...ro };
+    };
+
+    //console.log(decode(encode(defaultInitData)));
+
+    const cdAtom = atomWithReset({ ...defaultInitValues, ...initData });
 
     const toggleVisibleAtom = atom(null, (get, set) =>
         set(cdAtom, { ...get(cdAtom), visible: !get(cdAtom).visible })

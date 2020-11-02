@@ -1,6 +1,7 @@
 
 .noOutline {    
     outline: none;
+    touch-action: none;
 }
 
 .container {    
@@ -10,6 +11,7 @@
     outline: 'none';
     display: 'block';
     background: gray;
+    touch-action: none;
 }
 
 .canvas {    
@@ -19,6 +21,7 @@
     left: 0%;
     outline: none;
     display: 'block';
+    touch-action: none;
 }
 
 .photo-button {

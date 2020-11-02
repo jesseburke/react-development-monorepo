@@ -30,6 +30,7 @@ function ThreeScene(
         width = '100%',
         clearColor = '#f0f0f0',
         aspectRatio = 1,
+        showPhotoButton = true,
         children
     },
     ref
@@ -179,9 +180,11 @@ function ThreeScene(
                 {React.Children.map(children, (el) => React.cloneElement(el, { threeCBs }))}
             </React.Fragment>
             <div className={styles.noOutline} ref={(elt) => (labelContainerRef.current = elt)} />
-            <div className={styles['photo-button']} onClick={threeScene.downloadPicture}>
-                <span>{'\u{1f4f7}'}</span>
-            </div>
+            {showPhotoButton ? (
+                <div className={styles['photo-button']} onClick={threeScene.downloadPicture}>
+                    <span>{'\u{1f4f7}'}</span>
+                </div>
+            ) : null}
         </div>
     );
 }

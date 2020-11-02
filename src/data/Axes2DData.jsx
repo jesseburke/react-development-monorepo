@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
+import { atomWithReset } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
@@ -36,26 +37,39 @@ const defaultInitValues = {
 // function that diffs two objects? e.g., return all the fields and
 // values of the seoncd that do not occur in the first.
 
-function encode(newObj) {
-    const { radius, color, tickLabelDistance } = diffObjects(newObj, defaultInitValues);
-
-    let ro = {};
-
-    if (radius) ro.r = radius;
-    if (color) ro.c = color;
-    if (tickLabelDistance) ro.tld = tickLabelDistance;
-
-    return queryString.stringify(ro);
-}
-
-const decode = ({ r, c, tld }) => {
-    return { radius: Number(r), tickLabelDistance: Number(tld), color: c };
-};
-
 export default function Axes2DData(args) {
-    const aoAtom = atom({ ...defaultInitValues, ...args });
+    function encode(newObj) {
+        const { radius, color, tickLabelDistance } = diffObjects(newObj, defaultInitValues);
 
-    function Axes2DDataInput() {
+        let ro = {};
+
+        if (radius) ro.r = radius;
+        if (color) ro.c = color;
+        if (tickLabelDistance) ro.tld = tickLabelDistance;
+
+        return queryString.stringify(ro);
+    }
+
+    const decode = (objStr) => {
+        if (!objStr || !objStr.length || objStr.length === 0)
+            return { ...defaultInitValues, ...args };
+
+        const rawObj = queryString.parse(objStr);
+
+        const newKeys = Object.keys(rawObj);
+
+        const ro = {};
+
+        if (newKeys.includes('r')) ro.radius = Number(rawObj.r);
+        if (newKeys.includes('tld')) ro.tickLabelDistance = Number(rawObj.tld);
+        if (newKeys.includes('c')) ro.color = rawObj.c;
+
+        return { ...defaultInitValues, ...ro };
+    };
+
+    const aoAtom = atomWithReset({ ...defaultInitValues, ...args });
+
+    const comp = React.memo(() => {
         const [ao, setAo] = useAtom(aoAtom);
 
         const { radius, color, tickLabelDistance } = ao;
@@ -103,11 +117,11 @@ export default function Axes2DData(args) {
                 </div>
             </div>
         );
-    }
+    });
 
     return {
         atom: aoAtom,
-        component: Axes2DDataInput,
+        component: comp,
         encode,
         decode
     };

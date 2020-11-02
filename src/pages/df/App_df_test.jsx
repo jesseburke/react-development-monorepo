@@ -1,8 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil;
-
 import { atom as jatom, useAtom, Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
@@ -18,7 +15,6 @@ import './styles.css';
 import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
-import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 
 import Grid from '../../ThreeSceneComps/Grid.jsx';
@@ -42,7 +38,7 @@ import {
     EquationInput,
     axesDataAtom,
     AxesDataInput,
-    SaveComp
+    DataComp
 } from './App_df_test_data.jsx';
 
 const initColors = {
@@ -97,40 +93,46 @@ const controlBarFontSize = 1;
 
 export default function App() {
     return (
-        <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-            <Provider unstable_system={system}>
-                <ControlBar
-                    height={controlBarHeight}
-                    fontSize={fontSize * controlBarFontSize}
-                    padding='0em'
-                >
-                    <div className='center-flex-row'>
-                        <EquationInput />
-                    </div>
-                    <InitialPointInput />
-                    <OptionsModal />
-                </ControlBar>
-            </Provider>
+        <JProvider>
+            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
+                <Provider unstable_system={system}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={fontSize * controlBarFontSize}
+                        padding='0em'
+                    >
+                        <div className='center-flex-row'>
+                            <EquationInput />
+                        </div>
+                        <InitialPointInput />
+                        <OptionsModal />
+                    </ControlBar>
+                </Provider>
 
-            <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                <ThreeSceneComp initCameraData={initCameraData} controlsData={initControlsData}>
-                    <Grid boundsAtom={boundsAtom} gridShow={true} />
-                    <Axes2D
-                        tickLabelDistance={1}
-                        boundsAtom={boundsAtom}
-                        axesDataAtom={axesDataAtom}
-                        xLabelAtom={xLabelAtom}
-                        yLabelAtom={yLabelAtom}
-                    />
-                    <ArrowGrid
-                        funcAtom={funcAtom}
-                        boundsAtom={boundsAtom}
-                        arrowGridDataAtom={arrowGridDataAtom}
-                    />
-                </ThreeSceneComp>
-                <SaveComp />
-            </Main>
-        </FullScreenBaseComponent>
+                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
+                    <ThreeSceneComp
+                        initCameraData={initCameraData}
+                        controlsData={initControlsData}
+                        showPhotoButton={false}
+                    >
+                        <Grid boundsAtom={boundsAtom} gridShow={true} />
+                        <Axes2D
+                            tickLabelDistance={1}
+                            boundsAtom={boundsAtom}
+                            axesDataAtom={axesDataAtom}
+                            xLabelAtom={xLabelAtom}
+                            yLabelAtom={yLabelAtom}
+                        />
+                        <ArrowGrid
+                            funcAtom={funcAtom}
+                            boundsAtom={boundsAtom}
+                            arrowGridDataAtom={arrowGridDataAtom}
+                        />
+                    </ThreeSceneComp>
+                    <DataComp />
+                </Main>
+            </FullScreenBaseComponent>
+        </JProvider>
     );
 }
 

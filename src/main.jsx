@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import { Provider } from 'jotai';
-
 import './index.css';
 
 let title = 'default title';
@@ -39,15 +37,18 @@ title = 'Second order linear equation';
 
 function main() {
     const element = document.createElement('div');
+
+    // disables scrolling from touch actions
+    element.style.touchAction = 'none';
     ReactDOM.render(
-        <Provider>
+        <>
             <Helmet>
                 <meta name='viewport' content='width=device-width, user-scalable=no' />
                 <title>{title}</title>
             </Helmet>
 
             <App />
-        </Provider>,
+        </>,
         element
     );
 

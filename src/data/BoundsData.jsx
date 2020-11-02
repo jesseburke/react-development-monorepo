@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
+import { atomWithReset } from 'jotai/utils';
 
 import classnames from 'classnames';
 import styles from './BoundsData.module.css';
@@ -16,32 +17,43 @@ const defaultYLabelAtom = atom('y');
 
 const defaultInitBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
-const encode = (newObj) => {
-    const { xMin, xMax, yMin, yMax } = diffObjects(newObj, defaultInitBounds);
-
-    let ro = {};
-
-    if (xMax) ro.xp = xMax;
-    if (xMin) ro.xm = xMin;
-    if (yMax) ro.yp = yMax;
-    if (yMin) ro.ym = yMin;
-
-    return queryString.stringify(ro);
-};
-
-const decode = ({ xm, xmx, ym, ymx }) => ({
-    xMin: Number(xm),
-    xMax: Number(xmx),
-    yMin: Number(ym),
-    yMax: Number(ymx)
-});
-
 export default function BoundsData({
     xLabelAtom = defaultXLabelAtom,
     yLabelAtom = defaultYLabelAtom,
     initBounds = {}
 } = {}) {
-    const boundsAtom = atom({ ...defaultInitBounds, ...initBounds });
+    const encode = (newObj) => {
+        const { xMin, xMax, yMin, yMax } = diffObjects(newObj, defaultInitBounds);
+
+        let ro = {};
+
+        if (xMax) ro.xp = xMax;
+        if (xMin) ro.xm = xMin;
+        if (yMax) ro.yp = yMax;
+        if (yMin) ro.ym = yMin;
+
+        return queryString.stringify(ro);
+    };
+
+    const decode = (objStr) => {
+        if (!objStr || !objStr.length || objStr.length === 0)
+            return { ...defaultInitBounds, ...initBounds };
+
+        const rawObj = queryString.parse(objStr);
+
+        const newKeys = Object.keys(rawObj);
+
+        const ro = {};
+
+        if (newKeys.includes('xm')) ro.xMin = Number(rawObj.xm);
+        if (newKeys.includes('xp')) ro.xMax = Number(rawObj.xp);
+        if (newKeys.includes('ym')) ro.yMin = Number(rawObj.ym);
+        if (newKeys.includes('yp')) ro.yMax = Number(rawObj.yp);
+
+        return { ...defaultInitBounds, ...ro };
+    };
+
+    const boundsAtom = atomWithReset({ ...defaultInitBounds, ...initBounds });
 
     const component = React.memo(function BoundsInput({}) {
         const [bounds, setBounds] = useAtom(boundsAtom);

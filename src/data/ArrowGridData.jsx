@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
+import { atomWithReset } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
@@ -24,30 +25,44 @@ function strArrayToArray(strArray, f = Number) {
     return strArray.split(',').map((x) => f(x));
 }
 
-const encode = (newObj) => {
-    const { density, thickness, length, color } = diffObjects(newObj, defaultInitValues);
-
-    let ro = {};
-
-    if (density) ro.d = density;
-    if (thickness) ro.t = thickness;
-    if (length) ro.l = length;
-    if (color) ro.c = color;
-
-    return queryString.stringify(ro);
-    //queryString.stringify({ d: density, t: thickness, l: length, c: color });
-};
-
-const decode = ({ d, t, l, c }) => {
-    return { density: Number(d), thickness: Number(t), length: Number(l), color: c };
-};
-
-//console.log(decode(encode(defaultInitValues)));
-
 export default function ArrowGridData(args) {
-    const agAtom = atom({ ...defaultInitValues, ...args });
+    const encode = (newObj) => {
+        const { density, thickness, length, color } = diffObjects(newObj, defaultInitValues);
 
-    function ArrowGridOptionsInput() {
+        let ro = {};
+
+        if (density) ro.d = density;
+        if (thickness) ro.t = thickness;
+        if (length) ro.l = length;
+        if (color) ro.c = color;
+
+        return queryString.stringify(ro);
+        //queryString.stringify({ d: density, t: thickness, l: length, c: color });
+    };
+
+    const decode = (objStr) => {
+        if (!objStr || !objStr.length || objStr.length === 0)
+            return { ...defaultInitValues, ...args };
+
+        const rawObj = queryString.parse(objStr);
+
+        const newKeys = Object.keys(rawObj);
+
+        const ro = {};
+
+        if (newKeys.includes('d')) ro.density = Number(rawObj.d);
+        if (newKeys.includes('t')) ro.thickness = Number(rawObj.t);
+        if (newKeys.includes('l')) ro.length = Number(rawObj.l);
+        if (newKeys.includes('c')) ro.color = rawObj.c;
+
+        return { ...defaultInitValues, ...ro };
+    };
+
+    //console.log(decode(encode(defaultInitValues)));
+
+    const agAtom = atomWithReset({ ...defaultInitValues, ...args });
+
+    const ArrowGridOptionsInput = React.memo(() => {
         const [agda, setAgda] = useAtom(agAtom);
 
         const { density, thickness, length, color } = agda;
@@ -109,7 +124,7 @@ export default function ArrowGridData(args) {
                 </div>
             </div>
         );
-    }
+    });
 
     return {
         atom: agAtom,
