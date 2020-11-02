@@ -22,12 +22,7 @@ const defaultInitVal = 'x';
 
 const identity = (x) => x;
 
-export default function EquationInput(
-    initVal = defaultInitVal,
-    xLabelAtom,
-    yLabelAtom,
-    inputSize = 20
-) {
+export default function EquationData(initVal = defaultInitVal, equationLabelAtom, inputSize = 20) {
     const encode = identity;
     const decode = (objStr) => {
         if (!objStr || !objStr.length || objStr.length === 0) return initVal;
@@ -39,8 +34,7 @@ export default function EquationInput(
 
     const comp = React.memo(() => {
         const [funcStr, setFuncStr] = useAtom(funcStrAtom);
-        const [xLabel] = useAtom(xLabelAtom);
-        const [yLabel] = useAtom(yLabelAtom);
+        const [equationLabel] = useAtom(equationLabelAtom);
 
         const cssRef3 = useRef({ padding: '1em 0em' }, []);
 
@@ -56,7 +50,7 @@ export default function EquationInput(
                 )}
             >
                 <div style={cssRef3.current}>
-                    d{yLabel}/d{xLabel} =
+                    {equationLabel} ={' '}
                     <Input size={inputSize} initValue={funcStr} onC={funcInputCB} />
                 </div>
             </div>

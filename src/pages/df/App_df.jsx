@@ -1,8 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import Recoil from 'recoil';
-const { RecoilRoot, atom, selector, useRecoilValue, useSetRecoilState } = Recoil;
-
 import { atom as jatom, useAtom, Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
@@ -20,7 +17,6 @@ import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import SaveStateComp from '../../components/SaveStateComp.jsx';
 
 import Grid from '../../ThreeSceneComps/Grid.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
@@ -30,9 +26,6 @@ import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxReco
 import { fonts, labelStyle } from './constants.jsx';
 
 import {
-    decode,
-    encode,
-    atomArray,
     arrowGridDataAtom,
     ArrowGridDataInput,
     boundsAtom,
@@ -42,11 +35,12 @@ import {
     funcAtom,
     xLabelAtom,
     yLabelAtom,
-    solutionCurveOptionsAtom,
-    SolutionCurveOptionsInput,
+    solutionCurveDataAtom,
+    SolutionCurveDataInput,
     EquationInput,
     axesDataAtom,
-    AxesDataInput
+    AxesDataInput,
+    DataComp
 } from './App_df_data.jsx';
 
 const initColors = {
@@ -125,6 +119,7 @@ export default function App() {
                         initCameraData={initCameraData}
                         controlsData={initControlsData}
                         ref={(elt) => (threeSceneRef.current = elt)}
+                        showPhotoButton={false}
                     >
                         <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
@@ -143,11 +138,10 @@ export default function App() {
                             initialPointAtom={initialPointAtom}
                             boundsAtom={boundsAtom}
                             funcAtom={funcAtom}
-                            curveOptionsAtom={solutionCurveOptionsAtom}
+                            curveOptionsAtom={solutionCurveDataAtom}
                         />
-                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
-                    <SaveStateComp decode={decode} encode={encode} atomArray={atomArray} />
+                    <DataComp />
                 </Main>
             </FullScreenBaseComponent>
         </JProvider>
@@ -220,7 +214,7 @@ function OptionsModal() {
                         <BoundsInput />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveOptionsInput />
+                        <SolutionCurveDataInput />
                     </TabPanel>
                 </>
             </Dialog>
