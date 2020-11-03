@@ -14,9 +14,7 @@ import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
-//import InitialPointInput from '../../components/InitialPointInput.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import SaveStateComp from '../../components/SaveStateComp.jsx';
 
 import GridAndOrigin from '../../ThreeSceneComps/GridAndOriginRecoil.jsx';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
@@ -26,11 +24,8 @@ import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxReco
 import { fonts, labelStyle } from './constants.jsx';
 
 import {
-    decode,
-    encode,
-    atomArray,
-    arrowGridOptionsAtom,
-    ArrowGridOptionsInput,
+    arrowGridDataAtom,
+    ArrowGridDataInput,
     boundsAtom,
     BoundsInput,
     initialPointAtom,
@@ -38,9 +33,12 @@ import {
     funcAtom,
     xLabelAtom,
     yLabelAtom,
-    solutionCurveOptionsAtom,
-    SolutionCurveOptionsInput,
-    SepEquationInput
+    solutionCurveDataAtom,
+    SolutionCurveDataInput,
+    SepEquationInput,
+    axesDataAtom,
+    AxesDataInput,
+    DataComp
 } from './App_sep_data.jsx';
 
 //------------------------------------------------------------------------
@@ -84,31 +82,15 @@ const initCameraData = {
 
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
-const controlBarHeight = 13;
+const controlBarHeight = 18;
 
 // (relative) font sizes (first in em's)
 const fontSize = 1;
 const controlBarFontSize = 1;
 
-const initAxesData = {
-    radius: 0.01,
-    show: true,
-    showLabels: true,
-    labelStyle
-};
-
 //------------------------------------------------------------------------
 
 export default function App() {
-    const threeSceneRef = useRef(null);
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    useEffect(() => {
-        if (!threeCBs || !threeSceneRef) return;
-
-        window.dispatchEvent(new Event('resize'));
-    }, [threeCBs, threeSceneRef]);
-
     return (
         <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
@@ -128,37 +110,30 @@ export default function App() {
                     <ThreeSceneComp
                         initCameraData={initCameraData}
                         controlsData={initControlsData}
-                        ref={threeSceneRef}
+                        showPhotoButton={false}
                     >
-                        <GridAndOrigin
-                            boundsAtom={boundsAtom}
-                            gridQuadSize={initAxesData.length}
-                            gridShow={true}
-                        />
+                        <GridAndOrigin boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
+                            tickLabelDistance={1}
                             boundsAtom={boundsAtom}
-                            radius={initAxesData.radius}
-                            show={initAxesData.show}
-                            showLabels={initAxesData.showLabels}
-                            labelStyle={labelStyle}
-                            color={initColors.axes}
+                            axesDataAtom={axesDataAtom}
                             xLabelAtom={xLabelAtom}
                             yLabelAtom={yLabelAtom}
                         />
                         <ArrowGrid
                             funcAtom={funcAtom}
                             boundsAtom={boundsAtom}
-                            arrowGridOptionsAtom={arrowGridOptionsAtom}
+                            arrowGridDataAtom={arrowGridDataAtom}
                         />
                         <DirectionFieldApprox
                             initialPointAtom={initialPointAtom}
                             boundsAtom={boundsAtom}
                             funcAtom={funcAtom}
-                            solutionCurveOptionsAtom={solutionCurveOptionsAtom}
+                            curveDataAtom={solutionCurveDataAtom}
                         />
                         <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
-                    <SaveStateComp decode={decode} encode={encode} atomArray={atomArray} />
+                    <DataComp />
                 </Main>
             </FullScreenBaseComponent>
         </JProvider>
@@ -197,17 +172,21 @@ function OptionsModal() {
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Arrow grid</Tab>
+                        <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <ArrowGridOptionsInput />
+                        <ArrowGridDataInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <AxesDataInput />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <BoundsInput />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveOptionsInput />
+                        <SolutionCurveDataInput />
                     </TabPanel>
                 </>
             </Dialog>

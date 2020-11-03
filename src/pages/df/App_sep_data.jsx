@@ -1,20 +1,29 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { atom, useAtom } from 'jotai';
 
+import { atom, useAtom } from 'jotai';
+import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 import classnames from 'classnames';
 import styles from './base_styles.module.css';
 
-import Input from '../../components/Input.jsx';
-
+import MainDataComp from '../../data/MainDataComp.jsx';
+import PointData from '../../data/PointData.jsx';
+import EquationData from '../../data/EquationData.jsx';
 import ArrowGridData from '../../data/ArrowGridData.jsx';
+import AxesData from '../../data/Axes2DData.jsx';
 import BoundsData from '../../data/BoundsData.jsx';
 import CurveData from '../../data/CurveData.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
+
 //------------------------------------------------------------------------
 //
 // initial constants
+
+const colors = {
+    arrows: '#B01A46', //'#C2374F'
+    solutionCurve: '#4e6d87', //'#C2374F'
+    tick: '#e19662'
+};
 
 const initArrowData = { density: 1, thickness: 1, length: 0.75, color: '#C2374F' };
 
@@ -36,33 +45,95 @@ const initSolutionCurveData = {
 const initXFuncStr = 'sin(x)';
 const initYFuncStr = 'cos(y)';
 
+const initAxesData = {
+    radius: 0.01,
+    show: true,
+    tickLabelDistance: 5
+};
+
+export const labelStyle = {
+    color: 'black',
+    padding: '.1em',
+    margin: '.5em',
+    fontSize: '1.5em'
+};
+
+const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
+    fontSize: '1em',
+    color: colors.tick
+});
+
 //------------------------------------------------------------------------
 //
 // primitive atoms
 
-export const xLabelAtom = atom(initXLabel);
+export const xLabelAtom = atomWithReset(initXLabel);
 
-export const yLabelAtom = atom(initYLabel);
+const xLabelDecode = (str) => {
+    if (!str || !str.length || str.length === 0) return initXLabel;
 
-export const initialPointAtom = atom(initialInitialPoint);
+    return str;
+};
 
-export const xFuncStrAtom = atom(initXFuncStr);
-export const yFuncStrAtom = atom(initYFuncStr);
+export const yLabelAtom = atomWithReset(initYLabel);
+
+const yLabelDecode = (str) => {
+    if (!str || !str.length || str.length === 0) return initYLabel;
+
+    return str;
+};
 
 export const {
-    atom: arrowGridOptionsAtom,
-    component: ArrowGridOptionsInput,
-    encode: arrowGridOptionsEncode,
-    decode: arrowGridOptionsDecode,
-    length: agoel // agoel = arrow grid options encode length
+    atom: initialPointAtom,
+    component: InitialPointInput,
+    encode: initialPointEncode,
+    decode: initialPointDecode
+} = PointData(initialInitialPoint, 'Initial Point: ');
+
+export const {
+    atom: xFuncStrAtom,
+    component: XEquationInput,
+    encode: xFuncStrEncode,
+    decode: xFuncStrDecode
+} = EquationData({
+    initVal: initXFuncStr,
+    equationLabelAtom: atom((get) => 'g(' + get(xLabelAtom) + ') = '),
+    inputSize: 10
+});
+
+export const {
+    atom: yFuncStrAtom,
+    component: YEquationInput,
+    encode: yFuncStrEncode,
+    decode: yFuncStrDecode
+} = EquationData({
+    initVal: initYFuncStr,
+    equationLabelAtom: atom((get) => 'h(' + get(yLabelAtom) + ') = '),
+    inputSize: 10
+});
+
+export const {
+    atom: arrowGridDataAtom,
+    component: ArrowGridDataInput,
+    encode: arrowGridDataEncode,
+    decode: arrowGridDataDecode
 } = ArrowGridData(initArrowData);
+
+export const {
+    atom: axesDataAtom,
+    component: AxesDataInput,
+    encode: axesDataEncode,
+    decode: axesDataDecode
+} = AxesData({
+    ...initAxesData,
+    tickLabelStyle
+});
 
 export const {
     atom: boundsAtom,
     component: BoundsInput,
-    encode: boundsEncode,
-    decode: boundsDecode,
-    length: bel
+    encode: boundsDataEncode,
+    decode: boundsDataDecode
 } = BoundsData({
     initBounds,
     xLabelAtom,
@@ -70,84 +141,31 @@ export const {
 });
 
 export const {
-    atom: solutionCurveOptionsAtom,
-    component: SolutionCurveOptionsInput,
-    encode: solutionCurveOptionsEncode,
-    decode: solutionCurveOptionsDecode,
-    length: scoel
+    atom: solutionCurveDataAtom,
+    component: SolutionCurveDataInput,
+    encode: curveDataEncode,
+    decode: curveDataDecode
 } = CurveData(initSolutionCurveData);
 
 //------------------------------------------------------------------------
-//
-// encode and decode functions for primitive atoms
-//
+// the first entry in each array is the atom; the second is a function to
+// turn the atom value into a string; third entry is a function that takes a
+// string and returns an object, should be inverse to the second
+// argument.
 
-// everything depends on order of following:
-
-export const atomArray = [
-    arrowGridOptionsAtom,
-    boundsAtom,
-    solutionCurveOptionsAtom,
-    xLabelAtom,
-    yLabelAtom,
-    initialPointAtom,
-    xFuncStrAtom,
-    yFuncStrAtom
-];
-
-// should be pure function
-
-export const encode = ([
-    arrowGridOptions,
-    bounds,
-    solutionCurveOptions,
-    xLabel,
-    yLabel,
-    initialPoint,
-    xFuncStr,
-    yFuncStr
-]) => {
-    const agoe = arrowGridOptionsEncode(arrowGridOptions);
-
-    const be = boundsEncode(bounds);
-
-    const scoe = solutionCurveOptionsEncode(solutionCurveOptions);
-
-    return [
-        ...agoe,
-        ...be,
-        ...scoe,
-        xLabel,
-        yLabel,
-        initialPoint.x,
-        initialPoint.y,
-        xFuncStr,
-        yFuncStr
-    ];
+const atomStore = {
+    xl: [xLabelAtom, (x) => (x ? x.toString() : null), xLabelDecode],
+    yl: [yLabelAtom, (x) => (x ? x.toString() : null), yLabelDecode],
+    ip: [initialPointAtom, initialPointEncode, initialPointDecode],
+    xs: [xFuncStrAtom, xFuncStrEncode, xFuncStrDecode],
+    ys: [yFuncStrAtom, yFuncStrEncode, yFuncStrDecode],
+    ag: [arrowGridDataAtom, arrowGridDataEncode, arrowGridDataDecode],
+    ax: [axesDataAtom, axesDataEncode, axesDataDecode],
+    bd: [boundsAtom, boundsDataEncode, boundsDataDecode],
+    sc: [solutionCurveDataAtom, curveDataEncode, curveDataDecode]
 };
 
-// this function expects an array in the form returned by encode,
-// returns an array that can be cycled through and used to set the
-// value of each atom (this has to be done in react)
-export function decode(valueArray) {
-    // aga = arrow grid array
-    const aga = valueArray.slice(0, agoel);
-    const ba = valueArray.slice(agoel, agoel + bel);
-    const scoa = valueArray.slice(agoel + bel, agoel + bel + scoel);
-
-    const n = agoel + bel + scoel;
-
-    return [
-        arrowGridOptionsDecode(aga),
-        boundsDecode(ba),
-        solutionCurveOptionsDecode(scoa),
-        valueArray[n],
-        valueArray[n + 1],
-        { x: Number(valueArray[n + 2]), y: Number(valueArray[n + 3]) },
-        valueArray[n + 4],
-        valueArray[n + 5]
-    ];
-}
+export const DataComp = MainDataComp(atomStore);
 
 //------------------------------------------------------------------------
 //
@@ -162,66 +180,24 @@ export const funcAtom = atom((get) => ({
 // input components
 
 export const SepEquationInput = React.memo(function SepEquationI({}) {
-    const [xFuncStr, setXFuncStr] = useAtom(xFuncStrAtom);
-    const [yFuncStr, setYFuncStr] = useAtom(yFuncStrAtom);
     const [xLabel] = useAtom(xLabelAtom);
     const [yLabel] = useAtom(yLabelAtom);
 
-    const cssRef = useRef({ padding: '.05em' }, []);
-    const cssRef2 = useRef({ paddingRight: '.5em' }, []);
-    const cssRef3 = useRef({ padding: '1em 0em' }, []);
-
-    const xFuncInputCB = useCallback((str) => setXFuncStr(str), [setXFuncStr]);
-    const yFuncInputCB = useCallback((str) => setYFuncStr(str), [setYFuncStr]);
-
     return (
-        <div
-            className={classnames(
-                styles['center-flex-column'],
-                styles['right-border'],
-                styles['large-right-padding'],
-                styles['med-top-bottom-padding']
-            )}
-        >
-            <div style={cssRef3.current}>
-                d{yLabel}/d{xLabel} =<span style={cssRef.current}>h({yLabel})</span>
-                <span style={cssRef.current}>{'\u{00B7}'}</span>
-                <span style={cssRef.current}>q({xLabel})</span>
+        <div className={styles['center-flex-column']}>
+            <div className={styles['very-small-padding']}>
+                d{yLabel}/d{xLabel} = <span>g({xLabel})</span>
+                <span>{'\u{00B7}'}</span>
+                <span>h({yLabel})</span>
             </div>
-            <div style={cssRef.current}>
-                <span style={cssRef2.current}>
-                    <span style={cssRef2.current}>h({yLabel}) = </span>
-                    <Input size={10} initValue={yFuncStr} onC={yFuncInputCB} />
+            <div>
+                <span className={styles['very-small-padding']}>
+                    <XEquationInput />
                 </span>
-                <span>
-                    <span css={cssRef2.current}>g({xLabel}) = </span>
-                    <Input size={10} initValue={xFuncStr} onC={xFuncInputCB} />
+                <span className={styles['very-small-padding']}>
+                    <YEquationInput />
                 </span>
             </div>
-        </div>
-    );
-});
-
-export const InitialPointInput = React.memo(function InitialPointI({}) {
-    const [initialPoint, setInitialPoint] = useAtom(initialPointAtom);
-
-    const setX = useCallback((newX) => setInitialPoint((old) => ({ ...old, x: Number(newX) })), [
-        setInitialPoint
-    ]);
-    const setY = useCallback((newY) => setInitialPoint((old) => ({ ...old, y: Number(newY) })), [
-        setInitialPoint
-    ]);
-
-    const cssRef = useRef({ paddingRight: '5em' }, []);
-
-    return (
-        <div style={cssRef.current}>
-            <span>
-                <span>Initial Point: </span>
-                <Input initValue={round(initialPoint.x, 3)} size={8} onC={setX} />
-                <span> , </span>
-                <Input initValue={round(initialPoint.y, 3)} size={8} onC={setY} />
-            </span>
         </div>
     );
 });

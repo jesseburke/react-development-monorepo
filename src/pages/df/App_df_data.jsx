@@ -79,14 +79,14 @@ const yLabelDecode = (str) => {
     return str;
 };
 
-const equationLabelAtom = atom((get) => 'd' + get(yLabelAtom) + '/d' + get(xLabelAtom));
+const equationLabelAtom = atom((get) => 'd' + get(yLabelAtom) + '/d' + get(xLabelAtom) + ' =  ');
 
 export const {
     atom: funcStrAtom,
     component: EquationInput,
     encode: funcStrEncode,
     decode: funcStrDecode
-} = EquationData(initFuncStr, equationLabelAtom);
+} = EquationData({ initVal: initFuncStr, equationLabelAtom });
 
 export const {
     atom: initialPointAtom,

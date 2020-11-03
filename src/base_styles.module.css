@@ -22,9 +22,15 @@
     width: 12em;
 }
 
+.very-small-padding {
+    padding: .25em;
+}
+
+
 .small-padding {
     padding: .25em;
 }
+
 .med-padding {
     padding: .5em;
 }

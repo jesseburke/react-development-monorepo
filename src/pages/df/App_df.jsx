@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { atom as jatom, useAtom, Provider as JProvider } from 'jotai';
+import { Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -96,7 +96,7 @@ const controlBarFontSize = 1;
 export default function App() {
     const threeSceneRef = useRef();
 
-    useHackyThreeInitDisplay(threeSceneRef);
+    //useHackyThreeInitDisplay(threeSceneRef);
     return (
         <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
@@ -121,6 +121,12 @@ export default function App() {
                         ref={(elt) => (threeSceneRef.current = elt)}
                         showPhotoButton={false}
                     >
+                        <DirectionFieldApprox
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
+                            funcAtom={funcAtom}
+                            curveDataAtom={solutionCurveDataAtom}
+                        />
                         <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
                             tickLabelDistance={1}
@@ -134,12 +140,7 @@ export default function App() {
                             boundsAtom={boundsAtom}
                             arrowGridDataAtom={arrowGridDataAtom}
                         />
-                        <DirectionFieldApprox
-                            initialPointAtom={initialPointAtom}
-                            boundsAtom={boundsAtom}
-                            funcAtom={funcAtom}
-                            curveOptionsAtom={solutionCurveDataAtom}
-                        />
+                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
                     <DataComp />
                 </Main>

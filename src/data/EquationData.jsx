@@ -22,7 +22,12 @@ const defaultInitVal = 'x';
 
 const identity = (x) => x;
 
-export default function EquationData(initVal = defaultInitVal, equationLabelAtom, inputSize = 20) {
+export default function EquationData({
+    initVal = defaultInitVal,
+    equationLabelAtom,
+    equationLabelString = 'default label string',
+    inputSize = 20
+}) {
     const encode = identity;
     const decode = (objStr) => {
         if (!objStr || !objStr.length || objStr.length === 0) return initVal;
@@ -30,35 +35,25 @@ export default function EquationData(initVal = defaultInitVal, equationLabelAtom
         return objStr;
     };
 
-    const funcStrAtom = atomWithReset(initVal);
+    const equationStrAtom = atomWithReset(initVal);
+
+    const labelAtom = equationLabelAtom ? equationLabelAtom : atom(equationLabelString);
 
     const comp = React.memo(() => {
-        const [funcStr, setFuncStr] = useAtom(funcStrAtom);
-        const [equationLabel] = useAtom(equationLabelAtom);
+        const [eqStr, setEqStr] = useAtom(equationStrAtom);
+        const [equationLabel] = useAtom(labelAtom);
 
-        const cssRef3 = useRef({ padding: '1em 0em' }, []);
-
-        const funcInputCB = useCallback((str) => setFuncStr(str), [setFuncStr]);
+        const eqInputCB = useCallback((str) => setEqStr(str), [setEqStr]);
 
         return (
-            <div
-                className={classnames(
-                    styles['center-flex-column'],
-                    styles['right-border'],
-                    styles['large-right-padding'],
-                    styles['med-top-bottom-padding']
-                )}
-            >
-                <div style={cssRef3.current}>
-                    {equationLabel} ={' '}
-                    <Input size={inputSize} initValue={funcStr} onC={funcInputCB} />
-                </div>
-            </div>
+            <>
+                {equationLabel} <Input size={inputSize} initValue={eqStr} onC={eqInputCB} />
+            </>
         );
     });
 
     return {
-        atom: funcStrAtom,
+        atom: equationStrAtom,
         component: comp,
         encode,
         decode
