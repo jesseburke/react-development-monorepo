@@ -1,36 +1,39 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Helmet } from 'react-helmet';
 
-import queryString from 'query-string';
+import { Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
 
-import { Button } from '@jesseburke/basic-react-components';
-import { Modal } from '@jesseburke/basic-react-components';
+import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
+import { Provider } from 'reakit/Provider';
+import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 
+import * as system from 'reakit-system-bootstrap';
+
+import './styles.css';
+
+import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
+import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
-import FunctionInput from '../../components/FunctionInput.jsx';
-import FunctionOptions from '../../components/FunctionOptions.jsx';
-import CoordinateOptions from '../../components/CoordinateOptions.jsx';
-import CameraOptions from '../../components/CameraOptions.jsx';
-import ResetCameraButton from '../../components/ResetCameraButton.jsx';
-import RightDrawer from '../../components/RightDrawer.jsx';
-import SaveButton from '../../components/SaveButton.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use3DAxes from '../../graphics/use3DAxes.jsx';
-import FunctionGraph3DGeom from '../../graphics/FunctionGraph3DGeom.jsx';
+import Grid from '../../ThreeSceneComps/Grid.jsx';
+import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
+import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
+import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
 
-import funcParser from '../../utils/funcParser.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
+import { fonts, labelStyle } from './constants.jsx';
 
-//------------------------------------------------------------------------
-//
-// initial data
-//
+import {
+    funcAtom,
+    xLabelAtom,
+    yLabelAtom,
+    EquationInput,
+    axesDataAtom,
+    AxesDataInput,
+    DataComp
+} from './App_fg_data.jsx';
 
 const initColors = {
     arrows: '#C2374F',
@@ -40,427 +43,135 @@ const initColors = {
     testFunc: '#E16962', //#DBBBB0',
     axes: '#0A2C3C',
     controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0',
-    funcGraph: '#E53935'
+    clearColor: '#f0f0f0'
 };
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
     touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
-    enableRotate: true,
+    enableRotate: false,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
     screenSpaceSpanning: false
 };
 
-const solutionMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(initColors.solution),
-    side: THREE.FrontSide
-});
+const aspectRatio = window.innerWidth / window.innerHeight;
+//const frustumSize = 20;
+const frustumSize = 3.8;
 
-solutionMaterial.transparent = true;
-solutionMaterial.opacity = 0.6;
-
-const solutionCurveRadius = 0.1;
-
-const pointMaterial = solutionMaterial.clone();
-pointMaterial.transparent = false;
-pointMaterial.opacity = 0.8;
-
-const testFuncMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(initColors.testFunc),
-    side: THREE.FrontSide
-});
-
-testFuncMaterial.transparent = true;
-testFuncMaterial.opacity = 0.6;
-
-const testFuncRadius = 0.1;
-
-const testFuncH = 0.01;
-
-const dragDebounceTime = 5;
-
-const initFuncStr = 'x*y*sin(x+y)/10';
-const testFuncStr = 'sin(2*x)+1.5*sin(x)';
-
-const initCameraData = { position: [40, 40, 40], up: [0, 0, 1] };
-
-const initState = {
-    bounds: { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    funcStr: initFuncStr,
-    func: funcParser(initFuncStr),
-    gridQuadSize: 40,
-    gridShow: true,
-    axesData: { show: true, showLabels: true, length: 40, radius: 0.05 },
-    cameraData: Object.assign({}, initCameraData)
+const initCameraData = {
+    position: [0, 0, 1],
+    up: [0, 0, 1],
+    //fov: 75,
+    near: -100,
+    far: 100,
+    rotation: { order: 'XYZ' },
+    orthographic: {
+        left: (frustumSize * aspectRatio) / -2,
+        right: (frustumSize * aspectRatio) / 2,
+        top: frustumSize / 2,
+        bottom: frustumSize / -2
+    }
 };
 
-const roundConst = 3;
-
-function shrinkState({
-    bounds,
-    funcStr,
-    gridQuadSize,
-    gridShow,
-    axesData: { show, showLabels, length, radius },
-    cameraData: { position, up }
-}) {
-    const { xMin, xMax, yMin, yMax } = bounds;
-
-    const newObj = {
-        b: [xMin, xMax, yMin, yMax],
-        fs: funcStr,
-        gqs: gridQuadSize,
-        gs: gridShow,
-        as: show,
-        sl: showLabels,
-        l: length,
-        r: radius,
-        cp: position.map((x) => round(x, 2)),
-        cu: up.map((x) => round(x, 2))
-    };
-    return newObj;
-}
-
-// f is a function applied to the string representing each array element
-
-function strArrayToArray(strArray, f = Number) {
-    // e.g., '2,4,-32.13' -> [2, 4, -32.13]
-
-    return strArray.split(',').map((x) => f(x));
-}
-
-function expandState({ b, fs, gqs, gs, as, sl, l, r, cp, cu }) {
-    const bds = strArrayToArray(b, Number);
-
-    const cameraPos = strArrayToArray(cp, Number);
-    const cameraUp = strArrayToArray(cu, Number);
-
-    return {
-        bounds: { xMin: bds[0], xMax: bds[1], yMin: bds[2], yMax: bds[3] },
-        funcStr: fs,
-        func: funcParser(fs),
-        gridQuadSize: Number(gqs),
-        gridShow: Number(gs),
-        axesData: { show: as, showLabels: sl, length: Number(l), radius: Number(r) },
-        cameraData: { position: cameraPos, up: cameraUp }
-    };
-}
-
-const fonts = "'Helvetica', 'Hind', sans-serif";
-
-// percentage of sbcreen appBar will take (at the top)
+// percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
-const controlBarHeight = 10;
+const controlBarHeight = 13;
 
 // (relative) font sizes (first in em's)
-const initFontSize = 1;
-const percControlBar = 1.25;
-const percButton = 0.85;
-const percDrawer = 0.85;
-
-const labelStyle = {
-    color: 'black',
-    padding: '.1em',
-    margin: '.5em',
-    padding: '.4em',
-    fontSize: '1.5em'
-};
-
-// in em's
-const optionsDrawerWidth = 20;
-
-const initOptionsOpen = false;
+const fontSize = 1;
+const controlBarFontSize = 1;
 
 //------------------------------------------------------------------------
 
 export default function App() {
-    const [state, setState] = useState(Object.assign({}, initState));
+    const threeSceneRef = useRef();
 
-    const [colors, setColors] = useState(initColors);
-
-    const threeSceneRef = useRef(null);
-
-    // following will be passed to components that need to draw
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    // determine whether various UI elements are drawn
-    const [showOptsDrawer, setShowOptsDrawer] = useState(initOptionsOpen);
-    const [showCameraOpts, setShowCameraOpts] = useState(false);
-    const [showCoordOpts, setShowCoordOpts] = useState(false);
-    const [showFuncOpts, setShowFuncOpts] = useState(false);
-
-    //------------------------------------------------------------------------
-    //
-    // init effects
-
-    useGridAndOrigin({
-        threeCBs,
-        gridQuadSize: state.gridQuadSize,
-        gridShow: state.gridShow,
-        originRadius: 0.1
-    });
-
-    use3DAxes({
-        threeCBs,
-        bounds: {
-            xMin: -state.axesData.length,
-            xMax: state.axesData.length,
-            yMin: -state.axesData.length,
-            yMax: state.axesData.length,
-            zMin: -state.axesData.length,
-            zMax: state.axesData.length
-        },
-        radius: state.axesData.radius,
-        show: state.axesData.show,
-        showLabels: state.axesData.showLabels,
-        labelStyle,
-        color: initColors.axes
-    });
-
-    //------------------------------------------------------------------------
-    //
-    // look at location.search
-
-    // want to: read in the query string, parse it into an object, merge that object with
-    // initState, then set all of the state with that merged object
-
-    useEffect(() => {
-        const qs = window.location.search;
-
-        if (qs.length === 0) {
-            setState((s) => s);
-            return;
-        }
-
-        const newState = expandState(queryString.parse(qs.slice(1), { parseBooleans: true }));
-        setState(newState);
-
-        if (!threeCBs) return;
-
-        threeCBs.setCameraPosition(newState.cameraData.position);
-    }, [threeCBs]);
-
-    const saveButtonCB = useCallback(
-        () =>
-            window.history.replaceState(
-                null,
-                null,
-                '?' +
-                    queryString.stringify(shrinkState(state), {
-                        decode: false,
-                        arrayFormat: 'comma'
-                    })
-            ),
-        [state]
-    );
-
-    //------------------------------------------------------------------------
-    //
-    // funcGraph effect
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        if (!state.func) return;
-
-        const geometry = FunctionGraph3DGeom({
-            func: state.func,
-            bounds: state.bounds,
-            meshSize: 100
-        });
-
-        const material = new THREE.MeshPhongMaterial({
-            color: initColors.funcGraph,
-            side: THREE.DoubleSide
-        });
-        material.shininess = 0;
-        material.wireframe = false;
-
-        const mesh = new THREE.Mesh(geometry, material);
-        threeCBs.add(mesh);
-
-        return () => {
-            if (mesh) threeCBs.remove(mesh);
-            if (geometry) geometry.dispose();
-            if (material) material.dispose();
-        };
-    }, [threeCBs, state.func, state.bounds]);
-
-    //------------------------------------------------------------------------
-    //
-    // callbacks
-
-    const funcInputCB = useCallback((newFunc, newFuncStr) => {
-        if (!newFuncStr || newFuncStr.length === 0) {
-            setState(({ func, funcStr, ...rest }) => ({
-                func: null,
-                funcStr: newFuncStr,
-                ...rest
-            }));
-            return;
-        }
-
-        setState(({ func, funcStr, ...rest }) => ({ func: newFunc, funcStr: newFuncStr, ...rest }));
-    }, []);
-
-    const controlsCB = useCallback((position) => {
-        setState(({ cameraData, ...rest }) => ({
-            cameraData: Object.assign(cameraData, { position }),
-            ...rest
-        }));
-    }, []);
-
-    const cameraChangeCB = useCallback(
-        (position) => {
-            if (position) {
-                setState(({ cameraData, ...rest }) => ({
-                    cameraData: Object.assign(cameraData, { position }),
-                    ...rest
-                }));
-            }
-
-            if (!threeCBs) return;
-
-            threeCBs.setCameraPosition(position);
-        },
-        [threeCBs]
-    );
-
-    // this is imperative because we are not updating cameraData
-    const resetCameraCB = useCallback(() => {
-        if (!threeCBs) return;
-
-        setState(({ cameraData, ...rest }) => ({
-            cameraData: Object.assign({}, initCameraData),
-            ...rest
-        }));
-        threeCBs.setCameraPosition(initCameraData.position);
-    }, [threeCBs]);
-
-    const gridCB = useCallback(
-        ({ quadSize, show }) =>
-            setState(({ gridQuadSize, gridShow, ...rest }) => ({
-                gridQuadSize: quadSize,
-                gridShow: show,
-                ...rest
-            })),
-        []
-    );
-
-    const axesCB = useCallback((newAxesData) => {
-        setState(({ axesData, ...rest }) => ({ axesData: newAxesData, ...rest }));
-    }, []);
-
+    //useHackyThreeInitDisplay(threeSceneRef);
     return (
-        <FullScreenBaseComponent backgroundColor={colors.controlBar} fonts={fonts}>
-            <Helmet>
-                <title>Function grapher</title>
-                <meta name='viewport' content='width=device-width, user-scalable=no' />
-            </Helmet>
-
-            <ControlBar height={controlBarHeight} fontSize={initFontSize * percControlBar}>
-                <span>
-                    <FunctionInput
-                        onChangeFunc={funcInputCB}
-                        initFuncStr={state.funcStr}
-                        leftSideOfEquation='f(x,y) ='
-                    />
-                </span>
-                <Button
-                    fontSize={initFontSize * percButton}
-                    onClickFunc={useCallback(() => setShowOptsDrawer((o) => !o), [])}
-                >
-                    <div>
-                        <span css={{ paddingRight: '1em' }}>Options</span>
-                        <span>{showOptsDrawer ? '\u{2B06}' : '\u{2B07}'} </span>
-                    </div>
-                </Button>
-            </ControlBar>
-
-            <Main height={100 - controlBarHeight} fontSize={initFontSize * percDrawer}>
-                <ThreeSceneComp
-                    ref={threeSceneRef}
-                    initCameraData={initCameraData}
-                    controlsData={initControlsData}
-                    controlsCB={controlsCB}
-                />
-
-                <RightDrawer
-                    toShow={showOptsDrawer}
-                    width={optionsDrawerWidth}
-                    color={colors.optionsDrawer}
-                    fontSize={'1.5em'}
-                >
-                    <ListItem
-                        width={optionsDrawerWidth - 9}
-                        onClick={useCallback(() => setShowCoordOpts((s) => !s), [])}
+        <JProvider>
+            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
+                <Provider unstable_system={system}>
+                    <ControlBar
+                        height={controlBarHeight}
+                        fontSize={fontSize * controlBarFontSize}
+                        padding='0em'
                     >
-                        Coordinates
-                    </ListItem>
+                        <div className='center-flex-row'>
+                            <EquationInput />
+                        </div>
+                        <OptionsModal />
+                    </ControlBar>
+                </Provider>
 
-                    <ListItem
-                        width={optionsDrawerWidth - 9}
-                        onClick={useCallback(() => setShowCameraOpts((s) => !s), [])}
-                    >
-                        Camera
-                    </ListItem>
-                </RightDrawer>
-
-                <ResetCameraButton
-                    key='resetCameraButton'
-                    onClickFunc={resetCameraCB}
-                    color={colors.optionsDrawer}
-                    userCss={{ top: '73%', left: '5%' }}
-                />
-                <SaveButton onClickFunc={saveButtonCB} />
-
-                <Modal
-                    show={showCoordOpts}
-                    key='axesModalWindow'
-                    onClose={useCallback(() => setShowCoordOpts(false), [])}
-                    color={colors.optionsDrawer}
-                >
-                    <CoordinateOptions
-                        axesData={state.axesData}
-                        onAxesChange={axesCB}
-                        gridQuadSize={state.gridQuadSize}
-                        gridShow={state.gridShow}
-                        onGridChange={gridCB}
-                    />
-                </Modal>
-
-                <Modal
-                    show={showCameraOpts}
-                    key='cameraModal'
-                    onClose={useCallback(() => setShowCameraOpts(false), [])}
-                    leftPerc={80}
-                    topPerc={70}
-                    color={colors.optionsDrawer}
-                >
-                    <CameraOptions cameraData={state.cameraData} onChangeFunc={cameraChangeCB} />
-                </Modal>
-            </Main>
-        </FullScreenBaseComponent>
+                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
+                    <ThreeSceneComp
+                        initCameraData={initCameraData}
+                        controlsData={initControlsData}
+                        ref={(elt) => (threeSceneRef.current = elt)}
+                        showPhotoButton={false}
+                    ></ThreeSceneComp>
+                    <DataComp />
+                </Main>
+            </FullScreenBaseComponent>
+        </JProvider>
     );
 }
 
-function ListItem({ children, onClick, toShow = true, width = '20' }) {
+function useHackyThreeInitDisplay(threeSceneRef) {
+    // following is very hacky way to get three displayed on initial render
+    const threeCBs = useThreeCBs(threeSceneRef);
+
+    const [loadAgain, setLoadAgain] = useState(0);
+
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        window.dispatchEvent(new Event('resize'));
+        setLoadAgain(1);
+    }, [threeCBs]);
+
+    useEffect(() => {
+        if (loadAgain < 1) return;
+
+        window.dispatchEvent(new Event('resize'));
+    }, [loadAgain]);
+}
+
+function OptionsModal() {
+    const dialog = useDialogState();
+    const tab = useTabState();
+
+    useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+    });
+
+    const cssRef = useRef({
+        transform: 'none',
+        top: '15%',
+        left: 'auto',
+        right: 20,
+        width: 400,
+        height: 250
+    });
+
+    const cssRef1 = useRef({ width: '8em' });
+
+    const cssRef2 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
+
     return (
-        <div
-            onClick={onClick}
-            css={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-end',
-                width: width.toString() + 'em',
-                cursor: 'pointer'
-            }}
-        >
-            <div>{children}</div>
-            <div>{toShow ? '\u2699' : '\u274C'}</div>
+        <div zindex={-10}>
+            <DialogDisclosure style={cssRef2.current} {...dialog}>
+                <span style={cssRef1.current}>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
+            </DialogDisclosure>
+            <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
+                <>
+                    <TabList {...tab} aria-label='Option tabs'></TabList>
+                </>
+            </Dialog>
         </div>
     );
 }
