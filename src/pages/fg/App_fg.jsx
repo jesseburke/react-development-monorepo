@@ -10,8 +10,6 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 
 import * as system from 'reakit-system-bootstrap';
 
-import './styles.css';
-
 import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
@@ -27,8 +25,7 @@ import { fonts, labelStyle } from './constants.jsx';
 
 import {
     funcAtom,
-    xLabelAtom,
-    yLabelAtom,
+    labelAtom,
     EquationInput,
     axesDataAtom,
     AxesDataInput,

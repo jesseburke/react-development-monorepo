@@ -5,8 +5,7 @@ import { useAtom, atom } from 'jotai';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-const defaultXLabelAtom = atom('x');
-const defaultYLabelAtom = atom('y');
+const defaultLabelAtom = atom({ x: 'x', y: 'y' });
 
 const defaultAxesDataAtom = atom({
     radius: 0.01,
@@ -23,8 +22,7 @@ export default React.memo(function Axes2DTS({
     axesDataAtom = defaultAxesDataAtom,
     show = true,
     tickLabelDistanceFromEnds = 1,
-    xLabelAtom = defaultXLabelAtom,
-    yLabelAtom = defaultYLabelAtom
+    labelAtom = defaultLabelAtom
 }) {
     const {
         radius,
@@ -40,8 +38,7 @@ export default React.memo(function Axes2DTS({
     const [bounds] = useAtom(boundsAtom);
     const { xMin, xMax, yMin, yMax } = bounds;
 
-    const [xLabel] = useAtom(xLabelAtom);
-    const [yLabel] = useAtom(yLabelAtom);
+    const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];
 
     useEffect(() => {
         if (!threeCBs) return;

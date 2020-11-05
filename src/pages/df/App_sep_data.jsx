@@ -5,6 +5,7 @@ import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 import styles from './base_styles.module.css';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
+import LabelData from '../../data/LabelData.jsx';
 import PointData from '../../data/PointData.jsx';
 import EquationData from '../../data/EquationData.jsx';
 import ArrowGridData from '../../data/ArrowGridData.jsx';
@@ -27,10 +28,6 @@ const colors = {
 const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
 
 const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
-
-const initXLabel = 'x';
-
-const initYLabel = 'y';
 
 const initialInitialPoint = { x: 2, y: 2 };
 
@@ -66,21 +63,12 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-export const xLabelAtom = atomWithReset(initXLabel);
-
-const xLabelDecode = (str) => {
-    if (!str || !str.length || str.length === 0) return initXLabel;
-
-    return str;
-};
-
-export const yLabelAtom = atomWithReset(initYLabel);
-
-const yLabelDecode = (str) => {
-    if (!str || !str.length || str.length === 0) return initYLabel;
-
-    return str;
-};
+export const {
+    atom: labelAtom,
+    component: LabelInput,
+    encode: labelEncode,
+    decode: labelDecode
+} = LabelData({ twoD: true });
 
 export const {
     atom: initialPointAtom,
@@ -96,7 +84,7 @@ export const {
     decode: xFuncStrDecode
 } = EquationData({
     initVal: initXFuncStr,
-    equationLabelAtom: atom((get) => 'g(' + get(xLabelAtom) + ') = '),
+    equationLabelAtom: atom((get) => 'g(' + get(labelAtom).x + ') = '),
     inputSize: 10
 });
 
@@ -107,7 +95,7 @@ export const {
     decode: yFuncStrDecode
 } = EquationData({
     initVal: initYFuncStr,
-    equationLabelAtom: atom((get) => 'h(' + get(yLabelAtom) + ') = '),
+    equationLabelAtom: atom((get) => 'h(' + get(labelAtom).y + ') = '),
     inputSize: 10
 });
 
@@ -135,8 +123,7 @@ export const {
     decode: boundsDataDecode
 } = BoundsData({
     initBounds,
-    xLabelAtom,
-    yLabelAtom
+    labelAtom
 });
 
 export const {
@@ -153,8 +140,7 @@ export const {
 // argument.
 
 const atomStore = {
-    xl: [xLabelAtom, (x) => (x ? x.toString() : null), xLabelDecode],
-    yl: [yLabelAtom, (x) => (x ? x.toString() : null), yLabelDecode],
+    ls: [labelAtom, labelEncode, labelDecode],
     ip: [initialPointAtom, initialPointEncode, initialPointDecode],
     xs: [xFuncStrAtom, xFuncStrEncode, xFuncStrDecode],
     ys: [yFuncStrAtom, yFuncStrEncode, yFuncStrDecode],
@@ -179,8 +165,7 @@ export const funcAtom = atom((get) => ({
 // input components
 
 export const SepEquationInput = React.memo(function SepEquationI({}) {
-    const [xLabel] = useAtom(xLabelAtom);
-    const [yLabel] = useAtom(yLabelAtom);
+    const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];
 
     return (
         <div className={styles['center-flex-column']}>

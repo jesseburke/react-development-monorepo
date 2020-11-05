@@ -12,16 +12,11 @@ import Input from '../components/Input.jsx';
 
 import { diffObjects } from '../utils/BaseUtils.jsx';
 
-const defaultXLabelAtom = atom('x');
-const defaultYLabelAtom = atom('y');
+const defaultLabelAtom = atom({ x: 'x', y: 'y' });
 
 const defaultInitBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
-export default function BoundsData({
-    xLabelAtom = defaultXLabelAtom,
-    yLabelAtom = defaultYLabelAtom,
-    initBounds = {}
-} = {}) {
+export default function BoundsData({ labelAtom = defaultLabelAtom, initBounds = {} } = {}) {
     const encode = (newObj) => {
         const { xMin, xMax, yMin, yMax } = diffObjects(newObj, defaultInitBounds);
 
@@ -58,8 +53,7 @@ export default function BoundsData({
     const component = React.memo(function BoundsInput({}) {
         const [bounds, setBounds] = useAtom(boundsAtom);
 
-        const [xLabel] = useAtom(xLabelAtom);
-        const [yLabel] = useAtom(yLabelAtom);
+        const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];
 
         const xMinCB = useCallback(
             (newxm) => setBounds((oldBounds) => ({ ...oldBounds, xMin: Number(newxm) })),

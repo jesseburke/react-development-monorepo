@@ -13,7 +13,7 @@ let title = 'default title';
 
 //import App from './pages/df/App_df.jsx';
 
-//import App from './pages/df/App_sep.jsx';
+import App from './pages/df/App_sep.jsx';
 //title = 'Separable equation direction field grapher';
 
 //import App from './pages/df/App_logistic.jsx';
@@ -28,7 +28,7 @@ let title = 'default title';
 //import App from './pages/df/App_sec_order_cases.jsx';
 //title = 'Second order linear equations';
 
-import App from './pages/df/App_fg.jsx';
+//import App from './pages/fg/App_fg.jsx';
 
 function main() {
     const element = document.createElement('div');

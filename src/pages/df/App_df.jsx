@@ -33,8 +33,8 @@ import {
     initialPointAtom,
     InitialPointInput,
     funcAtom,
-    xLabelAtom,
-    yLabelAtom,
+    labelAtom,
+    LabelInput,
     solutionCurveDataAtom,
     SolutionCurveDataInput,
     EquationInput,
@@ -132,8 +132,7 @@ export default function App() {
                             tickLabelDistance={1}
                             boundsAtom={boundsAtom}
                             axesDataAtom={axesDataAtom}
-                            xLabelAtom={xLabelAtom}
-                            yLabelAtom={yLabelAtom}
+                            labelAtom={labelAtom}
                         />
                         <ArrowGrid
                             funcAtom={funcAtom}
@@ -204,6 +203,7 @@ function OptionsModal() {
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
                         <Tab {...tab}>Solution curve</Tab>
+                        <Tab {...tab}>Variable labels</Tab>
                     </TabList>
                     <TabPanel {...tab}>
                         <ArrowGridDataInput />
@@ -216,6 +216,9 @@ function OptionsModal() {
                     </TabPanel>
                     <TabPanel {...tab}>
                         <SolutionCurveDataInput />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <LabelInput />
                     </TabPanel>
                 </>
             </Dialog>

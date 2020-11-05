@@ -2,6 +2,7 @@ import { atom, useAtom } from 'jotai';
 import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
+import LabelData from '../../data/LabelData.jsx';
 import PointData from '../../data/PointData.jsx';
 import EquationData from '../../data/EquationData.jsx';
 import ArrowGridData from '../../data/ArrowGridData.jsx';
@@ -63,23 +64,14 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-export const xLabelAtom = atomWithReset(initXLabel);
+export const {
+    atom: labelAtom,
+    component: LabelInput,
+    encode: labelEncode,
+    decode: labelDecode
+} = LabelData({ twoD: true });
 
-const xLabelDecode = (str) => {
-    if (!str || !str.length || str.length === 0) return initXLabel;
-
-    return str;
-};
-
-export const yLabelAtom = atomWithReset(initYLabel);
-
-const yLabelDecode = (str) => {
-    if (!str || !str.length || str.length === 0) return initYLabel;
-
-    return str;
-};
-
-const equationLabelAtom = atom((get) => 'd' + get(yLabelAtom) + '/d' + get(xLabelAtom) + ' =  ');
+const equationLabelAtom = atom((get) => 'd' + get(labelAtom).x + '/d' + get(labelAtom).y + ' =  ');
 
 export const {
     atom: funcStrAtom,
@@ -119,8 +111,7 @@ export const {
     decode: boundsDataDecode
 } = BoundsData({
     initBounds,
-    xLabelAtom,
-    yLabelAtom
+    labelAtom
 });
 
 export const {
@@ -138,8 +129,7 @@ export const {
 // argument.
 
 const atomStore = {
-    xl: [xLabelAtom, (x) => (x ? x.toString() : null), xLabelDecode],
-    yl: [yLabelAtom, (x) => (x ? x.toString() : null), yLabelDecode],
+    ls: [labelAtom, labelEncode, labelDecode],
     ip: [initialPointAtom, initialPointEncode, initialPointDecode],
     fs: [funcStrAtom, funcStrEncode, funcStrDecode],
     ag: [arrowGridDataAtom, arrowGridDataEncode, arrowGridDataDecode],
