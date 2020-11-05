@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
 import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
-import classnames from 'classnames';
 import styles from './base_styles.module.css';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
@@ -25,7 +24,7 @@ const colors = {
     tick: '#e19662'
 };
 
-const initArrowData = { density: 1, thickness: 1, length: 0.75, color: '#C2374F' };
+const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
 
 const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
@@ -36,7 +35,7 @@ const initYLabel = 'y';
 const initialInitialPoint = { x: 2, y: 2 };
 
 const initSolutionCurveData = {
-    color: '#C2374F',
+    color: colors.solutionCurve,
     approxH: 0.1,
     visible: true,
     width: 0.1

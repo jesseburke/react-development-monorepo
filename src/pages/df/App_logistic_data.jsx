@@ -14,7 +14,13 @@ import CurveData from '../../data/CurveData.jsx';
 //
 // initial constants
 
-const initArrowData = { density: 1, thickness: 1, length: 0.75, color: '#C2374F' };
+const colors = {
+    arrows: '#B01A46', //'#C2374F'
+    solutionCurve: '#4e6d87', //'#C2374F'
+    tick: '#e19662'
+};
+
+const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
 
 const initBounds = { xMin: -20, xMax: 20, yMin: 0, yMax: 40 };
 

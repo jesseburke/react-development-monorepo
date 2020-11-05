@@ -34,11 +34,11 @@ const defaultInitValues = {
     tickLabelStyle: defaultTickLabelStyle
 };
 
-// function that diffs two objects? e.g., return all the fields and
-// values of the seoncd that do not occur in the first.
+// diffObjects = return all the fields and
+// values of the second object that do not occur in the first.
 
 export default function Axes2DData(args) {
-    function encode(newObj) {
+    const encode = (newObj) => {
         const { radius, color, tickLabelDistance } = diffObjects(newObj, defaultInitValues);
 
         let ro = {};
@@ -48,7 +48,7 @@ export default function Axes2DData(args) {
         if (tickLabelDistance) ro.tld = tickLabelDistance;
 
         return queryString.stringify(ro);
-    }
+    };
 
     const decode = (objStr) => {
         if (!objStr || !objStr.length || objStr.length === 0)
