@@ -35,10 +35,10 @@ import {
     LabelInput,
     solutionCurveDataAtom,
     SolutionCurveDataInput,
-    SepEquationInput,
     axesDataAtom,
     AxesDataInput,
-    DataComp
+    DataComp,
+    SepEquationInput
 } from './App_sep_data.jsx';
 
 //------------------------------------------------------------------------

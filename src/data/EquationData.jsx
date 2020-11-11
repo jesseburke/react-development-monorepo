@@ -35,7 +35,11 @@ export default function EquationData({
         return objStr;
     };
 
-    const equationStrAtom = atomWithReset(initVal);
+    const equationStrAtom = atom(initVal);
+
+    const resetAtom = atom(null, (get, set) => {
+        set(equationStrAtom, initVal);
+    });
 
     const labelAtom = equationLabelAtom ? equationLabelAtom : atom(equationLabelString);
 
@@ -55,6 +59,7 @@ export default function EquationData({
     return {
         atom: equationStrAtom,
         component: comp,
+        resetAtom,
         encode,
         decode
     };

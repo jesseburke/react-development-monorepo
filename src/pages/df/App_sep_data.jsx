@@ -29,7 +29,7 @@ const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.ar
 
 const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
-const initialInitialPoint = { x: 2, y: 2 };
+const initInitialPoint = { x: 2, y: 2 };
 
 const initSolutionCurveData = {
     color: colors.solutionCurve,
@@ -63,101 +63,59 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-export const {
-    atom: labelAtom,
-    component: LabelInput,
-    encode: labelEncode,
-    decode: labelDecode
-} = LabelData({ twoD: true });
-
-export const {
-    atom: initialPointAtom,
-    component: InitialPointInput,
-    encode: initialPointEncode,
-    decode: initialPointDecode
-} = PointData(initialInitialPoint, 'Initial Point: ');
-
-export const {
-    atom: xFuncStrAtom,
-    component: XEquationInput,
-    encode: xFuncStrEncode,
-    decode: xFuncStrDecode
-} = EquationData({
-    initVal: initXFuncStr,
-    equationLabelAtom: atom((get) => 'g(' + get(labelAtom).x + ') = '),
-    inputSize: 10
-});
-
-export const {
-    atom: yFuncStrAtom,
-    component: YEquationInput,
-    encode: yFuncStrEncode,
-    decode: yFuncStrDecode
-} = EquationData({
-    initVal: initYFuncStr,
-    equationLabelAtom: atom((get) => 'h(' + get(labelAtom).y + ') = '),
-    inputSize: 10
-});
-
-export const {
-    atom: arrowGridDataAtom,
-    component: ArrowGridDataInput,
-    encode: arrowGridDataEncode,
-    decode: arrowGridDataDecode
-} = ArrowGridData(initArrowData);
-
-export const {
-    atom: axesDataAtom,
-    component: AxesDataInput,
-    encode: axesDataEncode,
-    decode: axesDataDecode
-} = AxesData({
-    ...initAxesData,
-    tickLabelStyle
-});
-
-export const {
-    atom: boundsAtom,
-    component: BoundsInput,
-    encode: boundsDataEncode,
-    decode: boundsDataDecode
-} = BoundsData({
-    initBounds,
-    labelAtom
-});
-
-export const {
-    atom: solutionCurveDataAtom,
-    component: SolutionCurveDataInput,
-    encode: curveDataEncode,
-    decode: curveDataDecode
-} = CurveData(initSolutionCurveData);
-
-//------------------------------------------------------------------------
-// the first entry in each array is the atom; the second is a function to
-// turn the atom value into a string; third entry is a function that takes a
-// string and returns an object, should be inverse to the second
-// argument.
-
-const atomStore = {
-    ls: [labelAtom, labelEncode, labelDecode],
-    ip: [initialPointAtom, initialPointEncode, initialPointDecode],
-    xs: [xFuncStrAtom, xFuncStrEncode, xFuncStrDecode],
-    ys: [yFuncStrAtom, yFuncStrEncode, yFuncStrDecode],
-    ag: [arrowGridDataAtom, arrowGridDataEncode, arrowGridDataDecode],
-    ax: [axesDataAtom, axesDataEncode, axesDataDecode],
-    bd: [boundsAtom, boundsDataEncode, boundsDataDecode],
-    sc: [solutionCurveDataAtom, curveDataEncode, curveDataDecode]
+const primObj = {
+    ls: LabelData({ twoD: true }),
+    ip: PointData(initInitialPoint, 'Initial Point: '),
+    ag: ArrowGridData(initArrowData),
+    ax: AxesData({
+        ...initAxesData,
+        tickLabelStyle
+    }),
+    sc: CurveData(initSolutionCurveData)
 };
 
+const derObj = {
+    xs: EquationData({
+        initVal: initXFuncStr,
+        equationLabelAtom: atom((get) => 'g(' + get(primObj.ls.atom).x + ') = '),
+        inputSize: 10
+    }),
+    ys: EquationData({
+        initVal: initYFuncStr,
+        equationLabelAtom: atom((get) => 'h(' + get(primObj.ls.atom).y + ') = '),
+        inputSize: 10
+    }),
+    bd: BoundsData({
+        initBounds,
+        labelAtom: primObj.ls.atom
+    })
+};
+
+const atomStore = { ...primObj, ...derObj };
+
 export const DataComp = MainDataComp(atomStore);
+
+export const { atom: labelAtom, component: LabelInput } = atomStore.ls;
+
+export const { atom: xFuncStrAtom, component: XEquationInput } = atomStore.xs;
+export const { atom: yFuncStrAtom, component: YEquationInput } = atomStore.ys;
+
+export const { atom: initialPointAtom, component: InitialPointInput } = atomStore.ip;
+
+export const { atom: arrowGridDataAtom, component: ArrowGridDataInput } = atomStore.ag;
+
+export const { atom: axesDataAtom, component: AxesDataInput } = atomStore.ax;
+
+export const { atom: boundsAtom, component: BoundsInput } = atomStore.bd;
+
+export const { atom: solutionCurveDataAtom, component: SolutionCurveDataInput } = atomStore.sc;
 
 //------------------------------------------------------------------------
 //
 // derived atoms
 
 export const funcAtom = atom((get) => ({
-    func: funcParser('(' + get(xFuncStrAtom) + ')*(' + get(yFuncStrAtom) + ')')
+    func: funcParser('(' + get(atomStore.xs.atom) + ')*(' + get(atomStore.ys.atom) + ')')
 }));
 
 //------------------------------------------------------------------------
@@ -165,7 +123,7 @@ export const funcAtom = atom((get) => ({
 // input components
 
 export const SepEquationInput = React.memo(function SepEquationI({}) {
-    const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];
+    const { x: xLabel, y: yLabel } = useAtom(atomStore.ls.atom)[0];
 
     return (
         <div className={styles['center-flex-column']}>

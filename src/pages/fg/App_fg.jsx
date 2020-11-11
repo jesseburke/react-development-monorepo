@@ -26,7 +26,7 @@ import { fonts, labelStyle } from './constants.jsx';
 import {
     funcAtom,
     labelAtom,
-    EquationInput,
+    FuncStrInput,
     axesDataAtom,
     AxesDataInput,
     DataComp
@@ -96,7 +96,7 @@ export default function App() {
                         padding='0em'
                     >
                         <div className='center-flex-row'>
-                            <EquationInput />
+                            <FuncStrInput />
                         </div>
                         <OptionsModal />
                     </ControlBar>

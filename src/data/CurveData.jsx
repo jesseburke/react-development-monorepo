@@ -20,7 +20,9 @@ const defaultInitValues = {
     width: 0.1
 };
 
-export default function CurveData(initData = {}) {
+export default function CurveData(args = {}) {
+    const initValue = { ...defaultInitValues, ...args };
+
     const encode = (newObj) => {
         const { color, approxH, visible, width } = diffObjects(newObj, defaultInitValues);
 
@@ -35,8 +37,7 @@ export default function CurveData(initData = {}) {
     };
 
     const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0)
-            return { ...defaultInitValues, ...initData };
+        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
 
         const rawObj = queryString.parse(objStr);
 
@@ -49,12 +50,16 @@ export default function CurveData(initData = {}) {
         if (newKeys.includes('w')) ro.width = Number(rawObj.w);
         if (newKeys.includes('c')) ro.color = rawObj.c;
 
-        return { ...defaultInitValues, ...ro };
+        return { ...initValue, ...ro };
     };
 
     //console.log(decode(encode(defaultInitData)));
 
-    const cdAtom = atomWithReset({ ...defaultInitValues, ...initData });
+    const cdAtom = atom(initValue);
+
+    const resetAtom = atom(null, (get, set) => {
+        set(cdAtom, initValue);
+    });
 
     const toggleVisibleAtom = atom(null, (get, set) =>
         set(cdAtom, { ...get(cdAtom), visible: !get(cdAtom).visible })
@@ -121,5 +126,5 @@ export default function CurveData(initData = {}) {
         );
     });
 
-    return { component, atom: cdAtom, encode, decode };
+    return { component, atom: cdAtom, resetAtom, encode, decode };
 }

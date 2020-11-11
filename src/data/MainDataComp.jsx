@@ -12,12 +12,12 @@ export default function MainDataComp(atomStore) {
     // not update if they change
     const writerAtom = atom(null, (get, set, obj) => {
         Object.keys(obj).map((k) => {
-            set(atomStore[k][0], obj[k]);
+            set(atomStore[k].atom, obj[k]);
         });
     });
 
-    //could have component for each atom? that might simplify things drastically
-
+    // the two components are optional; will be components that
+    // represent buttons to click
     function DataComp({ saveComp, resetComp }) {
         const saveCB = useSaveToAddressBar();
         const resetCB = useReset();
@@ -37,6 +37,8 @@ export default function MainDataComp(atomStore) {
     }
 
     function useReset() {
+        // could potentially make writeFunc a derived atom? derived
+        // from the array of writerAtoms that are passed in
         const writeFunc = useAtom(writerAtom)[1];
 
         const resetCB = useCallback(() => {
@@ -45,7 +47,7 @@ export default function MainDataComp(atomStore) {
             // when the decode functions are passed a null argument,
             // they return the initial values of the app
             Object.keys(atomStore).map((k) => {
-                writeObj[k] = atomStore[k][2]();
+                writeObj[k] = atomStore[k].decode();
             });
 
             writeFunc(writeObj);
@@ -70,8 +72,8 @@ export default function MainDataComp(atomStore) {
             const writeObj = {};
 
             Object.keys(qsObj).map((k) => {
-                if (storeKeys.includes(k) && atomStore[k][2]) {
-                    writeObj[k] = atomStore[k][2](qsObj[k]);
+                if (storeKeys.includes(k) && atomStore[k].decode) {
+                    writeObj[k] = atomStore[k].decode(qsObj[k]);
                 }
             });
 
@@ -86,18 +88,18 @@ export default function MainDataComp(atomStore) {
                 // null, and should reset everything
                 if (!obj.state) {
                     Object.keys(atomStore).map((k) => {
-                        writeObj[k] = atomStore[k][2]();
+                        writeObj[k] = atomStore[k].decode();
                     });
                 } else {
                     Object.keys(obj.state).map((k) => {
-                        if (storeKeys.includes(k) && atomStore[k][2]) {
-                            writeObj[k] = atomStore[k][2](obj.state[k]);
+                        if (storeKeys.includes(k) && atomStore[k].decode()) {
+                            writeObj[k] = atomStore[k].decode(obj.state[k]);
                         }
                     });
                 }
 
                 writeFunc(writeObj);
-                console.log('onpopstate called with obj = ', obj.state);
+                //console.log('onpopstate called with obj = ', obj.state);
             };
         }, [writeFunc, storeKeys]);
     }
@@ -109,8 +111,8 @@ export default function MainDataComp(atomStore) {
             useCallback((get) => {
                 const objToReturn = {};
 
-                Object.entries(atomStore).map(([abbrev, [at, func]]) => {
-                    const newValue = func(get(at));
+                Object.entries(atomStore).map(([abbrev, { atom, encode }]) => {
+                    const newValue = encode(get(atom));
 
                     // don't need to put empty strings in address bar
                     if (!newValue || newValue.length === 0) return;

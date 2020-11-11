@@ -16,9 +16,12 @@ const defaultLabelAtom = atom({ x: 'x', y: 'y' });
 
 const defaultInitBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
-export default function BoundsData({ labelAtom = defaultLabelAtom, initBounds = {} } = {}) {
+export default function BoundsData({
+    labelAtom = defaultLabelAtom,
+    initBounds = defaultInitBounds
+} = {}) {
     const encode = (newObj) => {
-        const { xMin, xMax, yMin, yMax } = diffObjects(newObj, defaultInitBounds);
+        const { xMin, xMax, yMin, yMax } = diffObjects(newObj, initBounds);
 
         let ro = {};
 
@@ -31,8 +34,7 @@ export default function BoundsData({ labelAtom = defaultLabelAtom, initBounds = 
     };
 
     const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0)
-            return { ...defaultInitBounds, ...initBounds };
+        if (!objStr || !objStr.length || objStr.length === 0) return initBounds;
 
         const rawObj = queryString.parse(objStr);
 
@@ -45,10 +47,14 @@ export default function BoundsData({ labelAtom = defaultLabelAtom, initBounds = 
         if (newKeys.includes('ym')) ro.yMin = Number(rawObj.ym);
         if (newKeys.includes('yp')) ro.yMax = Number(rawObj.yp);
 
-        return { ...defaultInitBounds, ...ro };
+        return { ...initBounds, ...ro };
     };
 
-    const boundsAtom = atomWithReset({ ...defaultInitBounds, ...initBounds });
+    const boundsAtom = atom(initBounds);
+
+    const resetAtom = atom(null, (get, set) => {
+        set(boundsAtom, initBounds);
+    });
 
     const component = React.memo(function BoundsInput({}) {
         const [bounds, setBounds] = useAtom(boundsAtom);
@@ -109,6 +115,7 @@ export default function BoundsData({ labelAtom = defaultLabelAtom, initBounds = 
 
     return {
         atom: boundsAtom,
+        resetAtom,
         component,
         encode,
         decode

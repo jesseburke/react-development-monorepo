@@ -38,6 +38,8 @@ const defaultInitValues = {
 // values of the second object that do not occur in the first.
 
 export default function Axes2DData(args) {
+    const initValue = { ...defaultInitValues, ...args };
+
     const encode = (newObj) => {
         const { radius, color, tickLabelDistance } = diffObjects(newObj, defaultInitValues);
 
@@ -51,8 +53,7 @@ export default function Axes2DData(args) {
     };
 
     const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0)
-            return { ...defaultInitValues, ...args };
+        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
 
         const rawObj = queryString.parse(objStr);
 
@@ -64,10 +65,14 @@ export default function Axes2DData(args) {
         if (newKeys.includes('tld')) ro.tickLabelDistance = Number(rawObj.tld);
         if (newKeys.includes('c')) ro.color = rawObj.c;
 
-        return { ...defaultInitValues, ...ro };
+        return { ...initValue, ...ro };
     };
 
-    const aoAtom = atomWithReset({ ...defaultInitValues, ...args });
+    const aoAtom = atom(initValue);
+
+    const resetAtom = atom(null, (get, set) => {
+        set(aoAtom, initValue);
+    });
 
     const comp = React.memo(() => {
         const [ao, setAo] = useAtom(aoAtom);
@@ -121,6 +126,7 @@ export default function Axes2DData(args) {
 
     return {
         atom: aoAtom,
+        resetAtom,
         component: comp,
         encode,
         decode

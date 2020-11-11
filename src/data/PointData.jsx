@@ -23,9 +23,11 @@ const defaultInitValues = {
     y: 0
 };
 
-export default function PointData(initVal, inputStr = 'Point: ') {
+export default function PointData(initArgs, inputStr = 'Point: ') {
+    const initValue = { ...defaultInitValues, ...initArgs };
+
     const encode = (newObj) => {
-        const { x, y } = diffObjects(newObj, defaultInitValues);
+        const { x, y } = diffObjects(newObj, initValue);
 
         let ro = {};
 
@@ -36,7 +38,7 @@ export default function PointData(initVal, inputStr = 'Point: ') {
     };
 
     const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initVal;
+        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
 
         const rawObj = queryString.parse(objStr);
 
@@ -50,7 +52,11 @@ export default function PointData(initVal, inputStr = 'Point: ') {
         return { ...defaultInitValues, ...ro };
     };
 
-    const ptAtom = atomWithReset({ ...defaultInitValues, ...initVal });
+    const ptAtom = atom(initValue);
+
+    const resetAtom = atom(null, (get, set) => {
+        set(ptAtom, initValue);
+    });
 
     const comp = React.memo(() => {
         const [point, setPoint] = useAtom(ptAtom);
@@ -79,6 +85,7 @@ export default function PointData(initVal, inputStr = 'Point: ') {
     return {
         atom: ptAtom,
         component: comp,
+        resetAtom,
         encode,
         decode
     };

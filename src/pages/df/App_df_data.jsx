@@ -51,7 +51,6 @@ export const labelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '1.5em'
 };
 
@@ -64,86 +63,54 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-export const {
-    atom: labelAtom,
-    component: LabelInput,
-    encode: labelEncode,
-    decode: labelDecode
-} = LabelData({ twoD: true });
-
-const equationLabelAtom = atom((get) => 'd' + get(labelAtom).x + '/d' + get(labelAtom).y + ' =  ');
-
-export const {
-    atom: funcStrAtom,
-    component: EquationInput,
-    encode: funcStrEncode,
-    decode: funcStrDecode
-} = EquationData({ initVal: initFuncStr, equationLabelAtom });
-
-export const {
-    atom: initialPointAtom,
-    component: InitialPointInput,
-    encode: initialPointEncode,
-    decode: initialPointDecode
-} = PointData(initInitialPoint, 'Initial Point: ');
-
-export const {
-    atom: arrowGridDataAtom,
-    component: ArrowGridDataInput,
-    encode: arrowGridDataEncode,
-    decode: arrowGridDataDecode
-} = ArrowGridData(initArrowData);
-
-export const {
-    atom: axesDataAtom,
-    component: AxesDataInput,
-    encode: axesDataEncode,
-    decode: axesDataDecode
-} = AxesData({
-    ...initAxesData,
-    tickLabelStyle
-});
-
-export const {
-    atom: boundsAtom,
-    component: BoundsInput,
-    encode: boundsDataEncode,
-    decode: boundsDataDecode
-} = BoundsData({
-    initBounds,
-    labelAtom
-});
-
-export const {
-    atom: solutionCurveDataAtom,
-    component: SolutionCurveDataInput,
-    encode: curveDataEncode,
-    decode: curveDataDecode
-} = CurveData(initSolutionCurveData);
-
-//------------------------------------------------------------------------
-
-// the first entry in each array is the atom; the second is a function to
-// turn the atom value into a string; third entry is a function that takes a
-// string and returns an object, should be inverse to the second
-// argument.
-
-const atomStore = {
-    ls: [labelAtom, labelEncode, labelDecode],
-    ip: [initialPointAtom, initialPointEncode, initialPointDecode],
-    fs: [funcStrAtom, funcStrEncode, funcStrDecode],
-    ag: [arrowGridDataAtom, arrowGridDataEncode, arrowGridDataDecode],
-    ax: [axesDataAtom, axesDataEncode, axesDataDecode],
-    bd: [boundsAtom, boundsDataEncode, boundsDataDecode],
-    sc: [solutionCurveDataAtom, curveDataEncode, curveDataDecode]
+const primObj = {
+    ls: LabelData({ twoD: true }),
+    ip: PointData(initInitialPoint, 'Initial Point: '),
+    ag: ArrowGridData(initArrowData),
+    ax: AxesData({
+        ...initAxesData,
+        tickLabelStyle
+    }),
+    sc: CurveData(initSolutionCurveData)
 };
 
+const equationLabelAtom = atom(
+    (get) => 'd' + get(primObj.ls.atom).x + '/d' + get(primObj.ls.atom).y + ' =  '
+);
+
+const derObj = {
+    fs: EquationData({ initVal: initFuncStr, equationLabelAtom }),
+    bd: BoundsData({
+        initBounds,
+        labelAtom: primObj.ls.atom
+    })
+};
+
+// next step...rewrite copy of MainDataComp to accept testObj instead
+// of atomStore...then rewrite reset.
+
+const atomStore = { ...primObj, ...derObj };
+
 export const DataComp = MainDataComp(atomStore);
+
+export const { atom: labelAtom, component: LabelInput } = atomStore.ls;
+
+export const { atom: funcStrAtom, component: EquationInput } = atomStore.fs;
+
+export const { atom: initialPointAtom, component: InitialPointInput } = atomStore.ip;
+
+export const { atom: arrowGridDataAtom, component: ArrowGridDataInput } = atomStore.ag;
+
+export const { atom: axesDataAtom, component: AxesDataInput } = atomStore.ax;
+
+export const { atom: boundsAtom, component: BoundsInput } = atomStore.bd;
+
+export const { atom: solutionCurveDataAtom, component: SolutionCurveDataInput } = atomStore.sc;
 
 //------------------------------------------------------------------------
 //
 // derived atoms
 
 export const funcAtom = atom((get) => ({
-    func: funcParser(get(funcStrAtom))
+    func: funcParser(get(atomStore.fs.atom))
 }));

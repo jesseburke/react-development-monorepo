@@ -26,8 +26,10 @@ function strArrayToArray(strArray, f = Number) {
 }
 
 export default function ArrowGridData(args) {
+    const initValue = { ...defaultInitValues, ...args };
+
     const encode = (newObj) => {
-        const { density, thickness, length, color } = diffObjects(newObj, defaultInitValues);
+        const { density, thickness, length, color } = diffObjects(newObj, initValue);
 
         let ro = {};
 
@@ -41,8 +43,7 @@ export default function ArrowGridData(args) {
     };
 
     const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0)
-            return { ...defaultInitValues, ...args };
+        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
 
         const rawObj = queryString.parse(objStr);
 
@@ -55,12 +56,16 @@ export default function ArrowGridData(args) {
         if (newKeys.includes('l')) ro.length = Number(rawObj.l);
         if (newKeys.includes('c')) ro.color = rawObj.c;
 
-        return { ...defaultInitValues, ...ro };
+        return { ...initValue, ...ro };
     };
 
     //console.log(decode(encode(defaultInitValues)));
 
-    const agAtom = atomWithReset({ ...defaultInitValues, ...args });
+    const agAtom = atom(initValue);
+
+    const resetAtom = atom(null, (get, set) => {
+        set(agAtom, initValue);
+    });
 
     const ArrowGridOptionsInput = React.memo(() => {
         const [agda, setAgda] = useAtom(agAtom);
@@ -128,6 +133,7 @@ export default function ArrowGridData(args) {
 
     return {
         atom: agAtom,
+        resetAtom,
         component: ArrowGridOptionsInput,
         encode,
         decode
