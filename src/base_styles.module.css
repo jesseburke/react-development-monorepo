@@ -100,7 +100,6 @@
     outline: none;
 }
 
-// following two are for ThreeScene
 .container {    
     position: absolute;
     height: 100%;
@@ -119,12 +118,3 @@
     display: 'block';
 }
 
-
-/* 2 = med-padding, 5 =   { */
-/*             margin: 0, */
-/*             display: 'flex', */
-/*             flexDirection: 'column', */
-/*             justifyContent: 'center', */
-/*             alignItems: 'flex-start', */
-/*             padding: '0em 1em' */
-/*         }, try center-flex-column and add padding? */

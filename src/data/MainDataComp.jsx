@@ -124,6 +124,8 @@ export default function MainDataComp(atomStore) {
                 //console.log(queryString.stringify(returnObj));
                 //console.log(queryString.parse(queryString.stringify(returnObj)));
 
+                // the object is for pushing on history stack
+                // and the string is for writing to the address bar
                 return [objToReturn, queryString.stringify(objToReturn)];
             }, [])
         );
