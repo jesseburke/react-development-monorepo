@@ -28,6 +28,7 @@
         "recoil": "0.0.10",
         "three": "^0.110.0",
         "use-immer": "^0.4.1",
+        "valtio": "^0.4.5",
         "wouter": "^2.5.3"
     },
     "devDependencies": {

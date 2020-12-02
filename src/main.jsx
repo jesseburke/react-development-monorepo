@@ -11,7 +11,11 @@ let title = 'default title';
 
 //import App from './pages/df/App_canvas_test.jsx';
 
-import App from './pages/df/App_df.jsx';
+//import App from './pages/df/App_df.jsx';
+
+//import App from './pages/df/App_test_jotai.jsx';
+
+import App from './pages/df/App_test_valtio.jsx';
 
 //import App from './pages/df/App_sep.jsx';
 //title = 'Separable equation direction field grapher';

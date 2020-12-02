@@ -1,0 +1,23 @@
+[16:22:5.893] Global cache location '/Users/math/Library/Caches/typescript/3.9', safe file path '/usr/local/lib/node_modules/typescript/lib/typingsafelist.json', types map path /usr/local/lib/node_modules/typescript/lib/typesmap.json
+[16:22:5.895] Processing cache location '/Users/math/Library/Caches/typescript/3.9'
+[16:22:5.895] Trying to find '/Users/math/Library/Caches/typescript/3.9/package.json'...
+[16:22:5.896] Loaded content of '/Users/math/Library/Caches/typescript/3.9/package.json': {"private":true,"dependencies":{"types-registry":"^0.1.517"},"devDependencies":{"@types/classnames":"^2.2.11","@types/object-assign":"^4.0.30","@types/prop-types":"^15.7.3","@types/react":"^17.0.0"}}
+[16:22:5.897] Loaded content of '/Users/math/Library/Caches/typescript/3.9/package-lock.json'
+[16:22:5.905] Adding entry into typings cache: 'classnames' => '/Users/math/Library/Caches/typescript/3.9/node_modules/@types/classnames/index.d.ts'
+[16:22:5.908] Adding entry into typings cache: 'object-assign' => '/Users/math/Library/Caches/typescript/3.9/node_modules/@types/object-assign/index.d.ts'
+[16:22:5.910] Adding entry into typings cache: 'prop-types' => '/Users/math/Library/Caches/typescript/3.9/node_modules/@types/prop-types/index.d.ts'
+[16:22:5.915] Adding entry into typings cache: 'react' => '/Users/math/Library/Caches/typescript/3.9/node_modules/@types/react/index.d.ts'
+[16:22:5.915] Finished processing cache location '/Users/math/Library/Caches/typescript/3.9'
+[16:22:5.915] Process id: 21020
+[16:22:5.915] NPM location: /usr/local/lib/node_modules/node/bin/npm (explicit '--npmLocation' not  provided)
+[16:22:5.916] validateDefaultNpmLocation: false
+[16:22:5.916] Npm config file: /Users/math/Library/Caches/typescript/3.9/package.json
+[16:22:5.916] Updating types-registry npm package...
+[16:22:5.916] Exec: /usr/local/lib/node_modules/node/bin/npm install --ignore-scripts types-registry@latest
+[16:22:7.409]     Succeeded. stdout:
+    + types-registry@0.1.517
+    updated 1 package and audited 6 packages in 0.705s
+found 0 vulnerabilities
+
+
+[16:22:7.409] Updated types-registry npm package

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
-import { atomWithReset } from 'jotai/utils';
+
+import { proxy, useProxy } from 'valtio';
 
 import queryString from 'query-string-esm';
 
@@ -52,17 +53,17 @@ export default function PointData(initArgs, inputStr = 'Point: ') {
         return { ...defaultInitValues, ...ro };
     };
 
-    const ptAtom = atom(initValue);
+    const ptProxy = proxy(initValue);
+
+    const reset = () => Object.keys(initValue).map((k) => (ptProxy.k = initValue.k));
+
+    const dispatch = (newVal) => Object.keys(newVal).map((k) => (ptProxy.k = newVal.k));
 
     const comp = React.memo(() => {
-        const [point, setPoint] = useAtom(ptAtom);
+        const point = useProxy(ptProxy);
 
-        const setX = useCallback((newX) => setPoint((old) => ({ ...old, x: Number(newX) })), [
-            setPoint
-        ]);
-        const setY = useCallback((newY) => setPoint((old) => ({ ...old, y: Number(newY) })), [
-            setPoint
-        ]);
+        const setX = useCallback((newX) => (ptProxy.x = Number(newX)), []);
+        const setY = useCallback((newY) => (ptProxy.y = Number(newY)), []);
 
         const cssRef = useRef({ paddingRight: '5em' }, []);
 
@@ -79,9 +80,11 @@ export default function PointData(initArgs, inputStr = 'Point: ') {
     });
 
     return {
-        atom: ptAtom,
+        proxy: ptProxy,
         component: comp,
         encode,
-        decode
+        decode,
+        reset,
+        dispatch
     };
 }
