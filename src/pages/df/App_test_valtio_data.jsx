@@ -82,9 +82,6 @@ const derObj = {
     fs: EquationData({ initVal: initFuncStr, equationLabelString: 'need to fill this in' })
 };
 
-// next step...rewrite copy of MainDataComp to accept testObj instead
-// of atomStore...then rewrite reset.
-
 const atomStore = { ...primObj, ...derObj };
 
 export const DataComp = MainDataComp(atomStore);
@@ -92,6 +89,9 @@ export const DataComp = MainDataComp(atomStore);
 export const { atom: funcStrAtom, component: EquationInput } = atomStore.fs;
 
 export const { atom: initialPointAtom, component: InitialPointInput } = atomStore.ip;
+
+// next step...rewrite copy of MainDataComp to accept testObj instead
+// of atomStore...then rewrite reset.
 
 const atomStoreV = {
     ip: PointDataV(initInitialPoint, 'Initial Point: '),

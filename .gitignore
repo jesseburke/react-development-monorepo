@@ -16,3 +16,6 @@ package-lock.json
 
 # files introduced by Indium (I think)
 **/nil/**
+
+# log files from tide/typescript
+/.log

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 import { useResetAtom, useAtomCallback, useUpdateAtom } from 'jotai/utils';
 
+import { useProxy, snapshot } from 'valtio';
+
 import queryString from 'query-string-esm';
 
 import classnames from 'classnames';
@@ -85,41 +87,16 @@ export default function MainDataComp(atomStore) {
     // for valtio, make effect where reference gets updated to objToReturn
 
     function useSaveToAddressBar() {
-        const [saveStuff, setSaveStuff] = useState();
-
-        const readAtoms = useAtomCallback(
-            useCallback((get) => {
-                const objToReturn = {};
-
-                Object.entries(atomStore).map(([abbrev, { atom, encode }]) => {
-                    const newValue = encode(get(atom));
-
-                    // don't need to put empty strings in address bar
-                    if (!newValue || newValue.length === 0) return;
-
-                    objToReturn[abbrev] = newValue;
-                });
-
-                //console.log(returnObj);
-                //console.log(queryString.stringify(returnObj));
-                //console.log(queryString.parse(queryString.stringify(returnObj)));
-
-                // the object is for pushing on history stack
-                // and the string is for writing to the address bar
-                return [objToReturn, queryString.stringify(objToReturn)];
-            }, [])
-        );
-
         const saveCB = useCallback(() => {
-            readAtoms().then((st) => setSaveStuff(st));
-        }, [readAtoms]);
+            console.log('savecb called with ', snapshot(atomStore['ip'].proxy));
+        }, [atomStore]);
 
         // whenever saveStuff changes, update the search bar
-        useEffect(() => {
-            if (!saveStuff || saveStuff[1].length === 0) return;
+        //useEffect(() => {
+        //if (!saveStuff || saveStuff[1].length === 0) return;
 
-            window.history.pushState(saveStuff[0], null, '?' + saveStuff[1]);
-        }, [saveStuff]);
+        //window.history.pushState(saveStuff[0], null, '?' + saveStuff[1]);
+        //}, [saveStuff]);
 
         return saveCB;
     }

@@ -30,6 +30,7 @@ import {
     solutionCurveDataAtom,
     axesDataAtom,
     DataComp,
+    DataCompV,
     initialPointProxy,
     InitialPointInputV,
     equationProxy,
@@ -131,7 +132,7 @@ export default function App() {
                         />
                         <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
-                    <DataComp />
+                    <DataCompV />
                 </Main>
             </FullScreenBaseComponent>
         </JProvider>
