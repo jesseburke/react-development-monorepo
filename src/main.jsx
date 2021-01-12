@@ -1,3 +1,7 @@
+import App from './pages/df/App_sep.jsx';
+
+let title = 'default title';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -5,17 +9,13 @@ import { Helmet } from 'react-helmet';
 
 import './index.css';
 
-let title = 'default title';
-
 //import App from './pages/vibratingString/App.jsx';
 
 //import App from './pages/df/App_canvas_test.jsx';
 
-//import App from './pages/df/App_df.jsx';
-
 //import App from './pages/df/App_test_jotai.jsx';
 
-import App from './pages/df/App_test_valtio.jsx';
+//import App from './pages/df/App_test_valtio.jsx';
 
 //import App from './pages/df/App_sep.jsx';
 //title = 'Separable equation direction field grapher';
@@ -35,23 +35,23 @@ import App from './pages/df/App_test_valtio.jsx';
 //import App from './pages/fg/App_fg.jsx';
 
 function main() {
-  const element = document.createElement('div');
+    const element = document.createElement('div');
 
-  // disables scrolling from touch actions
-  element.style.touchAction = 'none';
-  ReactDOM.render(
-    <>
-      <Helmet>
-        <meta name='viewport' content='width=device-width, user-scalable=no' />
-        <title>{title}</title>
-      </Helmet>
+    // disables scrolling from touch actions
+    element.style.touchAction = 'none';
+    ReactDOM.render(
+        <>
+            <Helmet>
+                <meta name='viewport' content='width=device-width, user-scalable=no' />
+                <title>{title}</title>
+            </Helmet>
 
-      <App />
-    </>,
-    element
-  );
+            <App />
+        </>,
+        element
+    );
 
-  return element;
+    return element;
 }
 
 document.body.appendChild(main());
