@@ -2,17 +2,17 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import classnames from 'classnames';
-import styles from './base_styles.module.css';
+import styles from '../base_styles.module.css';
 
-import Input from '../../components/Input.jsx';
-import TexDisplayComp from '../../components/TexDisplayComp.jsx';
+import Input from '../../../components/Input.jsx';
+import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 
-import ArrowGridData from '../../data/ArrowGridData.jsx';
-import BoundsData from '../../data/BoundsData.jsx';
-import CurveData from '../../data/CurveData.jsx';
+import ArrowGridData from '../../../data/ArrowGridData.jsx';
+import BoundsData from '../../../data/BoundsData.jsx';
+import CurveData from '../../../data/CurveData.jsx';
 
-import funcParser from '../../utils/funcParser.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
+import funcParser from '../../../utils/funcParser.jsx';
+import { round } from '../../../utils/BaseUtils.jsx';
 
 //------------------------------------------------------------------------
 //

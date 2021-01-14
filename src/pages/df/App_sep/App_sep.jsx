@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 
-import { Provider as JProvider } from 'jotai';
+import { atom, useAtom, Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
 
@@ -10,22 +10,18 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 
 import * as system from 'reakit-system-bootstrap';
 
-import 'tailwindcss/tailwind.css';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.jsx';
+import ControlBar from '../../../components/ControlBar.jsx';
+import Main from '../../../components/Main.jsx';
+import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent.jsx';
 
-import './styles.css';
+import GridAndOrigin from '../../../ThreeSceneComps/GridAndOriginRecoil.jsx';
+import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
+import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
+import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
 
-import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.jsx';
-import ControlBar from '../../components/ControlBar.jsx';
-import Main from '../../components/Main.jsx';
-import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-
-import Grid from '../../ThreeSceneComps/Grid.jsx';
-import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
-import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
-
-import { fonts, labelStyle } from './constants.jsx';
+import { fonts, labelStyle } from '../constants.jsx';
 
 import {
     arrowGridDataAtom,
@@ -39,21 +35,21 @@ import {
     LabelInput,
     solutionCurveDataAtom,
     SolutionCurveDataInput,
-    EquationInput,
     axesDataAtom,
     AxesDataInput,
-    DataComp
-} from './App_df_data.jsx';
+    DataComp,
+    SepEquationInput
+} from './App_sep_data.jsx';
+
+//------------------------------------------------------------------------
+//
+// initial data
+//
 
 const initColors = {
-    arrows: '#C2374F',
     solution: '#C2374F',
-    firstPt: '#C2374F',
-    secPt: '#C2374F',
-    testFunc: '#E16962', //#DBBBB0',
     axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0'
+    controlBar: '#0A2C3C'
 };
 
 const initControlsData = {
@@ -67,8 +63,7 @@ const initControlsData = {
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-//const frustumSize = 20;
-const frustumSize = 3.8;
+const frustumSize = 20;
 
 const initCameraData = {
     position: [0, 0, 1],
@@ -87,7 +82,7 @@ const initCameraData = {
 
 // percentage of screen appBar will take (at the top)
 // (should make this a certain minimum number of pixels?)
-const controlBarHeight = 13;
+const controlBarHeight = 18;
 
 // (relative) font sizes (first in em's)
 const fontSize = 1;
@@ -96,9 +91,6 @@ const controlBarFontSize = 1;
 //------------------------------------------------------------------------
 
 export default function App() {
-    const threeSceneRef = useRef();
-
-    //useHackyThreeInitDisplay(threeSceneRef);
     return (
         <JProvider>
             <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
@@ -108,9 +100,7 @@ export default function App() {
                         fontSize={fontSize * controlBarFontSize}
                         padding='0em'
                     >
-                        <div className='center-flex-row'>
-                            <EquationInput />
-                        </div>
+                        <SepEquationInput />
                         <InitialPointInput />
                         <OptionsModal />
                     </ControlBar>
@@ -120,16 +110,9 @@ export default function App() {
                     <ThreeSceneComp
                         initCameraData={initCameraData}
                         controlsData={initControlsData}
-                        ref={(elt) => (threeSceneRef.current = elt)}
                         showPhotoButton={false}
                     >
-                        <DirectionFieldApprox
-                            initialPointAtom={initialPointAtom}
-                            boundsAtom={boundsAtom}
-                            funcAtom={funcAtom}
-                            curveDataAtom={solutionCurveDataAtom}
-                        />
-                        <Grid boundsAtom={boundsAtom} gridShow={true} />
+                        <GridAndOrigin boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
                             tickLabelDistance={1}
                             boundsAtom={boundsAtom}
@@ -141,6 +124,12 @@ export default function App() {
                             boundsAtom={boundsAtom}
                             arrowGridDataAtom={arrowGridDataAtom}
                         />
+                        <DirectionFieldApprox
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
+                            funcAtom={funcAtom}
+                            curveDataAtom={solutionCurveDataAtom}
+                        />
                         <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
                     </ThreeSceneComp>
                     <DataComp />
@@ -148,26 +137,6 @@ export default function App() {
             </FullScreenBaseComponent>
         </JProvider>
     );
-}
-
-function useHackyThreeInitDisplay(threeSceneRef) {
-    // following is very hacky way to get three displayed on initial render
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    const [loadAgain, setLoadAgain] = useState(0);
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        window.dispatchEvent(new Event('resize'));
-        setLoadAgain(1);
-    }, [threeCBs]);
-
-    useEffect(() => {
-        if (loadAgain < 1) return;
-
-        window.dispatchEvent(new Event('resize'));
-    }, [loadAgain]);
 }
 
 function OptionsModal() {
@@ -183,7 +152,7 @@ function OptionsModal() {
         top: '15%',
         left: 'auto',
         right: 20,
-        width: 400,
+        //width: 400,
         height: 250
     });
 
@@ -205,7 +174,7 @@ function OptionsModal() {
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
                         <Tab {...tab}>Solution curve</Tab>
-                        <Tab {...tab}>Variable labels</Tab>
+                        <Tab {...tab}>Variables</Tab>
                     </TabList>
                     <TabPanel {...tab}>
                         <ArrowGridDataInput />

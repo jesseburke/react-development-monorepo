@@ -2,22 +2,22 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
-import ControlBar from '../../components/ControlBar.jsx';
-import Main from '../../components/Main.jsx';
-import Slider from '../../components/Slider.jsx';
-import TexDisplayComp from '../../components/TexDisplayComp.jsx';
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.jsx';
+import ControlBar from '../../../components/ControlBar.jsx';
+import Main from '../../../components/Main.jsx';
+import Slider from '../../../components/Slider.jsx';
+import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import FunctionGraph2DGeom from '../../graphics/FunctionGraph2DGeom.jsx';
+import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
+import use2DAxes from '../../../graphics/use2DAxes.jsx';
+import FunctionGraph2DGeom from '../../../graphics/FunctionGraph2DGeom.jsx';
 
-import useDebounce from '../../hooks/useDebounce.jsx';
+import useDebounce from '../../../hooks/useDebounce.jsx';
 
-import { processNum } from '../../utils/BaseUtils.jsx';
+import { processNum } from '../../../utils/BaseUtils.jsx';
 
-import { fonts, labelStyle } from './constants.jsx';
+import { fonts, labelStyle } from '../constants.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -343,7 +343,8 @@ export default function App() {
             <ControlBar
                 height={controlBarHeight}
                 fontSize={initFontSize * controlBarFontSize}
-                padding='0em'>
+                padding='0em'
+            >
                 <div style={css2.current}>
                     <div style={css3.current}>
                         <div style={css4.current}>

@@ -2,18 +2,18 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
 import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
-import styles from './base_styles.module.css';
+import styles from '../base_styles.module.css';
 
-import MainDataComp from '../../data/MainDataComp.jsx';
-import LabelData from '../../data/LabelData.jsx';
-import PointData from '../../data/PointData.jsx';
-import EquationData from '../../data/EquationData.jsx';
-import ArrowGridData from '../../data/ArrowGridData.jsx';
-import AxesData from '../../data/Axes2DData.jsx';
-import BoundsData from '../../data/BoundsData.jsx';
-import CurveData from '../../data/CurveData.jsx';
+import MainDataComp from '../../../data/MainDataComp.jsx';
+import LabelData from '../../../data/LabelData.jsx';
+import PointData from '../../../data/PointData.jsx';
+import EquationData from '../../../data/EquationData.jsx';
+import ArrowGridData from '../../../data/ArrowGridData.jsx';
+import AxesData from '../../../data/Axes2DData.jsx';
+import BoundsData from '../../../data/BoundsData.jsx';
+import CurveData from '../../../data/CurveData.jsx';
 
-import funcParser from '../../utils/funcParser.jsx';
+import funcParser from '../../../utils/funcParser.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -126,17 +126,17 @@ export const SepEquationInput = React.memo(function SepEquationI({}) {
     const { x: xLabel, y: yLabel } = useAtom(atomStore.ls.atom)[0];
 
     return (
-        <div className={styles['center-flex-column']}>
-            <div className={styles['very-small-padding']}>
+        <div className={styles['centerFlexColumn']}>
+            <div className={styles['verySmallPadding']}>
                 d{yLabel}/d{xLabel} = <span>g({xLabel})</span>
                 <span>{'\u{00B7}'}</span>
                 <span>h({yLabel})</span>
             </div>
             <div>
-                <span className={styles['very-small-padding']}>
+                <span className={styles['verySmallPadding']}>
                     <XEquationInput />
                 </span>
-                <span className={styles['very-small-padding']}>
+                <span className={styles['verySmallPadding']}>
                     <YEquationInput />
                 </span>
             </div>

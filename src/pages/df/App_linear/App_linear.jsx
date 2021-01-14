@@ -9,19 +9,19 @@ import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
-import ControlBar from '../../components/ControlBar.jsx';
-import Main from '../../components/Main.jsx';
-import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import SaveStateComp from '../../components/SaveStateComp.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.jsx';
+import ControlBar from '../../../components/ControlBar.jsx';
+import Main from '../../../components/Main.jsx';
+import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent.jsx';
+import SaveStateComp from '../../../components/SaveStateComp.jsx';
 
-import GridAndOrigin from '../../ThreeSceneComps/GridAndOriginRecoil.jsx';
-import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
-import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
+import GridAndOrigin from '../../../ThreeSceneComps/GridAndOriginRecoil.jsx';
+import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
+import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
+import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
 
-import { fonts, labelStyle } from './constants.jsx';
+import { fonts, labelStyle } from '../constants.jsx';
 
 import {
     decode,

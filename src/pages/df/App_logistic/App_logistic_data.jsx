@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import classnames from 'classnames';
-import styles from './base_styles.module.css';
+import styles from '../base_styles.module.css';
 
-import Input from '../../components/Input.jsx';
+import Input from '../../../components/Input.jsx';
 
-import ArrowGridData from '../../data/ArrowGridData.jsx';
-import BoundsData from '../../data/BoundsData.jsx';
-import CurveData from '../../data/CurveData.jsx';
+import ArrowGridData from '../../../data/ArrowGridData.jsx';
+import BoundsData from '../../../data/BoundsData.jsx';
+import CurveData from '../../../data/CurveData.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -45,7 +45,6 @@ const lineLabelStyle = {
     color: initLineColor,
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '1.5em'
 };
 

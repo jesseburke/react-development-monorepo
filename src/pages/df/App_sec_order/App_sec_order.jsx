@@ -9,18 +9,18 @@ import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
-import ControlBar from '../../components/ControlBar.jsx';
-import Main from '../../components/Main.jsx';
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import SaveStateComp from '../../components/SaveStateComp.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.jsx';
+import ControlBar from '../../../components/ControlBar.jsx';
+import Main from '../../../components/Main.jsx';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent.jsx';
+import SaveStateComp from '../../../components/SaveStateComp.jsx';
 
-import GridAndOrigin from '../../ThreeSceneComps/GridAndOriginRecoil.jsx';
-import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
-import Sphere from '../../ThreeSceneComps/SphereRecoil.jsx';
-import FunctionGraph2D from '../../ThreeSceneComps/FunctionGraph2DRecoil.jsx';
+import GridAndOrigin from '../../../ThreeSceneComps/GridAndOriginRecoil.jsx';
+import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
+import Sphere from '../../../ThreeSceneComps/SphereRecoil.jsx';
+import FunctionGraph2D from '../../../ThreeSceneComps/FunctionGraph2DRecoil.jsx';
 
-import { fonts, labelStyle } from './constants.jsx';
+import { fonts, labelStyle } from '../constants.jsx';
 
 import {
     decode,
@@ -33,18 +33,17 @@ import {
     initialPoint1ColorAtom,
     initialPoint2ColorAtom,
     InitialPointsInput,
-    CaseDisplay,
+    CoefficientInput,
     xLabelAtom,
     yLabelAtom,
-    texEquationAtom,
     solnAtom,
     solutionCurveOptionsAtom,
     SolutionCurveOptionsInput,
     SolutionDisplayComp,
     TitleEquationComp,
     VariablesOptionsInput,
-    CharEquationRootDisplay
-} from './App_sec_order_cases_data.jsx';
+    CaseDisplay
+} from './App_sec_order_data.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -111,9 +110,17 @@ const controlBarFontSize = 0.85;
 //------------------------------------------------------------------------
 
 export default function App() {
-    const threeSceneRef = useRef();
+    const threeSceneRef = useRef(null);
 
-    useHackyThreeInitDisplay(threeSceneRef);
+    // following passed to components that need to draw
+    const threeCBs = useThreeCBs(threeSceneRef);
+
+    // following is hacky way to get three displayed on render
+    useEffect(() => {
+        if (!threeCBs || !threeSceneRef) return;
+
+        window.dispatchEvent(new Event('resize'));
+    }, [threeCBs, threeSceneRef]);
 
     return (
         <JProvider>
@@ -124,9 +131,10 @@ export default function App() {
                         fontSize={initFontSize * controlBarFontSize}
                     >
                         <TitleEquationComp />
+                        <CoefficientInput />
                         <CaseDisplay />
                         <InitialPointsInput />
-                        <CharEquationRootDisplay />
+                        <OptionsModal />
                     </ControlBar>
                 </Provider>
 
@@ -173,26 +181,6 @@ export default function App() {
             </FullScreenBaseComponent>
         </JProvider>
     );
-}
-
-function useHackyThreeInitDisplay(threeSceneRef) {
-    // following is very hacky way to get three displayed on initial render
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    const [loadAgain, setLoadAgain] = useState(0);
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        window.dispatchEvent(new Event('resize'));
-        setLoadAgain(1);
-    }, [threeCBs]);
-
-    useEffect(() => {
-        if (loadAgain < 1) return;
-
-        window.dispatchEvent(new Event('resize'));
-    }, [loadAgain]);
 }
 
 const OptionsModal = React.memo(({}) => {

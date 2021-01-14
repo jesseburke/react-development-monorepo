@@ -1,13 +1,14 @@
-import App from './pages/df/App_sep.jsx';
-
-let title = 'default title';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
 import './index.css';
+import './tailwind.css';
+
+import App from './pages/df/App_df/App_df.jsx';
+
+let title = 'default title';
 
 //import App from './pages/vibratingString/App.jsx';
 
