@@ -14,6 +14,8 @@ function fullScreenBaseComponent({ children, backgroundColor, fonts }) {
             border: 0,
             borderRadius: 0,
             margin: 0,
+            display: 'flex',
+            flexDirection: 'column',
             // internal layout
             padding: 0,
             backgroundColor: backgroundColor,

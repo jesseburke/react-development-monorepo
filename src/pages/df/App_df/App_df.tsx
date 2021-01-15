@@ -73,9 +73,11 @@ const initCameraData = {
     position: [0, 0, 1],
     up: [0, 0, 1],
     //fov: 75,
-    near: -100,
+    near: 0.01,
     far: 100,
     rotation: { order: 'XYZ' },
+    frustumSize,
+    aspectRatio,
     orthographic: {
         left: (frustumSize * aspectRatio) / -2,
         right: (frustumSize * aspectRatio) / 2,
@@ -100,46 +102,48 @@ export default function App() {
     //useHackyThreeInitDisplay(threeSceneRef);
     return (
         <JProvider>
-            <ControlBar
-                height={controlBarHeight}
-                backgroundColor={initColors.controlBar}
-                fontSize={fontSize * controlBarFontSize}
-                padding='0em'
-            >
-                <div className='center-flex-row'>
-                    <EquationInput />
-                </div>
-                <InitialPointInput />
-            </ControlBar>
-            <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                <ThreeSceneComp
-                    initCameraData={initCameraData}
-                    controlsData={initControlsData}
-                    ref={(elt) => (threeSceneRef.current = elt)}
-                    showPhotoButton={false}
+            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
+                <ControlBar
+                    height={controlBarHeight}
+                    backgroundColor={initColors.controlBar}
+                    fontSize={fontSize * controlBarFontSize}
+                    padding='0em'
                 >
-                    <DirectionFieldApprox
-                        initialPointAtom={initialPointAtom}
-                        boundsAtom={boundsAtom}
-                        funcAtom={funcAtom}
-                        curveDataAtom={solutionCurveDataAtom}
-                    />
-                    <Grid boundsAtom={boundsAtom} gridShow={true} />
-                    <Axes2D
-                        tickLabelDistance={1}
-                        boundsAtom={boundsAtom}
-                        axesDataAtom={axesDataAtom}
-                        labelAtom={labelAtom}
-                    />
-                    <ArrowGrid
-                        funcAtom={funcAtom}
-                        boundsAtom={boundsAtom}
-                        arrowGridDataAtom={arrowGridDataAtom}
-                    />
-                    <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
-                </ThreeSceneComp>
-                <DataComp />
-            </Main>
+                    <div className='center-flex-row'>
+                        <EquationInput />
+                    </div>
+                    <InitialPointInput />
+                </ControlBar>
+                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
+                    <ThreeSceneComp
+                        initCameraData={initCameraData}
+                        controlsData={initControlsData}
+                        ref={(elt) => (threeSceneRef.current = elt)}
+                        showPhotoButton={false}
+                    >
+                        <DirectionFieldApprox
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
+                            funcAtom={funcAtom}
+                            curveDataAtom={solutionCurveDataAtom}
+                        />
+                        <Grid boundsAtom={boundsAtom} gridShow={true} />
+                        <Axes2D
+                            tickLabelDistance={1}
+                            boundsAtom={boundsAtom}
+                            axesDataAtom={axesDataAtom}
+                            labelAtom={labelAtom}
+                        />
+                        <ArrowGrid
+                            funcAtom={funcAtom}
+                            boundsAtom={boundsAtom}
+                            arrowGridDataAtom={arrowGridDataAtom}
+                        />
+                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
+                    </ThreeSceneComp>
+                    <DataComp />
+                </Main>
+            </FullScreenBaseComponent>
         </JProvider>
     );
 }

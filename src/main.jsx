@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 import './index.css';
 import './tailwind.css';
 
-import App from './pages/df/App_df/App_df.jsx';
+import App from './pages/df/App_df/App_df.tsx';
 
 let title = 'default title';
 

@@ -18,17 +18,17 @@ function controlBar({
         Object.assign(
             {
                 // external layout
-                position: 'absolute',
+                //position: 'absolute',
                 //height: '100px',
-                top: '0px',
-                left: '0px',
-                bottom: b,
+                //top: '0px',
+                //left: '0px',
+                //bottom: b,
                 width: '100%',
                 margin: 0,
                 border: 0,
                 borderRadius: 0,
                 // internal layout
-                padding,
+                padding: '3em',
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-around',

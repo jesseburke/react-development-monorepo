@@ -168,6 +168,14 @@ function ThreeScene(
         threeScene.controlsPubSub.subscribe(controlsCB);
     }, [controlsCB, threeScene]);
 
+    useEffect(() => {
+        if (!threeCanvasRef.current) return;
+
+        //threeCanvasRef.current.setAttribute('height', '800px');
+        threeCanvasRef.current.height = document.body.clientHeight / 4;
+        console.log('height set');
+    });
+
     return (
         <div className={styles.container} ref={(elt) => (containerRef.current = elt)}>
             <canvas
