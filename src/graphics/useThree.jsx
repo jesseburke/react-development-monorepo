@@ -34,6 +34,10 @@ export default function useThreeScene({
     const width = useRef(null);
     const height = useRef(null);
 
+    const isOrthoCamera = useRef(null);
+    const aspectRatio = useRef(null);
+    const frustumSize = useRef(null);
+
     const controlsPubSub = useRef(pubsub(), []);
     controlsPubSub.current.subscribe(drawLabels);
 
@@ -62,11 +66,29 @@ export default function useThreeScene({
         if (!cameraData.orthographic) {
             camera.current = new THREE.PerspectiveCamera(fov, aspect, near, far);
         } else {
+            isOrthoCamera.current = true;
+            aspectRatio.current = cameraData.aspectRatio;
+            frustumSize.current = cameraData.frustumSize;
+
+            if (!aspectRatio) {
+                console.log(
+                    'need to have non-null aspectRatio in cameraData for orthographic camera'
+                );
+                return;
+            }
+
+            if (!frustumSize) {
+                console.log(
+                    'need to have non-null frustumSize in cameraData for orthographic camera'
+                );
+                return;
+            }
+
             camera.current = new THREE.OrthographicCamera(
-                cameraData.orthographic.left,
-                cameraData.orthographic.right,
-                cameraData.orthographic.top,
-                cameraData.orthographic.bottom,
+                (frustumSize * aspectRatio) / -2,
+                (frustumSize * aspectRatio) / 2,
+                frustumSize / 2,
+                frustumSize / -2,
                 near,
                 far
             );
@@ -245,12 +267,22 @@ export default function useThreeScene({
 
         if (width.current == newWidth && height.current == newHeight) return;
 
+        aspectRatio.current = newWidth / newHeight;
         width.current = newWidth;
         height.current = newHeight;
-        renderer.current.setSize(width.current, height.current, false);
-        camera.current.aspect = width.current / height.current;
+
+        if (!isOrthoCamera) {
+            renderer.current.setSize(width.current, height.current, false);
+            camera.current.aspect = width.current / height.current;
+        } else {
+            renderer.current.setSize(width.current, height.current, false);
+            camera.current.left = (frustumSize.current * aspectRatio.current) / -2;
+            camera.current.right = (frustumSize.current * aspectRatio.current) / 2;
+            camera.current.top = frustumSize.current / 2;
+            camera.current.bottom = frustumSize.current / -2;
+        }
         camera.current.updateProjectionMatrix();
-        console.log('resize happened');
+
         render();
         drawLabels();
     };
