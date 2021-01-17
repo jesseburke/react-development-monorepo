@@ -153,7 +153,8 @@ function ThreeScene(
 
     return (
         <div
-            className='absolute h-full w-full bg-gray point-events-none'
+            className='absolute h-full w-full bg-gray
+            point-events-none'
             ref={(elt) => (containerRef.current = elt)}
         >
             <canvas
@@ -167,8 +168,8 @@ function ThreeScene(
             </React.Fragment>
             <div ref={(elt) => (labelContainerRef.current = elt)} />
             {showPhotoBtn ? (
-                <div className={photoBtnClassStr} onClick={threeScene.downloadPicture}>
-                    <button>Photo</button>
+                <div onClick={threeScene.downloadPicture}>
+                    <button className={photoBtnClassStr}>Photo</button>
                 </div>
             ) : null}
         </div>

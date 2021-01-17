@@ -369,6 +369,7 @@ export default function useThreeScene({
                         left: ${htmlLabelData.current[key].pos[0]}px;
                         top: ${htmlLabelData.current[key].pos[1]}px;
                         font-size: ${curStyleString.fontSize};
+                        pointer-events: none;
                     `;
                     break;
 

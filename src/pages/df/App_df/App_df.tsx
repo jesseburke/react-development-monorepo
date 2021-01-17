@@ -7,7 +7,6 @@ import * as THREE from 'three';
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
 import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
-
 import * as system from 'reakit-system-bootstrap';
 
 import '../../../styles.css';
@@ -37,6 +36,9 @@ import {
     AxesDataInput,
     DataComp
 } from './App_df_data.jsx';
+
+import resolveConfig from 'tailwindcss/resolveConfig';
+import tailwindConfig from '../tailwind.config.js';
 
 const initColors = {
     arrows: '#C2374F',
