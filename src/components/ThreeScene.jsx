@@ -1,11 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 
-import classnames from 'classnames';
-
-import styles from './ThreeScene.module.css';
-//import styles from '../base_styles.module.css';
-
 import useThreeScene from '../graphics/useThree.jsx';
 
 //------------------------------------------------------------------------
@@ -26,11 +21,10 @@ function ThreeScene(
             enabled: false,
             keyPanSpeed: 50
         },
-        height = '100%',
-        width = '100%',
         clearColor = '#f0f0f0',
         aspectRatio = 1,
-        showPhotoButton = true,
+        showPhotoBtn = true,
+        photoBtnClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
         children
     },
     ref
@@ -39,7 +33,7 @@ function ThreeScene(
     const threeCanvasRef = useRef(null);
     const labelContainerRef = useRef(null);
 
-    const [threeScene, setThreeScene] = useState(
+    const [threeScene] = useState(
         useThreeScene({
             canvasRef: threeCanvasRef,
             labelContainerRef,
@@ -57,7 +51,8 @@ function ThreeScene(
     // only slightly different than threeScene
     const [threeCBs, setThreeCBs] = useState(null);
 
-    // functions to be called in parent component
+    // functions to be called in parent component;
+    // should be able to be removed after some editing
     React.useImperativeHandle(ref, () => ({
         add: (mesh) => {
             //console.log('threeCBs.add called with mesh = ', mesh);
@@ -116,6 +111,7 @@ function ThreeScene(
             threeScene.addDragControls({ meshArray, dragCB, dragendCB })
     }));
 
+    // think these can be gotten rid of...
     useEffect(() => {
         setThreeCBs({
             ...threeScene,
@@ -141,23 +137,6 @@ function ThreeScene(
         threeScene.render();
     }, [threeScene]);
 
-    // const download = useCallback(() => {
-    //     if (!threeCanvasRef) return;
-
-    //     let downloadLink = document.createElement('a');
-    //     downloadLink.setAttribute('download', 'CanvasAsImage.png');
-
-    //     threeCanvasRef.current.toBlob(function (blob) {
-    //         let url = URL.createObjectURL(blob);
-    //         downloadLink.setAttribute('href', url);
-    //         downloadLink.click();
-    //     });
-    // }, [threeCanvasRef]);
-
-    // useEffect(() => {
-    //     download();
-    // }, [download]);
-
     //------------------------------------------------------------------------
     //
     // subscribe to controlsPubSub
@@ -168,10 +147,17 @@ function ThreeScene(
         threeScene.controlsPubSub.subscribe(controlsCB);
     }, [controlsCB, threeScene]);
 
+    //------------------------------------------------------------------------
+    //
+    // component
+
     return (
-        <div className={styles.container} ref={(elt) => (containerRef.current = elt)}>
+        <div
+            className='absolute h-full w-full bg-gray point-events-none'
+            ref={(elt) => (containerRef.current = elt)}
+        >
             <canvas
-                className={classnames(styles.canvas, styles.noOutline)}
+                className='h-full w-full block'
                 width={widthPxs.current}
                 height={heightPxs.current}
                 ref={(elt) => (threeCanvasRef.current = elt)}
@@ -179,18 +165,22 @@ function ThreeScene(
             <React.Fragment>
                 {React.Children.map(children, (el) => React.cloneElement(el, { threeCBs }))}
             </React.Fragment>
-            <div className={styles.noOutline} ref={(elt) => (labelContainerRef.current = elt)} />
-            {showPhotoButton ? (
-                <div className={styles['photo-button']} onClick={threeScene.downloadPicture}>
-                    <span>{'\u{1f4f7}'}</span>
+            <div ref={(elt) => (labelContainerRef.current = elt)} />
+            {showPhotoBtn ? (
+                <div className={photoBtnClassStr} onClick={threeScene.downloadPicture}>
+                    <button>Photo</button>
                 </div>
             ) : null}
         </div>
     );
 }
 
+// camera icon
+// <span>{'\u{1f4f7}'}</span>
+
 export const ThreeSceneComp = React.memo(React.forwardRef(ThreeScene));
 
+// should get rid of this as soon as possible
 export function useThreeCBs(threeRef) {
     const [threeCBs, setThreeCBs] = useState(null);
 

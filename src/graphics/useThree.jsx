@@ -6,8 +6,6 @@ import { GeometryUtils } from 'three/examples/jsm/utils/GeometryUtils.js';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 //import GLTFExporter from 'three-gltf-exporter';
 
-import { throttle } from '../utils/BaseUtils.jsx';
-
 import { css } from 'emotion';
 
 export default function useThreeScene({
@@ -158,7 +156,7 @@ export default function useThreeScene({
         // cleanup function
         return () => {
             //window.removeEventListener('resize', handleResize);
-            resizeObserve.unobserve(canvasRef.current);
+            resizeObserver.unobserve(canvasRef.current);
             renderer.current.renderLists.dispose();
 
             while (labelContainerRef.current.firstChild) {

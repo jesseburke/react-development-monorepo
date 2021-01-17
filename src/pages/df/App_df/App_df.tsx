@@ -10,21 +10,15 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 
 import * as system from 'reakit-system-bootstrap';
 
-//import '../../../tailwind.css';
-import '../styles.css';
+import '../../../styles.css';
 
 import { useThreeCBs, ThreeSceneComp } from '../../../components/ThreeScene.jsx';
-import ControlBar from '../../../components/ControlBar.jsx';
-import Main from '../../../components/Main.jsx';
 import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
-import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent.jsx';
 
 import Grid from '../../../ThreeSceneComps/Grid.jsx';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
-
-import { fonts, labelStyle } from '../constants.jsx';
 
 import {
     arrowGridDataAtom,
@@ -86,135 +80,68 @@ const initCameraData = {
     }
 };
 
-// percentage of screen appBar will take (at the top)
-// (should make this a certain minimum number of pixels?)
-const controlBarHeight = 13;
+const saveBtnClassStr =
+    'absolute left-8 bottom-40 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
 
-// (relative) font sizes (first in em's)
-const fontSize = 1;
-const controlBarFontSize = 1;
+const resetBtnClassStr =
+    'absolute left-8 bottom-24 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+
+const photoBtnClassStr =
+    'absolute left-8 bottom-8 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
 
 //------------------------------------------------------------------------
 
 export default function App() {
-    const threeSceneRef = useRef();
-
-    //useHackyThreeInitDisplay(threeSceneRef);
     return (
         <JProvider>
-            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <ControlBar
-                    height={controlBarHeight}
-                    backgroundColor={initColors.controlBar}
-                    fontSize={fontSize * controlBarFontSize}
-                    padding='0em'
-                >
-                    <div className='center-flex-row'>
-                        <EquationInput />
-                    </div>
-                    <InitialPointInput />
-                </ControlBar>
-                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                    <ThreeSceneComp
-                        initCameraData={initCameraData}
-                        controlsData={initControlsData}
-                        ref={(elt) => (threeSceneRef.current = elt)}
-                        showPhotoButton={false}
+            <div className='full-screen-base'>
+                <Provider unstable_system={system}>
+                    <header
+                        className='control-bar bg-persian_blue-900 font-sans
+			p-8 text-white'
                     >
-                        <DirectionFieldApprox
-                            initialPointAtom={initialPointAtom}
-                            boundsAtom={boundsAtom}
-                            funcAtom={funcAtom}
-                            curveDataAtom={solutionCurveDataAtom}
+                        <div className='flex justify-center align-center'>
+                            <EquationInput />
+                        </div>
+                        <InitialPointInput />
+                        <OptionsModal />
+                    </header>
+                    <main className='flex-grow relative p-0'>
+                        <ThreeSceneComp
+                            initCameraData={initCameraData}
+                            controlsData={initControlsData}
+                            showPhotoBtn={true}
+                            photoBtnClassStr={photoBtnClassStr}
+                        >
+                            <DirectionFieldApprox
+                                initialPointAtom={initialPointAtom}
+                                boundsAtom={boundsAtom}
+                                funcAtom={funcAtom}
+                                curveDataAtom={solutionCurveDataAtom}
+                            />
+                            <Grid boundsAtom={boundsAtom} gridShow={true} />
+                            <Axes2D
+                                tickLabelDistance={1}
+                                boundsAtom={boundsAtom}
+                                axesDataAtom={axesDataAtom}
+                                labelAtom={labelAtom}
+                            />
+                            <ArrowGrid
+                                funcAtom={funcAtom}
+                                boundsAtom={boundsAtom}
+                                arrowGridDataAtom={arrowGridDataAtom}
+                            />
+                            <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
+                        </ThreeSceneComp>
+                        <DataComp
+                            resetBtnClassStr={resetBtnClassStr}
+                            saveBtnClassStr={saveBtnClassStr}
                         />
-                        <Grid boundsAtom={boundsAtom} gridShow={true} />
-                        <Axes2D
-                            tickLabelDistance={1}
-                            boundsAtom={boundsAtom}
-                            axesDataAtom={axesDataAtom}
-                            labelAtom={labelAtom}
-                        />
-                        <ArrowGrid
-                            funcAtom={funcAtom}
-                            boundsAtom={boundsAtom}
-                            arrowGridDataAtom={arrowGridDataAtom}
-                        />
-                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
-                    </ThreeSceneComp>
-                    <DataComp />
-                </Main>
-            </FullScreenBaseComponent>
+                    </main>
+                </Provider>
+            </div>
         </JProvider>
     );
-}
-
-/* (
- *     <JProvider>
- *         <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
- *             <Provider unstable_system={system}>
- *                 <ControlBar
- *                     height={controlBarHeight}
- *                     fontSize={fontSize * controlBarFontSize}
- *                     padding='0em'
- *                 >
- *                     <div className='center-flex-row'>
- *                         <EquationInput />
- *                     </div>
- *                     <InitialPointInput />
- *                     <OptionsModal />
- *                 </ControlBar>
- *             </Provider>
- *             <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
- *                 <ThreeSceneComp
- *                     initCameraData={initCameraData}
- *                     controlsData={initControlsData}
- *                     ref={(elt) => (threeSceneRef.current = elt)}
- *                     showPhotoButton={false}
- *                 >
- *                     <DirectionFieldApprox
- *                         initialPointAtom={initialPointAtom}
- *                         boundsAtom={boundsAtom}
- *                         funcAtom={funcAtom}
- *                         curveDataAtom={solutionCurveDataAtom}
- *                     />
- *                     <Grid boundsAtom={boundsAtom} gridShow={true} />
- *                     <Axes2D
- *                         tickLabelDistance={1}
- *                         boundsAtom={boundsAtom}
- *                         axesDataAtom={axesDataAtom}
- *                         labelAtom={labelAtom}
- *                     />
- *                     <ArrowGrid
- *                         funcAtom={funcAtom}
- *                         boundsAtom={boundsAtom}
- *                         arrowGridDataAtom={arrowGridDataAtom}
- *                     />
- *                     <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
- *                 </ThreeSceneComp>
- *                 <DataComp />
- *             </Main>
- *         </FullScreenBaseComponent>
- *     </JProvider>
- * ) */
-
-function useHackyThreeInitDisplay(threeSceneRef) {
-    // following is very hacky way to get three displayed on initial render
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    const [loadAgain, setLoadAgain] = useState(0);
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        window.dispatchEvent(new Event('resize'));
-        setLoadAgain(1);
-    }, [threeCBs]);
-
-    useEffect(() => {
-        if (loadAgain < 1) return;
-
-        window.dispatchEvent(new Event('resize'));
-    }, [loadAgain]);
 }
 
 function OptionsModal() {
@@ -229,21 +156,18 @@ function OptionsModal() {
         transform: 'none',
         top: '15%',
         left: 'auto',
+        backgroundColor: 'white',
         right: 20,
-        width: 400,
+        width: 500,
         height: 250
     });
 
-    const cssRef1 = useRef({ width: '8em' });
-
-    const cssRef2 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
+    const cssRef1 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
 
     return (
         <div zindex={-10}>
-            <DialogDisclosure style={cssRef2.current} {...dialog}>
-                <span style={cssRef1.current}>
-                    {!dialog.visible ? 'Show options' : 'Hide options'}
-                </span>
+            <DialogDisclosure style={cssRef1.current} {...dialog}>
+                <span className='w-32'>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
             </DialogDisclosure>
             <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
                 <>

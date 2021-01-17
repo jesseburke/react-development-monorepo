@@ -1,20 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
-import { atomWithReset } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 import { diffObjects, round } from '../utils/BaseUtils.jsx';
 
-import classnames from 'classnames';
-import styles from './ArrowGridData.module.css';
-
 export const defaultLabelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '1.5em'
 };
 
@@ -64,10 +59,8 @@ export default function PointData(initArgs, inputStr = 'Point: ') {
             setPoint
         ]);
 
-        const cssRef = useRef({ paddingRight: '5em' }, []);
-
         return (
-            <div style={cssRef.current}>
+            <div className='pr-20'>
                 <span>
                     <span>{inputStr}</span>
                     <Input initValue={round(point.x, 3)} size={8} onC={setX} />

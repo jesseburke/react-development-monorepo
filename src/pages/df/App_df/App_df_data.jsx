@@ -1,5 +1,4 @@
 import { atom, useAtom } from 'jotai';
-import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 
 import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelData from '../../../data/LabelData.jsx';
@@ -25,10 +24,6 @@ const colors = {
 const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
 
 const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
-
-const initXLabel = 'x';
-
-const initYLabel = 'y';
 
 const initInitialPoint = { x: 2, y: 2 };
 
@@ -75,7 +70,7 @@ const primObj = {
 };
 
 const equationLabelAtom = atom(
-    (get) => 'd' + get(primObj.ls.atom).x + '/d' + get(primObj.ls.atom).y + ' =  '
+    (get) => 'd' + get(primObj.ls.atom).x + '/d' + get(primObj.ls.atom).y + ' = '
 );
 
 const derObj = {

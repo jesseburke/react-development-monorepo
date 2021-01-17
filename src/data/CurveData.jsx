@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
-import { atomWithReset } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
 import { Checkbox } from 'reakit/Checkbox';
 
-import classnames from 'classnames';
-import styles from './CurveData.module.css';
-
 import Input from '../components/Input.jsx';
 import { diffObjects } from '../utils/BaseUtils.jsx';
+
+import '../styles.css';
 
 const defaultInitValues = {
     color: '#C2374F',
@@ -91,12 +89,18 @@ export default function CurveData(args = {}) {
             <div>
                 <label>
                     <Checkbox checked={visible} onChange={toggleVisible} />
-                    <span className={styles['med-margin']}>Show solution curve</span>
+                    <span className='p-1'>Show solution curve</span>
                 </label>
-                <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
-                    <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                        <span className={styles['text-align-center']}>Curve color:</span>
-                        <span className={styles['med-padding']}>
+                <div
+                    className='flex flex-col justify-center
+		    items-center h-full p-1'
+                >
+                    <div
+                        className='flex justify-center items-center
+			content-center h-full p-1'
+                    >
+                        <span className='text-center'>Curve color:</span>
+                        <span className='p-1'>
                             <input
                                 type='color'
                                 name='color'
@@ -106,18 +110,24 @@ export default function CurveData(args = {}) {
                             />
                         </span>
                     </div>
-                    <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                        <span className={styles['text-align-center']}>Curve width:</span>
-                        <span className={styles['med-padding']}>
+                    <div
+                        className='flex justify-center items-center
+			content-center h-full'
+                    >
+                        <span className='text-center'>Curve width:</span>
+                        <span className='p-1'>
                             <Input size={4} initValue={width} onC={widthCB} />
                         </span>
                     </div>
 
-                    <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                        <span className={styles['text-align-center']}>
+                    <div
+                        className='flex justify-center items-center
+			content-center h-full'
+                    >
+                        <span className='text-center'>
                             Approximation constant (lower is better quality, but slower):
                         </span>
-                        <span className={styles['med-padding']}>
+                        <span className='p-1'>
                             <Input size={4} initValue={approxH} onC={approxCB} />
                         </span>
                     </div>

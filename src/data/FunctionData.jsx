@@ -2,14 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 import { atomWithReset } from 'jotai/utils';
 
-import queryString from 'query-string-esm';
-
-import classnames from 'classnames';
-import styles from './ArrowGridData.module.css';
-
 import EquationData from './EquationData.jsx';
 
-import { diffObjects, round } from '../utils/BaseUtils.jsx';
+import '../styles.css';
 
 const globalDefaultData = {
     funcStr: 'x*y*sin(x^2 + y)/100',

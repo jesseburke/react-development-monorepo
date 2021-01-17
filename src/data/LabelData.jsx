@@ -3,14 +3,13 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 import { atomWithReset } from 'jotai/utils';
 
-import classnames from 'classnames';
-import styles from './BoundsData.module.css';
-
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
 import { diffObjects } from '../utils/BaseUtils.jsx';
+
+import '../styles.css';
 
 export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', twoD = 0 } = {}) {
     const initLabels = { x: xLabel, y: yLabel, z: zLabel };
@@ -63,22 +62,34 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
         ]);
 
         return (
-            <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Dependent variable:</span>
-                    <span className={styles['med-padding']}>
+            <div
+                className='flex flex-col justify-center items-center
+		h-full p-1'
+            >
+                <div
+                    className='flex justify-center content-center
+            items-center h-full p-1'
+                >
+                    <span className='text-center'>Dependent variable:</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={z} onC={zCB} />
                     </span>
                 </div>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Independent variable 1</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center
+		    content-center items-center h-full p-1'
+                >
+                    <span className='text-center'>Independent variable 1</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={x} onC={xCB} />
                     </span>
                 </div>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Independent variable 2</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center
+		    content-center items-center h-full p-1'
+                >
+                    <span className='text-center'>Independent variable 2</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={y} onC={yCB} />
                     </span>
                 </div>
@@ -97,16 +108,25 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
         ]);
 
         return (
-            <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Dependent variable:</span>
-                    <span className={styles['med-padding']}>
+            <div
+                className='flex flex-col justify-center items-center
+		h-full p-1'
+            >
+                <div
+                    className='flex justify-center content-center
+		    items-center h-full p-1'
+                >
+                    <span className='text-center'>Dependent variable:</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={y} onC={yCB} />
                     </span>
                 </div>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Independent variable</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center
+		    content-center items-center h-full p-1'
+                >
+                    <span className='text-center'>Independent variable</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={x} onC={xCB} />
                     </span>
                 </div>

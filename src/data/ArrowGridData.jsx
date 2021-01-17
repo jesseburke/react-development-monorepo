@@ -1,15 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
-import { atomWithReset } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import classnames from 'classnames';
-import styles from './ArrowGridData.module.css';
-
 import { diffObjects } from '../utils/BaseUtils.jsx';
+
+import '../styles.css';
 
 const defaultInitValues = {
     density: 1,
@@ -93,31 +91,46 @@ export default function ArrowGridData(args) {
         );
 
         return (
-            <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Arrows per unit:</span>
-                    <span className={styles['med-padding']}>
+            <div
+                className='flex flex-col justify-center
+		items-center h-full'
+            >
+                <div
+                    className='flex justify-center items-center
+		    content-center h-full px-1'
+                >
+                    <span className='text-center'>Arrows per unit:</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={density} onC={densityCB} />
                     </span>
                 </div>
 
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Relative arrow length:</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center items-center
+		    content-center h-full p-1'
+                >
+                    <span className='text-center'>Relative arrow length:</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={length} onC={lengthCB} />
                     </span>
                 </div>
 
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Arrow thickness:</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center items-center
+		    content-center h-full p-1'
+                >
+                    <span className='text-center'>Arrow thickness:</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={thickness} onC={thicknessCB} />
                     </span>
                 </div>
 
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Color:</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center items-center
+		    content-center h-full p-1'
+                >
+                    <span className='text-center'>Color:</span>
+                    <span className='p-1'>
                         <input
                             type='color'
                             name='color'

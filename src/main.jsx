@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { Helmet } from 'react-helmet';
 
 import './index.css';
-import './tailwind.css';
+import './styles.css';
 
 import App from './pages/df/App_df/App_df.tsx';
 

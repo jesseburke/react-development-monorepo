@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-import '../tailwind.css';
+import '../styles.css';
 
 export default React.memo(function Input({ onC, initValue, size = 10 }) {
     const inputElt = useRef(null);
@@ -33,7 +33,7 @@ export default React.memo(function Input({ onC, initValue, size = 10 }) {
 
     return (
         <input
-            className='text-black'
+            className='text-black px-1 rounded-sm'
             type='text'
             onBlur={handleBlur}
             onKeyDown={handleKey}

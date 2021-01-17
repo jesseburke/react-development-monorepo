@@ -7,14 +7,12 @@ import queryString from 'query-string-esm';
 import Input from '../components/Input.jsx';
 import { diffObjects } from '../utils/BaseUtils.jsx';
 
-import classnames from 'classnames';
-import styles from './ArrowGridData.module.css';
+import '../styles.css';
 
 export const defaultLabelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '1.5em'
 };
 
@@ -95,10 +93,16 @@ export default function Axes2DData(args) {
         );
 
         return (
-            <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Color:</span>
-                    <span className={styles['med-padding']}>
+            <div
+                className='flex flex-col justify-center
+		items-center h-full p-1'
+            >
+                <div
+                    className='flex justify-center items-center
+		    content-center h-full p-1'
+                >
+                    <span className='text-center'>Color:</span>
+                    <span className='p-1'>
                         <input
                             type='color'
                             name='color'
@@ -108,15 +112,21 @@ export default function Axes2DData(args) {
                         />
                     </span>
                 </div>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Distance between labels:</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center items-center
+		    content-center h-full p-1'
+                >
+                    <span className='text-center'>Distance between labels:</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={tickLabelDistance} onC={tickLabelDistanceCB} />
                     </span>
                 </div>
-                <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                    <span className={styles['text-align-center']}>Width of axis:</span>
-                    <span className={styles['med-padding']}>
+                <div
+                    className='flex justify-center items-center
+		    content-center h-full p-1'
+                >
+                    <span className='text-center'>Width of axis:</span>
+                    <span className='p-1'>
                         <Input size={4} initValue={radius} onC={radiusCB} />
                     </span>
                 </div>

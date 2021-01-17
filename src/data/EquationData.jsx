@@ -5,16 +5,13 @@ import { atomWithReset } from 'jotai/utils';
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
-import { diffObjects, round } from '../utils/BaseUtils.jsx';
 
-import classnames from 'classnames';
-import styles from './ArrowGridData.module.css';
+import '../styles.css';
 
 export const defaultLabelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '1.5em'
 };
 
@@ -51,7 +48,8 @@ export default function EquationData({
 
         return (
             <>
-                {equationLabel} <Input size={inputSize} initValue={eqStr} onC={eqInputCB} />
+                <span className='pr-2'>{equationLabel}</span>
+                <Input size={inputSize} initValue={eqStr} onC={eqInputCB} />
             </>
         );
     });

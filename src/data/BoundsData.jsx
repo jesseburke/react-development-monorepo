@@ -1,10 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
-import { atomWithReset } from 'jotai/utils';
-
-import classnames from 'classnames';
-import styles from './BoundsData.module.css';
 
 import queryString from 'query-string-esm';
 
@@ -79,32 +75,44 @@ export default function BoundsData({
         );
 
         return (
-            <div className={styles['left-flex-column']}>
-                <fieldset className={classnames(styles['full-width'], styles['center-flex-row'])}>
+            <div
+                className='flex flex-col justify-center items-center
+		h-full w-full'
+            >
+                <fieldset
+                    className='w-full h-full flex justify-center
+		    items-center content-center'
+                >
                     <legend>Direction field bounds</legend>
 
-                    <div className={styles['center-flex-row']}>
-                        <span className={styles['med-padding']}>
+                    <div
+                        className='flex justify-center items-center
+                        content-center h-full'
+                    >
+                        <span className='p-1'>
                             <Input size={4} initValue={bounds.xMin} onC={xMinCB} />
                         </span>
-                        <span className={styles['text-align-center']}>
+                        <span className='text-center'>
                             {' '}
                             {'\u2000 \u2264 \u2000' + xLabel + '\u2000 \u2264 \u2000'}
                         </span>
-                        <span className={styles['med-padding']}>
+                        <span className='p-1'>
                             <Input size={4} initValue={bounds.xMax} onC={xMaxCB} />
                         </span>
                     </div>
 
-                    <div className={styles['center-flex-row']}>
-                        <span className={styles['med-padding']}>
+                    <div
+                        className='flex justify-center items-center
+                        content-center h-full'
+                    >
+                        <span className='p-1'>
                             <Input size={4} initValue={bounds.yMin} onC={yMinCB} />
                         </span>
-                        <span className={styles['text-align-center']}>
+                        <span className='text-center'>
                             {' '}
                             {'\u2000 \u2264 \u2000' + yLabel + '\u2000 \u2264 \u2000'}
                         </span>
-                        <span className={styles['med-padding']}>
+                        <span className='p-1'>
                             <Input size={4} initValue={bounds.yMax} onC={yMaxCB} />
                         </span>
                     </div>
