@@ -158,7 +158,7 @@ function ThreeScene(
             ref={(elt) => (containerRef.current = elt)}
         >
             <canvas
-                className='h-full w-full block'
+                className='h-full w-full block outline-none'
                 width={widthPxs.current}
                 height={heightPxs.current}
                 ref={(elt) => (threeCanvasRef.current = elt)}

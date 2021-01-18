@@ -60,7 +60,7 @@ export default function PointData(initArgs, inputStr = 'Point: ') {
         ]);
 
         return (
-            <div className='pr-20'>
+            <div className='p-2'>
                 <span>
                     <span>{inputStr}</span>
                     <Input initValue={round(point.x, 3)} size={8} onC={setX} />

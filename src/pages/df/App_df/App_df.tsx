@@ -37,9 +37,6 @@ import {
     DataComp
 } from './App_df_data.jsx';
 
-import resolveConfig from 'tailwindcss/resolveConfig';
-import tailwindConfig from '../tailwind.config.js';
-
 const initColors = {
     arrows: '#C2374F',
     solution: '#C2374F',
@@ -83,13 +80,13 @@ const initCameraData = {
 };
 
 const saveBtnClassStr =
-    'absolute left-8 bottom-40 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+    'absolute left-8 bottom-40 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
 
 const resetBtnClassStr =
-    'absolute left-8 bottom-24 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+    'absolute left-8 bottom-24 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
 
 const photoBtnClassStr =
-    'absolute left-8 bottom-8 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+    'absolute left-8 bottom-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
 
 //------------------------------------------------------------------------
 
@@ -102,7 +99,7 @@ export default function App() {
                         className='control-bar bg-persian_blue-900 font-sans
 			p-8 text-white'
                     >
-                        <div className='flex justify-center align-center'>
+                        <div className='p-1'>
                             <EquationInput />
                         </div>
                         <InitialPointInput />
@@ -164,7 +161,10 @@ function OptionsModal() {
         height: 250
     });
 
-    const cssRef1 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
+    const cssRef1 = useRef({
+        backgroundColor: 'white',
+        color: initColors.controlBar
+    });
 
     return (
         <div zindex={-10}>

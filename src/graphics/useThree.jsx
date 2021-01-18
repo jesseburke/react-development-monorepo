@@ -37,10 +37,18 @@ export default function useThreeScene({
     const frustumSize = useRef(null);
 
     const controlsPubSub = useRef(pubsub(), []);
+
     controlsPubSub.current.subscribe(drawLabels);
 
     // initial three setup effect
     useEffect(() => {
+        // set up renderer and scene
+        if (!canvasRef.current) {
+            console.log('useThree was passed a null canvasRef, and so returned null');
+
+            return;
+        }
+
         width.current = canvasRef.current.clientWidth;
         height.current = canvasRef.current.clientHeight;
 
@@ -51,11 +59,11 @@ export default function useThreeScene({
         });
         renderer.current.setPixelRatio(window.devicePixelRatio);
         renderer.current.setClearColor(clearColor);
-        //renderer.current.setClearColor('#ffffff');
         renderer.current.setSize(width.current, height.current, false);
 
         scene.current = new THREE.Scene();
 
+        // set up camera
         const fov = cameraData.fov || 95;
         const aspect = width.current / height.current; // the canvas default
         const near = cameraData.near || 0.01;
@@ -96,8 +104,9 @@ export default function useThreeScene({
         camera.current.translateY(cameraData.position[1]);
         camera.current.translateZ(cameraData.position[2]);
 
-        // the spread operator below, '...', makes the array into the three arguments expected
         camera.current.up = new THREE.Vector3(...cameraData.up);
+
+        // set up lighting
 
         const color = 0xffffff;
         let intensity = 0.5;
@@ -171,8 +180,8 @@ export default function useThreeScene({
 
         // adds all properties of controlsData to controls.current
         controls.current = Object.assign(controls.current, controlsData);
-
         controls.current.update();
+
         controls.current.addEventListener('change', () => {
             render();
 
@@ -206,29 +215,6 @@ export default function useThreeScene({
             controls.current.dispose();
         };
     }, [controlsData]);
-
-    // controls effect
-    // useEffect( () => {
-    // 	controls.current = new OrbitControls( camera.current, canvasRef.current );
-
-    // 	// adds all properties of controlsData to controls.current
-    // 	controls.current = Object.assign( controls.current, controlsData );
-
-    // 	controls.current.update();
-    // 	controls.current.addEventListener('change', () => {
-    // 	    render();
-
-    // 	    let v = new THREE.Vector3( 0, 0, 0 );
-    // 	    camera.current.getWorldPosition(v);
-    // 	    controlsPubSub.current.publish(v.toArray());
-    // 	    render();
-    // 	});
-
-    //     return () => {
-    //         controls.current.dispose();
-    //     };
-
-    // }, [controlsData] );
 
     // coordinate plane mesh is created
     useEffect(() => {

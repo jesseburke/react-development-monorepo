@@ -8,7 +8,7 @@ import './styles.css';
 
 import App from './pages/df/App_df/App_df.tsx';
 
-let title = 'default title';
+let title = 'Direction Field Grapher';
 
 //import App from './pages/vibratingString/App.jsx';
 
