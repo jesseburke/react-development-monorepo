@@ -39,7 +39,7 @@ import {
     AxesDataInput,
     DataComp,
     SepEquationInput
-} from './App_sep_data.jsx';
+} from './App_sep_data.tsx';
 
 //------------------------------------------------------------------------
 //

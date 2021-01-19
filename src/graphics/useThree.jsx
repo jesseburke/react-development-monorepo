@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 //import {OrbitControls} from 'three-orbitcontrols';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -18,6 +18,8 @@ export default function useThreeScene({
     alpha = true
 }) {
     const scene = useRef(null);
+    const [sceneS, setScene] = useState(null);
+
     const camera = useRef(null);
     const renderer = useRef(null);
     const controls = useRef(null);
@@ -41,7 +43,7 @@ export default function useThreeScene({
     controlsPubSub.current.subscribe(drawLabels);
 
     // initial three setup effect
-    useEffect(() => {
+    useLayoutEffect(() => {
         // set up renderer and scene
         if (!canvasRef.current) {
             console.log('useThree was passed a null canvasRef, and so returned null');
@@ -62,7 +64,10 @@ export default function useThreeScene({
         renderer.current.setSize(width.current, height.current, false);
 
         scene.current = new THREE.Scene();
+        setScene(scene.current);
+    }, [canvasRef]);
 
+    useEffect(() => {
         // set up camera
         const fov = cameraData.fov || 95;
         const aspect = width.current / height.current; // the canvas default
@@ -105,9 +110,10 @@ export default function useThreeScene({
         camera.current.translateZ(cameraData.position[2]);
 
         camera.current.up = new THREE.Vector3(...cameraData.up);
+    }, [cameraData]);
 
-        // set up lighting
-
+    // set up lighting and resize oberserver (they are independent)
+    useEffect(() => {
         const color = 0xffffff;
         let intensity = 0.5;
         const light = new THREE.DirectionalLight(color, intensity);
@@ -184,7 +190,7 @@ export default function useThreeScene({
 
         controls.current.addEventListener('change', () => {
             render();
-
+            //console.log('controls change event happened');
             let v = new THREE.Vector3(0, 0, 0);
             camera.current.getWorldPosition(v);
             controlsPubSub.current.publish(v.toArray());
@@ -214,7 +220,7 @@ export default function useThreeScene({
         return () => {
             controls.current.dispose();
         };
-    }, [controlsData]);
+    }, [canvasRef, camera, controlsData]);
 
     // coordinate plane mesh is created
     useEffect(() => {
@@ -240,8 +246,12 @@ export default function useThreeScene({
         };
     }, []);
 
+    //let count = 0;
+
     const render = () => {
         if (!renderer.current) return;
+        //count = count + 1;
+        //console.log('render function called ', count, ' times');
         renderer.current.render(scene.current, camera.current);
     };
 

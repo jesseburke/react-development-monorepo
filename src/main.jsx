@@ -6,9 +6,13 @@ import { Helmet } from 'react-helmet';
 import './index.css';
 import './styles.css';
 
-import App from './pages/df/App_df/App_df.tsx';
+let title;
 
-let title = 'Direction Field Grapher';
+//import App from './pages/df/App_df/App_df.tsx';
+//title = 'Direction Field Grapher';
+
+import App from './pages/df/App_sep/App_sep.tsx';
+title = 'Separable equation direction field grapher';
 
 //import App from './pages/vibratingString/App.jsx';
 
@@ -17,9 +21,6 @@ let title = 'Direction Field Grapher';
 //import App from './pages/df/App_test_jotai.jsx';
 
 //import App from './pages/df/App_test_valtio.jsx';
-
-//import App from './pages/df/App_sep.jsx';
-//title = 'Separable equation direction field grapher';
 
 //import App from './pages/df/App_logistic.jsx';
 //title = 'Logistic equation';
