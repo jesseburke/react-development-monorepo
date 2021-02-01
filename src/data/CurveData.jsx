@@ -7,7 +7,7 @@ import queryString from 'query-string-esm';
 import { Checkbox } from 'reakit/Checkbox';
 
 import Input from '../components/Input.jsx';
-import { diffObjects } from '../utils/BaseUtils.jsx';
+import { diffObjects } from '../utils/BaseUtils.ts';
 
 import '../styles.css';
 

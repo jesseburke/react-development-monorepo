@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
-import { diffObjects, round } from '../utils/BaseUtils.jsx';
+import { diffObjects, round } from '../utils/BaseUtils.ts';
 
 export const defaultLabelStyle = {
     color: 'black',

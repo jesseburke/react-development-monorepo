@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { eGCD } from '../utils/BaseUtils.jsx';
+import { eGCD } from '../utils/BaseUtils.ts';
 
 // only does rotation about origin at the moment
 //

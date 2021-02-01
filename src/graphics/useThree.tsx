@@ -1,12 +1,56 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, RefObject } from 'react';
 import * as THREE from 'three';
 //import {OrbitControls} from 'three-orbitcontrols';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { GeometryUtils } from 'three/examples/jsm/utils/GeometryUtils.js';
+//import { GeometryUtils } from 'three/examples/jsm/utils/GeometryUtils.js';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 //import GLTFExporter from 'three-gltf-exporter';
 
 import { css } from 'emotion';
+
+import { pubsub } from '../utils/BaseUtils';
+
+import { ArrayPoint3 } from '../components/ThreeScene';
+
+export interface CameraData {
+    fov: number;
+    near: number;
+    far: number;
+    position?: ArrayPoint3;
+    up?: ArrayPoint3;
+    orthographic?: boolean;
+    aspectRatio?: number | null;
+    frustrumSize?: number | null;
+}
+
+export interface MouseButtons {
+    LEFT: THREE.MOUSE;
+}
+
+export interface Touches {
+    ONE: THREE.TOUCH | THREE.MOUSE;
+    TW0: THREE.TOUCH | THREE.MOUSE;
+    THREE: THREE.TOUCH | THREE.MOUSE;
+}
+
+export interface ControlsData {
+    mouseButtons: MouseButtons;
+    touches: Touches;
+    enableRotate: boolean;
+    enablePan: boolean;
+    enabled: boolean;
+    keyPanSpeed: number;
+    screenSpaceSpanning: boolean;
+}
+
+export interface UseThreeProps {
+    canvasRef: RefObject<HTMLCanvasElement>;
+    labelContainerRef: RefObject<HTMLDivElement>;
+    cameraData: CameraData;
+    controlsData: ControlsData;
+    clearColor: string;
+    alpha: boolean;
+}
 
 export default function useThreeScene({
     canvasRef,
@@ -14,14 +58,12 @@ export default function useThreeScene({
     cameraData,
     clearColor = '#f0f0f0',
     controlsData,
-    scrollCB = null,
     alpha = true
-}) {
-    const scene = useRef(null);
-    const [sceneS, setScene] = useState(null);
+}: UseThreeProps) {
+    const scene = useRef<THREE.Scene | null>(null);
 
-    const camera = useRef(null);
-    const renderer = useRef(null);
+    const camera = useRef<THREE.PerspectiveCamera | THREE.OrthographicCamera | null>(null);
+    const renderer = useRef<THREE.WebGLRenderer | null>(null);
     const controls = useRef(null);
     const raycaster = useRef(new THREE.Raycaster());
 
@@ -31,12 +73,12 @@ export default function useThreeScene({
     const htmlLabelData = useRef({});
     const labelCounter = useRef(0);
 
-    const width = useRef(null);
-    const height = useRef(null);
+    const width = useRef<number | null>(null);
+    const height = useRef<number | null>(null);
 
-    const isOrthoCamera = useRef(null);
-    const aspectRatio = useRef(null);
-    const frustumSize = useRef(null);
+    const isOrthoCamera = useRef<boolean | null>(null);
+    const aspectRatio = useRef<number | null>(null);
+    const frustrumSize = useRef<number | null>(null);
 
     const controlsPubSub = useRef(pubsub(), []);
 
@@ -47,7 +89,6 @@ export default function useThreeScene({
         // set up renderer and scene
         if (!canvasRef.current) {
             console.log('useThree was passed a null canvasRef, and so returned null');
-
             return;
         }
 
@@ -64,13 +105,12 @@ export default function useThreeScene({
         renderer.current.setSize(width.current, height.current, false);
 
         scene.current = new THREE.Scene();
-        setScene(scene.current);
     }, [canvasRef]);
 
     useEffect(() => {
         // set up camera
         const fov = cameraData.fov || 95;
-        const aspect = width.current / height.current; // the canvas default
+        const aspect = width.current! / height.current!; // the canvas default
         const near = cameraData.near || 0.01;
         const far = cameraData.far || 5000;
 
@@ -78,38 +118,43 @@ export default function useThreeScene({
             camera.current = new THREE.PerspectiveCamera(fov, aspect, near, far);
         } else {
             isOrthoCamera.current = true;
-            aspectRatio.current = cameraData.aspectRatio;
-            frustumSize.current = cameraData.frustumSize;
 
-            if (!aspectRatio) {
+            if (!cameraData.aspectRatio) {
                 console.log(
                     'need to have non-null aspectRatio in cameraData for orthographic camera'
                 );
                 return;
             }
 
-            if (!frustumSize) {
+            if (!cameraData.frustrumSize) {
                 console.log(
-                    'need to have non-null frustumSize in cameraData for orthographic camera'
+                    'need to have non-null frustrumSize in cameraData for orthographic camera'
                 );
                 return;
             }
 
+            aspectRatio.current = cameraData.aspectRatio!;
+            frustrumSize.current = cameraData.frustrumSize!;
+
             camera.current = new THREE.OrthographicCamera(
-                (frustumSize * aspectRatio) / -2,
-                (frustumSize * aspectRatio) / 2,
-                frustumSize / 2,
-                frustumSize / -2,
+                (frustrumSize.current * aspectRatio.current) / -2,
+                (frustrumSize.current * aspectRatio.current) / 2,
+                frustrumSize.current / 2,
+                frustrumSize.current / -2,
                 near,
                 far
             );
         }
 
-        camera.current.translateX(cameraData.position[0]);
-        camera.current.translateY(cameraData.position[1]);
-        camera.current.translateZ(cameraData.position[2]);
+        if (cameraData.position) {
+            camera.current.translateX(cameraData.position[0]);
+            camera.current.translateY(cameraData.position[1]);
+            camera.current.translateZ(cameraData.position[2]);
+        }
 
-        camera.current.up = new THREE.Vector3(...cameraData.up);
+        if (cameraData.up) {
+            camera.current.up = new THREE.Vector3(...cameraData.up);
+        }
     }, [cameraData]);
 
     // set up lighting and resize oberserver (they are independent)
@@ -118,6 +163,9 @@ export default function useThreeScene({
         let intensity = 0.5;
         const light = new THREE.DirectionalLight(color, intensity);
         light.position.set(-1000, 1000, 1000);
+
+        if (!scene.current || !canvasRef.current) return;
+
         scene.current.add(light);
         const light1 = new THREE.DirectionalLight(color, intensity);
         light1.position.set(1000, -1000, 1000);
@@ -270,10 +318,10 @@ export default function useThreeScene({
             camera.current.aspect = width.current / height.current;
         } else {
             renderer.current.setSize(width.current, height.current, false);
-            camera.current.left = (frustumSize.current * aspectRatio.current) / -2;
-            camera.current.right = (frustumSize.current * aspectRatio.current) / 2;
-            camera.current.top = frustumSize.current / 2;
-            camera.current.bottom = frustumSize.current / -2;
+            camera.current.left = (frustrumSize.current * aspectRatio.current) / -2;
+            camera.current.right = (frustrumSize.current * aspectRatio.current) / 2;
+            camera.current.top = frustrumSize.current / 2;
+            camera.current.bottom = frustrumSize.current / -2;
         }
         camera.current.updateProjectionMatrix();
 
@@ -453,10 +501,14 @@ export default function useThreeScene({
     }
 
     function add(threeObj) {
+        if (!scene.current) return;
+
         scene.current.add(threeObj);
     }
 
     function remove(threeObj) {
+        if (!scene.current) return;
+
         scene.current.remove(threeObj);
     }
 
@@ -697,19 +749,5 @@ export default function useThreeScene({
         getControlsTarget,
         addDragControls,
         addDrag
-    };
-}
-
-function pubsub() {
-    const subscribers = [];
-    return {
-        subscribe: function (subscriber) {
-            subscribers.push(subscriber);
-        },
-        publish: function (pubObj) {
-            subscribers.forEach(function (subscriber) {
-                subscriber(pubObj);
-            });
-        }
     };
 }

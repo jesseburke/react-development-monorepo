@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 
@@ -20,7 +20,7 @@ import ImplicitFuncGraph, {
     ptOnSide
 } from '../../math/ImplicitFuncGraph.jsx';
 
-import { round } from '../../utils/BaseUtils.jsx';
+import { round } from '../../utils/BaseUtils.ts';
 
 //------------------------------------------------------------------------
 //

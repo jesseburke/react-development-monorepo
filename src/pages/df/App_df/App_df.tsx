@@ -11,7 +11,7 @@ import * as system from 'reakit-system-bootstrap';
 
 import '../../../styles.css';
 
-import { ThreeSceneComp } from '../../../components/ThreeScene.jsx';
+import { ThreeSceneComp } from '../../../components/ThreeScene';
 import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
 
 import Grid from '../../../ThreeSceneComps/Grid.jsx';
@@ -48,8 +48,8 @@ const initControlsData = {
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-//const frustumSize = 20;
-const frustumSize = 3.8;
+//const frustrumSize = 20;
+const frustrumSize = 3.8;
 
 const initCameraData = {
     position: [0, 0, 1],
@@ -58,13 +58,13 @@ const initCameraData = {
     near: 0.01,
     far: 100,
     rotation: { order: 'XYZ' },
-    frustumSize,
+    frustrumSize,
     aspectRatio,
     orthographic: {
-        left: (frustumSize * aspectRatio) / -2,
-        right: (frustumSize * aspectRatio) / 2,
-        top: frustumSize / 2,
-        bottom: frustumSize / -2
+        left: (frustrumSize * aspectRatio) / -2,
+        right: (frustrumSize * aspectRatio) / 2,
+        top: frustrumSize / 2,
+        bottom: frustrumSize / -2
     }
 };
 

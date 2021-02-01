@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 import FreeDrawComp from '../../components/FreeDrawComp.jsx';
 import TranslateComp from '../../components/TranslateComp.jsx';
 import Input from '../../components/Input.jsx';

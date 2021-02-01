@@ -6,7 +6,7 @@ import './styles.css';
 
 import useHashLocation from '../../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 import FreeDrawComp from '../../components/FreeDrawComp.jsx';
 
 import RationalRotationCSFactory from '../../factories/RationalRotationCSFactory.jsx';

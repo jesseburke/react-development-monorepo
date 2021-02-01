@@ -5,7 +5,7 @@ import classnames from 'classnames';
 
 import styles from './ThreeSceneHalfWidth.module.css';
 
-import useThreeScene from '../graphics/useThree.jsx';
+import useThreeScene from '../graphics/useThree.tsx';
 
 //------------------------------------------------------------------------
 //

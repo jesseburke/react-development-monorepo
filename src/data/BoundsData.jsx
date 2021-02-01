@@ -6,7 +6,7 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects } from '../utils/BaseUtils.jsx';
+import { diffObjects } from '../utils/BaseUtils.ts';
 
 const defaultLabelAtom = atom({ x: 'x', y: 'y' });
 

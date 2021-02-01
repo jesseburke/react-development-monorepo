@@ -11,6 +11,7 @@
         "@types/node": "^12.19.9",
         "@types/react": "^17.0.0",
         "@types/react-dom": "^17.0.0",
+        "@types/resize-observer-browser": "^0.1.5",
         "classnames": "^2.2.6",
         "delaunator": "^4.0.1",
         "emotion": "^10.0.27",

@@ -12,7 +12,7 @@ import BoundsData from '../../../data/BoundsData.jsx';
 import CurveData from '../../../data/CurveData.jsx';
 
 import funcParser from '../../../utils/funcParser.jsx';
-import { round } from '../../../utils/BaseUtils.jsx';
+import { round } from '../../../utils/BaseUtils.ts';
 
 //------------------------------------------------------------------------
 //

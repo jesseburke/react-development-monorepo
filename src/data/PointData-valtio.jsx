@@ -6,7 +6,7 @@ import { proxy, useProxy } from 'valtio';
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
-import { diffObjects, round } from '../utils/BaseUtils.jsx';
+import { diffObjects, round } from '../utils/BaseUtils.ts';
 
 import classnames from 'classnames';
 import styles from './ArrowGridData.module.css';

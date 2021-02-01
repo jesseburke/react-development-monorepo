@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.jsx';
+import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.js';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';

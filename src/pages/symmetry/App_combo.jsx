@@ -7,7 +7,7 @@ import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 //import FreeDrawComp from '../../components/FreeDrawComp.jsx';
 import GraphDrawComp from '../../components/GraphDrawComp.jsx';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
@@ -232,7 +232,8 @@ export default function App() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-around'
-                        }}>
+                        }}
+                    >
                         <ActiveLink href={'/'}>Draw</ActiveLink>
                         <ActiveLink href={'/reflect'}>Draw with symmetry</ActiveLink>
                         <ActiveLink href={'/reflect'}>Add symmetry</ActiveLink>
@@ -259,7 +260,8 @@ export default function App() {
                                     top: '10%',
                                     left: '10%',
                                     fontSize: '1.25em'
-                                }}>
+                                }}
+                            >
                                 <Button>Done drawing</Button>
                             </div>
                         </Link>
@@ -280,7 +282,8 @@ export default function App() {
                                 display: 'flex',
                                 alignItems: 'flex-end',
                                 justifyContent: 'space-around'
-                            }}>
+                            }}
+                        >
                             <div
                                 css={{
                                     display: 'flex',
@@ -288,7 +291,8 @@ export default function App() {
                                     alignItems: 'center',
                                     height: '4em',
                                     justifyContent: 'space-between'
-                                }}>
+                                }}
+                            >
                                 <div css={{ cursor: 'pointer' }}>
                                     <Button onClickFunc={drawWithLineCB}>Draw with line</Button>
                                 </div>

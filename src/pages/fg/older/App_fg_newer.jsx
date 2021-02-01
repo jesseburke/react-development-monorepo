@@ -21,7 +21,7 @@ import use3DAxes from '../../graphics/use3DAxes.jsx';
 import FunctionGraph3DGeom from '../../graphics/FunctionGraph3DGeom.jsx';
 
 import funcParser from '../../utils/funcParser.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
+import { round } from '../../utils/BaseUtils.ts';
 
 //------------------------------------------------------------------------
 //

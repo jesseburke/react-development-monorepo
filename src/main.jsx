@@ -8,11 +8,11 @@ import './styles.css';
 
 let title;
 
-//import App from './pages/df/App_df/App_df.tsx';
-//title = 'Direction Field Grapher';
+import App from './pages/df/App_df/App_df.tsx';
+title = 'Direction Field Grapher';
 
-import App from './pages/df/App_sep/App_sep.tsx';
-title = 'Separable equation direction field grapher';
+//import App from './pages/df/App_sep/App_sep.tsx';
+//title = 'Separable equation direction field grapher';
 
 //import App from './pages/vibratingString/App.jsx';
 

@@ -3,7 +3,7 @@ import React, { useRef, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import Input from './Input.jsx';
-import { round } from '../utils/BaseUtils.jsx';
+import { round } from '../utils/BaseUtils.ts';
 
 const defaultVisibleAtom = atom(true);
 

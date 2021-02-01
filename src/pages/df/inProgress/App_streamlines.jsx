@@ -26,7 +26,7 @@ import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
 import Streamlines from '../../math/differentialEquations/Streamlines.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
-import { round } from '../../utils/BaseUtils.jsx';
+import { round } from '../../utils/BaseUtils.ts';
 
 //------------------------------------------------------------------------
 //

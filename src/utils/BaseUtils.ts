@@ -197,6 +197,20 @@ export function diffObjects(ob1, ob2) {
 //     '87': '{"sid":"87","name":"The derpy title 4"}'
 // };
 
+export function pubsub() {
+    const subscribers = [];
+    return {
+        subscribe: function (subscriber) {
+            subscribers.push(subscriber);
+        },
+        publish: function (pubObj) {
+            subscribers.forEach(function (subscriber) {
+                subscriber(pubObj);
+            });
+        }
+    };
+}
+
 export {
     isZero,
     scalarMultiply,

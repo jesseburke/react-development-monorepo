@@ -1,17 +1,29 @@
 import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 
-import useThreeScene from '../graphics/useThree.jsx';
+import useThreeScene from '../graphics/useThree.tsx';
 
 //------------------------------------------------------------------------
 //
 
 const defaultHeightPxs = 1024;
 
+export type ArrayPoint3 = [number, number, number];
+
+export interface ThreeSceneProps {
+    controlsCB: (pt: ArrayPoint3) => null;
+    initCameraData: null;
+    controlsData: null;
+    clearColor: null;
+    aspectRatio: null;
+    showPhotoBtn: boolean;
+    photoBtnClassStr: string;
+    children: null;
+}
+
 function ThreeScene(
     {
         controlsCB = null,
-        scrollCB = null,
         initCameraData = { position: [10, 10, 10], up: [0, 0, 1], fov: 75 },
         controlsData = {
             mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
@@ -39,8 +51,7 @@ function ThreeScene(
             labelContainerRef,
             cameraData: initCameraData,
             controlsData,
-            clearColor,
-            scrollCB
+            clearColor
         })
     );
 

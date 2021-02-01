@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
 import ControlBar from '../../../components/ControlBar.jsx';
 import Main from '../../../components/Main.jsx';
 import Slider from '../../../components/Slider.jsx';
@@ -15,7 +15,7 @@ import FunctionGraph2DGeom from '../../../graphics/FunctionGraph2DGeom.jsx';
 
 import useDebounce from '../../../hooks/useDebounce.jsx';
 
-import { processNum } from '../../../utils/BaseUtils.jsx';
+import { processNum } from '../../../utils/BaseUtils.ts';
 
 import { fonts, labelStyle } from '../constants.jsx';
 
