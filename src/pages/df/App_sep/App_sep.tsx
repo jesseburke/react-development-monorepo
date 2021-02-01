@@ -7,7 +7,6 @@ import * as THREE from 'three';
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
 import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
-
 import * as system from 'reakit-system-bootstrap';
 
 import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.jsx';
@@ -20,6 +19,8 @@ import GridAndOrigin from '../../../ThreeSceneComps/GridAndOriginRecoil.jsx';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
+
+import '../../../styles.css';
 
 import { fonts, labelStyle } from '../constants.jsx';
 
@@ -72,6 +73,8 @@ const initCameraData = {
     near: -100,
     far: 100,
     rotation: { order: 'XYZ' },
+    frustumSize,
+    aspectRatio,
     orthographic: {
         left: (frustumSize * aspectRatio) / -2,
         right: (frustumSize * aspectRatio) / 2,
@@ -80,61 +83,65 @@ const initCameraData = {
     }
 };
 
-// percentage of screen appBar will take (at the top)
-// (should make this a certain minimum number of pixels?)
-const controlBarHeight = 18;
+const saveBtnClassStr =
+    'absolute left-8 bottom-40 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
 
-// (relative) font sizes (first in em's)
-const fontSize = 1;
-const controlBarFontSize = 1;
+const resetBtnClassStr =
+    'absolute left-8 bottom-24 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+
+const photoBtnClassStr =
+    'absolute left-8 bottom-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
 
 //------------------------------------------------------------------------
 
 export default function App() {
     return (
         <JProvider>
-            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
+            <div className='full-screen-base'>
                 <Provider unstable_system={system}>
-                    <ControlBar
-                        height={controlBarHeight}
-                        fontSize={fontSize * controlBarFontSize}
-                        padding='0em'
+                    <header
+                        className='control-bar bg-persian_blue-900 font-sans
+			p-4 md:p-8 text-white'
                     >
                         <SepEquationInput />
                         <InitialPointInput />
                         <OptionsModal />
-                    </ControlBar>
-                </Provider>
+                    </header>
 
-                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
-                    <ThreeSceneComp
-                        initCameraData={initCameraData}
-                        controlsData={initControlsData}
-                        showPhotoButton={false}
-                    >
-                        <GridAndOrigin boundsAtom={boundsAtom} gridShow={true} />
-                        <Axes2D
-                            tickLabelDistance={1}
-                            boundsAtom={boundsAtom}
-                            axesDataAtom={axesDataAtom}
-                            labelAtom={labelAtom}
+                    <main className='flex-grow relative p-0'>
+                        <ThreeSceneComp
+                            initCameraData={initCameraData}
+                            controlsData={initControlsData}
+                            showPhotoButton={false}
+                            photoBtnClassStr={photoBtnClassStr}
+                        >
+                            <GridAndOrigin boundsAtom={boundsAtom} gridShow={true} />
+                            <Axes2D
+                                tickLabelDistance={1}
+                                boundsAtom={boundsAtom}
+                                axesDataAtom={axesDataAtom}
+                                labelAtom={labelAtom}
+                            />
+                            <ArrowGrid
+                                funcAtom={funcAtom}
+                                boundsAtom={boundsAtom}
+                                arrowGridDataAtom={arrowGridDataAtom}
+                            />
+                            <DirectionFieldApprox
+                                initialPointAtom={initialPointAtom}
+                                boundsAtom={boundsAtom}
+                                funcAtom={funcAtom}
+                                curveDataAtom={solutionCurveDataAtom}
+                            />
+                            <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
+                        </ThreeSceneComp>
+                        <DataComp
+                            resetBtnClassStr={resetBtnClassStr}
+                            saveBtnClassStr={saveBtnClassStr}
                         />
-                        <ArrowGrid
-                            funcAtom={funcAtom}
-                            boundsAtom={boundsAtom}
-                            arrowGridDataAtom={arrowGridDataAtom}
-                        />
-                        <DirectionFieldApprox
-                            initialPointAtom={initialPointAtom}
-                            boundsAtom={boundsAtom}
-                            funcAtom={funcAtom}
-                            curveDataAtom={solutionCurveDataAtom}
-                        />
-                        <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
-                    </ThreeSceneComp>
-                    <DataComp />
-                </Main>
-            </FullScreenBaseComponent>
+                    </main>
+                </Provider>
+            </div>
         </JProvider>
     );
 }

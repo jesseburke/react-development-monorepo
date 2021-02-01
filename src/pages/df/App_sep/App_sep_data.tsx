@@ -126,17 +126,17 @@ export const SepEquationInput = React.memo(function SepEquationI({}) {
     const { x: xLabel, y: yLabel } = useAtom(atomStore.ls.atom)[0];
 
     return (
-        <div className={styles['centerFlexColumn']}>
-            <div className={styles['verySmallPadding']}>
+        <div className='flex flex-col justify-center items-center h-full'>
+            <div className='px-2'>
                 d{yLabel}/d{xLabel} = <span>g({xLabel})</span>
                 <span>{'\u{00B7}'}</span>
                 <span>h({yLabel})</span>
             </div>
-            <div>
-                <span className={styles['verySmallPadding']}>
+            <div className='flex flex-col md:flex-row'>
+                <span className='px-2 py-1'>
                     <XEquationInput />
                 </span>
-                <span className={styles['verySmallPadding']}>
+                <span className='px-2 py-1'>
                     <YEquationInput />
                 </span>
             </div>

@@ -11,7 +11,7 @@ import * as system from 'reakit-system-bootstrap';
 
 import '../../../styles.css';
 
-import { useThreeCBs, ThreeSceneComp } from '../../../components/ThreeScene.jsx';
+import { ThreeSceneComp } from '../../../components/ThreeScene.jsx';
 import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
 
 import Grid from '../../../ThreeSceneComps/Grid.jsx';
@@ -37,20 +37,9 @@ import {
     DataComp
 } from './App_df_data.jsx';
 
-const initColors = {
-    arrows: '#C2374F',
-    solution: '#C2374F',
-    firstPt: '#C2374F',
-    secPt: '#C2374F',
-    testFunc: '#E16962', //#DBBBB0',
-    axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0'
-};
-
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
+    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN, THREE: THREE.MOUSE.ROTATE },
     enableRotate: false,
     enablePan: true,
     enabled: true,
@@ -105,6 +94,7 @@ export default function App() {
                         <InitialPointInput />
                         <OptionsModal />
                     </header>
+
                     <main className='flex-grow relative p-0'>
                         <ThreeSceneComp
                             initCameraData={initCameraData}
@@ -163,7 +153,7 @@ function OptionsModal() {
 
     const cssRef1 = useRef({
         backgroundColor: 'white',
-        color: initColors.controlBar
+        color: '#0A2C3C'
     });
 
     return (

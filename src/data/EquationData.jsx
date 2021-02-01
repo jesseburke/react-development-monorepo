@@ -23,7 +23,7 @@ export default function EquationData({
     initVal = defaultInitVal,
     equationLabelAtom,
     equationLabelString = 'default label string',
-    inputSize = 20
+    inputSize = 15
 }) {
     const encode = identity;
     const decode = (objStr) => {
@@ -47,10 +47,10 @@ export default function EquationData({
         const eqInputCB = useCallback((str) => setEqStr(str), [setEqStr]);
 
         return (
-            <>
-                <span className='pr-2'>{equationLabel}</span>
+            <div>
+                <span className='pr-1'>{equationLabel}</span>
                 <Input size={inputSize} initValue={eqStr} onC={eqInputCB} />
-            </>
+            </div>
         );
     });
 

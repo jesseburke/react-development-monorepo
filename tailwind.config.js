@@ -4,6 +4,13 @@ module.exports = {
     purge: ['./src/**/*.html', './src/**/*.js', './src/**/*.tsx', './src/**/*.jsx'],
     darkMode: false, // or 'media' or 'class'
     theme: {
+        screens: {
+            sm: '400px',
+            md: '661px',
+            lg: '768px',
+            xl: '1280px',
+            '2xl': '1536px'
+        },
         extend: {
             colors: {
                 coolGray: colors.coolGray,
