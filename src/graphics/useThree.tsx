@@ -9,19 +9,7 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { css } from 'emotion';
 
 import { pubsub } from '../utils/BaseUtils';
-
-import { ArrayPoint3 } from '../components/ThreeScene';
-
-export interface CameraData {
-    fov: number;
-    near: number;
-    far: number;
-    position?: ArrayPoint3;
-    up?: ArrayPoint3;
-    orthographic?: boolean;
-    aspectRatio?: number | null;
-    frustrumSize?: number | null;
-}
+import { CameraData, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
 
 export interface MouseButtons {
     LEFT: THREE.MOUSE;
@@ -62,15 +50,15 @@ export default function useThreeScene({
 }: UseThreeProps) {
     const scene = useRef<THREE.Scene | null>(null);
 
-    const camera = useRef<THREE.PerspectiveCamera | THREE.OrthographicCamera | null>(null);
+    const camera = useRef<(THREE.PerspectiveCamera | THREE.OrthographicCamera) | null>(null);
     const renderer = useRef<THREE.WebGLRenderer | null>(null);
-    const controls = useRef(null);
     const raycaster = useRef(new THREE.Raycaster());
+    const controls = useRef<OrbitControls | null>(null);
 
-    const coordPlaneMesh = useRef(null);
+    const coordPlaneMesh = useRef<THREE.Mesh | null>(null);
 
-    const threeLabelData = useRef({});
-    const htmlLabelData = useRef({});
+    const threeLabelData = useRef<(LabelProps | null)[]>([]);
+    const htmlLabelData = useRef<(LabelProps | null)[]>([]);
     const labelCounter = useRef(0);
 
     const width = useRef<number | null>(null);
@@ -157,7 +145,7 @@ export default function useThreeScene({
         }
     }, [cameraData]);
 
-    // set up lighting and resize oberserver (they are independent)
+    // set up lighting
     useEffect(() => {
         const color = 0xffffff;
         let intensity = 0.5;
@@ -175,61 +163,50 @@ export default function useThreeScene({
         const light2 = new THREE.AmbientLight(color, intensity);
         scene.current.add(light2);
 
-        // const light2 = new THREE.DirectionalLight(color, intensity);
-        // light2.position.set(1000, 1000, -1000);
-        // scene.current.add(light2);
-        // const light3 = new THREE.DirectionalLight(color, intensity);
-        // light3.position.set(1000, 1000, 1000);
-        // scene.current.add(light3);
-        // const light4 = new THREE.DirectionalLight(color, intensity);
-        // light4.position.set(-1000, -1000, 1000);
-        // scene.current.add(light4);
-        // const light5 = new THREE.DirectionalLight(color, intensity);
-        // light5.position.set(-1000, 1000, -1000);
-        // scene.current.add(light5);
-        // const light6 = new THREE.DirectionalLight(color, intensity);
-        // light6.position.set(1000, -1000, -1000);
-        // scene.current.add(light6);
-        // const light7 = new THREE.DirectionalLight(color, intensity);
-        // light7.position.set(-1000, -1000, -1000);
-        // scene.current.add(light7);
-
-        // light.position.set(100, 200, 400);
-        // scene.current.add(light);
-        // light.position.set(100, -200, 400);
-        // scene.current.add(light);
-        // light.position.set(-100, -200, 400);
-        // scene.current.add(light);
-
-        //const skyColor = 0xB1E1F0;  // light blue
-        //const groundColor = 0xB97A20;  // brownish orange
-        //const ambIntensity = .75;
-        //const ambLight = new THREE.AmbientLight(color, ambIntensity);
-        //const ambLight = new THREE.HemisphereLight(skyColor, groundColor, ambIntensity);
-        //scene.current.add(ambLight);
-
-        //window.onresize = handleResize;
-
         const resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(canvasRef.current, { box: 'content-box' });
 
         drawLabels();
         render();
 
-        // cleanup function
         return () => {
-            //window.removeEventListener('resize', handleResize);
-            resizeObserver.unobserve(canvasRef.current);
-            renderer.current.renderLists.dispose();
+            if (resizeObserver && canvasRef.current) resizeObserver.unobserve(canvasRef.current);
 
-            while (labelContainerRef.current.firstChild) {
-                labelContainerRef.current.removeChild(labelContainerRef.current.firstChild);
+            if (renderer.current) renderer.current.renderLists.dispose();
+
+            // not sure why this is here
+            if (labelContainerRef.current) {
+                while (labelContainerRef.current.firstChild) {
+                    labelContainerRef.current.removeChild(labelContainerRef.current.firstChild);
+                }
             }
         };
     }, [cameraData]);
 
+    // resize observer effect
+    useEffect(() => {
+        if (!scene.current || !canvasRef.current) return;
+
+        const resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(canvasRef.current, { box: 'content-box' });
+
+        return () => {
+            if (resizeObserver && canvasRef.current) resizeObserver.unobserve(canvasRef.current);
+        };
+    }, []);
+
     // controls effect
     useEffect(() => {
+        if (!camera.current) {
+            console.log('tried to set up controls with a null camera in useThree, returning');
+            return;
+        }
+
+        if (!canvasRef.current) {
+            console.log('tried to set up controls with a null canvasRef in useThree, returning');
+            return;
+        }
+
         controls.current = new OrbitControls(camera.current, canvasRef.current);
 
         // adds all properties of controlsData to controls.current
@@ -237,36 +214,14 @@ export default function useThreeScene({
         controls.current.update();
 
         controls.current.addEventListener('change', () => {
-            render();
-            //console.log('controls change event happened');
             let v = new THREE.Vector3(0, 0, 0);
-            camera.current.getWorldPosition(v);
+            camera.current!.getWorldPosition(v);
             controlsPubSub.current.publish(v.toArray());
             render();
         });
 
-        // function animate() {
-
-        //     requestAnimationFrame( animate );
-        //     controls.current.update();
-        //     render();
-
-        //     if( scrollCB ) {
-
-        // 	scrollCB({ xMin: screenToWorldCoords( -1, 0 ).x,
-        // 		   xMax: screenToWorldCoords( 1, 0 ).x,
-        // 		   xMin: screenToWorldCoords( -1, 0 ).x,
-        // 		   xMax: screenToWorldCoords( 1, 0 ).x,
-
-        // 		 });
-        //     }
-
-        // };
-
-        // animate();
-
         return () => {
-            controls.current.dispose();
+            if (controls.current) controls.current.dispose();
         };
     }, [canvasRef, camera, controlsData]);
 
@@ -286,10 +241,7 @@ export default function useThreeScene({
 
         coordPlaneMesh.current = new THREE.Mesh(planeGeom, mat);
 
-        //.scene.current.add( coordPlaneMesh.current );
-
         return () => {
-            //scene.current.remove( coordPlaneMesh.current );
             planeGeom.dispose();
         };
     }, []);
@@ -297,13 +249,20 @@ export default function useThreeScene({
     //let count = 0;
 
     const render = () => {
-        if (!renderer.current) return;
-        //count = count + 1;
-        //console.log('render function called ', count, ' times');
+        if (!renderer.current || !scene.current || !camera.current) {
+            console.log('render was called in useThree with null renderer, scene or camera');
+            return;
+        }
+
         renderer.current.render(scene.current, camera.current);
     };
 
     const handleResize = () => {
+        if (!canvasRef.current) {
+            console.log('handleResize called with null canvasRef.current');
+            return;
+        }
+
         const newWidth = canvasRef.current.clientWidth;
         const newHeight = canvasRef.current.clientHeight;
 
@@ -312,6 +271,11 @@ export default function useThreeScene({
         aspectRatio.current = newWidth / newHeight;
         width.current = newWidth;
         height.current = newHeight;
+
+        if (!renderer.current || !camera.current) {
+            console.log('handleResize called with null renderer.current or null camera.current');
+            return;
+        }
 
         if (!isOrthoCamera) {
             renderer.current.setSize(width.current, height.current, false);
@@ -345,38 +309,48 @@ export default function useThreeScene({
             fontSize: '1em'
         },
         anchor = 'ul'
-    }) {
+    }: LabelProps) {
         threeLabelData.current[labelCounter.current] = { pos, text, style, anchor };
         labelCounter.current++;
         return labelCounter.current;
     }
 
-    function removeLabel(id) {
+    function removeLabel(id: number) {
         threeLabelData.current[id - 1] = null;
     }
 
     function drawLabels() {
         // remove all previous labels
+        if (!labelContainerRef.current) {
+            console.log('tried to draw labels in useThree with null labelContainerRef');
+            return;
+        }
+
+        if (!camera.current) {
+            console.log('tried to draw label with null camera in useThree');
+            return;
+        }
+
         while (labelContainerRef.current.firstChild) {
             labelContainerRef.current.removeChild(labelContainerRef.current.firstChild);
         }
 
-        htmlLabelData.current = {};
+        htmlLabelData.current = [];
 
         // following converts all coordinates of labels to html coordinates;
         // if they are in the window, they are added to htmlLabelData
         let x, y;
 
         for (let key in threeLabelData.current) {
-            if (!threeLabelData.current[key]) {
+            if (!threeLabelData.current[key] || !threeLabelData.current[key]!.pos) {
                 continue;
             }
 
-            [x, y] = threeToHtmlCoords({
-                coord: threeLabelData.current[key].pos,
-                worldInverse: camera.current.matrixWorldInverse,
-                projection: camera.current.projectionMatrix
-            });
+            [x, y] = threeToHtmlCoords(
+                threeLabelData.current[key].pos,
+                camera.current.matrixWorldInverse,
+                camera.current.projectionMatrix
+            );
 
             if (0 < x && x < width.current && 0 < y && y < height.current) {
                 htmlLabelData.current[key] = {};
@@ -391,7 +365,6 @@ export default function useThreeScene({
         let labelClass;
         let curStyleString;
         let anchor;
-        let temp;
 
         for (let key in htmlLabelData.current) {
             workingDiv = document.createElement('div');
@@ -485,7 +458,7 @@ export default function useThreeScene({
     }
 
     // coord = array with three elts, e.g., coord = [1, 2, 1]
-    function threeToHtmlCoords({ coord, worldInverse, projection }) {
+    function threeToHtmlCoords(coord: ArrayPoint3) {
         //camera.current.
         camera.current.updateProjectionMatrix();
 
@@ -512,32 +485,20 @@ export default function useThreeScene({
         scene.current.remove(threeObj);
     }
 
-    // newPosition should be an array of the form [x,y,z]
-    //
-    function setCameraPosition(newPosition, newUp = [0, 0, 1]) {
-        //console.log('threeScene.setcameraposition called with newPosition = ', newPosition);
-
-        //render();
-        //const curr = camera.current.position.toArray();
-        //let v = new THREE.Vector3( 0, 0, 0 );
-        //camera.current.getWorldPosition(v);
-
+    function setCameraPosition(newPosition: ArrayPoint3, newUp: ArrayPoint3 = [0, 0, 1]) {
         camera.current.position.set(...newPosition);
         camera.current.quaternion.set(new THREE.Quaternion(0, 0, 0, 1));
         camera.current.up = new THREE.Vector3(...newUp);
         camera.current.lookAt(0, 0, 0);
-
-        //console.log('camera has been positioned in threeScene.setcameraposition');
 
         render();
         camera.current.updateProjectionMatrix();
 
         drawLabels();
         render();
-        //console.log('threeScene.setcameraposition over');
     }
 
-    function setCameraLookAt(newPos) {
+    function setCameraLookAt(newPos: ArrayPoint3) {
         camera.current.lookAt(...newPos);
 
         //console.log('camera has been positioned in threeScene.setcameraposition');
@@ -626,7 +587,7 @@ export default function useThreeScene({
 
     // this assumes that the canvas is the entire width of window, and
     // that the botto of the canvas is the botto of the window
-    function getMouseCoords(e, mesh) {
+    function getMouseCoords(e, mesh: THREE.Mesh) {
         const xperc = e.clientX / canvasRef.current.clientWidth;
 
         // following accounts for top of canvas being potentially
@@ -651,7 +612,7 @@ export default function useThreeScene({
     }
 
     // calculates where ray into the screen at (screenX, screenY) intersects mesh
-    function screenToWorldCoords(screenX, screenY) {
+    function screenToWorldCoords(screenX: number, screenY: number) {
         if (!coordPlaneMesh.current) return;
 
         //const xperc = screenX/ canvasRef.current.clientWidth;
@@ -672,7 +633,7 @@ export default function useThreeScene({
         // should also reset camera?
     }
 
-    function changeControls(newControlsData) {
+    function changeControls(newControlsData: ControlsData) {
         controls.current = Object.assign(controls.current, newControlsData);
 
         controls.current.update();

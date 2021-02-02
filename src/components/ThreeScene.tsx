@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 
-import useThreeScene from '../graphics/useThree.tsx';
+import useThreeScene from '../graphics/useThree';
+import { ArrayPoint3 } from '../my-types';
 
 //------------------------------------------------------------------------
 //
 
 const defaultHeightPxs = 1024;
-
-export type ArrayPoint3 = [number, number, number];
 
 export interface ThreeSceneProps {
     controlsCB: (pt: ArrayPoint3) => null;
