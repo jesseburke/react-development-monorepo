@@ -7,24 +7,24 @@ import queryString from 'query-string-esm';
 import { Checkbox } from 'reakit/Checkbox';
 
 import Input from '../components/Input.jsx';
-import { diffObjects } from '../utils/BaseUtils.ts';
-
+import { diffObjects } from '../utils/BaseUtils';
+import { CurveData2, CurveData2Min } from '../my-types';
 import '../styles.css';
 
-const defaultInitValues = {
+const defaultInitValues: CurveData2 = {
     color: '#C2374F',
     approxH: 0.1,
     visible: true,
     width: 0.1
 };
 
-export default function CurveData(args = {}) {
+export default function CurveData(args: CurveData2 = {}) {
     const initValue = { ...defaultInitValues, ...args };
 
-    const encode = (newObj) => {
+    const encode = (newObj: CurveData2) => {
         const { color, approxH, visible, width } = diffObjects(newObj, defaultInitValues);
 
-        let ro = {};
+        let ro: CurveData2Min = {};
 
         if (color) ro.c = color;
         if (approxH) ro.a = approxH;
@@ -34,14 +34,14 @@ export default function CurveData(args = {}) {
         return queryString.stringify(ro);
     };
 
-    const decode = (objStr) => {
+    const decode = (objStr: string) => {
         if (!objStr || !objStr.length || objStr.length === 0) return initValue;
 
-        const rawObj = queryString.parse(objStr);
+        const rawObj: CurveData2Min = queryString.parse(objStr);
 
         const newKeys = Object.keys(rawObj);
 
-        const ro = {};
+        const ro: CurveData2 = {};
 
         if (newKeys.includes('a')) ro.approxH = Number(rawObj.a);
         if (newKeys.includes('v')) ro.visible = rawObj.v === 0 ? false : true;

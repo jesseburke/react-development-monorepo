@@ -7,8 +7,8 @@ import styles from '../base_styles.module.css';
 import Input from '../../../components/Input.jsx';
 
 import ArrowGridData from '../../../data/ArrowGridData.jsx';
-import BoundsData from '../../../data/BoundsData.jsx';
-import CurveData from '../../../data/CurveData.jsx';
+import BoundsData from '../../../data/BoundsData.js';
+import CurveData from '../../../data/CurveData.js';
 
 //------------------------------------------------------------------------
 //

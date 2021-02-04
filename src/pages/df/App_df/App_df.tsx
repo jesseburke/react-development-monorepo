@@ -17,7 +17,7 @@ import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx
 import Grid from '../../../ThreeSceneComps/Grid.jsx';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
+import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.tsx';
 
 import {
     arrowGridDataAtom,
@@ -35,7 +35,7 @@ import {
     axesDataAtom,
     AxesDataInput,
     DataComp
-} from './App_df_data.jsx';
+} from './App_df_data';
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE },

@@ -19,7 +19,7 @@ import SaveStateComp from '../../../components/SaveStateComp.jsx';
 import GridAndOrigin from '../../../ThreeSceneComps/GridAndOriginRecoil.jsx';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.jsx';
+import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.js';
 import Line from '../../../ThreeSceneComps/LineRecoil.jsx';
 import ClickablePlane from '../../../ThreeSceneComps/ClickablePlane.jsx';
 

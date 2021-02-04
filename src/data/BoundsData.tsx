@@ -1,25 +1,31 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { atom, useAtom } from 'jotai';
+import { atom, useAtom, PrimitiveAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects } from '../utils/BaseUtils.ts';
+import { diffObjects } from '../utils/BaseUtils';
+import { Bounds2, Bounds2Min, Label2 } from '../my-types';
 
-const defaultLabelAtom = atom({ x: 'x', y: 'y' });
+const defaultLabelAtom: PrimitiveAtom<Label2> = atom({ x: 'x', y: 'y' });
 
-const defaultInitBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
+const defaultInitBounds: Bounds2 = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
+
+export interface BoundsDataProps {
+    labelAtom?: PrimitiveAtom<Label2>;
+    initBounds?: Bounds2;
+}
 
 export default function BoundsData({
     labelAtom = defaultLabelAtom,
     initBounds = defaultInitBounds
-} = {}) {
-    const encode = (newObj) => {
-        const { xMin, xMax, yMin, yMax } = diffObjects(newObj, initBounds);
+}: BoundsDataProps = {}) {
+    const encode = (newObj: Bounds2) => {
+        const { xMin, xMax, yMin, yMax }: Bounds2 = diffObjects(newObj, initBounds);
 
-        let ro = {};
+        let ro: Bounds2Min = {};
 
         if (xMax) ro.xp = xMax;
         if (xMin) ro.xm = xMin;
@@ -29,14 +35,14 @@ export default function BoundsData({
         return queryString.stringify(ro);
     };
 
-    const decode = (objStr) => {
+    const decode = (objStr: string) => {
         if (!objStr || !objStr.length || objStr.length === 0) return initBounds;
 
         const rawObj = queryString.parse(objStr);
 
         const newKeys = Object.keys(rawObj);
 
-        const ro = {};
+        const ro: Bounds2 = {};
 
         if (newKeys.includes('xm')) ro.xMin = Number(rawObj.xm);
         if (newKeys.includes('xp')) ro.xMax = Number(rawObj.xp);

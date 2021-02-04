@@ -10,8 +10,8 @@ import TexDisplayCompR from '../../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../../components/Slider.jsx';
 
 import AxesData from '../../../data/Axes2DData.jsx';
-import BoundsData from '../../../data/BoundsData.jsx';
-import CurveData from '../../../data/CurveData.jsx';
+import BoundsData from '../../../data/BoundsData.js';
+import CurveData from '../../../data/CurveData.js';
 
 import funcParser from '../../../utils/funcParser.jsx';
 import { round } from '../../../utils/BaseUtils.ts';

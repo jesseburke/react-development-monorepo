@@ -1,4 +1,11 @@
-import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, {
+    useState,
+    useRef,
+    useEffect,
+    useCallback,
+    useLayoutEffect,
+    FunctionComponent
+} from 'react';
 import * as THREE from 'three';
 
 import useThreeScene from '../graphics/useThree';
@@ -20,7 +27,7 @@ export interface ThreeSceneProps {
     children: null;
 }
 
-function ThreeScene(
+const ThreeScene: FunctionComponent = (
     {
         controlsCB = null,
         initCameraData = { position: [10, 10, 10], up: [0, 0, 1], fov: 75 },
@@ -39,7 +46,7 @@ function ThreeScene(
         children
     },
     ref
-) {
+) => {
     const containerRef = useRef(null);
     const threeCanvasRef = useRef(null);
     const labelContainerRef = useRef(null);
@@ -184,7 +191,7 @@ function ThreeScene(
             ) : null}
         </div>
     );
-}
+};
 
 // camera icon
 // <span>{'\u{1f4f7}'}</span>

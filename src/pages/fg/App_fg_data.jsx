@@ -7,8 +7,8 @@ import PointData from '../../data/PointData.jsx';
 import FunctionData from '../../data/FunctionData.jsx';
 import ArrowGridData from '../../data/ArrowGridData.jsx';
 import AxesData from '../../data/Axes2DData.jsx';
-import BoundsData from '../../data/BoundsData.jsx';
-import CurveData from '../../data/CurveData.jsx';
+import BoundsData from '../../data/BoundsData.js';
+import CurveData from '../../data/CurveData.js';
 
 import funcParser from '../../utils/funcParser.jsx';
 

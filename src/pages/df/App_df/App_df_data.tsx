@@ -6,10 +6,11 @@ import PointData from '../../../data/PointData.jsx';
 import EquationData from '../../../data/EquationData.jsx';
 import ArrowGridData from '../../../data/ArrowGridData.jsx';
 import AxesData from '../../../data/Axes2DData.jsx';
-import BoundsData from '../../../data/BoundsData.jsx';
-import CurveData from '../../../data/CurveData.jsx';
+import BoundsData from '../../../data/BoundsData';
+import CurveData from '../../../data/CurveData';
 
 import funcParser from '../../../utils/funcParser.jsx';
+import { ObjectPoint2, Bounds2, CurveData2, LabelStyle, AxesDataT } from '../../../my-types';
 
 //------------------------------------------------------------------------
 //
@@ -23,26 +24,26 @@ const colors = {
 
 const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
 
-const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
+const initBounds: Bounds2 = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
-const initInitialPoint = { x: 2, y: 2 };
+const initInitialPoint: ObjectPoint2 = { x: 2, y: 2 };
 
-const initSolutionCurveData = {
+const initSolutionCurveData: CurveData2 = {
     color: colors.solutionCurve,
     approxH: 0.1,
     visible: true,
     width: 0.1
 };
 
-const initFuncStr = 'x*y*sin(x+y)/10';
+const initFuncStr: string = 'x*y*sin(x+y)/10';
 
-const initAxesData = {
+const initAxesData: AxesDataT = {
     radius: 0.01,
     show: true,
     tickLabelDistance: 5
 };
 
-export const labelStyle = {
+export const labelStyle: LabelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',

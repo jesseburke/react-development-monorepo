@@ -1,13 +1,22 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 
-import { atom, useAtom } from 'jotai';
+import { atom, useAtom, PrimitiveAtom } from 'jotai';
 
 import * as THREE from 'three';
 
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
 import Sphere from './SphereRecoil.jsx';
 
-const defaultWidth = 0.1;
+import { ArrayPoint2, Bounds2, CurveData2 } from '../my-types';
+
+export interface DirectionFieldApproxProps {
+    threeCBs?: Function;
+    funcAtom: PrimitiveAtom<Function>;
+    initialPointAtom: PrimitiveAtom<ArrayPoint2>;
+    boundsAtom: PrimitiveAtom<Bounds2>;
+    curveDataAtom: PrimitiveAtom<CurveData2>;
+    radius: number;
+}
 
 export default function DirectionFieldApprox({
     threeCBs,
