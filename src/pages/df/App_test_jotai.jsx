@@ -12,7 +12,7 @@ import Main from '../../components/Main.jsx';
 import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 
-import Grid from '../../ThreeSceneComps/Grid.jsx';
+import Grid from '../../ThreeSceneComps/Grid.js';
 import Axes2D from '../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.js';

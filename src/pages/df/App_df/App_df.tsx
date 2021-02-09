@@ -14,10 +14,10 @@ import '../../../styles.css';
 import { ThreeSceneComp } from '../../../components/ThreeScene';
 import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
 
-import Grid from '../../../ThreeSceneComps/Grid.jsx';
+import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil.tsx';
+import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
 
 import {
     arrowGridDataAtom,

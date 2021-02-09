@@ -1,10 +1,19 @@
 import * as React from 'react';
 
-import { atom, useAtom } from 'jotai';
+import { atom, useAtom, ReadOnlyAtom } from 'jotai';
 
 import * as THREE from 'three';
 
 import GridGeometry from '../graphics/GridGeometry.js';
+import { ArrayPoint2, Bounds2 } from '../my-types';
+
+export interface GridProps {
+    threeCBs?: Function;
+    center?: ArrayPoint2;
+    gridShow?: boolean;
+    boundsAtom?: ReadOnlyAtom<Bounds2>;
+    gridCB?: Function;
+}
 
 export default React.memo(function GridTS({
     threeCBs,
@@ -12,7 +21,7 @@ export default React.memo(function GridTS({
     gridShow = true,
     boundsAtom,
     gridCB = () => null
-}) {
+}: GridProps) {
     const { xMax, xMin, yMax, yMin } = useAtom(boundsAtom)[0];
 
     React.useEffect(() => {
