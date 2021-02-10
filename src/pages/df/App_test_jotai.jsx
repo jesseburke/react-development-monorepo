@@ -30,7 +30,7 @@ import {
     solutionCurveDataAtom,
     axesDataAtom,
     DataComp
-} from './App_df_data.jsx';
+} from './App_df_data';
 
 const initColors = {
     arrows: '#C2374F',
