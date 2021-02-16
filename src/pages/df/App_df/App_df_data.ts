@@ -59,49 +59,40 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-const primObj = {
-    ls: LabelData({ twoD: true }),
-    ip: PointData(initInitialPoint, 'Initial Point: '),
-    ag: ArrowGridData(initArrowData),
-    ax: AxesData({
-        ...initAxesData,
-        tickLabelStyle
-    }),
-    sc: CurveData(initSolutionCurveData)
-};
+const ls = LabelData({ twoD: true });
+const ip = PointData(initInitialPoint, 'Initial Point: ');
+const ag = ArrowGridData(initArrowData);
+const ax = AxesData({
+    ...initAxesData,
+    tickLabelStyle
+});
+const sc = CurveData(initSolutionCurveData);
 
-const equationLabelAtom = atom(
-    (get) => 'd' + get(primObj.ls.atom).x + '/d' + get(primObj.ls.atom).y + ' = '
-);
+const equationLabelAtom = atom((get) => 'd' + get(ls.atom).x + '/d' + get(ls.atom).y + ' = ');
 
-const derObj = {
-    fs: EquationData({ initVal: initFuncStr, equationLabelAtom }),
-    bd: BoundsData({
-        initBounds,
-        labelAtom: primObj.ls.atom
-    })
-};
+const fs = EquationData({ initVal: initFuncStr, equationLabelAtom });
+const bd = BoundsData({
+    initBounds,
+    labelAtom: ls.atom
+});
 
-// next step...rewrite copy of MainDataComp to accept testObj instead
-// of atomStore...then rewrite reset.
-
-const atomStore = { ...primObj, ...derObj };
+const atomStore = { ls, ip, ag, ax, sc, fs, bd };
 
 export const DataComp = MainDataComp(atomStore);
 
-export const { atom: labelAtom, component: LabelInput } = atomStore.ls;
+export const { atom: labelAtom, component: LabelInput } = ls;
 
-export const { atom: funcStrAtom, component: EquationInput } = atomStore.fs;
+export const { atom: funcStrAtom, component: EquationInput } = fs;
 
-export const { atom: initialPointAtom, component: InitialPointInput } = atomStore.ip;
+export const { atom: initialPointAtom, component: InitialPointInput } = ip;
 
-export const { atom: arrowGridDataAtom, component: ArrowGridDataInput } = atomStore.ag;
+export const { atom: arrowGridDataAtom, component: ArrowGridDataInput } = ag;
 
-export const { atom: axesDataAtom, component: AxesDataInput } = atomStore.ax;
+export const { atom: axesDataAtom, component: AxesDataInput } = ax;
 
-export const { atom: boundsAtom, component: BoundsInput } = atomStore.bd;
+export const { atom: boundsAtom, component: BoundsInput } = bd;
 
-export const { atom: solutionCurveDataAtom, component: SolutionCurveDataInput } = atomStore.sc;
+export const { atom: solutionCurveDataAtom, component: SolutionCurveDataInput } = sc;
 
 //------------------------------------------------------------------------
 //

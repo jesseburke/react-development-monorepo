@@ -7,7 +7,7 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects } from '../utils/BaseUtils.ts';
+import { diffObjects } from '../utils/BaseUtils';
 
 import '../styles.css';
 
