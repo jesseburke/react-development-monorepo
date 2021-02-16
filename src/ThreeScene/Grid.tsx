@@ -4,7 +4,7 @@ import { atom, useAtom, ReadOnlyAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import GridGeometry from '../graphics/GridGeometry.js';
+import GridGeom from '../geometries/GridGeom.js';
 import { ArrayPoint2, Bounds2 } from '../my-types';
 
 export interface GridProps {
@@ -27,7 +27,7 @@ export default React.memo(function GridTS({
     React.useEffect(() => {
         if (!gridShow || !threeCBs) return;
 
-        const grid = GridGeometry({ length: yMax - yMin, width: xMax - xMin, llc: [xMin, yMin] });
+        const grid = GridGeom({ length: yMax - yMin, width: xMax - xMin, llc: [xMin, yMin] });
 
         threeCBs.add(grid);
 

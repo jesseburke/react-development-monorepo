@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { RK4Pts } from '../math/differentialEquations/RK4.jsx';
+import { RK4Pts } from '../math/RK4.jsx';
 
 // function func is a function of x and y
 

@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import ArrowGridGeom from '../graphics/ArrowGridGeom.jsx';
+import ArrowGridGeom from '../geometries/ArrowGridGeom.js';
 
 export default function ArrowGrid({ threeCBs, funcAtom, boundsAtom, arrowGridDataAtom }) {
     // const [density] = useAtom(arrowDensityAtom);

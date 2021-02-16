@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-import ArrowGeometry from './ArrowGeometry.jsx';
+import ArrowGeom from './ArrowGeom.js';
 
 // arrowLength*aGridSqSize will be actual arrow length
 
@@ -28,7 +28,7 @@ export default function ArrowGridGeom({
 
         const theta = Math.asin(slope / Math.sqrt(slope * slope + 1));
 
-        return ArrowGeometry({ length: arrowLength, thickness: arrowThickness })
+        return ArrowGeom({ length: arrowLength, thickness: arrowThickness })
             .rotateZ(theta - Math.PI / 2)
             .translate(x, y, 0);
     });

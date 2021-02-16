@@ -4,8 +4,8 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 // output has middle at origin; arrow is parallel to y-axis
 // base of arrow is at (0, -length/2) and tip of arrow is at (0, length/2)
 
-export default function ArrowGeometry({ length, thickness = 1 }) {
-    const rawGeom = RawArrowGeometry({
+export default function ArrowGeom({ length, thickness = 1 }) {
+    const rawGeom = RawArrowGeom({
         baseLength: 1.25,
         baseRadius: 0.1 * thickness,
         tipLength: 0.75,
@@ -18,7 +18,7 @@ export default function ArrowGeometry({ length, thickness = 1 }) {
     return rawGeom;
 }
 
-function RawArrowGeometry({ baseLength, baseRadius, tipLength, tipRadius }) {
+function RawArrowGeom({ baseLength, baseRadius, tipLength, tipRadius }) {
     const radiusTop = baseRadius;
     const radiusBottom = baseRadius;
     let height = baseLength;

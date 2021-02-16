@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import * as THREE from 'three';
 
-import ThreeSceneFactory from '../graphics/ThreeSceneFactory';
+import ThreeSceneFactory from '../ThreeScene/ThreeSceneFactory';
 import { ArrayPoint3 } from '../my-types';
 
 //------------------------------------------------------------------------

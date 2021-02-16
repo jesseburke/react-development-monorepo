@@ -4,8 +4,8 @@ import { atom, useAtom, PrimitiveAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
-import Sphere from './SphereRecoil.jsx';
+import DirectionFieldApproxGeom from '../geometries/DirectionFieldApprox.jsx';
+import Sphere from './Sphere.jsx';
 
 import { ArrayPoint2, Bounds2, CurveData2 } from '../my-types';
 

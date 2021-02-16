@@ -1,6 +1,6 @@
 import { atom, useAtom } from 'jotai';
 
-import MainDataComp from './data/MainDataComp.jsx';
+import MainDataComp from './components/MainDataComp.jsx';
 import LabelData from './data/LabelData.jsx';
 import PointData from './data/PointData.jsx';
 import EquationData from './data/EquationData.jsx';
