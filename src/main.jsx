@@ -6,35 +6,8 @@ import { Helmet } from 'react-helmet';
 import './index.css';
 import './styles.css';
 
-let title;
-
-import App from './pages/df/App_df/App_df.tsx';
-title = 'Direction Field Grapher';
-
-//import App from './pages/df/App_sep/App_sep.tsx';
-//title = 'Separable equation direction field grapher';
-
-//import App from './pages/vibratingString/App.jsx';
-
-//import App from './pages/df/App_canvas_test.jsx';
-
-//import App from './pages/df/App_test_jotai.jsx';
-
-//import App from './pages/df/App_test_valtio.jsx';
-
-//import App from './pages/df/App_logistic.jsx';
-//title = 'Logistic equation';
-
-//import App from './pages/df/App_linear.jsx';
-//title = 'Linear equation';
-
-//import App from './pages/df/App_sec_order.jsx';
-//title = 'Second order linear equation';
-
-//import App from './pages/df/App_sec_order_cases.jsx';
-//title = 'Second order linear equations';
-
-//import App from './pages/fg/App_fg.jsx';
+import App from './App_df';
+const title = 'Direction Field Grapher';
 
 function main() {
     const element = document.createElement('div');

@@ -1,23 +1,23 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { Provider as JProvider } from 'jotai';
+import { Provider as JotaiProvider } from 'jotai';
 
 import * as THREE from 'three';
 
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
-import { Provider } from 'reakit/Provider';
+import { Provider as ReakitProvider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
-import '../../../styles.css';
+import './styles.css';
 
-import { ThreeSceneComp } from '../../../components/ThreeScene';
-import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
+import { ThreeSceneComp } from './components/ThreeScene';
+import ClickablePlaneComp from './components/RecoilClickablePlaneComp.jsx';
 
-import Grid from '../../../ThreeSceneComps/Grid';
-import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
-import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
+import Grid from './ThreeSceneComps/Grid';
+import Axes2D from './ThreeSceneComps/Axes2DRecoil.jsx';
+import ArrowGrid from './ThreeSceneComps/ArrowGridRecoil.jsx';
+import DirectionFieldApprox from './ThreeSceneComps/DirectionFieldApproxRecoil';
 
 import {
     arrowGridDataAtom,
@@ -48,8 +48,8 @@ const initControlsData = {
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-//const frustrumSize = 20;
-const frustrumSize = 3.8;
+//const frustumSize = 20;
+const frustumSize = 3.8;
 
 const initCameraData = {
     position: [0, 0, 1],
@@ -58,13 +58,13 @@ const initCameraData = {
     near: 0.01,
     far: 100,
     rotation: { order: 'XYZ' },
-    frustrumSize,
+    frustumSize,
     aspectRatio,
     orthographic: {
-        left: (frustrumSize * aspectRatio) / -2,
-        right: (frustrumSize * aspectRatio) / 2,
-        top: frustrumSize / 2,
-        bottom: frustrumSize / -2
+        left: (frustumSize * aspectRatio) / -2,
+        right: (frustumSize * aspectRatio) / 2,
+        top: frustumSize / 2,
+        bottom: frustumSize / -2
     }
 };
 
@@ -81,9 +81,9 @@ const photoBtnClassStr =
 
 export default function App() {
     return (
-        <JProvider>
+        <JotaiProvider>
             <div className='full-screen-base'>
-                <Provider unstable_system={system}>
+                <ReakitProvider unstable_system={system}>
                     <header
                         className='control-bar bg-persian_blue-900 font-sans
 			p-8 text-white'
@@ -127,9 +127,9 @@ export default function App() {
                             saveBtnClassStr={saveBtnClassStr}
                         />
                     </main>
-                </Provider>
+                </ReakitProvider>
             </div>
-        </JProvider>
+        </JotaiProvider>
     );
 }
 

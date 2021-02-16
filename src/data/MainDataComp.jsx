@@ -66,7 +66,7 @@ export default function MainDataComp(atomStore) {
         useEffect(() => {
             const qsObj = queryString.parse(window.location.search.slice(1));
 
-            // for each new key, check if its a key in atomStore; if it
+            // for each new key, check if it is a key in atomStore; if it
             // is, check if it has non-null decode function, and if so,
             // call it with the corresponding entry of newObj
 

@@ -1,16 +1,16 @@
 import { atom, useAtom } from 'jotai';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
-import LabelData from '../../../data/LabelData.jsx';
-import PointData from '../../../data/PointData.jsx';
-import EquationData from '../../../data/EquationData.jsx';
-import ArrowGridData from '../../../data/ArrowGridData.jsx';
-import AxesData from '../../../data/Axes2DData.jsx';
-import BoundsData from '../../../data/BoundsData';
-import CurveData from '../../../data/CurveData';
+import MainDataComp from './data/MainDataComp.jsx';
+import LabelData from './data/LabelData.jsx';
+import PointData from './data/PointData.jsx';
+import EquationData from './data/EquationData.jsx';
+import ArrowGridData from './data/ArrowGridData.jsx';
+import AxesData from './data/Axes2DData.jsx';
+import BoundsData from './data/BoundsData';
+import CurveData from './data/CurveData';
 
-import funcParser from '../../../utils/funcParser.jsx';
-import { ObjectPoint2, Bounds2, CurveData2, LabelStyle, AxesDataT } from '../../../my-types';
+import funcParser from './utils/funcParser.jsx';
+import { ObjectPoint2, Bounds2, CurveData2, LabelStyle, AxesDataT } from './my-types';
 
 //------------------------------------------------------------------------
 //
