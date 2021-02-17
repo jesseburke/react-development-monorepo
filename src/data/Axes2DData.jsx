@@ -5,7 +5,7 @@ import { atomWithReset } from 'jotai/utils';
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
-import { diffObjects } from '../utils/BaseUtils.ts';
+import { diffObjects, isEmpty } from '../utils/BaseUtils.ts';
 
 import '../styles.css';
 
@@ -38,41 +38,44 @@ const defaultInitValues = {
 export default function Axes2DData(args) {
     const initValue = { ...defaultInitValues, ...args };
 
-    const encode = (newObj) => {
-        const { radius, color, tickLabelDistance } = diffObjects(newObj, defaultInitValues);
-
-        let ro = {};
-
-        if (radius) ro.r = radius;
-        if (color) ro.c = color;
-        if (tickLabelDistance) ro.tld = tickLabelDistance;
-
-        return queryString.stringify(ro);
-    };
-
-    const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
-
-        const rawObj = queryString.parse(objStr);
-
-        const newKeys = Object.keys(rawObj);
-
-        const ro = {};
-
-        if (newKeys.includes('r')) ro.radius = Number(rawObj.r);
-        if (newKeys.includes('tld')) ro.tickLabelDistance = Number(rawObj.tld);
-        if (newKeys.includes('c')) ro.color = rawObj.c;
-
-        return { ...initValue, ...ro };
-    };
-
     const aoAtom = atom(initValue);
 
-    const resetAtom = atom(null, (get, set) => {
-        set(aoAtom, initValue);
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            const { radius, color, tickLabelDistance } = diffObjects(get(aoAtom), initValue);
+
+            let ro = {};
+
+            if (radius) ro.r = radius;
+            if (color) ro.c = color;
+            if (tickLabelDistance) ro.tld = tickLabelDistance;
+
+            if (isEmpty(ro)) return;
+
+            action.callback(ro);
+        } else if (action.type === 'deserialize') {
+            const objStr = action.value;
+
+            if (!objStr || !objStr.length || objStr.length === 0) {
+                set(aoAtom, initValue);
+                return;
+            }
+
+            const rawObj = queryString.parse(objStr);
+
+            const newKeys = Object.keys(rawObj);
+
+            const ro = {};
+
+            if (newKeys.includes('r')) ro.radius = Number(rawObj.r);
+            if (newKeys.includes('tld')) ro.tickLabelDistance = Number(rawObj.tld);
+            if (newKeys.includes('c')) ro.color = rawObj.c;
+
+            set(aoAtom, { ...initValue, ...ro });
+        }
     });
 
-    const comp = React.memo(() => {
+    const component = React.memo(() => {
         const [ao, setAo] = useAtom(aoAtom);
 
         const { radius, color, tickLabelDistance } = ao;
@@ -134,11 +137,8 @@ export default function Axes2DData(args) {
         );
     });
 
-    return {
-        atom: aoAtom,
-        resetAtom,
-        component: comp,
-        encode,
-        decode
-    };
+    aoAtom.component = component;
+    aoAtom.serializeAtom = serializeAtom;
+
+    return aoAtom;
 }

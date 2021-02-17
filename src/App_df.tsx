@@ -21,18 +21,12 @@ import ClickablePlane from './ThreeScene/ClickablePlane.jsx';
 
 import {
     arrowGridDataAtom,
-    ArrowGridDataInput,
     boundsAtom,
-    BoundsInput,
     initialPointAtom,
-    InitialPointInput,
     funcAtom,
     labelAtom,
     solutionCurveDataAtom,
-    SolutionCurveDataInput,
-    DifferentialEquationInput,
     axesDataAtom,
-    AxesDataInput,
     DataComp
 } from './App_df_data';
 
@@ -86,10 +80,9 @@ export default function App() {
                     className='control-bar bg-persian_blue-900 font-sans
 		    p-8 text-white'
                 >
-                    <div className='p-1'>
-                        <DifferentialEquationInput />
-                    </div>
-                    <InitialPointInput />
+                    <funcAtom.component />
+
+                    <initialPointAtom.component />
                     <ReakitProvider unstable_system={system}>
                         <OptionsModal />
                     </ReakitProvider>
@@ -170,16 +163,16 @@ function OptionsModal() {
                         <Tab {...tab}>Variable labels</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <ArrowGridDataInput />
+                        <arrowGridDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <AxesDataInput />
+                        <axesDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <BoundsInput />
+                        <boundsAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveDataInput />
+                        <solutionCurveDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <labelAtom.component />

@@ -1,51 +1,59 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
-import { atomWithReset } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects } from '../utils/BaseUtils';
+import { diffObjects, isEmpty } from '../utils/BaseUtils';
 
 import '../styles.css';
 
 export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', twoD = 0 } = {}) {
     const initLabels = { x: xLabel, y: yLabel, z: zLabel };
-
-    const encode = (newObj) => {
-        const { x, y, z } = diffObjects(newObj, initLabels);
-
-        let ro = {};
-
-        if (x) ro.x = x;
-        if (y) ro.y = y;
-        if (z) ro.z = z;
-
-        return queryString.stringify(ro);
-    };
-
-    const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initLabels;
-
-        const rawObj = queryString.parse(objStr);
-
-        const newKeys = Object.keys(rawObj);
-
-        const ro = {};
-
-        if (newKeys.includes('x')) ro.x = rawObj.x;
-        if (newKeys.includes('y')) ro.y = rawObj.y;
-        if (newKeys.includes('z')) ro.z = rawObj.z;
-
-        return { ...initLabels, ...ro };
-    };
-
     const labelAtom = atom(initLabels);
 
-    const resetAtom = atom(null, (get, set) => {
-        set(labelAtom, initLabels);
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            const { x, y, z } = diffObjects(get(labelAtom), initLabels);
+
+            let ro = {};
+
+            if (x) {
+                ro.x = x;
+            }
+            if (y) {
+                ro.y = y;
+            }
+            if (z) {
+                ro.z = z;
+            }
+
+            if (isEmpty(ro)) {
+                return;
+            }
+
+            action.callback(ro);
+        } else if (action.type === 'deserialize') {
+            const objStr = action.value;
+
+            if (!objStr || !objStr.length || objStr.length === 0) {
+                set(labelAtom, initLabels);
+                return;
+            }
+            const rawObj = queryString.parse(objStr);
+
+            const newKeys = Object.keys(rawObj);
+
+            const ro = {};
+
+            if (newKeys.includes('x')) ro.x = rawObj.x;
+            if (newKeys.includes('y')) ro.y = rawObj.y;
+            if (newKeys.includes('z')) ro.z = rawObj.z;
+
+            set(labelAtom, { ...initLabels, ...ro });
+        }
     });
 
     const component = React.memo(function LabelInput({}) {
@@ -135,11 +143,7 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
     });
 
     labelAtom.component = twoD ? component2d : component;
+    labelAtom.serializeAtom = serializeAtom;
 
-    return {
-        atom: labelAtom,
-        resetAtom,
-        encode,
-        decode
-    };
+    return labelAtom;
 }

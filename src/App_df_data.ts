@@ -1,15 +1,14 @@
 import { atom, useAtom } from 'jotai';
 
-import MainDataComp from './components/MainDataComp.jsx';
+import MainDataComp from './data/MainDataComp.jsx';
 import LabelData from './data/LabelData.jsx';
 import PointData from './data/PointData.jsx';
-import EquationData from './data/EquationData.jsx';
+import FunctionData from './data/FunctionData.jsx';
 import ArrowGridData from './data/ArrowGridData.jsx';
 import AxesData from './data/Axes2DData.jsx';
 import BoundsData from './data/BoundsData';
 import CurveData from './data/CurveData';
 
-import funcParser from './utils/funcParser.jsx';
 import { ObjectPoint2, Bounds2, CurveData2, LabelStyle, AxesDataT } from './my-types';
 
 //------------------------------------------------------------------------
@@ -59,45 +58,31 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-const ls = LabelData({ twoD: true });
-const ip = PointData(initInitialPoint, 'Initial Point: ');
-const ag = ArrowGridData(initArrowData);
-const ax = AxesData({
+export const labelAtom = LabelData({ twoD: true });
+export const initialPointAtom = PointData(initInitialPoint, 'Initial Point: ');
+export const arrowGridDataAtom = ArrowGridData(initArrowData);
+export const axesDataAtom = AxesData({
     ...initAxesData,
     tickLabelStyle
 });
-const sc = CurveData(initSolutionCurveData);
+export const solutionCurveDataAtom = CurveData(initSolutionCurveData);
 
-const equationLabelAtom = atom((get) => 'd' + get(ls.atom).x + '/d' + get(ls.atom).y + ' = ');
+const functionLabelAtom = atom((get) => 'd' + get(labelAtom).x + '/d' + get(labelAtom).y + ' = ');
 
-const fs = EquationData({ initVal: initFuncStr, equationLabelAtom });
-const bd = BoundsData({
+export const funcAtom = FunctionData({ initVal: initFuncStr, functionLabelAtom });
+export const boundsAtom = BoundsData({
     initBounds,
-    labelAtom: ls.atom
+    labelAtom
 });
 
-const atomStore = { ls, ip, ag, ax, sc, fs, bd };
+const atomStore = {
+    ls: labelAtom,
+    ip: initialPointAtom,
+    ag: arrowGridDataAtom,
+    ax: axesDataAtom,
+    sc: solutionCurveDataAtom,
+    fn: funcAtom.functionStrAtom,
+    bd: boundsAtom
+};
 
 export const DataComp = MainDataComp(atomStore);
-
-export const { atom: labelAtom } = ls;
-
-export const { atom: funcStrAtom, component: DifferentialEquationInput } = fs;
-
-export const { atom: initialPointAtom, component: InitialPointInput } = ip;
-
-export const { atom: arrowGridDataAtom, component: ArrowGridDataInput } = ag;
-
-export const { atom: axesDataAtom, component: AxesDataInput } = ax;
-
-export const { atom: boundsAtom, component: BoundsInput } = bd;
-
-export const { atom: solutionCurveDataAtom, component: SolutionCurveDataInput } = sc;
-
-//------------------------------------------------------------------------
-//
-// derived atoms
-
-export const funcAtom = atom((get) => ({
-    func: funcParser(get(atomStore.fs.atom))
-}));

@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
-import { diffObjects, round } from '../utils/BaseUtils.ts';
+import { diffObjects, round, isEmpty } from '../utils/BaseUtils.ts';
 
 export const defaultLabelStyle = {
     color: 'black',
@@ -21,35 +21,44 @@ const defaultInitValues = {
 export default function PointData(initArgs, inputStr = 'Point: ') {
     const initValue = { ...defaultInitValues, ...initArgs };
 
-    const encode = (newObj) => {
-        const { x, y } = diffObjects(newObj, initValue);
-
-        let ro = {};
-
-        if (x) ro.x = x;
-        if (y) ro.y = y;
-
-        return queryString.stringify(ro);
-    };
-
-    const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
-
-        const rawObj = queryString.parse(objStr);
-
-        const newKeys = Object.keys(rawObj);
-
-        const ro = {};
-
-        if (newKeys.includes('x')) ro.x = Number(rawObj.x);
-        if (newKeys.includes('y')) ro.y = Number(rawObj.y);
-
-        return { ...defaultInitValues, ...ro };
-    };
-
     const ptAtom = atom(initValue);
 
-    const comp = React.memo(() => {
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            const { x, y } = diffObjects(get(ptAtom), initValue);
+
+            let ro = {};
+
+            if (x) ro.x = x;
+            if (y) ro.y = y;
+
+            if (isEmpty(ro)) return;
+
+            action.callback(ro);
+        } else if (action.type === 'deserialize') {
+            const objStr = action.value;
+
+            if (!objStr || !objStr.length || objStr.length === 0) {
+                set(ptAtom, initValue);
+                return;
+            }
+
+            //console.log('deserialize of point occured with action.value = ', action.value);
+
+            const rawObj = queryString.parse(objStr);
+
+            const newKeys = Object.keys(rawObj);
+
+            const ro = {};
+
+            if (newKeys.includes('x')) ro.x = Number(rawObj.x);
+            if (newKeys.includes('y')) ro.y = Number(rawObj.y);
+
+            set(ptAtom, { ...defaultInitValues, ...ro });
+        }
+    });
+
+    const component = React.memo(() => {
         const [point, setPoint] = useAtom(ptAtom);
 
         const setX = useCallback((newX) => setPoint((old) => ({ ...old, x: Number(newX) })), [
@@ -69,10 +78,8 @@ export default function PointData(initArgs, inputStr = 'Point: ') {
         );
     });
 
-    return {
-        atom: ptAtom,
-        component: comp,
-        encode,
-        decode
-    };
+    ptAtom.component = component;
+    ptAtom.serializeAtom = serializeAtom;
+
+    return ptAtom;
 }

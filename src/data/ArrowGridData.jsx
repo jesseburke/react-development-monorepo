@@ -5,7 +5,7 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects } from '../utils/BaseUtils.ts';
+import { diffObjects, isEmpty } from '../utils/BaseUtils.ts';
 
 import '../styles.css';
 
@@ -26,46 +26,46 @@ function strArrayToArray(strArray, f = Number) {
 export default function ArrowGridData(args) {
     const initValue = { ...defaultInitValues, ...args };
 
-    const encode = (newObj) => {
-        const { density, thickness, length, color } = diffObjects(newObj, initValue);
-
-        let ro = {};
-
-        if (density) ro.d = density;
-        if (thickness) ro.t = thickness;
-        if (length) ro.l = length;
-        if (color) ro.c = color;
-
-        return queryString.stringify(ro);
-        //queryString.stringify({ d: density, t: thickness, l: length, c: color });
-    };
-
-    const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
-
-        const rawObj = queryString.parse(objStr);
-
-        const newKeys = Object.keys(rawObj);
-
-        const ro = {};
-
-        if (newKeys.includes('d')) ro.density = Number(rawObj.d);
-        if (newKeys.includes('t')) ro.thickness = Number(rawObj.t);
-        if (newKeys.includes('l')) ro.length = Number(rawObj.l);
-        if (newKeys.includes('c')) ro.color = rawObj.c;
-
-        return { ...initValue, ...ro };
-    };
-
-    //console.log(decode(encode(defaultInitValues)));
-
     const agAtom = atom(initValue);
 
-    const resetAtom = atom(null, (get, set) => {
-        set(agAtom, initValue);
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            const { density, thickness, length, color } = diffObjects(get(agAtom), initValue);
+
+            let ro = {};
+
+            if (density) ro.d = density;
+            if (thickness) ro.t = thickness;
+            if (length) ro.l = length;
+            if (color) ro.c = color;
+
+            if (isEmpty(ro)) return;
+
+            action.callback(ro);
+        } else if (action.type === 'deserialize') {
+            const objStr = action.value;
+
+            if (!objStr || !objStr.length || objStr.length === 0) {
+                set(agAtom, initValue);
+                return;
+            }
+
+            const rawObj = queryString.parse(objStr);
+
+            const newKeys = Object.keys(rawObj);
+
+            const ro = {};
+
+            if (newKeys.includes('d')) ro.density = Number(rawObj.d);
+            if (newKeys.includes('t')) ro.thickness = Number(rawObj.t);
+            if (newKeys.includes('l')) ro.length = Number(rawObj.l);
+            if (newKeys.includes('c')) ro.color = rawObj.c;
+
+            set(agAtom, { ...initValue, ...ro });
+        }
     });
 
-    const ArrowGridOptionsInput = React.memo(() => {
+    const component = React.memo(() => {
         const [agda, setAgda] = useAtom(agAtom);
 
         const { density, thickness, length, color } = agda;
@@ -144,11 +144,8 @@ export default function ArrowGridData(args) {
         );
     });
 
-    return {
-        atom: agAtom,
-        resetAtom,
-        component: ArrowGridOptionsInput,
-        encode,
-        decode
-    };
+    agAtom.component = component;
+    agAtom.serializeAtom = serializeAtom;
+
+    return agAtom;
 }

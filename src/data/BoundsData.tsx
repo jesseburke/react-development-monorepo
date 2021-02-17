@@ -6,7 +6,7 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects } from '../utils/BaseUtils';
+import { diffObjects, isEmpty } from '../utils/BaseUtils';
 import { Bounds2, Bounds2Min, Label2 } from '../my-types';
 
 const defaultLabelAtom: PrimitiveAtom<Label2> = atom({ x: 'x', y: 'y' });
@@ -22,40 +22,43 @@ export default function BoundsData({
     labelAtom = defaultLabelAtom,
     initBounds = defaultInitBounds
 }: BoundsDataProps = {}) {
-    const encode = (newObj: Bounds2) => {
-        const { xMin, xMax, yMin, yMax }: Bounds2 = diffObjects(newObj, initBounds);
-
-        let ro: Bounds2Min = {};
-
-        if (xMax) ro.xp = xMax;
-        if (xMin) ro.xm = xMin;
-        if (yMax) ro.yp = yMax;
-        if (yMin) ro.ym = yMin;
-
-        return queryString.stringify(ro);
-    };
-
-    const decode = (objStr: string) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initBounds;
-
-        const rawObj = queryString.parse(objStr);
-
-        const newKeys = Object.keys(rawObj);
-
-        const ro: Bounds2 = {};
-
-        if (newKeys.includes('xm')) ro.xMin = Number(rawObj.xm);
-        if (newKeys.includes('xp')) ro.xMax = Number(rawObj.xp);
-        if (newKeys.includes('ym')) ro.yMin = Number(rawObj.ym);
-        if (newKeys.includes('yp')) ro.yMax = Number(rawObj.yp);
-
-        return { ...initBounds, ...ro };
-    };
-
     const boundsAtom = atom(initBounds);
 
-    const resetAtom = atom(null, (get, set) => {
-        set(boundsAtom, initBounds);
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            const { xMin, xMax, yMin, yMax }: Bounds2 = diffObjects(get(boundsAtom), initBounds);
+
+            let ro: Bounds2Min = {};
+
+            if (xMax) ro.xp = xMax;
+            if (xMin) ro.xm = xMin;
+            if (yMax) ro.yp = yMax;
+            if (yMin) ro.ym = yMin;
+
+            if (isEmpty(ro)) return;
+
+            action.callback(ro);
+        } else if (action.type === 'deserialize') {
+            const objStr = action.value;
+
+            if (!objStr || !objStr.length || objStr.length === 0) {
+                set(boundsAtom, initBounds);
+                return;
+            }
+
+            const rawObj = queryString.parse(objStr);
+
+            const newKeys = Object.keys(rawObj);
+
+            const ro: Bounds2 = {};
+
+            if (newKeys.includes('xm')) ro.xMin = Number(rawObj.xm);
+            if (newKeys.includes('xp')) ro.xMax = Number(rawObj.xp);
+            if (newKeys.includes('ym')) ro.yMin = Number(rawObj.ym);
+            if (newKeys.includes('yp')) ro.yMax = Number(rawObj.yp);
+
+            set(boundsAtom, { ...initBounds, ...ro });
+        }
     });
 
     const component = React.memo(function BoundsInput({}) {
@@ -127,11 +130,8 @@ export default function BoundsData({
         );
     });
 
-    return {
-        atom: boundsAtom,
-        resetAtom,
-        component,
-        encode,
-        decode
-    };
+    boundsAtom.component = component;
+    boundsAtom.serializeAtom = serializeAtom;
+
+    return boundsAtom;
 }

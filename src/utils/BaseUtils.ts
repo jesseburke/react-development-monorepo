@@ -197,6 +197,8 @@ export function diffObjects(ob1, ob2) {
 //     '87': '{"sid":"87","name":"The derpy title 4"}'
 // };
 
+export const isEmpty = (obj) => obj && Object.keys(obj).length === 0 && obj.constructor === Object;
+
 export function pubsub() {
     const subscribers = [];
     return {

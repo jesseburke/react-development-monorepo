@@ -7,7 +7,7 @@ import queryString from 'query-string-esm';
 import { Checkbox } from 'reakit/Checkbox';
 
 import Input from '../components/Input.jsx';
-import { diffObjects } from '../utils/BaseUtils';
+import { diffObjects, isEmpty } from '../utils/BaseUtils';
 import { CurveData2, CurveData2Min } from '../my-types';
 import '../styles.css';
 
@@ -21,47 +21,48 @@ const defaultInitValues: CurveData2 = {
 export default function CurveData(args: CurveData2 = {}) {
     const initValue = { ...defaultInitValues, ...args };
 
-    const encode = (newObj: CurveData2) => {
-        const { color, approxH, visible, width } = diffObjects(newObj, defaultInitValues);
-
-        let ro: CurveData2Min = {};
-
-        if (color) ro.c = color;
-        if (approxH) ro.a = approxH;
-        if (visible) ro.v = visible;
-        if (width) ro.w = width;
-
-        return queryString.stringify(ro);
-    };
-
-    const decode = (objStr: string) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initValue;
-
-        const rawObj: CurveData2Min = queryString.parse(objStr);
-
-        const newKeys = Object.keys(rawObj);
-
-        const ro: CurveData2 = {};
-
-        if (newKeys.includes('a')) ro.approxH = Number(rawObj.a);
-        if (newKeys.includes('v')) ro.visible = rawObj.v === 0 ? false : true;
-        if (newKeys.includes('w')) ro.width = Number(rawObj.w);
-        if (newKeys.includes('c')) ro.color = rawObj.c;
-
-        return { ...initValue, ...ro };
-    };
-
-    //console.log(decode(encode(defaultInitData)));
-
     const cdAtom = atom(initValue);
-
-    const resetAtom = atom(null, (get, set) => {
-        set(cdAtom, initValue);
-    });
 
     const toggleVisibleAtom = atom(null, (get, set) =>
         set(cdAtom, { ...get(cdAtom), visible: !get(cdAtom).visible })
     );
+
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            const { color, approxH, visible, width } = diffObjects(get(cdAtom), initValue);
+
+            let ro: CurveData2Min = {};
+
+            if (color) ro.c = color;
+            if (approxH) ro.a = approxH;
+            if (visible) ro.v = visible;
+            if (width) ro.w = width;
+
+            if (isEmpty(ro)) return;
+
+            action.callback(ro);
+        } else if (action.type === 'deserialize') {
+            const objStr = action.value;
+
+            if (!objStr || !objStr.length || objStr.length === 0) {
+                set(cdAtom, initValue);
+                return;
+            }
+
+            const rawObj: CurveData2Min = queryString.parse(objStr);
+
+            const newKeys = Object.keys(rawObj);
+
+            const ro: CurveData2 = {};
+
+            if (newKeys.includes('a')) ro.approxH = Number(rawObj.a);
+            if (newKeys.includes('v')) ro.visible = rawObj.v === 0 ? false : true;
+            if (newKeys.includes('w')) ro.width = Number(rawObj.w);
+            if (newKeys.includes('c')) ro.color = rawObj.c;
+
+            set(cdAtom, { ...initValue, ...ro });
+        }
+    });
 
     const component = React.memo(function CurveOptionsInput({}) {
         const [data, setData] = useAtom(cdAtom);
@@ -136,5 +137,8 @@ export default function CurveData(args: CurveData2 = {}) {
         );
     });
 
-    return { component, atom: cdAtom, resetAtom, encode, decode };
+    cdAtom.component = component;
+    cdAtom.serializeAtom = serializeAtom;
+
+    return cdAtom;
 }

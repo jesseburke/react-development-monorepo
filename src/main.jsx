@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import './index.css';
 import './styles.css';
 
 import App from './App_df';
