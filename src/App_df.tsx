@@ -12,12 +12,12 @@ import * as system from 'reakit-system-bootstrap';
 import './styles.css';
 
 import { ThreeSceneComp } from './components/ThreeScene';
-import ClickablePlaneComp from './ThreeScene/ClickablePlane.jsx';
 
 import Grid from './ThreeScene/Grid';
 import Axes2D from './ThreeScene/Axes2D.jsx';
 import ArrowGrid from './ThreeScene/ArrowGrid.jsx';
 import DirectionFieldApprox from './ThreeScene/DirectionFieldApprox';
+import ClickablePlane from './ThreeScene/ClickablePlane.jsx';
 
 import {
     arrowGridDataAtom,
@@ -28,10 +28,9 @@ import {
     InitialPointInput,
     funcAtom,
     labelAtom,
-    LabelInput,
     solutionCurveDataAtom,
     SolutionCurveDataInput,
-    EquationInput,
+    DifferentialEquationInput,
     axesDataAtom,
     AxesDataInput,
     DataComp
@@ -83,51 +82,51 @@ export default function App() {
     return (
         <JotaiProvider>
             <div className='full-screen-base'>
-                <ReakitProvider unstable_system={system}>
-                    <header
-                        className='control-bar bg-persian_blue-900 font-sans
-			p-8 text-white'
-                    >
-                        <div className='p-1'>
-                            <EquationInput />
-                        </div>
-                        <InitialPointInput />
+                <header
+                    className='control-bar bg-persian_blue-900 font-sans
+		    p-8 text-white'
+                >
+                    <div className='p-1'>
+                        <DifferentialEquationInput />
+                    </div>
+                    <InitialPointInput />
+                    <ReakitProvider unstable_system={system}>
                         <OptionsModal />
-                    </header>
+                    </ReakitProvider>
+                </header>
 
-                    <main className='flex-grow relative p-0'>
-                        <ThreeSceneComp
-                            initCameraData={initCameraData}
-                            controlsData={initControlsData}
-                            showPhotoBtn={true}
-                            photoBtnClassStr={photoBtnClassStr}
-                        >
-                            <DirectionFieldApprox
-                                initialPointAtom={initialPointAtom}
-                                boundsAtom={boundsAtom}
-                                funcAtom={funcAtom}
-                                curveDataAtom={solutionCurveDataAtom}
-                            />
-                            <Grid boundsAtom={boundsAtom} gridShow={true} />
-                            <Axes2D
-                                tickLabelDistance={1}
-                                boundsAtom={boundsAtom}
-                                axesDataAtom={axesDataAtom}
-                                labelAtom={labelAtom}
-                            />
-                            <ArrowGrid
-                                funcAtom={funcAtom}
-                                boundsAtom={boundsAtom}
-                                arrowGridDataAtom={arrowGridDataAtom}
-                            />
-                            <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
-                        </ThreeSceneComp>
-                        <DataComp
-                            resetBtnClassStr={resetBtnClassStr}
-                            saveBtnClassStr={saveBtnClassStr}
+                <main className='flex-grow relative p-0'>
+                    <ThreeSceneComp
+                        initCameraData={initCameraData}
+                        controlsData={initControlsData}
+                        showPhotoBtn={true}
+                        photoBtnClassStr={photoBtnClassStr}
+                    >
+                        <DirectionFieldApprox
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
+                            funcAtom={funcAtom}
+                            curveDataAtom={solutionCurveDataAtom}
                         />
-                    </main>
-                </ReakitProvider>
+                        <Grid boundsAtom={boundsAtom} gridShow={true} />
+                        <Axes2D
+                            tickLabelDistance={1}
+                            boundsAtom={boundsAtom}
+                            axesDataAtom={axesDataAtom}
+                            labelAtom={labelAtom}
+                        />
+                        <ArrowGrid
+                            funcAtom={funcAtom}
+                            boundsAtom={boundsAtom}
+                            arrowGridDataAtom={arrowGridDataAtom}
+                        />
+                        <ClickablePlane clickPositionAtom={initialPointAtom} />
+                    </ThreeSceneComp>
+                    <DataComp
+                        resetBtnClassStr={resetBtnClassStr}
+                        saveBtnClassStr={saveBtnClassStr}
+                    />
+                </main>
             </div>
         </JotaiProvider>
     );
@@ -183,7 +182,7 @@ function OptionsModal() {
                         <SolutionCurveDataInput />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <LabelInput />
+                        <labelAtom.component />
                     </TabPanel>
                 </>
             </Dialog>

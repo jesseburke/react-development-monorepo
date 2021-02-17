@@ -4,14 +4,7 @@ import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-function ClickablePlaneComp({
-    threeCBs,
-    clickPositionAtom,
-    paused,
-    xSize = 1000,
-    ySize = 1000,
-    mesh
-}) {
+function ClickablePlane({ threeCBs, clickPositionAtom, paused, xSize = 1000, ySize = 1000, mesh }) {
     const [clickPlane, setClickPlane] = useState(null);
     const [clickPosition, setClickPosition] = useAtom(clickPositionAtom);
 
@@ -115,4 +108,4 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
     return { dispose, reset, getPt, pause, play };
 }
 
-export default React.memo(ClickablePlaneComp);
+export default React.memo(ClickablePlane);

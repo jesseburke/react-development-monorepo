@@ -548,9 +548,9 @@ export default function ThreeSceneFactory({
         // normalized device coordinates, both in [-1,1]
         const ncoords = new THREE.Vector2(2 * xperc - 1, -2 * yperc + 1);
 
-        raycaster.current.setFromCamera(ncoords, camera);
+        raycaster.setFromCamera(ncoords, camera);
 
-        const array = raycaster.current.intersectObject(mesh);
+        const array = raycaster.intersectObject(mesh);
         return array[0].point;
     }
 
@@ -563,9 +563,9 @@ export default function ThreeSceneFactory({
         //const yperc = (screenY - drawCanvas.offsetParent.offsetTop)/ drawCanvas.clientHeight;
         //const ncoords = [xperc*2 - 1, yperc*2 - 1];
 
-        raycaster.current.setFromCamera(new THREE.Vector2(screenX, screenY), camera);
+        raycaster.setFromCamera(new THREE.Vector2(screenX, screenY), camera);
 
-        const array = raycaster.current.intersectObject(coordPlaneMesh);
+        const array = raycaster.intersectObject(coordPlaneMesh);
         return array[0].point;
     }
 

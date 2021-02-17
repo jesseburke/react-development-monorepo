@@ -80,9 +80,9 @@ const atomStore = { ls, ip, ag, ax, sc, fs, bd };
 
 export const DataComp = MainDataComp(atomStore);
 
-export const { atom: labelAtom, component: LabelInput } = ls;
+export const { atom: labelAtom } = ls;
 
-export const { atom: funcStrAtom, component: EquationInput } = fs;
+export const { atom: funcStrAtom, component: DifferentialEquationInput } = fs;
 
 export const { atom: initialPointAtom, component: InitialPointInput } = ip;
 

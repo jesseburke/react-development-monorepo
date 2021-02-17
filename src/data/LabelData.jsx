@@ -134,10 +134,11 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
         );
     });
 
+    labelAtom.component = twoD ? component2d : component;
+
     return {
         atom: labelAtom,
         resetAtom,
-        component: twoD ? component2d : component,
         encode,
         decode
     };
