@@ -126,7 +126,7 @@ export default function ThreeSceneFactory({
     if (initCameraData.center) {
         camera.translateX(initCameraData.center[0]);
         camera.translateY(initCameraData.center[1]);
-        camera.translateZ(10);
+        camera.translateZ(10000);
     }
 
     if (fixedCameraData.up) {
