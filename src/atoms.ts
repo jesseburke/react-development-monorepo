@@ -1,4 +1,4 @@
-import { atom, useAtom } from 'jotai';
+import { atom } from 'jotai';
 
 import MainDataComp from './data/MainDataComp.jsx';
 import LabelData from './data/LabelData.jsx';
@@ -8,6 +8,7 @@ import ArrowGridData from './data/ArrowGridData.jsx';
 import AxesData from './data/Axes2DData.jsx';
 import BoundsData from './data/BoundsData';
 import CurveData from './data/CurveData';
+import OrthoCameraData from './data/OrthoCameraData';
 
 import { ObjectPoint2, Bounds2, CurveData2, LabelStyle, AxesDataT } from './my-types';
 
@@ -42,6 +43,12 @@ const initAxesData: AxesDataT = {
     tickLabelDistance: 5
 };
 
+const initCameraData = {
+    center: [0, 0, 0],
+    viewHeight: 8,
+    rotationEnabled: true
+};
+
 export const labelStyle: LabelStyle = {
     color: 'black',
     padding: '.1em',
@@ -69,20 +76,23 @@ export const solutionCurveDataAtom = CurveData(initSolutionCurveData);
 
 const functionLabelAtom = atom((get) => 'd' + get(labelAtom).x + '/d' + get(labelAtom).y + ' = ');
 
-export const funcAtom = FunctionData({ initVal: initFuncStr, functionLabelAtom });
+export const diffEqAtom = FunctionData({ initVal: initFuncStr, functionLabelAtom });
 export const boundsAtom = BoundsData({
     initBounds,
     labelAtom
 });
 
-const atomStore = {
+export const orthoCameraDataAtom = OrthoCameraData(initCameraData);
+
+const atomStoreAtom = atom({
     ls: labelAtom,
     ip: initialPointAtom,
     ag: arrowGridDataAtom,
     ax: axesDataAtom,
     sc: solutionCurveDataAtom,
-    fn: funcAtom.functionStrAtom,
-    bd: boundsAtom
-};
+    fn: diffEqAtom.functionStrAtom,
+    bd: boundsAtom,
+    cd: orthoCameraDataAtom
+});
 
-export const DataComp = MainDataComp(atomStore);
+export const DataComp = MainDataComp(atomStoreAtom);

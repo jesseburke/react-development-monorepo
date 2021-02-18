@@ -8,7 +8,7 @@ const defaultVisibleAtom = atom(true);
 
 const defaultColorAtom = atom('#0A2C3C');
 
-export default React.memo(function SphereTS({
+export default React.memo(function DraggableSphere({
     threeCBs,
     radius = 2,
     colorAtom = defaultColorAtom,

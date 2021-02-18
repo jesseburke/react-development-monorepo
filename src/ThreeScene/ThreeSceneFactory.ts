@@ -33,7 +33,7 @@ export interface ControlsData {
 export interface ThreeFactoryProps {
     drawCanvas: HTMLCanvasElement;
     labelContainerDiv: HTMLDivElement;
-    cameraData: CameraData;
+    initCameraData: CameraData;
     controlsData: ControlsData;
     clearColor: string;
     alpha: boolean;
@@ -42,7 +42,8 @@ export interface ThreeFactoryProps {
 export default function ThreeSceneFactory({
     drawCanvas,
     labelContainerDiv,
-    cameraData,
+    initCameraData,
+    fixedCameraData,
     clearColor = '#f0f0f0',
     controlsData,
     alpha = true
@@ -62,7 +63,7 @@ export default function ThreeSceneFactory({
 
     let isOrthoCamera = false;
     let aspectRatio: number | null = null;
-    let frustumSize: number | null = null;
+    let viewHeight: number | null = null;
 
     const controlsPubSub = pubsub();
 
@@ -87,47 +88,49 @@ export default function ThreeSceneFactory({
 
     scene = new THREE.Scene();
 
-    const fov = cameraData.fov || 95;
+    const fov = fixedCameraData.fov || 95;
     const aspect = width! / height!; // the canvas default
-    const near = cameraData.near || 0.01;
-    const far = cameraData.far || 5000;
+    const near = fixedCameraData.near || 0.01;
+    const far = fixedCameraData.far || 5000;
 
-    if (!cameraData.orthographic) {
+    if (!fixedCameraData.orthographic) {
         camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     } else {
         isOrthoCamera = true;
 
-        if (!cameraData.aspectRatio) {
-            console.log('need to have non-null aspectRatio in cameraData for orthographic camera');
+        if (!fixedCameraData.aspectRatio) {
+            console.log(
+                'need to have non-null aspectRatio in fixedCameraData for orthographic camera'
+            );
             return;
         }
 
-        if (!cameraData.frustumSize) {
-            console.log('need to have non-null frustumSize in cameraData for orthographic camera');
+        if (!initCameraData.viewHeight) {
+            console.log('need to have non-null viewHeight in cameraData for orthographic camera');
             return;
         }
 
-        aspectRatio = cameraData.aspectRatio!;
-        frustumSize = cameraData.frustumSize!;
+        aspectRatio = fixedCameraData.aspectRatio!;
+        viewHeight = initCameraData.viewHeight!;
 
         camera = new THREE.OrthographicCamera(
-            (frustumSize * aspectRatio) / -2,
-            (frustumSize * aspectRatio) / 2,
-            frustumSize / 2,
-            frustumSize / -2,
+            (viewHeight * aspectRatio) / -2,
+            (viewHeight * aspectRatio) / 2,
+            viewHeight / 2,
+            viewHeight / -2,
             near,
             far
         );
     }
 
-    if (cameraData.position) {
-        camera.translateX(cameraData.position[0]);
-        camera.translateY(cameraData.position[1]);
-        camera.translateZ(cameraData.position[2]);
+    if (initCameraData.center) {
+        camera.translateX(initCameraData.center[0]);
+        camera.translateY(initCameraData.center[1]);
+        camera.translateZ(10);
     }
 
-    if (cameraData.up) {
-        camera.up = new THREE.Vector3(...cameraData.up);
+    if (fixedCameraData.up) {
+        camera.up = new THREE.Vector3(...fixedCameraData.up);
     }
 
     const color = 0xffffff;
@@ -180,10 +183,10 @@ export default function ThreeSceneFactory({
             camera.aspect = width / height;
         } else {
             renderer.setSize(width, height, false);
-            camera.left = (frustumSize * aspectRatio) / -2;
-            camera.right = (frustumSize * aspectRatio) / 2;
-            camera.top = frustumSize / 2;
-            camera.bottom = frustumSize / -2;
+            camera.left = (viewHeight * aspectRatio) / -2;
+            camera.right = (viewHeight * aspectRatio) / 2;
+            camera.top = viewHeight / 2;
+            camera.bottom = viewHeight / -2;
         }
         camera.updateProjectionMatrix();
 
@@ -221,6 +224,11 @@ export default function ThreeSceneFactory({
         controlsPubSub.publish(v.toArray());
         render();
     });
+
+    if (initCameraData.center) {
+        controls.target = new THREE.Vector3(...initCameraData.center);
+        controls.update();
+    }
 
     const bounds = { xMin: -1000, xMax: 1000, yMax: 1000, yMin: -1000 };
 
@@ -427,15 +435,11 @@ export default function ThreeSceneFactory({
         if (!scene) return;
 
         scene.remove(threeObj);
+        render();
     }
 
-    function setCameraPosition(newPosition: ArrayPoint3, newUp: ArrayPoint3 = [0, 0, 1]) {
+    function setCameraPosition(newPosition: ArrayPoint3) {
         camera.position.set(...newPosition);
-        camera.quaternion.set(new THREE.Quaternion(0, 0, 0, 1));
-        camera.up = new THREE.Vector3(...newUp);
-        camera.lookAt(0, 0, 0);
-
-        render();
         camera.updateProjectionMatrix();
 
         drawLabels();
@@ -583,7 +587,13 @@ export default function ThreeSceneFactory({
     }
 
     // dragendCB is called with the object that is being dragged as first argument
-    function addDragControls({ meshArray, dragCB = null, dragDelay, dragendCB = null }) {
+    function addDragControls({
+        meshArray,
+        dragstartCB = null,
+        dragCB = null,
+        dragDelay,
+        dragendCB = null
+    }) {
         const controls = new DragControls(meshArray, camera, renderer.domElement);
         controls.addEventListener('drag', render);
 
@@ -604,6 +614,10 @@ export default function ThreeSceneFactory({
         }
 
         if (dragCB) {
+            controls.addEventListener('dragstart', modifyCB(dragstartCB));
+        }
+
+        if (dragCB) {
             controls.addEventListener('drag', modifyCB(dragCB));
         }
 
@@ -615,19 +629,18 @@ export default function ThreeSceneFactory({
     }
 
     // dragCB is called with one argument, event, and event.object is the mesh that is being dragged
-    function addDrag({ mesh, dragCB = null, dragendCB = null }) {
-        const controls = new DragControls([mesh], camera, renderer.domElement);
-        controls.addEventListener('drag', render);
+    function addDrag({ mesh, dragCB = null, dragstartCB = null, dragendCB = null }) {
+        const dragControls = new DragControls([mesh], camera, renderer.domElement);
+        //dragControls.addEventListener('drag', render);
+
+        dragControls.addEventListener('dragstart', () => (controls.enabled = false));
+        dragControls.addEventListener('dragend', () => (controls.enabled = true));
 
         if (dragCB) {
-            controls.addEventListener('drag', dragCB);
+            dragControls.addEventListener('drag', dragCB);
         }
 
-        if (dragendCB) {
-            controls.addEventListener('dragend', dragendCB, dragendCB);
-        }
-
-        return controls.dispose;
+        return dragControls.dispose;
     }
 
     const getControlsTarget = () => controls.target;
@@ -659,10 +672,10 @@ export default function ThreeSceneFactory({
         drawLabels,
         setCameraPosition,
         setCameraLookAt,
+        getCamera,
         exportGLTF,
         downloadGLTF,
         downloadPicture,
-        getCamera,
         screenToWorldCoords,
         getMouseCoords,
         resetControls,

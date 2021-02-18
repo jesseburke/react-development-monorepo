@@ -5,11 +5,17 @@ import queryString from 'query-string-esm';
 
 import { isEmpty } from '../utils/BaseUtils.ts';
 
-export default function MainDataComp(atomStore) {
+export default function MainDataComp(atomStoreAtom) {
     const saveStuffAtom = atom({});
 
     const readAtomStoreSerializedAtom = atom(null, (get, set) => {
         let ro = {};
+
+        const atomStore = get(atomStoreAtom);
+        console.log(
+            'atomStore, inside write function of readAtomStoreSerializedAtom, is',
+            atomStore
+        );
 
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
             set(atom.serializeAtom, {
@@ -44,6 +50,8 @@ export default function MainDataComp(atomStore) {
     }
 
     const resetAtomStoreAtom = atom(null, (get, set) => {
+        const atomStore = get(atomStoreAtom);
+
         // in the following, using that deserializing without value
         // resets atom to original value
         Object.values(atomStore).forEach((atom) => {
@@ -51,6 +59,7 @@ export default function MainDataComp(atomStore) {
                 type: 'deserialize'
             });
         });
+        window.history.pushState({}, null, '');
     });
 
     function useReset() {
@@ -58,6 +67,8 @@ export default function MainDataComp(atomStore) {
     }
 
     const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
+        const atomStore = get(atomStoreAtom);
+
         Object.keys(newObj).forEach((k) => {
             set(atomStore[k].serializeAtom, {
                 type: 'deserialize',

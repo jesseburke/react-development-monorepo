@@ -23,10 +23,6 @@ export default function CurveData(args: CurveData2 = {}) {
 
     const cdAtom = atom(initValue);
 
-    const toggleVisibleAtom = atom(null, (get, set) =>
-        set(cdAtom, { ...get(cdAtom), visible: !get(cdAtom).visible })
-    );
-
     const serializeAtom = atom(null, (get, set, action) => {
         if (action.type === 'serialize') {
             const { color, approxH, visible, width } = diffObjects(get(cdAtom), initValue);
@@ -67,17 +63,10 @@ export default function CurveData(args: CurveData2 = {}) {
     const component = React.memo(function CurveOptionsInput({}) {
         const [data, setData] = useAtom(cdAtom);
 
-        const toggleVisible = useAtom(toggleVisibleAtom)[1];
-
         const { color, approxH, visible, width } = data;
 
         const colorCB = useCallback(
             (e) => setData((oldData) => ({ ...oldData, color: e.target.value })),
-            [setData]
-        );
-
-        const widthCB = useCallback(
-            (inputStr) => setData((oldData) => ({ ...oldData, width: Number(inputStr) })),
             [setData]
         );
 
@@ -86,16 +75,30 @@ export default function CurveData(args: CurveData2 = {}) {
             [setData]
         );
 
+        const visibleCB = useCallback(
+            () =>
+                setData((oldData) => {
+                    console.log(oldData);
+                    return { ...oldData, visible: !oldData.visible };
+                }),
+            [setData]
+        );
+
+        const widthCB = useCallback(
+            (inputStr) => setData((oldData) => ({ ...oldData, width: Number(inputStr) })),
+            [setData]
+        );
+
         return (
-            <div>
+            <div
+                className='flex flex-col justify-center
+		items-center h-full p-1'
+            >
                 <label>
-                    <Checkbox checked={visible} onChange={toggleVisible} />
+                    <Checkbox checked={visible} onChange={visibleCB} />
                     <span className='p-1'>Show solution curve</span>
                 </label>
-                <div
-                    className='flex flex-col justify-center
-		    items-center h-full p-1'
-                >
+                <div>
                     <div
                         className='flex justify-center items-center
 			content-center h-full p-1'
@@ -125,9 +128,10 @@ export default function CurveData(args: CurveData2 = {}) {
                         className='flex justify-center items-center
 			content-center h-full'
                     >
-                        <span className='text-center'>
-                            Approximation constant (lower is better quality, but slower):
-                        </span>
+                        <div className='text-center'>
+                            <p>Approximation constant:</p>
+                            <p>(lower is better quality, but slower)</p>
+                        </div>
                         <span className='p-1'>
                             <Input size={4} initValue={approxH} onC={approxCB} />
                         </span>

@@ -1,12 +1,6 @@
-import React, {
-    useState,
-    useRef,
-    useEffect,
-    useCallback,
-    useLayoutEffect,
-    FunctionComponent
-} from 'react';
+import React, { useState, useRef, useEffect, FunctionComponent } from 'react';
 import * as THREE from 'three';
+import { atom, useAtom } from 'jotai';
 
 import ThreeSceneFactory from '../ThreeScene/ThreeSceneFactory';
 import { ArrayPoint3 } from '../my-types';
@@ -19,6 +13,7 @@ const defaultHeightPxs = 1024;
 export interface ThreeSceneProps {
     controlsCB: (pt: ArrayPoint3) => null;
     initCameraData: null;
+    fixedCameraData: null;
     controlsData: null;
     clearColor: null;
     aspectRatio: null;
@@ -31,6 +26,7 @@ const ThreeScene: FunctionComponent = (
     {
         controlsCB = null,
         initCameraData = { position: [10, 10, 10], up: [0, 0, 1], fov: 75 },
+        fixedCameraData,
         controlsData = {
             mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
             touches: { ONE: THREE.MOUSE.ROTATE, TWO: THREE.TOUCH.PAN, THREE: THREE.MOUSE.DOLLY },
@@ -41,7 +37,7 @@ const ThreeScene: FunctionComponent = (
         },
         clearColor = '#f0f0f0',
         aspectRatio = 1,
-        showPhotoBtn = true,
+        showPhotoBtn = false,
         photoBtnClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
         children
     },
@@ -50,34 +46,39 @@ const ThreeScene: FunctionComponent = (
     const threeCanvasRef = useRef(null);
     const labelContainerRef = useRef(null);
 
-    const [threeScene, setThreeScene] = useState(null);
+    const [threeSceneCBs, setThreeSceneCBs] = useState(null);
+
+    //------------------------------------------------------------------------
+    //
+    // effect to put threeScene in state
 
     useEffect(() => {
         if (!threeCanvasRef.current) {
-            setThreeScene(null);
+            setThreeSceneCBs(null);
             return;
         }
 
-        setThreeScene(
+        setThreeSceneCBs(
             ThreeSceneFactory({
                 drawCanvas: threeCanvasRef.current,
                 labelContainerDiv: labelContainerRef.current,
-                cameraData: initCameraData,
+                initCameraData,
+                fixedCameraData,
                 controlsData,
                 clearColor
             })
         );
-    }, [threeCanvasRef, labelContainerRef, initCameraData, controlsData, clearColor]);
+    }, [threeCanvasRef, labelContainerRef, controlsData, clearColor]);
 
     //------------------------------------------------------------------------
     //
     // subscribe to controlsPubSub
 
     useEffect(() => {
-        if (!controlsCB || !threeScene) return;
+        if (!controlsCB || !threeSceneCBs) return;
 
-        threeScene.controlsPubSub.subscribe(controlsCB);
-    }, [controlsCB, threeScene]);
+        threeSceneCBs.controlsPubSub.subscribe(controlsCB);
+    }, [controlsCB, threeSceneCBs]);
 
     const heightPxs = useRef(defaultHeightPxs);
     const widthPxs = useRef(heightPxs.current * aspectRatio);
@@ -95,12 +96,12 @@ const ThreeScene: FunctionComponent = (
             />
             <React.Fragment>
                 {React.Children.map(children, (el) =>
-                    React.cloneElement(el, { threeCBs: threeScene })
+                    React.cloneElement(el, { threeCBs: threeSceneCBs })
                 )}
             </React.Fragment>
             <div ref={(elt) => (labelContainerRef.current = elt)} />
             {showPhotoBtn ? (
-                <div onClick={threeScene ? threeScene.downloadPicture : null}>
+                <div onClick={threeSceneCBs ? threeSceneCBs.downloadPicture : null}>
                     <button className={photoBtnClassStr}>Photo</button>
                 </div>
             ) : null}

@@ -5,22 +5,22 @@ import { atom, useAtom, PrimitiveAtom } from 'jotai';
 import * as THREE from 'three';
 
 import DirectionFieldApproxGeom from '../geometries/DirectionFieldApprox.jsx';
-import Sphere from './Sphere.jsx';
+import DraggableSphere from './DraggableSphere.jsx';
 
 import { ArrayPoint2, Bounds2, CurveData2 } from '../my-types';
 
 export interface DirectionFieldApproxProps {
     threeCBs?: Function;
-    funcAtom: PrimitiveAtom<Function>;
+    diffEqAtom: PrimitiveAtom<Function>;
     initialPointAtom: PrimitiveAtom<ArrayPoint2>;
     boundsAtom: PrimitiveAtom<Bounds2>;
     curveDataAtom: PrimitiveAtom<CurveData2>;
     radius: number;
 }
 
-export default function DirectionFieldApprox({
+export default function IntegralCurve({
     threeCBs,
-    funcAtom,
+    diffEqAtom,
     initialPointAtom = null,
     boundsAtom,
     curveDataAtom,
@@ -32,7 +32,7 @@ export default function DirectionFieldApprox({
 
     const initialPt = useAtom(initialPointAtom)[0];
 
-    const func = useAtom(funcAtom)[0];
+    const func = useAtom(diffEqAtom)[0];
 
     const bounds = useAtom(boundsAtom)[0];
 
@@ -88,7 +88,7 @@ export default function DirectionFieldApprox({
     }, [threeCBs, initialPt, bounds, func, width, approxH, mat, radius, visible]);
 
     return visible ? (
-        <Sphere
+        <DraggableSphere
             threeCBs={threeCBs}
             colorAtom={sphereColorAtom}
             dragPositionAtom={initialPointAtom}

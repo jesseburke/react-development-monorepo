@@ -16,59 +16,59 @@ import { ThreeSceneComp } from './components/ThreeScene';
 import Grid from './ThreeScene/Grid';
 import Axes2D from './ThreeScene/Axes2D.jsx';
 import ArrowGrid from './ThreeScene/ArrowGrid.jsx';
-import DirectionFieldApprox from './ThreeScene/DirectionFieldApprox';
-import ClickablePlane from './ThreeScene/ClickablePlane.jsx';
+import IntegralCurve from './ThreeScene/IntegralCurve';
+import CameraControls from './ThreeScene/CameraControls.jsx';
 
 import {
     arrowGridDataAtom,
     boundsAtom,
     initialPointAtom,
-    funcAtom,
+    diffEqAtom,
     labelAtom,
     solutionCurveDataAtom,
     axesDataAtom,
+    orthoCameraDataAtom,
     DataComp
-} from './App_df_data';
+} from './atoms';
 
 const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
+    mouseButtons: { LEFT: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.DOLLY },
     touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN, THREE: THREE.MOUSE.ROTATE },
     enableRotate: false,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    screenSpaceSpanning: false
+    zoomSpeed: 2,
+    screenSpacePanning: true
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-//const frustumSize = 20;
-const frustumSize = 3.8;
+const viewHeight = 8;
 
-const initCameraData = {
-    position: [0, 0, 1],
-    up: [0, 0, 1],
-    //fov: 75,
-    near: 0.01,
-    far: 100,
-    rotation: { order: 'XYZ' },
-    frustumSize,
+const fixedCameraData = {
+    up: [0, 1, 0],
+    near: 0.001,
+    far: 1000,
     aspectRatio,
-    orthographic: {
-        left: (frustumSize * aspectRatio) / -2,
-        right: (frustumSize * aspectRatio) / 2,
-        top: frustumSize / 2,
-        bottom: frustumSize / -2
-    }
+    orthographic: true
 };
 
-const saveBtnClassStr =
-    'absolute left-8 bottom-40 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const initCameraData = {
+    center: [0, 0, 0],
+    viewHeight,
+    rotationEnabled: true
+};
 
-const resetBtnClassStr =
-    'absolute left-8 bottom-24 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const btnClassStr =
+    'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-2xl';
 
-const photoBtnClassStr =
-    'absolute left-8 bottom-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const saveBtnClassStr = btnClassStr + ' bottom-40';
+
+const resetBtnClassStr = btnClassStr + ' bottom-24';
+
+/* const photoBtnClassStr = btnClassStr + ' bottom-8'; */
+
+const cameraBtnClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ export default function App() {
                     className='control-bar bg-persian_blue-900 font-sans
 		    p-8 text-white'
                 >
-                    <funcAtom.component />
+                    <diffEqAtom.component />
 
                     <initialPointAtom.component />
                     <ReakitProvider unstable_system={system}>
@@ -91,16 +91,9 @@ export default function App() {
                 <main className='flex-grow relative p-0'>
                     <ThreeSceneComp
                         initCameraData={initCameraData}
+                        fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
-                        showPhotoBtn={true}
-                        photoBtnClassStr={photoBtnClassStr}
                     >
-                        <DirectionFieldApprox
-                            initialPointAtom={initialPointAtom}
-                            boundsAtom={boundsAtom}
-                            funcAtom={funcAtom}
-                            curveDataAtom={solutionCurveDataAtom}
-                        />
                         <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
                             tickLabelDistance={1}
@@ -109,11 +102,20 @@ export default function App() {
                             labelAtom={labelAtom}
                         />
                         <ArrowGrid
-                            funcAtom={funcAtom}
+                            diffEqAtom={diffEqAtom}
                             boundsAtom={boundsAtom}
                             arrowGridDataAtom={arrowGridDataAtom}
                         />
-                        <ClickablePlane clickPositionAtom={initialPointAtom} />
+                        <IntegralCurve
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
+                            diffEqAtom={diffEqAtom}
+                            curveDataAtom={solutionCurveDataAtom}
+                        />
+                        <CameraControls
+                            cameraDataAtom={orthoCameraDataAtom}
+                            classStr={cameraBtnClassStr}
+                        />
                     </ThreeSceneComp>
                     <DataComp
                         resetBtnClassStr={resetBtnClassStr}
@@ -126,7 +128,7 @@ export default function App() {
 }
 
 function OptionsModal() {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     const tab = useTabState();
 
     useEffect(() => {
@@ -139,7 +141,7 @@ function OptionsModal() {
         left: 'auto',
         backgroundColor: 'white',
         right: 20,
-        width: 500,
+        width: 600,
         height: 250
     });
 
@@ -151,14 +153,17 @@ function OptionsModal() {
     return (
         <div zindex={-10}>
             <DialogDisclosure style={cssRef1.current} {...dialog}>
-                <span className='w-32'>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
+                <span className='w-32 text-xl'>
+                    {!dialog.visible ? 'Show options' : 'Hide options'}
+                </span>
             </DialogDisclosure>
-            <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
+            <Dialog {...dialog} style={cssRef.current} aria-label='Options'>
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Camera</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                         <Tab {...tab}>Variable labels</Tab>
                     </TabList>
@@ -170,6 +175,9 @@ function OptionsModal() {
                     </TabPanel>
                     <TabPanel {...tab}>
                         <boundsAtom.component />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <orthoCameraDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <solutionCurveDataAtom.component />

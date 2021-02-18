@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 import ArrowGridGeom from '../geometries/ArrowGridGeom.js';
 
-export default function ArrowGrid({ threeCBs, funcAtom, boundsAtom, arrowGridDataAtom }) {
+export default function ArrowGrid({ threeCBs, diffEqAtom, boundsAtom, arrowGridDataAtom }) {
     // const [density] = useAtom(arrowDensityAtom);
     // const [length] = useAtom(arrowLengthAtom);
     // const [thickness] = useAtom(arrowThicknessAtom);
@@ -14,7 +14,7 @@ export default function ArrowGrid({ threeCBs, funcAtom, boundsAtom, arrowGridDat
 
     const { density, length, thickness, color } = useAtom(arrowGridDataAtom)[0];
 
-    const [func] = useAtom(funcAtom);
+    const [func] = useAtom(diffEqAtom);
     const [bounds] = useAtom(boundsAtom);
 
     useEffect(() => {
