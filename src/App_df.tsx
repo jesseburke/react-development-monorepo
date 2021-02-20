@@ -47,7 +47,7 @@ const viewHeight = 8;
 
 const fixedCameraData = {
     up: [0, 1, 0],
-    near: 0.001,
+    near: 0.01,
     far: 1000,
     aspectRatio,
     orthographic: true
@@ -81,7 +81,6 @@ export default function App() {
 		    p-8 text-white'
                 >
                     <diffEqAtom.component />
-
                     <initialPointAtom.component />
                     <ReakitProvider unstable_system={system}>
                         <OptionsModal />
@@ -94,13 +93,13 @@ export default function App() {
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
                     >
-                        <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <Axes2D
                             tickLabelDistance={1}
                             boundsAtom={boundsAtom}
                             axesDataAtom={axesDataAtom}
                             labelAtom={labelAtom}
                         />
+                        <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <ArrowGrid
                             diffEqAtom={diffEqAtom}
                             boundsAtom={boundsAtom}
@@ -112,6 +111,7 @@ export default function App() {
                             diffEqAtom={diffEqAtom}
                             curveDataAtom={solutionCurveDataAtom}
                         />
+
                         <CameraControls
                             cameraDataAtom={orthoCameraDataAtom}
                             classStr={cameraBtnClassStr}
@@ -142,7 +142,7 @@ function OptionsModal() {
         backgroundColor: 'white',
         right: 20,
         width: 600,
-        height: 250
+        height: 275
     });
 
     const cssRef1 = useRef({

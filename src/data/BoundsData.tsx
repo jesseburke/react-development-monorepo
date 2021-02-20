@@ -84,49 +84,44 @@ export default function BoundsData({
         );
 
         return (
-            <div
-                className='flex flex-col justify-center items-center
-		h-full w-full'
-            >
-                <fieldset
-                    className='w-full h-full flex justify-center
+            <fieldset
+                className='w-full h-full flex flex-col flex-center justify-center
 		    items-center content-center'
+            >
+                <div className='py-2'>Direction field bounds</div>
+
+                <div
+                    className='flex justify-center items-center
+                        content-center h-full py-2'
                 >
-                    <legend>Direction field bounds</legend>
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.xMin} onC={xMinCB} />
+                    </span>
+                    <span className='text-center'>
+                        {' '}
+                        {'\u2000 \u2264 \u2000' + xLabel + '\u2000 \u2264 \u2000'}
+                    </span>
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.xMax} onC={xMaxCB} />
+                    </span>
+                </div>
 
-                    <div
-                        className='flex justify-center items-center
-                        content-center h-full'
-                    >
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.xMin} onC={xMinCB} />
-                        </span>
-                        <span className='text-center'>
-                            {' '}
-                            {'\u2000 \u2264 \u2000' + xLabel + '\u2000 \u2264 \u2000'}
-                        </span>
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.xMax} onC={xMaxCB} />
-                        </span>
-                    </div>
-
-                    <div
-                        className='flex justify-center items-center
-                        content-center h-full'
-                    >
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.yMin} onC={yMinCB} />
-                        </span>
-                        <span className='text-center'>
-                            {' '}
-                            {'\u2000 \u2264 \u2000' + yLabel + '\u2000 \u2264 \u2000'}
-                        </span>
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.yMax} onC={yMaxCB} />
-                        </span>
-                    </div>
-                </fieldset>
-            </div>
+                <div
+                    className='flex justify-center items-center
+                        content-center h-full py-2'
+                >
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.yMin} onC={yMinCB} />
+                    </span>
+                    <span className='text-center'>
+                        {' '}
+                        {'\u2000 \u2264 \u2000' + yLabel + '\u2000 \u2264 \u2000'}
+                    </span>
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.yMax} onC={yMaxCB} />
+                    </span>
+                </div>
+            </fieldset>
         );
     });
 

@@ -87,7 +87,7 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
                     className='flex justify-center
 		    content-center items-center h-full p-1'
                 >
-                    <span className='text-center'>Independent variable 1</span>
+                    <span className='text-center'>Independent variable 1:</span>
                     <span className='p-1'>
                         <Input size={4} initValue={x} onC={xCB} />
                     </span>
@@ -96,7 +96,7 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
                     className='flex justify-center
 		    content-center items-center h-full p-1'
                 >
-                    <span className='text-center'>Independent variable 2</span>
+                    <span className='text-center'>Independent variable 2:</span>
                     <span className='p-1'>
                         <Input size={4} initValue={y} onC={yCB} />
                     </span>
@@ -124,7 +124,7 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
                     className='flex justify-center content-center
 		    items-center h-full p-1'
                 >
-                    <span className='text-center'>Dependent variable:</span>
+                    <span className='text-center'>Dependent variable: </span>
                     <span className='p-1'>
                         <Input size={4} initValue={y} onC={yCB} />
                     </span>
@@ -133,7 +133,7 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
                     className='flex justify-center
 		    content-center items-center h-full p-1'
                 >
-                    <span className='text-center'>Independent variable</span>
+                    <span className='text-center'>Independent variable: </span>
                     <span className='p-1'>
                         <Input size={4} initValue={x} onC={xCB} />
                     </span>

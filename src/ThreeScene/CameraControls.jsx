@@ -16,7 +16,7 @@ export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
         if (!threeCBs) return;
 
         const center = cameraData.center;
-        console.log('cameraData.center = ', cameraData.center);
+        //console.log('cameraData.center = ', cameraData.center);
 
         threeCBs.setCameraPosition([center[0], center[1], 1]);
         threeCBs.changeControls({ target: new THREE.Vector3(...center) });
@@ -29,7 +29,7 @@ export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
         const en = cameraData.rotationEnabled;
 
         if (en) {
-            console.log('rotationEnabledCB called with en = ', en);
+            //console.log('rotationEnabledCB called with en = ', en);
             threeCBs.changeControls({ enableRotate: en });
             threeCBs.render();
         }

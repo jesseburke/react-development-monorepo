@@ -95,26 +95,24 @@ export default function OrthoCameraData(args: OrthoCameraData = {}) {
 
         return (
             <div
-                className='flex flex-col justify-center
-		items-center h-full p-1'
+                className='flex flex-col justify-center content-center
+		items-center w-full h-full p-1'
             >
-                <label>
+                <div className='h-full py-2'>
                     <Checkbox checked={rotationEnabled} onChange={rotationEnabledCB} />
-                    <span className='p-1 text-center'>Allow 3d camera movement</span>
-                </label>
-                <div>
-                    <div className='p-2'>
-                        <span className='text-center'>View center: </span>
-                        <Input initValue={center[0]} size={2} onC={setCenterX} />
-                        <span> , </span>
-                        <Input initValue={center[1]} size={2} onC={setCenterY} />
-                    </div>
-                    <div>
-                        <span className='text-center'>View height:</span>
-                        <span className='p-1'>
-                            <Input size={4} initValue={viewHeight} onC={viewHeightCB} />
-                        </span>
-                    </div>
+                    <span className='text-center'>Allow 3d camera movement</span>
+                </div>
+                <div className='py-2'>
+                    <span className='text-center'>View center: </span>
+                    <Input initValue={center[0]} size={2} onC={setCenterX} />
+                    <span> , </span>
+                    <Input initValue={center[1]} size={2} onC={setCenterY} />
+                </div>
+                <div className='py-2'>
+                    <span className='text-center'>View height:</span>
+                    <span className='p-1'>
+                        <Input size={4} initValue={viewHeight} onC={viewHeightCB} />
+                    </span>
                 </div>
             </div>
         );

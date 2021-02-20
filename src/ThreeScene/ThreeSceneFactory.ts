@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 //import {OrbitControls} from 'three-orbitcontrols';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
 //import { GeometryUtils } from 'three/examples/jsm/utils/GeometryUtils.js';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 //import GLTFExporter from 'three-gltf-exporter';
@@ -8,7 +9,7 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { css } from 'emotion';
 
 import { pubsub } from '../utils/BaseUtils';
-import { CameraData, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
+import { OrthoCameraData, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
 
 export interface MouseButtons {
     LEFT: THREE.MOUSE;
@@ -33,7 +34,7 @@ export interface ControlsData {
 export interface ThreeFactoryProps {
     drawCanvas: HTMLCanvasElement;
     labelContainerDiv: HTMLDivElement;
-    initCameraData: CameraData;
+    initCameraData: OrthoCameraData;
     controlsData: ControlsData;
     clearColor: string;
     alpha: boolean;
@@ -133,6 +134,9 @@ export default function ThreeSceneFactory({
         camera.up = new THREE.Vector3(...fixedCameraData.up);
     }
 
+    const helper = new THREE.CameraHelper(camera);
+    scene.add(helper);
+
     const color = 0xffffff;
     let intensity = 0.5;
     const light = new THREE.DirectionalLight(color, intensity);
@@ -229,6 +233,8 @@ export default function ThreeSceneFactory({
         controls.target = new THREE.Vector3(...initCameraData.center);
         controls.update();
     }
+
+    controlsPubSub.subscribe(render);
 
     const bounds = { xMin: -1000, xMax: 1000, yMax: 1000, yMin: -1000 };
 
