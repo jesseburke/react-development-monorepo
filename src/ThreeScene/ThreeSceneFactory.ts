@@ -47,16 +47,12 @@ export default function ThreeSceneFactory({
     fixedCameraData,
     clearColor = '#f0f0f0',
     controlsData,
-    alpha = true
+    alpha = true,
+    cameraDebug = false,
+    debugDiv1 = null,
+    debugDiv2 = null
 }: ThreeFactoryProps) {
-    let scene: THREE.Scene | null = null;
-
-    let camera: THREE.PerspectiveCamera | THREE.OrthographicCamera | null = null;
-    let renderer: THREE.WebGLRenderer | null = null;
     let raycaster = new THREE.Raycaster();
-    let controls: OrbitControls | null = null;
-
-    let coordPlaneMesh: THREE.Mesh | null = null;
 
     let threeLabelData: LabelProps | null = [];
     let htmlLabelData: (LabelProps | null)[] = [];
@@ -66,9 +62,9 @@ export default function ThreeSceneFactory({
     let aspectRatio: number | null = null;
     let viewHeight: number | null = null;
 
-    const controlsPubSub = pubsub();
-
-    controlsPubSub.subscribe(drawLabels);
+    //----------------------------------------
+    //
+    // set up renderer
 
     if (!drawCanvas) {
         console.log('useThree was passed a null drawCanvas, and so returned null');
@@ -78,7 +74,7 @@ export default function ThreeSceneFactory({
     let width = drawCanvas.clientWidth;
     let height = drawCanvas.clientHeight;
 
-    renderer = new THREE.WebGLRenderer({
+    let renderer = new THREE.WebGLRenderer({
         canvas: drawCanvas,
         antialias: true,
         alpha
@@ -87,15 +83,26 @@ export default function ThreeSceneFactory({
     renderer.setClearColor(clearColor);
     renderer.setSize(width, height, false);
 
-    scene = new THREE.Scene();
+    //----------------------------------------
+    //
+    // set up scene and camera
+
+    let scene = new THREE.Scene();
 
     const fov = fixedCameraData.fov || 95;
     const aspect = width! / height!; // the canvas default
     const near = fixedCameraData.near || 0.01;
     const far = fixedCameraData.far || 5000;
 
+    let camera: THREE.Camera | null = null;
+    let camera2: THREE.Camera | null = null;
+
     if (!fixedCameraData.orthographic) {
         camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+
+        if (cameraDebug) {
+            camera2 = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        }
     } else {
         isOrthoCamera = true;
 
@@ -122,20 +129,47 @@ export default function ThreeSceneFactory({
             near,
             far
         );
-    }
 
-    if (initCameraData.center) {
-        camera.translateX(initCameraData.center[0]);
-        camera.translateY(initCameraData.center[1]);
-        camera.translateZ(10000);
+        camera.zoom = 0.2;
+        camera.position.set(0, 10, 20);
+        camera.updateProjectionMatrix();
+
+        if (cameraDebug) {
+            camera2 = new THREE.PerspectiveCamera(
+                60, // fov
+                2, // aspect
+                0.1, // near
+                500 // far
+            );
+
+            camera2.position.set(0, 0, 10);
+            camera2.lookAt(0, 5, 0);
+            // camera2 = new THREE.OrthographicCamera(
+            //         (viewHeight * aspectRatio) / -2,
+            //         (viewHeight * aspectRatio) / 2,
+            //         viewHeight / 2,
+            //         viewHeight / -2,
+            //         near,
+            //         far
+            //     );
+        }
+
+        // if (initCameraData.center) {
+        //     console.log('initCameraData.center is ', initCameraData.center);
+        //     //camera.translateX(initCameraData.center[0]);
+        //     //camera.translateY(initCameraData.center[1]);
+        //     //camera.translateZ(100);
+        //     camera.position.set(0, 0, 100);
+        // }
     }
 
     if (fixedCameraData.up) {
         camera.up = new THREE.Vector3(...fixedCameraData.up);
     }
 
-    const helper = new THREE.CameraHelper(camera);
-    scene.add(helper);
+    //----------------------------------------
+    //
+    // set up lights
 
     const color = 0xffffff;
     let intensity = 0.5;
@@ -153,14 +187,123 @@ export default function ThreeSceneFactory({
     const light2 = new THREE.AmbientLight(color, intensity);
     scene.add(light2);
 
+    //----------------------------------------
+    //
+    // set up controls
+
+    let controls = new OrbitControls(camera, cameraDebug ? debugDiv1 : drawCanvas);
+
+    // adds all properties of controlsData to controls
+    controls = Object.assign(controls, controlsData);
+    controls.update();
+
+    controls.addEventListener('change', () => {
+        let v = new THREE.Vector3(0, 0, 0);
+        camera!.getWorldPosition(v);
+        controlsPubSub.publish(v.toArray());
+        render();
+    });
+
+    if (initCameraData.center) {
+        controls.target = new THREE.Vector3(...initCameraData.center);
+        controls.update();
+    }
+
+    const controlsPubSub = pubsub();
+    controlsPubSub.subscribe(drawLabels);
+
+    let controls2;
+
+    if (cameraDebug) {
+        controls2 = new OrbitControls(camera2, debugDiv2);
+
+        controls2.addEventListener('change', () => {
+            render();
+        });
+    }
+
+    //----------------------------------------
+    //
+    // define render function, resize handler, and other basic
+    // functions
+
+    let cameraHelper = new THREE.CameraHelper(camera);
+
+    if (cameraDebug) {
+        controlsPubSub.subscribe(() => cameraHelper.update());
+        scene.add(cameraHelper);
+    }
+
     const render = () => {
         if (!renderer || !scene || !camera) {
             console.log('render was called in useThree with null renderer, scene or camera');
             return;
         }
 
-        renderer.render(scene, camera);
+        if (!cameraDebug) {
+            renderer.render(scene, camera);
+            return;
+        }
+
+        // following is from
+        // https://threejsfundamentals.org/threejs/lessons/threejs-cameras.html
+
+        // turn on the scissor
+        renderer.setScissorTest(true);
+
+        // render the original view
+        {
+            const aspect = setScissorForElement(debugDiv1, renderer, drawCanvas);
+
+            // adjust the camera for this aspect
+            camera.left = -aspect;
+            camera.right = aspect;
+            camera.updateProjectionMatrix();
+            cameraHelper.update();
+
+            // don't draw the camera helper in the original view
+            cameraHelper.visible = false;
+
+            // render
+            renderer.render(scene, camera);
+        }
+
+        // render from the 2nd camera
+        {
+            const aspect = setScissorForElement(debugDiv2, renderer, drawCanvas);
+
+            // adjust the camera for this aspect
+            camera2.aspect = aspect;
+            camera2.updateProjectionMatrix();
+
+            // draw the camera helper in the 2nd view
+            cameraHelper.visible = true;
+
+            renderer.render(scene, camera2);
+        }
     };
+
+    function setScissorForElement(elem, renderer, drawCanvas) {
+        const canvasRect = drawCanvas.getBoundingClientRect();
+        const elemRect = elem.getBoundingClientRect();
+
+        // compute a canvas relative rectangle
+        const right = Math.min(elemRect.right, canvasRect.right) - canvasRect.left;
+        const left = Math.max(0, elemRect.left - canvasRect.left);
+        const bottom = Math.min(elemRect.bottom, canvasRect.bottom) - canvasRect.top;
+        const top = Math.max(0, elemRect.top - canvasRect.top);
+
+        const width = Math.min(canvasRect.width, right - left);
+        const height = Math.min(canvasRect.height, bottom - top);
+
+        // setup the scissor to only render to that part of the canvas
+        const positiveYUpBottom = canvasRect.height - bottom;
+        renderer.setScissor(left, positiveYUpBottom, width, height);
+        renderer.setViewport(left, positiveYUpBottom, width, height);
+
+        // return the aspect
+        return width / height;
+    }
 
     const handleResize = () => {
         if (!drawCanvas) {
@@ -201,40 +344,72 @@ export default function ThreeSceneFactory({
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(drawCanvas, { box: 'content-box' });
 
+    function add(threeObj) {
+        if (!scene) return;
+
+        scene.add(threeObj);
+        render();
+    }
+
+    function remove(threeObj) {
+        if (!scene) return;
+
+        scene.remove(threeObj);
+        render();
+    }
+
+    function setCameraPosition(newPosition: ArrayPoint3) {
+        camera.position.set(...newPosition);
+        camera.updateProjectionMatrix();
+
+        drawLabels();
+        render();
+    }
+
+    function setCameraLookAt(newPos: ArrayPoint3) {
+        camera.lookAt(...newPos);
+
+        //console.log('camera has been positioned in threeScene.setcameraposition');
+
+        render();
+        camera.updateProjectionMatrix();
+
+        drawLabels();
+        render();
+        //console.log('threeScene.setcameraposition over');
+    }
+
     drawLabels();
     render();
 
-    // // resize observer effect
-    // useEffect(() => {
-    //     if (!scene || !drawCanvas) return;
+    //----------------------------------------
+    //
+    // getMouseCoords and screenToWorldCoords
 
-    //     const resizeObserver = new ResizeObserver(handleResize);
-    //     resizeObserver.observe(drawCanvas, { box: 'content-box' });
+    // this assumes that the canvas is the entire width of window, and
+    // that the botto of the canvas is the botto of the window
+    function getMouseCoords(e, mesh: THREE.Mesh) {
+        const xperc = e.clientX / drawCanvas.clientWidth;
 
-    //     return () => {
-    //         if (resizeObserver && drawCanvas) resizeObserver.unobserve(drawCanvas);
-    //     };
-    // }, []);
+        // following accounts for top of canvas being potentially
+        // different from top of window
+        //
+        // e.clientY is in terms of the entire window; we want to see
+        // how high the canvas is from the top of the window and subtract that.
+        // offsetParent gives the closest positioned ancestor element.
+        // in this case, the parent of the canvas is the container
+        // div, and this is contained in the main component, which is what we want
+        const yperc =
+            (e.clientY - drawCanvas.offsetParent.offsetParent.offsetTop) / drawCanvas.clientHeight;
 
-    controls = new OrbitControls(camera, drawCanvas);
+        // normalized device coordinates, both in [-1,1]
+        const ncoords = new THREE.Vector2(2 * xperc - 1, -2 * yperc + 1);
 
-    // adds all properties of controlsData to controls
-    controls = Object.assign(controls, controlsData);
-    controls.update();
+        raycaster.setFromCamera(ncoords, camera);
 
-    controls.addEventListener('change', () => {
-        let v = new THREE.Vector3(0, 0, 0);
-        camera!.getWorldPosition(v);
-        controlsPubSub.publish(v.toArray());
-        render();
-    });
-
-    if (initCameraData.center) {
-        controls.target = new THREE.Vector3(...initCameraData.center);
-        controls.update();
+        const array = raycaster.intersectObject(mesh);
+        return array[0].point;
     }
-
-    controlsPubSub.subscribe(render);
 
     const bounds = { xMin: -1000, xMax: 1000, yMax: 1000, yMin: -1000 };
 
@@ -246,9 +421,30 @@ export default function ThreeSceneFactory({
     mat.transparent = true;
     mat.opacity = 0.0;
     mat.side = THREE.DoubleSide;
-    //planeGeom.rotateX(Math.PI);
 
-    coordPlaneMesh = new THREE.Mesh(planeGeom, mat);
+    const coordPlaneMesh = new THREE.Mesh(planeGeom, mat);
+
+    // following calculates where ray into the screen at (screenX, screenY)
+    // intersects mesh
+
+    // is it a bug that coordPlaneMesh is never added to the scene?
+    function screenToWorldCoords(screenX: number, screenY: number) {
+        if (!coordPlaneMesh) return;
+
+        //const xperc = screenX/ drawCanvas.clientWidth;
+        // following accounts for fact that canvas might not be entire window
+        //const yperc = (screenY - drawCanvas.offsetParent.offsetTop)/ drawCanvas.clientHeight;
+        //const ncoords = [xperc*2 - 1, yperc*2 - 1];
+
+        raycaster.setFromCamera(new THREE.Vector2(screenX, screenY), camera);
+
+        const array = raycaster.intersectObject(coordPlaneMesh);
+        return array[0].point;
+    }
+
+    //----------------------------------------
+    //
+    // set up labels
 
     // labelObj = {pos, text, style}
     // pos = array of three numbers
@@ -430,41 +626,6 @@ export default function ThreeSceneFactory({
         return [x, y];
     }
 
-    function add(threeObj) {
-        if (!scene) return;
-
-        scene.add(threeObj);
-        render();
-    }
-
-    function remove(threeObj) {
-        if (!scene) return;
-
-        scene.remove(threeObj);
-        render();
-    }
-
-    function setCameraPosition(newPosition: ArrayPoint3) {
-        camera.position.set(...newPosition);
-        camera.updateProjectionMatrix();
-
-        drawLabels();
-        render();
-    }
-
-    function setCameraLookAt(newPos: ArrayPoint3) {
-        camera.lookAt(...newPos);
-
-        //console.log('camera has been positioned in threeScene.setcameraposition');
-
-        render();
-        camera.updateProjectionMatrix();
-
-        drawLabels();
-        render();
-        //console.log('threeScene.setcameraposition over');
-    }
-
     function exportGLTF(onCompleted, options) {
         // const exporter = new GLTFExporter();
         // exporter.parse(scene, onCompleted, options);
@@ -535,73 +696,38 @@ export default function ThreeSceneFactory({
         return str.replace(/\//g, '-').replace(/:/g, '.');
     }
 
-    function getCamera() {
-        return camera;
+    // dragCB is called with one argument, event, and event.object is the mesh that is being dragged
+    function addDrag({ mesh, dragCB = null, dragstartCB = null, dragendCB = null }) {
+        const dragControls = new DragControls([mesh], camera, renderer.domElement);
+        //dragControls.addEventListener('drag', render);
+
+        dragControls.addEventListener('dragstart', () => (controls.enabled = false));
+        dragControls.addEventListener('dragend', () => (controls.enabled = true));
+
+        if (dragstartCB) {
+            controls.addEventListener('dragstart', dragstartCB);
+        }
+
+        if (dragCB) {
+            controls.addEventListener('drag', dragCB);
+        }
+
+        if (dragendCB) {
+            controls.addEventListener('dragend', dragendCB);
+        }
+
+        return dragControls.dispose;
     }
 
-    // this assumes that the canvas is the entire width of window, and
-    // that the botto of the canvas is the botto of the window
-    function getMouseCoords(e, mesh: THREE.Mesh) {
-        const xperc = e.clientX / drawCanvas.clientWidth;
-
-        // following accounts for top of canvas being potentially
-        // different from top of window
-        //
-        // e.clientY is in terms of the entire window; we want to see
-        // how high the canvas is from the top of the window and subtract that.
-        // offsetParent gives the closest positioned ancestor element.
-        // in this case, the parent of the canvas is the container
-        // div, and this is contained in the main component, which is what we want
-        const yperc =
-            (e.clientY - drawCanvas.offsetParent.offsetParent.offsetTop) / drawCanvas.clientHeight;
-
-        // normalized device coordinates, both in [-1,1]
-        const ncoords = new THREE.Vector2(2 * xperc - 1, -2 * yperc + 1);
-
-        raycaster.setFromCamera(ncoords, camera);
-
-        const array = raycaster.intersectObject(mesh);
-        return array[0].point;
-    }
-
-    // calculates where ray into the screen at (screenX, screenY) intersects mesh
-    function screenToWorldCoords(screenX: number, screenY: number) {
-        if (!coordPlaneMesh) return;
-
-        //const xperc = screenX/ drawCanvas.clientWidth;
-        // following accounts for fact that canvas might not be entire window
-        //const yperc = (screenY - drawCanvas.offsetParent.offsetTop)/ drawCanvas.clientHeight;
-        //const ncoords = [xperc*2 - 1, yperc*2 - 1];
-
-        raycaster.setFromCamera(new THREE.Vector2(screenX, screenY), camera);
-
-        const array = raycaster.intersectObject(coordPlaneMesh);
-        return array[0].point;
-    }
-
-    function resetControls() {
-        controls.reset();
-        controls.update();
-
-        // should also reset camera?
-    }
-
-    function changeControls(newControlsData: ControlsData) {
-        controls = Object.assign(controls, newControlsData);
-
-        controls.update();
-    }
-
-    // dragendCB is called with the object that is being dragged as first argument
-    function addDragControls({
+    function addDragToMeshArray({
         meshArray,
         dragstartCB = null,
         dragCB = null,
         dragDelay,
         dragendCB = null
     }) {
-        const controls = new DragControls(meshArray, camera, renderer.domElement);
-        controls.addEventListener('drag', render);
+        const dragControls = new DragControls(meshArray, camera, renderer.domElement);
+        dragControls.addEventListener('drag', render);
 
         const idArray = meshArray.map((mesh) => mesh.id);
 
@@ -620,34 +746,33 @@ export default function ThreeSceneFactory({
         }
 
         if (dragCB) {
-            controls.addEventListener('dragstart', modifyCB(dragstartCB));
+            dragControls.addEventListener('dragstart', modifyCB(dragstartCB));
         }
 
         if (dragCB) {
-            controls.addEventListener('drag', modifyCB(dragCB));
+            dragControls.addEventListener('drag', modifyCB(dragCB));
         }
 
         if (dragendCB) {
-            controls.addEventListener('dragend', modifyCB(dragendCB));
-        }
-
-        return controls.dispose;
-    }
-
-    // dragCB is called with one argument, event, and event.object is the mesh that is being dragged
-    function addDrag({ mesh, dragCB = null, dragstartCB = null, dragendCB = null }) {
-        const dragControls = new DragControls([mesh], camera, renderer.domElement);
-        //dragControls.addEventListener('drag', render);
-
-        dragControls.addEventListener('dragstart', () => (controls.enabled = false));
-        dragControls.addEventListener('dragend', () => (controls.enabled = true));
-
-        if (dragCB) {
-            dragControls.addEventListener('drag', dragCB);
+            dragControls.addEventListener('dragend', modifyCB(dragendCB));
         }
 
         return dragControls.dispose;
     }
+
+    const getCamera = () => camera;
+
+    const resetControls = () => {
+        controls.reset();
+        controls.update();
+
+        // should also reset camera?
+    };
+
+    const changeControls = (newControlsData: ControlsData) => {
+        controls = Object.assign(controls, newControlsData);
+        controls.update();
+    };
 
     const getControlsTarget = () => controls.target;
 
@@ -688,7 +813,7 @@ export default function ThreeSceneFactory({
         changeControls,
         getControlsTarget,
         controlsPubSub,
-        addDragControls,
+        addDragToMeshArray,
         addDrag,
         getCanvas,
         cleanUp

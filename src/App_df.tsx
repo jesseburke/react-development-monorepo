@@ -47,8 +47,8 @@ const viewHeight = 8;
 
 const fixedCameraData = {
     up: [0, 1, 0],
-    near: 0.01,
-    far: 1000,
+    near: 5,
+    far: 100,
     aspectRatio,
     orthographic: true
 };
@@ -92,6 +92,7 @@ export default function App() {
                         initCameraData={initCameraData}
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
+                        cameraDebug={true}
                     >
                         <Axes2D
                             tickLabelDistance={1}

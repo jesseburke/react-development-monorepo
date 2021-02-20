@@ -39,6 +39,7 @@ const ThreeScene: FunctionComponent = (
         aspectRatio = 1,
         showPhotoBtn = false,
         photoBtnClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
+        cameraDebug = false,
         children
     },
     ref
@@ -52,23 +53,50 @@ const ThreeScene: FunctionComponent = (
     //
     // effect to put threeScene in state
 
+    const debugDiv1Ref = useRef<HTMLDivElement>(null);
+    const debugDiv2Ref = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         if (!threeCanvasRef.current) {
             setThreeSceneCBs(null);
             return;
         }
 
-        setThreeSceneCBs(
-            ThreeSceneFactory({
-                drawCanvas: threeCanvasRef.current,
-                labelContainerDiv: labelContainerRef.current,
-                initCameraData,
-                fixedCameraData,
-                controlsData,
-                clearColor
-            })
-        );
-    }, [threeCanvasRef, labelContainerRef, controlsData, clearColor]);
+        if (cameraDebug) {
+            setThreeSceneCBs(
+                ThreeSceneFactory({
+                    drawCanvas: threeCanvasRef.current,
+                    labelContainerDiv: labelContainerRef.current,
+                    initCameraData,
+                    fixedCameraData,
+                    controlsData,
+                    clearColor,
+                    cameraDebug,
+                    debugDiv1: debugDiv1Ref.current,
+                    debugDiv2: debugDiv2Ref.current
+                })
+            );
+        } else {
+            setThreeSceneCBs(
+                ThreeSceneFactory({
+                    drawCanvas: threeCanvasRef.current,
+                    labelContainerDiv: labelContainerRef.current,
+                    initCameraData,
+                    fixedCameraData,
+                    controlsData,
+                    clearColor
+                })
+            );
+        }
+    }, [
+        threeCanvasRef,
+        labelContainerRef,
+        controlsData,
+        clearColor,
+        cameraDebug,
+        debugDiv1Ref,
+        debugDiv2Ref
+    ]);
 
     //------------------------------------------------------------------------
     //
@@ -83,6 +111,21 @@ const ThreeScene: FunctionComponent = (
     const heightPxs = useRef(defaultHeightPxs);
     const widthPxs = useRef(heightPxs.current * aspectRatio);
 
+    const cameraDebugComp = useState(
+        <div className='absolute top-0 left-0 h-full w-full outline-none flex'>
+            <div
+                className='h-full w-full'
+                tabIndex='1'
+                ref={(elt) => (debugDiv1Ref.current = elt)}
+            ></div>
+            <div
+                className='h-full w-full'
+                tabIndex='2'
+                ref={(elt) => (debugDiv2Ref.current = elt)}
+            ></div>
+        </div>
+    )[0];
+
     return (
         <div
             className='absolute h-full w-full bg-gray
@@ -94,6 +137,7 @@ const ThreeScene: FunctionComponent = (
                 height={heightPxs.current}
                 ref={(elt) => (threeCanvasRef.current = elt)}
             />
+            {cameraDebug ? cameraDebugComp : null}
             <React.Fragment>
                 {React.Children.map(children, (el) =>
                     React.cloneElement(el, { threeCBs: threeSceneCBs })
