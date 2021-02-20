@@ -130,10 +130,6 @@ export default function ThreeSceneFactory({
             far
         );
 
-        camera.zoom = 0.2;
-        camera.position.set(0, 10, 20);
-        camera.updateProjectionMatrix();
-
         if (cameraDebug) {
             camera2 = new THREE.PerspectiveCamera(
                 60, // fov
@@ -154,13 +150,11 @@ export default function ThreeSceneFactory({
             //     );
         }
 
-        // if (initCameraData.center) {
-        //     console.log('initCameraData.center is ', initCameraData.center);
-        //     //camera.translateX(initCameraData.center[0]);
-        //     //camera.translateY(initCameraData.center[1]);
-        //     //camera.translateZ(100);
-        //     camera.position.set(0, 0, 100);
-        // }
+        if (initCameraData.center) {
+            camera.translateX(initCameraData.center[0]);
+            camera.translateY(initCameraData.center[1]);
+            camera.translateZ(initCameraData.center[2]);
+        }
     }
 
     if (fixedCameraData.up) {
@@ -197,29 +191,18 @@ export default function ThreeSceneFactory({
     controls = Object.assign(controls, controlsData);
     controls.update();
 
-    controls.addEventListener('change', () => {
-        let v = new THREE.Vector3(0, 0, 0);
-        camera!.getWorldPosition(v);
-        controlsPubSub.publish(v.toArray());
-        render();
-    });
+    const controlsPubSub = pubsub();
+    controlsPubSub.subscribe(drawLabels);
 
     if (initCameraData.center) {
         controls.target = new THREE.Vector3(...initCameraData.center);
         controls.update();
     }
 
-    const controlsPubSub = pubsub();
-    controlsPubSub.subscribe(drawLabels);
-
     let controls2;
 
     if (cameraDebug) {
         controls2 = new OrbitControls(camera2, debugDiv2);
-
-        controls2.addEventListener('change', () => {
-            render();
-        });
     }
 
     //----------------------------------------
@@ -304,6 +287,19 @@ export default function ThreeSceneFactory({
         // return the aspect
         return width / height;
     }
+
+    if (controls2) {
+        controls2.addEventListener('change', () => {
+            render();
+        });
+    }
+
+    controls.addEventListener('change', () => {
+        let v = new THREE.Vector3(0, 0, 0);
+        camera!.getWorldPosition(v);
+        controlsPubSub.publish(v.toArray());
+        render();
+    });
 
     const handleResize = () => {
         if (!drawCanvas) {

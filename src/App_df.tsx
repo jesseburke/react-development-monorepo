@@ -32,8 +32,8 @@ import {
 } from './atoms';
 
 const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.DOLLY },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN, THREE: THREE.MOUSE.ROTATE },
+    mouseButtons: { LEFT: THREE.MOUSE.PAN },
+    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN },
     enableRotate: false,
     enablePan: true,
     enabled: true,
@@ -47,16 +47,16 @@ const viewHeight = 8;
 
 const fixedCameraData = {
     up: [0, 1, 0],
-    near: 5,
+    near: 0.1,
     far: 100,
     aspectRatio,
     orthographic: true
 };
 
 const initCameraData = {
-    center: [0, 0, 0],
+    center: [0, 0, 1],
     viewHeight,
-    rotationEnabled: true
+    rotationEnabled: false
 };
 
 const btnClassStr =
@@ -92,7 +92,7 @@ export default function App() {
                         initCameraData={initCameraData}
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
-                        cameraDebug={true}
+                        cameraDebug={false}
                     >
                         <Axes2D
                             tickLabelDistance={1}
@@ -164,7 +164,6 @@ function OptionsModal() {
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
-                        <Tab {...tab}>Camera</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                         <Tab {...tab}>Variable labels</Tab>
                     </TabList>
@@ -176,9 +175,6 @@ function OptionsModal() {
                     </TabPanel>
                     <TabPanel {...tab}>
                         <boundsAtom.component />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <orthoCameraDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <solutionCurveDataAtom.component />
