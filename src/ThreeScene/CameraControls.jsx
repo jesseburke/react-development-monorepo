@@ -18,8 +18,8 @@ export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
         const center = cameraData.center;
         //console.log('cameraData.center = ', cameraData.center);
 
-        threeCBs.setCameraPosition([center[0], center[1], 1]);
-        threeCBs.changeControls({ target: new THREE.Vector3(...center) });
+        //threeCBs.setCameraPosition([center[0], center[1], 1]);
+        //threeCBs.changeControls({ target: new THREE.Vector3(...center) });
         threeCBs.render();
     }, [threeCBs, cameraData.center]);
 

@@ -38,7 +38,7 @@ const initControlsData = {
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    zoomSpeed: 2,
+    zoomSpeed: 1,
     screenSpacePanning: true
 };
 
@@ -54,7 +54,7 @@ const fixedCameraData = {
 };
 
 const initCameraData = {
-    center: [0, 0, 1],
+    center: [0, 0],
     viewHeight,
     rotationEnabled: false
 };
@@ -68,7 +68,7 @@ const resetBtnClassStr = btnClassStr + ' bottom-24';
 
 /* const photoBtnClassStr = btnClassStr + ' bottom-8'; */
 
-const cameraBtnClassStr = btnClassStr + ' bottom-8';
+const photoButtonClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
 
@@ -93,6 +93,8 @@ export default function App() {
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
                         cameraDebug={false}
+                        photoButton={true}
+                        photoButtonClassStr={photoButtonClassStr}
                     >
                         <Axes2D
                             tickLabelDistance={1}
@@ -115,7 +117,7 @@ export default function App() {
 
                         <CameraControls
                             cameraDataAtom={orthoCameraDataAtom}
-                            classStr={cameraBtnClassStr}
+                            classStr={photoButtonClassStr}
                         />
                     </ThreeSceneComp>
                     <DataComp
@@ -164,6 +166,7 @@ function OptionsModal() {
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Camera Options</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                         <Tab {...tab}>Variable labels</Tab>
                     </TabList>
@@ -175,6 +178,9 @@ function OptionsModal() {
                     </TabPanel>
                     <TabPanel {...tab}>
                         <boundsAtom.component />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <orthoCameraDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <solutionCurveDataAtom.component />

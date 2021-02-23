@@ -70,6 +70,7 @@ export default React.memo(function DraggableSphere({
 
         meshState.position.x = position.x;
         meshState.position.y = position.y;
+        meshState.position.z = 0;
     }, [position, meshState]);
 
     //------------------------------------------------------------------------
