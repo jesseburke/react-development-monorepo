@@ -16,34 +16,37 @@ export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
         if (!threeCBs) return;
 
         const center = cameraData.center;
-        //console.log('cameraData.center = ', cameraData.center);
+        //console.log('cameraData.center = ', center);
 
-        //threeCBs.setCameraPosition([center[0], center[1], 1]);
-        //threeCBs.changeControls({ target: new THREE.Vector3(...center) });
-        threeCBs.render();
+        threeCBs.changeControls({ target: new THREE.Vector3(...center) });
     }, [threeCBs, cameraData.center]);
 
     useEffect(() => {
         if (!threeCBs) return;
 
-        const en = cameraData.rotationEnabled;
+        const zoom = cameraData.zoom;
+        //console.log('cameraData.zoom = ', zoom);
 
-        if (en) {
-            //console.log('rotationEnabledCB called with en = ', en);
-            threeCBs.changeControls({ enableRotate: en });
-            threeCBs.render();
-        }
-
-        // TO ADD!!!!!
-        // need to figure out to do when this is un-enabled
-    }, [threeCBs, cameraData.rotationEnabled]);
+        threeCBs.setCameraZoom(zoom);
+    }, [threeCBs, cameraData.zoom]);
 
     useEffect(() => {
         if (!threeCBs) return;
 
-        // need to use aspect ratio to set left, right, top and
-        // bottom of the camera
-    }, [threeCBs, cameraData.viewHeight]);
+        const position = cameraData.position;
+        //console.log('cameraData.zoom = ', zoom);
+
+        threeCBs.setCameraPosition(position);
+    }, [threeCBs, cameraData.position]);
+
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        threeCBs.controlsPubSub.subscribe((newData) => {
+            //console.log('subscribe funtion called with newData = ', newData);
+            setCameraData(newData);
+        });
+    }, [threeCBs]);
 
     return null;
 }

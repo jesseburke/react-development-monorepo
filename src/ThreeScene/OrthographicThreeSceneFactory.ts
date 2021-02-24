@@ -9,7 +9,7 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import LabelMaker from './LabelMaker';
 
 import { pubsub } from '../utils/BaseUtils';
-import { OrthoCameraData, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
+import { LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
 
 export interface MouseButtons {
     LEFT: THREE.MOUSE;
@@ -34,7 +34,6 @@ export interface ControlsData {
 export interface ThreeFactoryProps {
     drawCanvas: HTMLCanvasElement;
     labelContainerDiv: HTMLDivElement;
-    initCameraData: OrthoCameraData;
     controlsData: ControlsData;
     clearColor: string;
     alpha: boolean;
@@ -43,7 +42,6 @@ export interface ThreeFactoryProps {
 export default function ThreeSceneFactory({
     drawCanvas,
     labelContainerDiv,
-    initCameraData,
     fixedCameraData,
     clearColor = '#f0f0f0',
     controlsData,
@@ -95,6 +93,8 @@ export default function ThreeSceneFactory({
     let camera: THREE.Camera | null = null;
     let cameraForDebug: THREE.Camera | null = null;
 
+    const viewHeight = 1; //initCameraData.viewHeight!;
+
     if (!fixedCameraData.orthographic) {
         camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
@@ -111,12 +111,10 @@ export default function ThreeSceneFactory({
             return;
         }
 
-        if (!initCameraData.viewHeight) {
-            console.log('need to have non-null viewHeight in cameraData for orthographic camera');
-            return;
-        }
-
-        const viewHeight = initCameraData.viewHeight!;
+        // if (!initCameraData.viewHeight) {
+        //     console.log('need to have non-null viewHeight in cameraData for orthographic camera');
+        //     return;
+        // }
 
         camera = new THREE.OrthographicCamera(
             (viewHeight * aspectRatio) / -2,
@@ -126,6 +124,10 @@ export default function ThreeSceneFactory({
             near,
             far
         );
+
+        // convention
+        camera.translateZ(50);
+        camera.zoom = 0.2;
 
         if (cameraDebug) {
             cameraForDebug = new THREE.PerspectiveCamera(
@@ -137,13 +139,6 @@ export default function ThreeSceneFactory({
 
             cameraForDebug.position.set(0, 0, 10);
             cameraForDebug.lookAt(0, 5, 0);
-        }
-
-        if (initCameraData.center) {
-            camera.translateX(initCameraData.center[0]);
-            camera.translateY(initCameraData.center[1]);
-            // convention
-            camera.translateZ(50);
         }
     }
 
@@ -181,10 +176,10 @@ export default function ThreeSceneFactory({
     controls = Object.assign(controls, controlsData);
     controls.update();
 
-    if (initCameraData.center) {
-        controls.target = new THREE.Vector3(...initCameraData.center, 0);
-        controls.update();
-    }
+    // if (initCameraData.center) {
+    //     controls.target = new THREE.Vector3(...initCameraData.center, 0);
+    //     controls.update();
+    // }
 
     let controls2;
 
@@ -342,14 +337,13 @@ export default function ThreeSceneFactory({
             controls.update();
         } else {
             renderer.setSize(width, height, false);
-            camera.left = (initCameraData.viewHeight * aspectRatio) / -2;
-            camera.right = (initCameraData.viewHeight * aspectRatio) / 2;
-            camera.top = initCameraData.viewHeight / 2;
-            camera.bottom = initCameraData.viewHeight / -2;
+            camera.left = (viewHeight * aspectRatio) / -2;
+            camera.right = (viewHeight * aspectRatio) / 2;
+            camera.top = viewHeight / 2;
+            camera.bottom = viewHeight / -2;
             controls.update();
         }
         camera.updateProjectionMatrix();
-        console.log('handleResize called; renderer.getPixelRatio() =', renderer.getPixelRatio());
 
         render();
         drawLabels();
@@ -469,8 +463,13 @@ export default function ThreeSceneFactory({
     controls.addEventListener('change', () => {
         let v = new THREE.Vector3(0, 0, 0);
         camera!.getWorldPosition(v);
-        controlsPubSub.publish(v.toArray());
+        controlsPubSub.publish({
+            position: v.toArray(),
+            zoom: camera.zoom,
+            center: controls.target.toArray()
+        });
         render();
+        drawLabels();
     });
 
     if (cameraDebug) {
@@ -539,6 +538,15 @@ export default function ThreeSceneFactory({
 
     const getCamera = () => camera;
 
+    const setCameraZoom = (newZoom) => {
+        camera.zoom = newZoom;
+        camera.updateProjectionMatrix();
+
+        controls.update();
+        render();
+        drawLabels;
+    };
+
     const resetControls = () => {
         controls.reset();
         controls.update();
@@ -580,6 +588,7 @@ export default function ThreeSceneFactory({
         drawLabels,
         setCameraPosition,
         setCameraLookAt,
+        setCameraZoom,
         getCamera,
         exportGLTF,
         downloadGLTF,

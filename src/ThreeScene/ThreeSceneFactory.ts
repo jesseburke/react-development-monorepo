@@ -295,9 +295,14 @@ export default function ThreeSceneFactory({
     }
 
     controls.addEventListener('change', () => {
-        let v = new THREE.Vector3(0, 0, 0);
+        const v = new THREE.Vector3(0, 0, 0);
+        const f = new THREE.Vector3(controls.target.x, controls.target.y, controls.target.z);
         camera!.getWorldPosition(v);
-        controlsPubSub.publish(v.toArray());
+        controlsPubSub.publish({
+            position: v.toArray(),
+            zoom: camera.zoom,
+            focus: v.toArray()
+        });
         render();
     });
 

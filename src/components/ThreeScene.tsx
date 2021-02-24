@@ -10,7 +10,6 @@ import { ArrayPoint3 } from '../my-types';
 
 export interface ThreeSceneProps {
     controlsCB: (pt: ArrayPoint3) => null;
-    initCameraData: null;
     fixedCameraData: null;
     controlsData: null;
     clearColor: null;
@@ -22,7 +21,6 @@ export interface ThreeSceneProps {
 
 const ThreeScene: FunctionComponent = ({
     controlsCB = null,
-    initCameraData = { position: [10, 10, 10], up: [0, 0, 1], fov: 75 },
     fixedCameraData,
     controlsData = {
         mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
@@ -92,7 +90,6 @@ const ThreeScene: FunctionComponent = ({
                 ThreeSceneFactory({
                     drawCanvas: threeCanvasRef.current,
                     labelContainerDiv: labelContainerRef.current,
-                    initCameraData,
                     fixedCameraData,
                     controlsData,
                     clearColor,
@@ -108,7 +105,6 @@ const ThreeScene: FunctionComponent = ({
                 ThreeSceneFactory({
                     drawCanvas: threeCanvasRef.current,
                     labelContainerDiv: labelContainerRef.current,
-                    initCameraData,
                     fixedCameraData,
                     controlsData,
                     height: initialHeightPxs,

@@ -4,36 +4,44 @@ import { atom, useAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
-import { Checkbox } from 'reakit/Checkbox';
-
 import Input from '../components/Input.jsx';
-import { diffObjects, isEmpty } from '../utils/BaseUtils';
+import { diffObjects, isEmpty, round } from '../utils/BaseUtils';
 import { OrthoCameraData } from '../my-types';
 import '../styles.css';
 
 const defaultInitValues: OrthoCameraData = {
     center: [0, 0, 0],
-    viewHeight: 10,
-    rotationEnabled: false
+    zoom: 0.2,
+    position: [0, 0, 50]
 };
 
 export default function OrthoCameraData(args: OrthoCameraData = {}) {
     const initValue = { ...defaultInitValues, ...args };
 
     const cameraDataAtom = atom(initValue);
+    const displayDataAtom = atom(initValue);
+    const writerAtom = atom(null, (get, set, update) => {
+        const oldVal = get(displayDataAtom);
+        const newVal = { ...oldVal, ...update };
+
+        set(cameraDataAtom, newVal);
+        set(displayDataAtom, newVal);
+    });
+
+    const externalAtom = atom(
+        (get) => get(cameraDataAtom),
+        (get, set, newVal) => set(displayDataAtom, newVal)
+    );
 
     const serializeAtom = atom(null, (get, set, action) => {
         if (action.type === 'serialize') {
-            const { center, viewHeight, rotationEnabled } = diffObjects(
-                get(cameraDataAtom),
-                initValue
-            );
+            const { center, zoom, position } = diffObjects(get(displayDataAtom), initValue);
 
             let ro: OrthoCameraData = {};
 
-            if (center) ro.c = center;
-            if (viewHeight) ro.v = viewHeight;
-            if (rotationEnabled) ro.r = rotationEnabled ? 1 : 0;
+            if (center) ro.c = queryString.stringify(center);
+            if (zoom) ro.z = zoom;
+            if (position) ro.p = queryString.stringify(position);
 
             if (isEmpty(ro)) return;
 
@@ -52,45 +60,63 @@ export default function OrthoCameraData(args: OrthoCameraData = {}) {
 
             const ro: OrthoCameraData = {};
 
-            if (newKeys.includes('c')) ro.center = Number(rawObj.c);
-            if (newKeys.includes('v')) ro.viewHeight = Number(rawObj.v);
-            if (newKeys.includes('r')) ro.rotationEnabled = rawObj.r ? true : false;
+            if (newKeys.includes('c'))
+                ro.center = [
+                    Number(queryString.parse(rawObj.c)[0]),
+                    Number(queryString.parse(rawObj.c)[1]),
+                    Number(queryString.parse(rawObj.c)[2])
+                ];
+            if (newKeys.includes('z')) ro.zoom = Number(rawObj.z);
+            if (newKeys.includes('p')) ro.position = queryString.parse(rawObj.p);
 
             set(cameraDataAtom, { ...initValue, ...ro });
+            set(displayDataAtom, { ...initValue, ...ro });
         }
     });
 
     const component = React.memo(function OrthoCameraOptionsInput({}) {
-        const [data, setData] = useAtom(cameraDataAtom);
+        const { center, zoom, position } = useAtom(displayDataAtom)[0];
+        const setData = useAtom(writerAtom)[1];
 
-        const { center, viewHeight, rotationEnabled } = data;
-
-        const rotationEnabledCB = useCallback(
-            () => setData((oldData) => ({ ...oldData, rotationEnabled: !oldData.rotationEnabled })),
-            [setData]
+        const centerXCB = useCallback(
+            (inputStr) => setData({ center: [Number(inputStr), center[1], center[2]] }),
+            [setData, center]
         );
 
-        const viewHeightCB = useCallback(
-            (inputStr) => setData((oldData) => ({ ...oldData, viewHeight: Number(inputStr) })),
-            [setData]
+        const centerYCB = useCallback(
+            (inputStr) => setData({ center: [center[0], Number(inputStr), center[2]] }),
+            [setData, center]
         );
 
-        const setCenterX = useCallback(
+        const centerZCB = useCallback(
+            (inputStr) => setData({ center: [center[0], center[1], Number(inputStr)] }),
+            [setData, center]
+        );
+
+        const zoomCB = useCallback((inputStr) => setData({ zoom: Number(inputStr) }), [setData]);
+
+        const positionXCB = useCallback(
             (inputStr) =>
-                setData((oldData) => ({
-                    ...oldData,
-                    center: [Number(inputStr), oldData.center[1], oldData.center[2]]
-                })),
-            [setData]
+                setData({
+                    position: [Number(inputStr), position[1], position[2]]
+                }),
+            [setData, position]
         );
 
-        const setCenterY = useCallback(
+        const positionYCB = useCallback(
             (inputStr) =>
-                setData((oldData) => ({
-                    ...oldData,
-                    center: [oldData.center[0], Number(inputStr), oldData.center[2]]
-                })),
-            [setData]
+                setData({
+                    position: [position[0], Number(inputStr), position[2]]
+                }),
+            [setData, position]
+        );
+
+        const positionZCB = useCallback(
+            (inputStr) =>
+                setData({
+                    position: [position[0], position[1], Number(inputStr)]
+                }),
+            [setData, position]
         );
 
         return (
@@ -98,28 +124,34 @@ export default function OrthoCameraData(args: OrthoCameraData = {}) {
                 className='flex flex-col justify-center content-center
 		items-center w-full h-full p-1'
             >
-                <div className='h-full py-2'>
-                    <Checkbox checked={rotationEnabled} onChange={rotationEnabledCB} />
-                    <span className='text-center'>Allow 3d camera movement</span>
-                </div>
                 <div className='py-2'>
-                    <span className='text-center'>View center: </span>
-                    <Input initValue={center[0]} size={2} onC={setCenterX} />
+                    <span className='text-center'>View center point: </span>
+                    <Input initValue={center[0]} size={2} onC={centerXCB} />
                     <span> , </span>
-                    <Input initValue={center[1]} size={2} onC={setCenterY} />
+                    <Input initValue={center[1]} size={2} onC={centerYCB} />
+                    <span> , </span>
+                    <Input initValue={center[2]} size={2} onC={centerZCB} />
                 </div>
                 <div className='py-2'>
-                    <span className='text-center'>View height:</span>
+                    <span className='text-center'>Zoom:</span>
                     <span className='p-1'>
-                        <Input size={4} initValue={viewHeight} onC={viewHeightCB} />
+                        <Input size={4} initValue={zoom} onC={zoomCB} />
                     </span>
+                </div>
+                <div className='py-2'>
+                    <span className='text-center'>Camera position: </span>
+                    <Input initValue={position[0]} size={2} onC={positionXCB} />
+                    <span> , </span>
+                    <Input initValue={position[1]} size={2} onC={positionYCB} />
+                    <span> , </span>
+                    <Input initValue={position[2]} size={2} onC={positionZCB} />
                 </div>
             </div>
         );
     });
 
-    cameraDataAtom.component = component;
-    cameraDataAtom.serializeAtom = serializeAtom;
+    externalAtom.component = component;
+    externalAtom.serializeAtom = serializeAtom;
 
-    return cameraDataAtom;
+    return externalAtom;
 }

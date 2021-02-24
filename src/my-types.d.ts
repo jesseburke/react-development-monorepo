@@ -1,7 +1,7 @@
 export interface OrthoCameraData {
     center: ArrayPoint3;
-    viewHeight: number;
-    rotationEnabled?: boolean;
+    zoom: number;
+    position: ArrayPoint3;
 }
 
 export type ArrayPoint3 = [number, number, number];

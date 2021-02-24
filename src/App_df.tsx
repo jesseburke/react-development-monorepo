@@ -34,7 +34,7 @@ import {
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.PAN },
     touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN },
-    enableRotate: false,
+    enableRotate: true,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
@@ -51,12 +51,6 @@ const fixedCameraData = {
     far: 100,
     aspectRatio,
     orthographic: true
-};
-
-const initCameraData = {
-    center: [0, 0],
-    viewHeight,
-    rotationEnabled: false
 };
 
 const btnClassStr =
@@ -89,7 +83,6 @@ export default function App() {
 
                 <main className='flex-grow relative p-0'>
                     <ThreeSceneComp
-                        initCameraData={initCameraData}
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
                         cameraDebug={false}
