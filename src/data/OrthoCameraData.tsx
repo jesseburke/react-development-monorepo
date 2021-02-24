@@ -6,38 +6,25 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 import { diffObjects, isEmpty, round } from '../utils/BaseUtils';
-import { OrthoCameraData } from '../my-types';
+import { OrthoCamera } from '../my-types';
 import '../styles.css';
 
-const defaultInitValues: OrthoCameraData = {
+const defaultInitValues: OrthoCamera = {
     center: [0, 0, 0],
     zoom: 0.2,
     position: [0, 0, 50]
 };
 
-export default function OrthoCameraData(args: OrthoCameraData = {}) {
+export default function OrthoCameraData(args: OrthoCamera = {}) {
     const initValue = { ...defaultInitValues, ...args };
 
     const cameraDataAtom = atom(initValue);
-    const displayDataAtom = atom(initValue);
-    const writerAtom = atom(null, (get, set, update) => {
-        const oldVal = get(displayDataAtom);
-        const newVal = { ...oldVal, ...update };
-
-        set(cameraDataAtom, newVal);
-        set(displayDataAtom, newVal);
-    });
-
-    const externalAtom = atom(
-        (get) => get(cameraDataAtom),
-        (get, set, newVal) => set(displayDataAtom, newVal)
-    );
 
     const serializeAtom = atom(null, (get, set, action) => {
         if (action.type === 'serialize') {
             const { center, zoom, position } = diffObjects(get(displayDataAtom), initValue);
 
-            let ro: OrthoCameraData = {};
+            let ro: OrthoCamera = {};
 
             if (center) ro.c = queryString.stringify(center);
             if (zoom) ro.z = zoom;
@@ -58,7 +45,7 @@ export default function OrthoCameraData(args: OrthoCameraData = {}) {
 
             const newKeys = Object.keys(rawObj);
 
-            const ro: OrthoCameraData = {};
+            const ro: OrthoCamera = {};
 
             if (newKeys.includes('c'))
                 ro.center = [
@@ -70,53 +57,71 @@ export default function OrthoCameraData(args: OrthoCameraData = {}) {
             if (newKeys.includes('p')) ro.position = queryString.parse(rawObj.p);
 
             set(cameraDataAtom, { ...initValue, ...ro });
-            set(displayDataAtom, { ...initValue, ...ro });
         }
     });
 
     const component = React.memo(function OrthoCameraOptionsInput({}) {
-        const { center, zoom, position } = useAtom(displayDataAtom)[0];
-        const setData = useAtom(writerAtom)[1];
+        const [cameraData, setData] = useAtom(cameraDataAtom);
+
+        const { center, zoom, position } = cameraData;
+
+        const zoomCB = useCallback(
+            (inputStr) => setData((oldData) => ({ ...oldData, zoom: Number(inputStr) })),
+            [setData]
+        );
 
         const centerXCB = useCallback(
-            (inputStr) => setData({ center: [Number(inputStr), center[1], center[2]] }),
-            [setData, center]
+            (inputStr) =>
+                setData((oldData) => ({
+                    ...oldData,
+                    center: [Number(inputStr), oldData.center[1], oldData.center[2]]
+                })),
+            [setData]
         );
 
         const centerYCB = useCallback(
-            (inputStr) => setData({ center: [center[0], Number(inputStr), center[2]] }),
-            [setData, center]
+            (inputStr) =>
+                setData((oldData) => ({
+                    ...oldData,
+                    center: [oldData.center[0], Number(inputStr), oldData.center[2]]
+                })),
+            [setData]
         );
 
         const centerZCB = useCallback(
-            (inputStr) => setData({ center: [center[0], center[1], Number(inputStr)] }),
-            [setData, center]
+            (inputStr) =>
+                setData((oldData) => ({
+                    ...oldData,
+                    center: [oldData.center[0], oldData.center[1], Number(inputStr)]
+                })),
+            [setData]
         );
-
-        const zoomCB = useCallback((inputStr) => setData({ zoom: Number(inputStr) }), [setData]);
 
         const positionXCB = useCallback(
             (inputStr) =>
-                setData({
-                    position: [Number(inputStr), position[1], position[2]]
-                }),
-            [setData, position]
+                setData((oldData) => ({
+                    ...oldData,
+                    position: [Number(inputStr), oldData.center[1], oldData.center[2]]
+                })),
+            [setData]
         );
 
         const positionYCB = useCallback(
             (inputStr) =>
-                setData({
-                    position: [position[0], Number(inputStr), position[2]]
-                }),
-            [setData, position]
+                setData((oldData) => ({
+                    ...oldData,
+                    position: [oldData.center[0], Number(inputStr), oldData.center[2]]
+                })),
+            [setData]
         );
 
         const positionZCB = useCallback(
             (inputStr) =>
-                setData({
-                    position: [position[0], position[1], Number(inputStr)]
-                }),
-            [setData, position]
+                setData((oldData) => ({
+                    ...oldData,
+                    position: [oldData.center[0], oldData.center[1], Number(inputStr)]
+                })),
+            [setData]
         );
 
         return (
@@ -150,8 +155,8 @@ export default function OrthoCameraData(args: OrthoCameraData = {}) {
         );
     });
 
-    externalAtom.component = component;
-    externalAtom.serializeAtom = serializeAtom;
+    cameraDataAtom.component = component;
+    cameraDataAtom.serializeAtom = serializeAtom;
 
-    return externalAtom;
+    return cameraDataAtom;
 }

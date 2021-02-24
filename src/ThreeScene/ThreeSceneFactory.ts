@@ -9,7 +9,7 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { css } from 'emotion';
 
 import { pubsub } from '../utils/BaseUtils';
-import { OrthoCameraData, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
+import { OrthoCamera, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
 
 export interface MouseButtons {
     LEFT: THREE.MOUSE;
@@ -34,7 +34,7 @@ export interface ControlsData {
 export interface ThreeFactoryProps {
     drawCanvas: HTMLCanvasElement;
     labelContainerDiv: HTMLDivElement;
-    initCameraData: OrthoCameraData;
+    initCameraData: OrthoCamera;
     controlsData: ControlsData;
     clearColor: string;
     alpha: boolean;

@@ -1,4 +1,4 @@
-export interface OrthoCameraData {
+export interface OrthoCamera {
     center: ArrayPoint3;
     zoom: number;
     position: ArrayPoint3;
