@@ -45,8 +45,8 @@ const initAxesData: AxesDataT = {
 
 const initCameraData = {
     center: [0, 0, 0],
-    viewHeight: 8,
-    rotationEnabled: true
+    zoom: 0.2,
+    position: [0, 0, 50]
 };
 
 export const labelStyle: LabelStyle = {

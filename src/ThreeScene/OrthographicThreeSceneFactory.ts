@@ -65,8 +65,6 @@ export default function ThreeSceneFactory({
         return;
     }
 
-    console.log('ThreeSceneFactory called with drawCanvas = ', drawCanvas, 'and width = ', width);
-
     let aspectRatio = cameraDebug ? width / (2 * height) : width / height;
 
     let renderer = new THREE.WebGLRenderer({
@@ -364,9 +362,16 @@ export default function ThreeSceneFactory({
     }
 
     function setCameraPosition(newPosition: ArrayPoint3) {
+        if (
+            newPosition[0] === camera.position.x &&
+            newPosition[1] === camera.position.y &&
+            newPosition[2] === camera.position.z
+        )
+            return;
+
         camera.position.set(...newPosition);
         camera.updateProjectionMatrix();
-
+        controls.update();
         drawLabels();
         render();
     }
@@ -378,7 +383,7 @@ export default function ThreeSceneFactory({
 
         render();
         camera.updateProjectionMatrix();
-
+        controls.update();
         drawLabels();
         render();
         //console.log('threeScene.setcameraposition over');
@@ -539,6 +544,8 @@ export default function ThreeSceneFactory({
     const getCamera = () => camera;
 
     const setCameraZoom = (newZoom) => {
+        if (newZoom === camera.zoom) return;
+
         camera.zoom = newZoom;
         camera.updateProjectionMatrix();
 
@@ -557,9 +564,19 @@ export default function ThreeSceneFactory({
     const changeControls = (newControlsData: ControlsData) => {
         controls = Object.assign(controls, newControlsData);
         controls.update();
+        render();
+        drawLabels();
     };
 
     const getControlsTarget = () => controls.target;
+
+    const setControlsTarget = ([x, y, z]) => {
+        const t = controls.target;
+
+        if (x === t.x && y === t.y && z === t.z) return;
+
+        controls.target = new THREE.Vector3(x, y, z);
+    };
 
     const getCanvas = () => drawCanvas;
 
@@ -599,6 +616,7 @@ export default function ThreeSceneFactory({
         resetControls,
         changeControls,
         getControlsTarget,
+        setControlsTarget,
         controlsPubSub,
         addDrag,
         getCanvas,

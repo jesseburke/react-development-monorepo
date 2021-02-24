@@ -18,7 +18,7 @@ export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
         const center = cameraData.center;
         //console.log('cameraData.center = ', center);
 
-        threeCBs.changeControls({ target: new THREE.Vector3(...center) });
+        threeCBs.setControlsTarget(center);
     }, [threeCBs, cameraData.center]);
 
     useEffect(() => {
@@ -29,15 +29,6 @@ export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
 
         threeCBs.setCameraZoom(zoom);
     }, [threeCBs, cameraData.zoom]);
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        const position = cameraData.position;
-        //console.log('cameraData.zoom = ', zoom);
-
-        threeCBs.setCameraPosition(position);
-    }, [threeCBs, cameraData.position]);
 
     useEffect(() => {
         if (!threeCBs) return;

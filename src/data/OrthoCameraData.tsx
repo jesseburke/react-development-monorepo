@@ -145,11 +145,10 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
                 </div>
                 <div className='py-2'>
                     <span className='text-center'>Camera position: </span>
-                    <Input initValue={position[0]} size={2} onC={positionXCB} />
-                    <span> , </span>
-                    <Input initValue={position[1]} size={2} onC={positionYCB} />
-                    <span> , </span>
-                    <Input initValue={position[2]} size={2} onC={positionZCB} />
+
+                    <span className='px-1'>{round(position[0], 2)},</span>
+                    <span className='px-1'>{round(position[1], 2)},</span>
+                    <span className='px-1'>{round(position[2], 2)}</span>
                 </div>
             </div>
         );
