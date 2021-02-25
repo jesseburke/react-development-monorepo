@@ -1,8 +1,0 @@
-{
-    "entry": ["src/main.jsx", "src/App_df.tsx"],
-    "extensions": [".ts", ".js", ".tsx", ".jsx"],
-    "ignorePatterns": ["**/node_modules/**"],
-    "ignoreUnresolved": [],
-    "ignoreUnimported": [],
-    "ignoreUnused": []
-}
