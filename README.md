@@ -17,5 +17,5 @@ https://www.maths.usyd.edu.au/u/jburke/directionFieldGrapher
 - save the entire state of the app in the query string of the address (no server required); user can copy the new address, and e.g., send it to students, or post it on course webpages; also allows creation of easy defaults; once saved, the back button changes the app to the previously saved state.
 
 - the initial point on the solution curve is draggable
-- 
+
 ![title](assets/3d-direction-field-dragging.gif)
