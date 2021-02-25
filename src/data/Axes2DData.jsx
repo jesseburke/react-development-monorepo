@@ -32,9 +32,6 @@ const defaultInitValues = {
     tickLabelStyle: defaultTickLabelStyle
 };
 
-// diffObjects = return all the fields and
-// values of the second object that do not occur in the first.
-
 export default function Axes2DData(args) {
     const initValue = { ...defaultInitValues, ...args };
 

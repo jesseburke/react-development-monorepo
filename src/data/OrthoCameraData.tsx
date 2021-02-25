@@ -22,13 +22,13 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
 
     const serializeAtom = atom(null, (get, set, action) => {
         if (action.type === 'serialize') {
-            const { center, zoom, position } = diffObjects(get(displayDataAtom), initValue);
+            const { center, zoom, position } = diffObjects(get(cameraDataAtom), initValue);
 
             let ro: OrthoCamera = {};
 
-            if (center) ro.c = queryString.stringify(center);
+            if (center) ro.c = queryString.stringify(center.map((x) => round(x, 2)));
             if (zoom) ro.z = zoom;
-            if (position) ro.p = queryString.stringify(position);
+            if (position) ro.p = queryString.stringify(position.map((x) => round(x, 2)));
 
             if (isEmpty(ro)) return;
 
@@ -47,14 +47,17 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
 
             const ro: OrthoCamera = {};
 
-            if (newKeys.includes('c'))
-                ro.center = [
-                    Number(queryString.parse(rawObj.c)[0]),
-                    Number(queryString.parse(rawObj.c)[1]),
-                    Number(queryString.parse(rawObj.c)[2])
-                ];
+            if (newKeys.includes('c')) {
+                const ct = queryString.parse(rawObj.c);
+
+                ro.center = [Number(ct[0]), Number(ct[1]), Number(ct[2])];
+            }
             if (newKeys.includes('z')) ro.zoom = Number(rawObj.z);
-            if (newKeys.includes('p')) ro.position = queryString.parse(rawObj.p);
+            if (newKeys.includes('p')) {
+                const ps = queryString.parse(rawObj.p);
+
+                ro.position = [Number(ps[0]), Number(ps[1]), Number(ps[2])];
+            }
 
             set(cameraDataAtom, { ...initValue, ...ro });
         }
@@ -63,7 +66,8 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
     const component = React.memo(function OrthoCameraOptionsInput({}) {
         const [cameraData, setData] = useAtom(cameraDataAtom);
 
-        const { center, zoom, position } = cameraData;
+        let { center, zoom, position } = cameraData;
+        center = center.map((x) => round(x, 2));
 
         const zoomCB = useCallback(
             (inputStr) => setData((oldData) => ({ ...oldData, zoom: Number(inputStr) })),
@@ -131,11 +135,11 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
             >
                 <div className='py-2'>
                     <span className='text-center'>View center point: </span>
-                    <Input initValue={center[0]} size={2} onC={centerXCB} />
+                    <Input initValue={center[0]} size={4} onC={centerXCB} />
                     <span> , </span>
-                    <Input initValue={center[1]} size={2} onC={centerYCB} />
+                    <Input initValue={center[1]} size={4} onC={centerYCB} />
                     <span> , </span>
-                    <Input initValue={center[2]} size={2} onC={centerZCB} />
+                    <Input initValue={center[2]} size={4} onC={centerZCB} />
                 </div>
                 <div className='py-2'>
                     <span className='text-center'>Zoom:</span>

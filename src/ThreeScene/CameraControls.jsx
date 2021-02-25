@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useAtom, atom } from 'jotai';
-import * as THREE from 'three';
-
-import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
-import { Provider as ReakitProvider } from 'reakit/Provider';
-import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
-import * as system from 'reakit-system-bootstrap';
 
 import '../styles.css';
 
@@ -29,6 +23,15 @@ export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
 
         threeCBs.setCameraZoom(zoom);
     }, [threeCBs, cameraData.zoom]);
+
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        const position = cameraData.position;
+        //console.log('cameraData.position = ', position);
+
+        threeCBs.setCameraPosition(position);
+    }, [threeCBs, cameraData.position]);
 
     useEffect(() => {
         if (!threeCBs) return;

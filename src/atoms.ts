@@ -19,7 +19,7 @@ import { ObjectPoint2, Bounds2, CurveData2, LabelStyle, AxesDataT } from './my-t
 const colors = {
     arrows: '#B01A46', //'#C2374F'
     solutionCurve: '#4e6d87', //'#C2374F'
-    tick: '#e19662'
+    tick: '#cf6c28' //#e19662'
 };
 
 const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
@@ -57,7 +57,7 @@ export const labelStyle: LabelStyle = {
 };
 
 const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
-    fontSize: '1em',
+    fontSize: '1.5em',
     color: colors.tick
 });
 
@@ -74,7 +74,7 @@ export const axesDataAtom = AxesData({
 });
 export const solutionCurveDataAtom = CurveData(initSolutionCurveData);
 
-const functionLabelAtom = atom((get) => 'd' + get(labelAtom).x + '/d' + get(labelAtom).y + ' = ');
+const functionLabelAtom = atom((get) => 'd' + get(labelAtom).y + '/d' + get(labelAtom).x + ' = ');
 
 export const diffEqAtom = FunctionData({ initVal: initFuncStr, functionLabelAtom });
 export const boundsAtom = BoundsData({

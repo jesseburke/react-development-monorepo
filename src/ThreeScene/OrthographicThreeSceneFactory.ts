@@ -91,7 +91,7 @@ export default function ThreeSceneFactory({
     let camera: THREE.Camera | null = null;
     let cameraForDebug: THREE.Camera | null = null;
 
-    const viewHeight = 1; //initCameraData.viewHeight!;
+    const viewHeight = 5; //initCameraData.viewHeight!;
 
     if (!fixedCameraData.orthographic) {
         camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -576,6 +576,9 @@ export default function ThreeSceneFactory({
         if (x === t.x && y === t.y && z === t.z) return;
 
         controls.target = new THREE.Vector3(x, y, z);
+        controls.update();
+        render();
+        drawLabels();
     };
 
     const getCanvas = () => drawCanvas;

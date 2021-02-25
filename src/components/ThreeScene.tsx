@@ -35,6 +35,7 @@ const ThreeScene: FunctionComponent = ({
     photoButton = false,
     photoButtonClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
     cameraDebug = false,
+    cameraDataAtom,
     children
 }) => {
     const threeCanvasRef = useRef(null);
@@ -186,7 +187,7 @@ const ThreeScene: FunctionComponent = ({
             {cameraDebug ? cameraDebugComp : null}
             <React.Fragment>
                 {React.Children.map(children, (el) =>
-                    React.cloneElement(el, { threeCBs: threeSceneCBs })
+                    React.cloneElement(el, { threeCBs: threeSceneCBs, cameraDataAtom })
                 )}
             </React.Fragment>
             <div ref={(elt) => (labelContainerRef.current = elt)} />

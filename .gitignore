@@ -9,6 +9,9 @@
 # files ending in ~
 *~
 
+# files starting with .
+.~
+
 package-lock.json
 
 # files containing a sharp

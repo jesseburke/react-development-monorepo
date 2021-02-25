@@ -38,12 +38,11 @@ const initControlsData = {
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    zoomSpeed: 1,
+    zoomSpeed: 2,
     screenSpacePanning: true
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-const viewHeight = 8;
 
 const fixedCameraData = {
     up: [0, 1, 0],
@@ -85,7 +84,7 @@ export default function App() {
                     <ThreeSceneComp
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
-                        cameraDebug={false}
+                        cameraDataAtom={orthoCameraDataAtom}
                         photoButton={true}
                         photoButtonClassStr={photoButtonClassStr}
                     >
@@ -108,10 +107,7 @@ export default function App() {
                             curveDataAtom={solutionCurveDataAtom}
                         />
 
-                        <CameraControls
-                            cameraDataAtom={orthoCameraDataAtom}
-                            classStr={photoButtonClassStr}
-                        />
+                        <CameraControls classStr={photoButtonClassStr} />
                     </ThreeSceneComp>
                     <DataComp
                         resetBtnClassStr={resetBtnClassStr}
@@ -153,7 +149,12 @@ function OptionsModal() {
                     {!dialog.visible ? 'Show options' : 'Hide options'}
                 </span>
             </DialogDisclosure>
-            <Dialog {...dialog} style={cssRef.current} aria-label='Options'>
+            <Dialog
+                {...dialog}
+                style={cssRef.current}
+                aria-label='Options'
+                hideOnClickOutside={false}
+            >
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Arrow grid</Tab>

@@ -35,8 +35,7 @@ export default React.memo(function Axes2DTS({
         tickLabelStyle
     } = useAtom(axesDataAtom)[0];
 
-    const [bounds] = useAtom(boundsAtom);
-    const { xMin, xMax, yMin, yMax } = bounds;
+    const { xMin, xMax, yMin, yMax } = useAtom(boundsAtom)[0];
 
     const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];
 
