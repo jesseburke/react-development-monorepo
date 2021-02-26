@@ -179,6 +179,8 @@ export default React.memo(function Axes2DTS({
             );
         }
 
+        threeCBs.drawLabels();
+
         return () => {
             if (threeCBs || labelArr)
                 labelArr.forEach((l) => {
