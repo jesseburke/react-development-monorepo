@@ -101,32 +101,26 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
             [setData]
         );
 
-        const positionXCB = useCallback(
-            (inputStr) =>
-                setData((oldData) => ({
-                    ...oldData,
-                    position: [Number(inputStr), oldData.center[1], oldData.center[2]]
-                })),
-            [setData]
-        );
+        const straightenCB = useCallback(() => {
+            /* const l = Math.sqrt(position[0] ** 2 + position[1] ** 2 +
+	       position[2] ** 2);
+	     */
+            let diffAndSquaredArray = position.map(
+                (x, index) => (position[index] - center[index]) ** 2
+            );
 
-        const positionYCB = useCallback(
-            (inputStr) =>
-                setData((oldData) => ({
-                    ...oldData,
-                    position: [oldData.center[0], Number(inputStr), oldData.center[2]]
-                })),
-            [setData]
-        );
+            const red = (acc, curVal) => acc + curVal;
 
-        const positionZCB = useCallback(
-            (inputStr) =>
-                setData((oldData) => ({
-                    ...oldData,
-                    position: [oldData.center[0], oldData.center[1], Number(inputStr)]
-                })),
-            [setData]
-        );
+            const l = Math.sqrt(diffAndSquaredArray.reduce(red));
+
+            console.log('l is ', l);
+
+            setData((oldData) => ({
+                ...oldData,
+                position: [oldData.center[0], oldData.center[1], l],
+                center: [oldData.center[0], oldData.center[1], 0]
+            }));
+        }, [position, setData]);
 
         return (
             <div
@@ -153,6 +147,12 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
                     <span className='px-1'>{round(position[0], 2)},</span>
                     <span className='px-1'>{round(position[1], 2)},</span>
                     <span className='px-1'>{round(position[2], 2)}</span>
+                </div>
+                <div
+                    className='p-2 rounded-md border-4 border-persian_blue-600'
+                    onClick={straightenCB}
+                >
+                    <button className='focus:outline-none'>Straighten Camera</button>
                 </div>
             </div>
         );

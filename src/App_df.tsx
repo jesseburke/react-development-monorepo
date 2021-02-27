@@ -134,7 +134,7 @@ function OptionsModal() {
         backgroundColor: 'white',
         right: 20,
         width: 600,
-        height: 275
+        height: 300
     });
 
     const cssRef1 = useRef({
