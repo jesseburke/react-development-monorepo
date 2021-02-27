@@ -6,7 +6,7 @@ https://www.maths.usyd.edu.au/u/jburke/directionFieldGrapher
 
 ## Features
 
-- 3d view: rotate the camera by holding shift while click and dragging, or using two fingers on a touch screen (normal click and drag, or one finger, moves the display without rotating)
+- 3d view: the more vertical an arrow is, the more it is displaced in the z-direction. To see this, rotate the camera by holding shift while dragging the mouse, or or using two fingers on a touch screen (to move the display without rotating, use normal click and drag, or one finger on touch screen; to zoom in/out use pinch on a track pad or touch screen)
 
 ![title](assets/3d-direction-field.gif)
 
