@@ -10,7 +10,8 @@ export default function ArrowGridGeom({
     arrowLength,
     arrowThickness,
     bounds = {},
-    func
+    func,
+    zHeightFunc
 }) {
     const { xMin, xMax, yMin, yMax } = bounds;
 
@@ -28,14 +29,17 @@ export default function ArrowGridGeom({
 
         const theta = Math.asin(slope / Math.sqrt(slope * slope + 1));
 
-        return ArrowGeom({ length: arrowLength, thickness: arrowThickness })
-            .rotateZ(theta - Math.PI / 2)
-            .translate(x, y, 0);
+        const ag = ArrowGeom({ length: arrowLength, thickness: arrowThickness });
+        const sg = new THREE.SphereBufferGeometry(0.1, 15, 15);
+
+        const g = BufferGeometryUtils.mergeBufferGeometries([ag, sg]);
+
+        return g.rotateZ(theta - Math.PI / 2).translate(x, y, zHeightFunc(a, b));
     });
 
     const geom = BufferGeometryUtils.mergeBufferGeometries(geomArray);
     const c = gridSqSize;
-    geom.scale(c, c, c);
+    geom.scale(c, c, 1);
     geom.translate(xMin, yMin, 0);
 
     return geom;

@@ -95,4 +95,14 @@ const atomStoreAtom = atom({
     cd: orthoCameraDataAtom
 });
 
+export const zHeightAtom = atom((get) => {
+    const f = get(diffEqAtom).func;
+
+    function theta(a) {
+        return Math.asin(a / Math.sqrt(a * a + 1));
+    }
+
+    return { func: (x, y) => 3 * theta(f(x, y)) };
+});
+
 export const DataComp = MainDataComp(atomStoreAtom);

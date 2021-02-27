@@ -13,7 +13,8 @@ export default function DirectionFieldApproxGeom({
     h = 0.01,
     radius = 0.05,
     tubularSegments = 1064,
-    radialSegments = 8
+    radialSegments = 8,
+    zHeightFunc
 }) {
     const { xMin, xMax, yMin, yMax } = bounds;
 
@@ -26,7 +27,7 @@ export default function DirectionFieldApproxGeom({
 
     let pointArray = RK4Pts({ func, initialPt, bounds, h });
 
-    pointArray = pointArray.map(([x, y]) => new THREE.Vector3(x, y, 0));
+    pointArray = pointArray.map(([x, y]) => new THREE.Vector3(x, y, zHeightFunc(x, y)));
 
     const path = new THREE.CurvePath();
 

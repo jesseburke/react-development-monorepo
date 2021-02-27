@@ -59,7 +59,7 @@ export default function MainDataComp(atomStoreAtom) {
                 type: 'deserialize'
             });
         });
-        window.history.pushState(null, null, '/');
+        window.history.pushState(null, null, import.meta.env.BASE_URL);
     });
 
     function useReset() {

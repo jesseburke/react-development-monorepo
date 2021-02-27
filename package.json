@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "serve": "vite preview"
     },
     "dependencies": {
         "@types/node": "^12.19.9",

@@ -6,16 +6,19 @@ import * as THREE from 'three';
 
 import ArrowGridGeom from '../geometries/ArrowGridGeom.js';
 
-export default function ArrowGrid({ threeCBs, diffEqAtom, boundsAtom, arrowGridDataAtom }) {
-    // const [density] = useAtom(arrowDensityAtom);
-    // const [length] = useAtom(arrowLengthAtom);
-    // const [thickness] = useAtom(arrowThicknessAtom);
-    // const [color] = useAtom(arrowColorAtom);
-
+export default function ArrowGrid({
+    threeCBs,
+    diffEqAtom,
+    boundsAtom,
+    arrowGridDataAtom,
+    zHeightAtom
+}) {
     const { density, length, thickness, color } = useAtom(arrowGridDataAtom)[0];
 
     const [func] = useAtom(diffEqAtom);
     const [bounds] = useAtom(boundsAtom);
+
+    const zHeightFunc = zHeightAtom ? useAtom(zHeightAtom)[0].func : (x, y) => 0;
 
     useEffect(() => {
         if (!threeCBs) return;
@@ -25,7 +28,8 @@ export default function ArrowGrid({ threeCBs, diffEqAtom, boundsAtom, arrowGridD
             arrowLength: length,
             arrowThickness: thickness,
             bounds,
-            func: func.func //funcValue.func
+            func: func.func, //funcValue.func
+            zHeightFunc
         });
 
         const material = new THREE.MeshBasicMaterial({ color });

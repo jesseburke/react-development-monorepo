@@ -24,6 +24,7 @@ export default function IntegralCurve({
     initialPointAtom = null,
     boundsAtom,
     curveDataAtom,
+    zHeightAtom,
     radius = 0.05
 }) {
     const [mat, setMat] = useState();
@@ -39,6 +40,8 @@ export default function IntegralCurve({
     const { visible, color, approxH, width } = useAtom(curveDataAtom)[0];
 
     const sphereColorAtom = atom((get) => get(curveDataAtom).color);
+
+    const zHeightFunc = zHeightAtom ? useAtom(zHeightAtom)[0].func : (x, y) => 0;
 
     useEffect(() => {
         setMat(
@@ -72,7 +75,8 @@ export default function IntegralCurve({
             initialPt: [initialPt.x, initialPt.y],
             bounds,
             h: approxH,
-            radius: width
+            radius: width,
+            zHeightFunc
         });
 
         const mesh = new THREE.Mesh(dfag, mat);
@@ -93,6 +97,8 @@ export default function IntegralCurve({
             colorAtom={sphereColorAtom}
             dragPositionAtom={initialPointAtom}
             radius={(0.25 * width) / 0.1}
+            funcAtom={diffEqAtom}
+            zHeightAtom={zHeightAtom}
         />
     ) : null;
 }

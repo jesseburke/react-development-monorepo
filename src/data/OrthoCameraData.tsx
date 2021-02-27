@@ -102,9 +102,6 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
         );
 
         const straightenCB = useCallback(() => {
-            /* const l = Math.sqrt(position[0] ** 2 + position[1] ** 2 +
-	       position[2] ** 2);
-	     */
             let diffAndSquaredArray = position.map(
                 (x, index) => (position[index] - center[index]) ** 2
             );
@@ -112,8 +109,6 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
             const red = (acc, curVal) => acc + curVal;
 
             const l = Math.sqrt(diffAndSquaredArray.reduce(red));
-
-            console.log('l is ', l);
 
             setData((oldData) => ({
                 ...oldData,
