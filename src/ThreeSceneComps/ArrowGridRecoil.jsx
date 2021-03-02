@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import ArrowGridGeom from '../geometries/ArrowGridGeom.js';
+import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
 
 export default function ArrowGrid({
     threeCBs,

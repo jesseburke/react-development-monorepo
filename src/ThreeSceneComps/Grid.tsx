@@ -4,7 +4,7 @@ import { atom, useAtom, ReadOnlyAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import GridGeom from '../geometries/GridGeom.js';
+import GridGeom from '../graphics/GridGeom.js';
 import { ArrayPoint2, Bounds2 } from '../my-types';
 
 export interface GridProps {

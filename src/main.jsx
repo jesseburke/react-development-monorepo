@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 
 import './styles.css';
 
-import App from './App';
+import App from './pages/df/App_df/App_df';
 const title = 'Direction Field Grapher';
 
 function main() {

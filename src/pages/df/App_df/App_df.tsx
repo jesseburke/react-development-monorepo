@@ -1,140 +1,129 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { Provider as JProvider } from 'jotai';
+import { Provider as JotaiProvider } from 'jotai';
 
 import * as THREE from 'three';
 
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
-import { Provider } from 'reakit/Provider';
+import { Provider as ReakitProvider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
 import '../../../styles.css';
 
 import { ThreeSceneComp } from '../../../components/ThreeScene';
-import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
 
 import Grid from '../../../ThreeSceneComps/Grid';
-import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
+import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
+import CameraControls from '../../../ThreeSceneComps/CameraControls.jsx';
 
 import {
     arrowGridDataAtom,
-    ArrowGridDataInput,
     boundsAtom,
-    BoundsInput,
     initialPointAtom,
-    InitialPointInput,
-    funcAtom,
+    diffEqAtom,
     labelAtom,
-    LabelInput,
     solutionCurveDataAtom,
-    SolutionCurveDataInput,
-    EquationInput,
     axesDataAtom,
-    AxesDataInput,
+    orthoCameraDataAtom,
+    zHeightAtom,
     DataComp
-} from './App_df_data';
+} from './App_df_atoms';
 
 const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN, THREE: THREE.MOUSE.ROTATE },
-    enableRotate: false,
+    mouseButtons: { LEFT: THREE.MOUSE.PAN },
+    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN },
+    enableRotate: true,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    screenSpaceSpanning: false
+    zoomSpeed: 2,
+    screenSpacePanning: true
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-//const frustrumSize = 20;
-const frustrumSize = 3.8;
 
-const initCameraData = {
-    position: [0, 0, 1],
-    up: [0, 0, 1],
-    //fov: 75,
-    near: 0.01,
+const fixedCameraData = {
+    up: [0, 1, 0],
+    near: 0.1,
     far: 100,
-    rotation: { order: 'XYZ' },
-    frustrumSize,
     aspectRatio,
-    orthographic: {
-        left: (frustrumSize * aspectRatio) / -2,
-        right: (frustrumSize * aspectRatio) / 2,
-        top: frustrumSize / 2,
-        bottom: frustrumSize / -2
-    }
+    orthographic: true
 };
 
-const saveBtnClassStr =
-    'absolute left-8 bottom-40 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const btnClassStr =
+    'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
 
-const resetBtnClassStr =
-    'absolute left-8 bottom-24 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const saveBtnClassStr = btnClassStr + ' bottom-40';
 
-const photoBtnClassStr =
-    'absolute left-8 bottom-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const resetBtnClassStr = btnClassStr + ' bottom-24';
+
+/* const photoBtnClassStr = btnClassStr + ' bottom-8'; */
+
+const photoButtonClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
 
 export default function App() {
     return (
-        <JProvider>
+        <JotaiProvider>
             <div className='full-screen-base'>
-                <Provider unstable_system={system}>
-                    <header
-                        className='control-bar bg-persian_blue-900 font-sans
-			p-8 text-white'
-                    >
-                        <div className='p-1'>
-                            <EquationInput />
-                        </div>
-                        <InitialPointInput />
+                <header
+                    className='control-bar bg-persian_blue-900 font-sans
+		    p-8 text-white'
+                >
+                    <diffEqAtom.component />
+                    <initialPointAtom.component />
+                    <ReakitProvider unstable_system={system}>
                         <OptionsModal />
-                    </header>
+                    </ReakitProvider>
+                </header>
 
-                    <main className='flex-grow relative p-0'>
-                        <ThreeSceneComp
-                            initCameraData={initCameraData}
-                            controlsData={initControlsData}
-                            showPhotoBtn={true}
-                            photoBtnClassStr={photoBtnClassStr}
-                        >
-                            <DirectionFieldApprox
-                                initialPointAtom={initialPointAtom}
-                                boundsAtom={boundsAtom}
-                                funcAtom={funcAtom}
-                                curveDataAtom={solutionCurveDataAtom}
-                            />
-                            <Grid boundsAtom={boundsAtom} gridShow={true} />
-                            <Axes2D
-                                tickLabelDistance={1}
-                                boundsAtom={boundsAtom}
-                                axesDataAtom={axesDataAtom}
-                                labelAtom={labelAtom}
-                            />
-                            <ArrowGrid
-                                funcAtom={funcAtom}
-                                boundsAtom={boundsAtom}
-                                arrowGridDataAtom={arrowGridDataAtom}
-                            />
-                            <ClickablePlaneComp clickPositionAtom={initialPointAtom} />
-                        </ThreeSceneComp>
-                        <DataComp
-                            resetBtnClassStr={resetBtnClassStr}
-                            saveBtnClassStr={saveBtnClassStr}
+                <main className='flex-grow relative p-0'>
+                    <ThreeSceneComp
+                        fixedCameraData={fixedCameraData}
+                        controlsData={initControlsData}
+                        cameraDataAtom={orthoCameraDataAtom}
+                        photoButton={true}
+                        photoButtonClassStr={photoButtonClassStr}
+                    >
+                        <Axes2D
+                            tickLabelDistance={1}
+                            boundsAtom={boundsAtom}
+                            axesDataAtom={axesDataAtom}
+                            labelAtom={labelAtom}
                         />
-                    </main>
-                </Provider>
+                        <Grid boundsAtom={boundsAtom} gridShow={true} />
+                        <ArrowGrid
+                            diffEqAtom={diffEqAtom}
+                            boundsAtom={boundsAtom}
+                            arrowGridDataAtom={arrowGridDataAtom}
+                            zHeightAtom={zHeightAtom}
+                        />
+                        <DirectionFieldApprox
+                            initialPointAtom={initialPointAtom}
+                            boundsAtom={boundsAtom}
+                            diffEqAtom={diffEqAtom}
+                            curveDataAtom={solutionCurveDataAtom}
+                            zHeightAtom={zHeightAtom}
+                        />
+
+                        <CameraControls classStr={photoButtonClassStr} />
+                    </ThreeSceneComp>
+                    <DataComp
+                        resetBtnClassStr={resetBtnClassStr}
+                        saveBtnClassStr={saveBtnClassStr}
+                    />
+                </main>
             </div>
-        </JProvider>
+        </JotaiProvider>
     );
 }
 
 function OptionsModal() {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     const tab = useTabState();
 
     useEffect(() => {
@@ -147,8 +136,8 @@ function OptionsModal() {
         left: 'auto',
         backgroundColor: 'white',
         right: 20,
-        width: 500,
-        height: 250
+        width: 600,
+        height: 300
     });
 
     const cssRef1 = useRef({
@@ -157,33 +146,42 @@ function OptionsModal() {
     });
 
     return (
-        <div zindex={-10}>
+        <div zindex={-10} className='text-sm'>
             <DialogDisclosure style={cssRef1.current} {...dialog}>
                 <span className='w-32'>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
             </DialogDisclosure>
-            <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
+            <Dialog
+                {...dialog}
+                style={cssRef.current}
+                aria-label='Options'
+                hideOnClickOutside={false}
+            >
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Camera Options</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                         <Tab {...tab}>Variable labels</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <ArrowGridDataInput />
+                        <arrowGridDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <AxesDataInput />
+                        <axesDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <BoundsInput />
+                        <boundsAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <SolutionCurveDataInput />
+                        <orthoCameraDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <LabelInput />
+                        <solutionCurveDataAtom.component />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <labelAtom.component />
                     </TabPanel>
                 </>
             </Dialog>

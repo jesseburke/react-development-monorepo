@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, FunctionComponent } fr
 import * as THREE from 'three';
 import { atom, useAtom } from 'jotai';
 
-import ThreeSceneFactory from '../ThreeScene/ThreeSceneFactory';
+import ThreeSceneFactory from '../ThreeSceneComps/ThreeSceneFactory';
 import { ArrayPoint3 } from '../my-types';
 
 //------------------------------------------------------------------------
