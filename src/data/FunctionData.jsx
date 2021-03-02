@@ -1,58 +1,70 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
-import { atomWithReset } from 'jotai/utils';
 
-import EquationData from './EquationData.jsx';
+import Input from '../components/Input.jsx';
+import funcParser from '../utils/funcParser.jsx';
+import { isEmpty } from '../utils/BaseUtils';
 
 import '../styles.css';
 
-const globalDefaultData = {
-    funcStr: 'x*y*sin(x^2 + y)/100',
-    bounds: {
-        xMin: -20,
-        xMax: 20,
-        yMin: -20,
-        yMax: 20
-    },
-    meshSize: 100,
-    color: '#E53935'
+export const defaultLabelStyle = {
+    color: 'black',
+    padding: '.1em',
+    margin: '.5em',
+    fontSize: '1.5em'
 };
+
+const defaultInitVal = 'x';
 
 const identity = (x) => x;
 
-export default function FunctionData({ funcStr, labelAtom, inputSize = 20 }) {
-    let initData = globalDefaultData;
+export default function FunctionData({
+    initVal = defaultInitVal,
+    functionLabelAtom,
+    functionLabelString = 'default label string',
+    inputSize = 15
+}) {
+    const functionStrAtom = atom(initVal);
 
-    if (funcStr) initData = { ...initData, funcStr };
+    const functionAtom = atom((get) => ({
+        func: funcParser(get(functionStrAtom))
+    }));
 
-    const encode = identity;
-    const decode = (objStr) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initData;
+    const labelAtom = functionLabelAtom ? functionLabelAtom : atom(functionLabelString);
 
-        return objStr;
-    };
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            action.callback(get(functionStrAtom));
+        } else if (action.type === 'deserialize') {
+            const funStr = action.value;
 
-    const funcInputLabelAtom = atom(
-        (get) => 'f(' + get(labelAtom).x + ',' + get(labelAtom).y + ') = '
-    );
+            if (!funStr || !funStr.length || funStr.length === 0) {
+                set(functionStrAtom, initVal);
+                return;
+            }
 
-    const {
-        atom: funcStrAtom,
-        component: FuncStrInput,
-        encode: funcStrEncode,
-        decode: funcStrDecode
-    } = EquationData({ initVal: initData.funcStr, equationLabelAtom: funcInputLabelAtom });
-
-    const dataAtom = atomWithReset(initData);
-
-    const InputComponent = React.memo(() => {
-        return null;
+            set(functionStrAtom, funStr);
+        }
     });
 
-    return {
-        atom: dataAtom,
-        component: FuncStrInput,
-        encode,
-        decode
-    };
+    const component = React.memo(() => {
+        const [eqStr, setEqStr] = useAtom(functionStrAtom);
+        const [equationLabel] = useAtom(labelAtom);
+
+        const eqInputCB = useCallback((str) => setEqStr(str), [setEqStr]);
+
+        return (
+            <div>
+                <span className='pr-1'>{equationLabel}</span>
+                <Input size={inputSize} initValue={eqStr} onC={eqInputCB} />
+            </div>
+        );
+    });
+
+    functionAtom.component = component;
+    functionAtom.serializeAtom = serializeAtom;
+    functionAtom.functionStrAtom = functionStrAtom;
+    functionAtom.functionStrAtom.serializeAtom = serializeAtom;
+
+    return functionAtom;
 }

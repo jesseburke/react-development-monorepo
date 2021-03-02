@@ -1,17 +1,111 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
-import { useResetAtom, useAtomCallback, useUpdateAtom } from 'jotai/utils';
 
 import queryString from 'query-string-esm';
 
-export default function MainDataComp(atomStore) {
-    // following can write to all of the atoms in atomStore, but does
-    // not update if they change
-    const writerAtom = atom(null, (get, set, obj) => {
-        Object.keys(obj).map((k) => {
-            set(atomStore[k].atom, obj[k]);
+import { isEmpty } from '../utils/BaseUtils.ts';
+
+export default function MainDataComp(atomStoreAtom) {
+    const saveStuffAtom = atom({});
+
+    const readAtomStoreSerializedAtom = atom(null, (get, set) => {
+        let ro = {};
+
+        const atomStore = get(atomStoreAtom);
+        console.log(
+            'atomStore, inside write function of readAtomStoreSerializedAtom, is',
+            atomStore
+        );
+
+        Object.entries(atomStore).forEach(([abbrev, atom]) => {
+            set(atom.serializeAtom, {
+                type: 'serialize',
+                callback: (obj) => {
+                    if (obj) ro[abbrev] = myStringify(obj);
+                }
+            });
+        });
+
+        set(saveStuffAtom, ro);
+        //console.log('ro is ', ro);
+    });
+
+    function useSaveToAddressBar() {
+        const [saveStuff, setSaveStuff] = useAtom(saveStuffAtom);
+
+        const readAt = useAtom(readAtomStoreSerializedAtom)[1];
+
+        const saveCB = useCallback(() => {
+            readAt();
+        }, [readAt]);
+
+        // whenever saveStuff changes, update the search bar
+        useEffect(() => {
+            if (isEmpty(saveStuff)) return;
+            //console.log('saveStuff effect called with saveStuff = ', saveStuff);
+            window.history.pushState(saveStuff, null, '?' + queryString.stringify(saveStuff));
+        }, [saveStuff]);
+
+        return saveCB;
+    }
+
+    const resetAtomStoreAtom = atom(null, (get, set) => {
+        const atomStore = get(atomStoreAtom);
+
+        // in the following, using that deserializing without value
+        // resets atom to original value
+        Object.values(atomStore).forEach((atom) => {
+            set(atom.serializeAtom, {
+                type: 'deserialize'
+            });
+        });
+        window.history.pushState(null, null, import.meta.env.BASE_URL);
+    });
+
+    function useReset() {
+        return useAtom(resetAtomStoreAtom)[1];
+    }
+
+    const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
+        const atomStore = get(atomStoreAtom);
+
+        Object.keys(newObj).forEach((k) => {
+            set(atomStore[k].serializeAtom, {
+                type: 'deserialize',
+                value: newObj[k]
+            });
         });
     });
+
+    // on load, parse the address bar data and dole it out to atoms
+    function useReadAddressBar() {
+        const writeToAtomStoreFunc = useAtom(writeToAtomStoreAtom)[1];
+        const resetAtomStoreFunc = useAtom(resetAtomStoreAtom)[1];
+
+        useLayoutEffect(() => {
+            const qsObj = queryString.parse(window.location.search.slice(1));
+
+            //console.log('read address bar effect called with qsObj = ', qsObj);
+
+            writeToAtomStoreFunc(qsObj);
+        }, [writeToAtomStoreFunc]);
+
+        useEffect(() => {
+            const popCb = (obj) => {
+                if (!obj.state) {
+                    resetAtomStoreFunc();
+                    return;
+                }
+                writeToAtomStoreFunc(obj.state);
+            };
+
+            window.addEventListener('popstate', popCb);
+
+            return () => {
+                window.removeEventListener('popstate', popCb);
+            };
+        }, [writeToAtomStoreFunc, resetAtomStoreFunc]);
+    }
 
     // the two components are optional; will be components that
     // represent buttons to click.
@@ -33,118 +127,6 @@ export default function MainDataComp(atomStore) {
                     : DefaultResetComp(resetCB, resetBtnClassStr)}
             </div>
         );
-    }
-
-    // this should be pretty easy with valtio?
-
-    function useReset() {
-        // could potentially make writeFunc a derived atom? derived
-        // from the array of writerAtoms that are passed in
-        const writeFunc = useAtom(writerAtom)[1];
-
-        const resetCB = useCallback(() => {
-            const writeObj = {};
-
-            // when the decode functions are passed a null argument,
-            // they return the initial values of the app
-            Object.keys(atomStore).map((k) => {
-                writeObj[k] = atomStore[k].decode();
-            });
-
-            writeFunc(writeObj);
-            window.history.pushState(null, null, '/');
-        }, [writeFunc]);
-
-        return resetCB;
-    }
-
-    // on load, parse the address bar data and dole it out to atoms
-    function useReadAddressBar() {
-        const writeFunc = useAtom(writerAtom)[1];
-        const storeKeys = Object.keys(atomStore);
-
-        useEffect(() => {
-            const qsObj = queryString.parse(window.location.search.slice(1));
-
-            // for each new key, check if its a key in atomStore; if it
-            // is, check if it has non-null decode function, and if so,
-            // call it with the corresponding entry of newObj
-
-            const writeObj = {};
-
-            Object.keys(qsObj).map((k) => {
-                if (storeKeys.includes(k) && atomStore[k].decode) {
-                    writeObj[k] = atomStore[k].decode(qsObj[k]);
-                }
-            });
-
-            writeFunc(writeObj);
-        }, [writeFunc, storeKeys]);
-
-        useEffect(() => {
-            window.onpopstate = (obj) => {
-                const writeObj = {};
-
-                // if go back to original address, then obj.state is
-                // null, and should reset everything
-                if (!obj.state) {
-                    Object.keys(atomStore).map((k) => {
-                        writeObj[k] = atomStore[k].decode();
-                    });
-                } else {
-                    Object.keys(obj.state).map((k) => {
-                        if (storeKeys.includes(k) && atomStore[k].decode()) {
-                            writeObj[k] = atomStore[k].decode(obj.state[k]);
-                        }
-                    });
-                }
-
-                writeFunc(writeObj);
-                //console.log('onpopstate called with obj = ', obj.state);
-            };
-        }, [writeFunc, storeKeys]);
-    }
-
-    // for valtio, make effect where reference gets updated to objToReturn
-
-    function useSaveToAddressBar() {
-        const [saveStuff, setSaveStuff] = useState();
-
-        const readAtoms = useAtomCallback(
-            useCallback((get) => {
-                const objToReturn = {};
-
-                Object.entries(atomStore).map(([abbrev, { atom, encode }]) => {
-                    const newValue = encode(get(atom));
-
-                    // don't need to put empty strings in address bar
-                    if (!newValue || newValue.length === 0) return;
-
-                    objToReturn[abbrev] = newValue;
-                });
-
-                //console.log(returnObj);
-                //console.log(queryString.stringify(returnObj));
-                //console.log(queryString.parse(queryString.stringify(returnObj)));
-
-                // the object is for pushing on history stack
-                // and the string is for writing to the address bar
-                return [objToReturn, queryString.stringify(objToReturn)];
-            }, [])
-        );
-
-        const saveCB = useCallback(() => {
-            readAtoms().then((st) => setSaveStuff(st));
-        }, [readAtoms]);
-
-        // whenever saveStuff changes, update the search bar
-        useEffect(() => {
-            if (!saveStuff || saveStuff[1].length === 0) return;
-
-            window.history.pushState(saveStuff[0], null, '?' + saveStuff[1]);
-        }, [saveStuff]);
-
-        return saveCB;
     }
 
     return DataComp;
@@ -192,4 +174,10 @@ function DiscIconSaveComp({ saveCB }) {
             <span style={cssRef2.current}>{'\u{1F4BE}'}</span>
         </div>
     );
+}
+
+function myStringify(obj) {
+    if (typeof obj === 'string') return obj;
+
+    return queryString.stringify(obj);
 }

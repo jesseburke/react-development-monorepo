@@ -33,7 +33,7 @@ export default React.memo(function Input({ onC, initValue, size = 10 }) {
 
     return (
         <input
-            className='text-black px-1 rounded-sm'
+            className='text-black px-1 rounded-sm border-2 border-gray-800'
             type='text'
             onBlur={handleBlur}
             onKeyDown={handleKey}

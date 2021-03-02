@@ -9,6 +9,9 @@
 # files ending in ~
 *~
 
+# files starting with .
+.~
+
 package-lock.json
 
 # files containing a sharp
@@ -17,5 +20,6 @@ package-lock.json
 # files introduced by Indium (I think)
 **/nil/**
 
-# log files from tide/typescript
-/.log
+# log files from typescript
+.log
+

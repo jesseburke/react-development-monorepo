@@ -6,7 +6,7 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects } from '../utils/BaseUtils';
+import { diffObjects, isEmpty } from '../utils/BaseUtils';
 import { Bounds2, Bounds2Min, Label2 } from '../my-types';
 
 const defaultLabelAtom: PrimitiveAtom<Label2> = atom({ x: 'x', y: 'y' });
@@ -22,40 +22,43 @@ export default function BoundsData({
     labelAtom = defaultLabelAtom,
     initBounds = defaultInitBounds
 }: BoundsDataProps = {}) {
-    const encode = (newObj: Bounds2) => {
-        const { xMin, xMax, yMin, yMax }: Bounds2 = diffObjects(newObj, initBounds);
-
-        let ro: Bounds2Min = {};
-
-        if (xMax) ro.xp = xMax;
-        if (xMin) ro.xm = xMin;
-        if (yMax) ro.yp = yMax;
-        if (yMin) ro.ym = yMin;
-
-        return queryString.stringify(ro);
-    };
-
-    const decode = (objStr: string) => {
-        if (!objStr || !objStr.length || objStr.length === 0) return initBounds;
-
-        const rawObj = queryString.parse(objStr);
-
-        const newKeys = Object.keys(rawObj);
-
-        const ro: Bounds2 = {};
-
-        if (newKeys.includes('xm')) ro.xMin = Number(rawObj.xm);
-        if (newKeys.includes('xp')) ro.xMax = Number(rawObj.xp);
-        if (newKeys.includes('ym')) ro.yMin = Number(rawObj.ym);
-        if (newKeys.includes('yp')) ro.yMax = Number(rawObj.yp);
-
-        return { ...initBounds, ...ro };
-    };
-
     const boundsAtom = atom(initBounds);
 
-    const resetAtom = atom(null, (get, set) => {
-        set(boundsAtom, initBounds);
+    const serializeAtom = atom(null, (get, set, action) => {
+        if (action.type === 'serialize') {
+            const { xMin, xMax, yMin, yMax }: Bounds2 = diffObjects(get(boundsAtom), initBounds);
+
+            let ro: Bounds2Min = {};
+
+            if (xMax) ro.xp = xMax;
+            if (xMin) ro.xm = xMin;
+            if (yMax) ro.yp = yMax;
+            if (yMin) ro.ym = yMin;
+
+            if (isEmpty(ro)) return;
+
+            action.callback(ro);
+        } else if (action.type === 'deserialize') {
+            const objStr = action.value;
+
+            if (!objStr || !objStr.length || objStr.length === 0) {
+                set(boundsAtom, initBounds);
+                return;
+            }
+
+            const rawObj = queryString.parse(objStr);
+
+            const newKeys = Object.keys(rawObj);
+
+            const ro: Bounds2 = {};
+
+            if (newKeys.includes('xm')) ro.xMin = Number(rawObj.xm);
+            if (newKeys.includes('xp')) ro.xMax = Number(rawObj.xp);
+            if (newKeys.includes('ym')) ro.yMin = Number(rawObj.ym);
+            if (newKeys.includes('yp')) ro.yMax = Number(rawObj.yp);
+
+            set(boundsAtom, { ...initBounds, ...ro });
+        }
     });
 
     const component = React.memo(function BoundsInput({}) {
@@ -81,57 +84,49 @@ export default function BoundsData({
         );
 
         return (
-            <div
-                className='flex flex-col justify-center items-center
-		h-full w-full'
-            >
-                <fieldset
-                    className='w-full h-full flex justify-center
+            <fieldset
+                className='w-full h-full flex flex-col flex-center justify-center
 		    items-center content-center'
+            >
+                <div className='py-2'>Direction field bounds</div>
+
+                <div
+                    className='flex justify-center items-center
+                        content-center h-full py-2'
                 >
-                    <legend>Direction field bounds</legend>
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.xMin} onC={xMinCB} />
+                    </span>
+                    <span className='text-center'>
+                        {' '}
+                        {'\u2000 \u2264 \u2000' + xLabel + '\u2000 \u2264 \u2000'}
+                    </span>
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.xMax} onC={xMaxCB} />
+                    </span>
+                </div>
 
-                    <div
-                        className='flex justify-center items-center
-                        content-center h-full'
-                    >
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.xMin} onC={xMinCB} />
-                        </span>
-                        <span className='text-center'>
-                            {' '}
-                            {'\u2000 \u2264 \u2000' + xLabel + '\u2000 \u2264 \u2000'}
-                        </span>
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.xMax} onC={xMaxCB} />
-                        </span>
-                    </div>
-
-                    <div
-                        className='flex justify-center items-center
-                        content-center h-full'
-                    >
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.yMin} onC={yMinCB} />
-                        </span>
-                        <span className='text-center'>
-                            {' '}
-                            {'\u2000 \u2264 \u2000' + yLabel + '\u2000 \u2264 \u2000'}
-                        </span>
-                        <span className='p-1'>
-                            <Input size={4} initValue={bounds.yMax} onC={yMaxCB} />
-                        </span>
-                    </div>
-                </fieldset>
-            </div>
+                <div
+                    className='flex justify-center items-center
+                        content-center h-full py-2'
+                >
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.yMin} onC={yMinCB} />
+                    </span>
+                    <span className='text-center'>
+                        {' '}
+                        {'\u2000 \u2264 \u2000' + yLabel + '\u2000 \u2264 \u2000'}
+                    </span>
+                    <span className='p-1'>
+                        <Input size={4} initValue={bounds.yMax} onC={yMaxCB} />
+                    </span>
+                </div>
+            </fieldset>
         );
     });
 
-    return {
-        atom: boundsAtom,
-        resetAtom,
-        component,
-        encode,
-        decode
-    };
+    boundsAtom.component = component;
+    boundsAtom.serializeAtom = serializeAtom;
+
+    return boundsAtom;
 }

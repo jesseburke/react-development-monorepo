@@ -1,14 +1,5 @@
 {
-    "entry": [
-        "src/main.jsx",
-        "src/pages/df/App_df/App_df.tsx",
-        "src/pages/df/App_linear/App_linear.jsx",
-        "src/pages/df/App_logistic/App_logistic.jsx",
-        "src/pages/df/App_resonance/App_resonance.jsx",
-        "src/pages/df/App_sec_order/App_sec_order.jsx",
-        "src/pages/df/App_sep/App_sep.tsx",
-        "src/pages/df/inProgress/App_streamlines.jsx"
-    ],
+    "entry": ["src/main.jsx", "src/App_df.tsx"],
     "extensions": [".ts", ".js", ".tsx", ".jsx"],
     "ignorePatterns": ["**/node_modules/**"],
     "ignoreUnresolved": [],

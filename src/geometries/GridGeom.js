@@ -3,11 +3,11 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 // llc = lower left corner
 
-export default function GridGeometry({ length, width, llc = [0, 0], divisionLength = 1 }) {
+export default function GridGeom({ length, width, llc = [0, 0], divisionLength = 1 }) {
     if (length <= 0 || width <= 0) return null;
 
     if (length > width) {
-        const geom = GridGeometry({ length: width, width: length, llc: [0, 0] });
+        const geom = GridGeom({ length: width, width: length, llc: [0, 0] });
 
         geom.rotateZ(Math.PI / 2);
         geom.translateY(-width); // not sure, but works
@@ -30,7 +30,7 @@ export default function GridGeometry({ length, width, llc = [0, 0], divisionLeng
     }
 
     if (width - k * length > 0)
-        group.add(GridGeometry({ length, width: width - k * length, llc: [k * length, 0] }));
+        group.add(GridGeom({ length, width: width - k * length, llc: [k * length, 0] }));
 
     group.translateX(llc[0]);
     group.translateY(llc[1]);

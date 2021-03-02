@@ -1,12 +1,7 @@
-export interface CameraData {
-    fov: number;
-    near: number;
-    far: number;
-    position?: ArrayPoint3;
-    up?: ArrayPoint3;
-    orthographic?: boolean;
-    aspectRatio?: number | null;
-    frustrumSize?: number | null;
+export interface OrthoCamera {
+    center: ArrayPoint3;
+    zoom: number;
+    position: ArrayPoint3;
 }
 
 export type ArrayPoint3 = [number, number, number];
