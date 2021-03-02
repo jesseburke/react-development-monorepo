@@ -1,0 +1,25 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# production
+/dist
+
+# files ending in ~
+*~
+
+# files starting with .
+.~
+
+package-lock.json
+
+# files containing a sharp
+*\#*
+
+# files introduced by Indium (I think)
+**/nil/**
+
+# log files from typescript
+.log
+
