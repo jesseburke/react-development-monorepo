@@ -5,25 +5,26 @@ import { atom, useAtom, PrimitiveAtom } from 'jotai';
 import * as THREE from 'three';
 
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
-import Sphere from './SphereRecoil.jsx';
+import DraggableSphere from './SphereRecoil.jsx';
 
 import { ArrayPoint2, Bounds2, CurveData2 } from '../my-types';
 
 export interface DirectionFieldApproxProps {
     threeCBs?: Function;
-    funcAtom: PrimitiveAtom<Function>;
+    diffEqAtom: PrimitiveAtom<Function>;
     initialPointAtom: PrimitiveAtom<ArrayPoint2>;
     boundsAtom: PrimitiveAtom<Bounds2>;
     curveDataAtom: PrimitiveAtom<CurveData2>;
     radius: number;
 }
 
-export default function DirectionFieldApprox({
+export default function IntegralCurve({
     threeCBs,
-    funcAtom,
+    diffEqAtom,
     initialPointAtom = null,
     boundsAtom,
     curveDataAtom,
+    zHeightAtom,
     radius = 0.05
 }) {
     const [mat, setMat] = useState();
@@ -32,13 +33,15 @@ export default function DirectionFieldApprox({
 
     const initialPt = useAtom(initialPointAtom)[0];
 
-    const func = useAtom(funcAtom)[0];
+    const func = useAtom(diffEqAtom)[0];
 
     const bounds = useAtom(boundsAtom)[0];
 
     const { visible, color, approxH, width } = useAtom(curveDataAtom)[0];
 
     const sphereColorAtom = atom((get) => get(curveDataAtom).color);
+
+    const zHeightFunc = zHeightAtom ? useAtom(zHeightAtom)[0].func : (x, y) => 0;
 
     useEffect(() => {
         setMat(
@@ -72,7 +75,8 @@ export default function DirectionFieldApprox({
             initialPt: [initialPt.x, initialPt.y],
             bounds,
             h: approxH,
-            radius: width
+            radius: width,
+            zHeightFunc
         });
 
         const mesh = new THREE.Mesh(dfag, mat);
@@ -88,11 +92,13 @@ export default function DirectionFieldApprox({
     }, [threeCBs, initialPt, bounds, func, width, approxH, mat, radius, visible]);
 
     return visible ? (
-        <Sphere
+        <DraggableSphere
             threeCBs={threeCBs}
             colorAtom={sphereColorAtom}
             dragPositionAtom={initialPointAtom}
             radius={(0.25 * width) / 0.1}
+            funcAtom={diffEqAtom}
+            zHeightAtom={zHeightAtom}
         />
     ) : null;
 }

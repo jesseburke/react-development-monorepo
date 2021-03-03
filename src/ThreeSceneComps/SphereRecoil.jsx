@@ -8,12 +8,13 @@ const defaultVisibleAtom = atom(true);
 
 const defaultColorAtom = atom('#0A2C3C');
 
-export default React.memo(function SphereTS({
+export default React.memo(function DraggableSphere({
     threeCBs,
     radius = 2,
     colorAtom = defaultColorAtom,
     dragCB = null,
     dragPositionAtom = null,
+    zHeightAtom = null,
     visibleAtom = defaultVisibleAtom
 }) {
     const [meshState, setMeshState] = useState();
@@ -23,6 +24,8 @@ export default React.memo(function SphereTS({
     const [visible] = useAtom(visibleAtom);
 
     const color = useAtom(colorAtom)[0];
+
+    const zHeightFunc = zHeightAtom ? useAtom(zHeightAtom)[0].func : (x, y) => 0;
 
     //------------------------------------------------------------------------
     //
@@ -46,7 +49,8 @@ export default React.memo(function SphereTS({
 
         const mesh = new THREE.Mesh(geometry, material)
             .translateX(position.x)
-            .translateY(position.y);
+            .translateY(position.y)
+            .translateZ(zHeightFunc(position.x, position.y));
 
         threeCBs.add(mesh);
         setMeshState(mesh);
@@ -56,7 +60,7 @@ export default React.memo(function SphereTS({
             if (geometry) geometry.dispose();
             if (material) material.dispose();
         };
-    }, [visible, color, radius, threeCBs]);
+    }, [visible, color, radius, threeCBs, zHeightFunc]);
 
     //------------------------------------------------------------------------
     //
@@ -70,7 +74,8 @@ export default React.memo(function SphereTS({
 
         meshState.position.x = position.x;
         meshState.position.y = position.y;
-    }, [position, meshState]);
+        meshState.position.z = zHeightFunc(position.x, position.y);
+    }, [position, meshState, zHeightFunc]);
 
     //------------------------------------------------------------------------
     //
