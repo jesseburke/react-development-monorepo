@@ -38,7 +38,7 @@ const initSolutionCurveData: CurveData2 = {
 const initFuncStr: string = 'x*y*sin(x+y)/10';
 
 const initAxesData: AxesDataT = {
-    radius: 0.01,
+    radius: 0.02,
     show: true,
     tickLabelDistance: 5
 };

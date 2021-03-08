@@ -14,7 +14,7 @@ import '../../../styles.css';
 import { ThreeSceneComp } from '../../../components/ThreeScene';
 
 import Grid from '../../../ThreeSceneComps/Grid';
-import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
+import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
 import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
 import CameraControls from '../../../ThreeSceneComps/CameraControls.jsx';
@@ -90,7 +90,7 @@ export default function App() {
                         photoButtonClassStr={photoButtonClassStr}
                     >
                         <Axes2D
-                            tickLabelDistance={1}
+                            tickDistance={1}
                             boundsAtom={boundsAtom}
                             axesDataAtom={axesDataAtom}
                             labelAtom={labelAtom}
