@@ -32,7 +32,7 @@ const defaultInitValues = {
     tickLabelStyle: defaultTickLabelStyle
 };
 
-export default function Axes2DData(args) {
+export default function AxesData(args) {
     const initValue = { ...defaultInitValues, ...args };
 
     const aoAtom = atom(initValue);
