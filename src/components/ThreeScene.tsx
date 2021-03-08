@@ -36,6 +36,7 @@ const ThreeScene: FunctionComponent = ({
     photoButtonClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
     cameraDebug = false,
     cameraDataAtom,
+    halfWidth = false,
     children
 }) => {
     const threeCanvasRef = useRef(null);
@@ -142,7 +143,7 @@ const ThreeScene: FunctionComponent = ({
         };
     }, [threeSceneCBs, threeCanvasRef]);
 
-    //------------------------------------------------------------------------
+    //----------------------------------------
     //
     // subscribe to controlsPubSub
 
@@ -151,6 +152,12 @@ const ThreeScene: FunctionComponent = ({
 
         threeSceneCBs.controlsPubSub.subscribe(controlsCB);
     }, [controlsCB, threeSceneCBs]);
+
+    //----------------------------------------
+    //
+    // set width class string
+
+    const widthStr = halfWidth ? ' w-1/2' : ' w-full';
 
     //----------------------------------------
     //
@@ -174,10 +181,7 @@ const ThreeScene: FunctionComponent = ({
     )[0];
 
     return (
-        <div
-            className='absolute h-full w-full bg-gray
-            point-events-none'
-        >
+        <div className={'absolute h-full bg-gray point-events-none' + widthStr}>
             <canvas
                 className='h-full w-full block outline-none'
                 ref={(elt) => (threeCanvasRef.current = elt)}
