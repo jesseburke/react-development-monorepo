@@ -5,12 +5,12 @@ import LabelData from '../../../data/LabelData.jsx';
 import PointData from '../../../data/PointData.jsx';
 import FunctionData from '../../../data/FunctionData.jsx';
 import ArrowGridData from '../../../data/ArrowGridData.jsx';
-import AxesData from '../../../data/Axes2DData.jsx';
+import AxesData from '../../../data/AxesData.jsx';
 import BoundsData from '../../../data/BoundsData';
 import CurveData from '../../../data/CurveData';
 import OrthoCameraData from '../../../data/OrthoCameraData';
 
-import { ObjectPoint2, Bounds2, CurveData2, LabelStyle, AxesDataT } from '../../../my-types';
+import { ObjectPoint2, Bounds, CurveData2, LabelStyle, AxesDataT } from '../../../my-types';
 
 //------------------------------------------------------------------------
 //
@@ -24,7 +24,7 @@ const colors = {
 
 const initArrowData = { density: 1, thickness: 1, length: 0.75, color: colors.arrows };
 
-const initBounds: Bounds2 = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
+const initBounds: Bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
 
 const initInitialPoint: ObjectPoint2 = { x: 2, y: 2 };
 
@@ -79,7 +79,8 @@ const functionLabelAtom = atom((get) => 'd' + get(labelAtom).y + '/d' + get(labe
 export const diffEqAtom = FunctionData({ initVal: initFuncStr, functionLabelAtom });
 export const boundsAtom = BoundsData({
     initBounds,
-    labelAtom
+    labelAtom,
+    twoD: true
 });
 
 export const orthoCameraDataAtom = OrthoCameraData(initCameraData);
