@@ -9,7 +9,7 @@ import LabelData from '../../../data/LabelData.jsx';
 import PointData from '../../../data/PointData.jsx';
 import EquationData from '../../../data/EquationData.jsx';
 import ArrowGridData from '../../../data/ArrowGridData.jsx';
-import AxesData from '../../../data/Axes2DData.jsx';
+import AxesData from '../../../data/AxesData.jsx';
 import BoundsData from '../../../data/BoundsData';
 import CurveData from '../../../data/CurveData';
 

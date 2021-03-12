@@ -35,7 +35,7 @@ export default React.memo(function FunctionGraph3DTS({
         const mesh = new THREE.Mesh(geometry, material);
         threeCBs.add(mesh);
 
-        const helper = new THREE.VertexNormalsHelper(mesh, 0.25, 0x000000, 10);
+        //const helper = new THREE.VertexNormalsHelper(mesh, 0.25, 0x000000, 10);
         //threeCBs.add(helper);
 
         //const helper1 = new VertexTangentsHelper( mesh, .25, 0x000000, 10 );

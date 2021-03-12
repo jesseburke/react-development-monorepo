@@ -16,7 +16,7 @@ const defaultAxesDataAtom = atom({
     tickLabelDistance: 2
 });
 
-export default React.memo(function Axes2DTS({
+export default React.memo(function Axes2D({
     threeCBs,
     boundsAtom,
     axesDataAtom = defaultAxesDataAtom,
@@ -84,21 +84,19 @@ export default React.memo(function Axes2DTS({
 
             // make ticks now
 
-            let geomArray = [];
+            let tickGeomArray = [];
 
             for (let i = xMin; i <= xMax; i++) {
-                geomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(i, 0, 0));
+                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(i, 0, 0));
             }
 
             for (let i = yMin; i <= yMax; i++) {
-                geomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(0, i, 0));
+                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(0, i, 0));
             }
 
-            let axesGeom = BufferGeometryUtils.mergeBufferGeometries(geomArray);
-
+            const tickGeom = BufferGeometryUtils.mergeBufferGeometries(tickGeomArray);
             const tickMaterial = new THREE.MeshBasicMaterial({ color: color });
-
-            axesGroup.add(new THREE.Mesh(axesGeom, tickMaterial));
+            axesGroup.add(new THREE.Mesh(tickGeom, tickMaterial));
 
             threeCBs.add(axesGroup);
         }
@@ -111,7 +109,7 @@ export default React.memo(function Axes2DTS({
     }, [threeCBs, show, xMin, xMax, yMin, yMax, radius, tickRadiusMultiple, color]);
 
     useEffect(() => {
-        if (!threeCBs) return;
+        if (!threeCBs || !show) return;
 
         let xLabelID;
         let yLabelID;
@@ -142,7 +140,7 @@ export default React.memo(function Axes2DTS({
 
             threeCBs.drawLabels();
         };
-    }, [threeCBs, showLabels, xMax, yMax, labelStyle, xLabel, yLabel]);
+    }, [threeCBs, show, showLabels, xMax, yMax, labelStyle, xLabel, yLabel]);
 
     // tick labeling
     useEffect(() => {

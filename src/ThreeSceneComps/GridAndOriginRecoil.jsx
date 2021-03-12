@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import GridGeometry from '../graphics/GridGeometry.js';
+import GridGeometry from '../graphics/GridGeom.js';
 
 export default React.memo(function GridAndOriginTS({
     threeCBs,

@@ -1,7 +1,5 @@
 import React, { useRef, useCallback } from 'react';
 
-import Input from './Input.jsx';
-
 function Slider({
     value,
     step = 0.1,
@@ -17,14 +15,8 @@ function Slider({
         CB(e.target.value);
     }, []);
 
-    const inputCB = useCallback((str) => {
-        CB(Number(str));
-    }, []);
-
-    const css1 = useRef({ whiteSpace: 'nowrap' }, []);
-
     return (
-        <div style={userCss}>
+        <div>
             <input
                 name='n'
                 type='range'
@@ -33,7 +25,11 @@ function Slider({
                 onChange={cb}
                 min={min}
                 max={max}
+                id='slider'
             />
+            <label htmlFor='slider' className='block'>
+                {label} = {value.toString()}
+            </label>
         </div>
     );
 }

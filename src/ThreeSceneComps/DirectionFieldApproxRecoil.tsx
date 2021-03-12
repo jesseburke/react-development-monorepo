@@ -7,13 +7,13 @@ import * as THREE from 'three';
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
 import DraggableSphere from './SphereRecoil.jsx';
 
-import { ArrayPoint2, Bounds2, CurveData2 } from '../my-types';
+import { ArrayPoint2, Bounds, CurveData2 } from '../my-types';
 
 export interface DirectionFieldApproxProps {
     threeCBs?: Function;
     diffEqAtom: PrimitiveAtom<Function>;
     initialPointAtom: PrimitiveAtom<ArrayPoint2>;
-    boundsAtom: PrimitiveAtom<Bounds2>;
+    boundsAtom: PrimitiveAtom<Bounds>;
     curveDataAtom: PrimitiveAtom<CurveData2>;
     radius: number;
 }

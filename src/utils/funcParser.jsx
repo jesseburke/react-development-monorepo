@@ -1,21 +1,14 @@
-import {Parser} from 'expr-eval';
+import { Parser } from 'expr-eval';
 
-export default function funcParser(funcStr) {
-
+export default function funcParser(funcStr, firstVar = 'x', secondVar = 'y') {
     const parser = new Parser();
 
     parser.consts.e = Math.E;
-    
-    return ((x0,y0) => parser.evaluate(funcStr, {x:x0, y:y0}));
 
-}
-
-export function funcParserXT(funcStr) {
-
-    const parser = new Parser();
-
-    parser.consts.e = Math.E;
-    
-    return ((x0,t0) => parser.evaluate(funcStr, {x:x0, t:t0}));
-
+    return (x0, y0) => {
+        const newObj = {};
+        newObj[firstVar] = x0;
+        newObj[secondVar] = y0;
+        return parser.evaluate(funcStr, newObj);
+    };
 }

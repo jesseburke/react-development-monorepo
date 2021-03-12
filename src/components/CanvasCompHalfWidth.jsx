@@ -100,7 +100,3 @@ export default React.memo(function CanvasComp({
         </React.Fragment>
     );
 });
-
-//------------------------------------------------------------------------
-//
-// draw on canvas

@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 
 import Input from '../components/Input.jsx';
 
-import funcParser, { funcParserXT } from '../utils/funcParser.jsx';
+import funcParser from '../utils/funcParser.jsx';
 
 import styles from './FunctionAndBoundsInput.module.css';
 import classnames from 'classnames';
@@ -92,7 +92,8 @@ export const FunctionAndBoundsInputXT = React.memo(function functionInputAndBoun
                         styles['inside-container'],
                         styles['outside-container-item']
                     )}
-                    style={userCss}>
+                    style={userCss}
+                >
                     <span className={styles['left-side-equation']}>{leftSideOfEquation}</span>
                     <Input size={inputSize} initValue={initFuncStr} onC={funcCB} />
                 </span>
@@ -101,7 +102,8 @@ export const FunctionAndBoundsInputXT = React.memo(function functionInputAndBoun
                     className={classnames(
                         styles['inside-container'],
                         styles['outside-container-item']
-                    )}>
+                    )}
+                >
                     <span className={styles['inside-container-item']}>
                         <span className={styles['text-item']}>{'0 \u{2264} x \u{2264}'}</span>
                         <Input size={bis} initValue={initBounds.xMax} onC={xMaxCB} />
@@ -116,7 +118,8 @@ export const FunctionAndBoundsInputXT = React.memo(function functionInputAndBoun
             <button
                 type={'button'}
                 className={classnames(styles['base-item'], styles['button'])}
-                onClick={graphButtonCB}>
+                onClick={graphButtonCB}
+            >
                 Graph
             </button>
         </div>

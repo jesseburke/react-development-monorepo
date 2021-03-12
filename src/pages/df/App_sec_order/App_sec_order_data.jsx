@@ -9,7 +9,7 @@ import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import TexDisplayCompR from '../../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../../components/Slider.jsx';
 
-import AxesData from '../../../data/Axes2DData.jsx';
+import AxesData from '../../../data/AxesData.jsx';
 import BoundsData from '../../../data/BoundsData.js';
 import CurveData from '../../../data/CurveData.js';
 

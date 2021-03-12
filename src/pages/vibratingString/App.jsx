@@ -14,7 +14,7 @@ import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.js
 import { FunctionAndBoundsInputXT as FunctionAndBoundsInput } from '../../components/FunctionAndBoundsInput.jsx';
 import Slider from '../../components/Slider.jsx';
 
-import { ThreeSceneHalfWidthComp } from '../../components/ThreeSceneHalfWidth.jsx';
+import ThreeSceneHalfWidthComp from '../../components/ThreeSceneHalfWidth.jsx';
 import CanvasComp from '../../components/CanvasCompHalfWidth.jsx';
 
 import GridAndOriginTS from '../../ThreeSceneComps/GridAndOrigin.jsx';
@@ -25,7 +25,9 @@ import AnimatedPlaneTS from '../../ThreeSceneComps/AnimatedPlane.jsx';
 import Axes2D from '../../CanvasComps/Axes2D.jsx';
 import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';
 
-import { funcParserXT as funcParser } from '../../utils/funcParser.jsx';
+/* import { funcParserXT as funcParser } from
+   /'../../utils/funcParser.jsx'; */
+import funcParser from '../../utils/funcParser.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -57,7 +59,7 @@ const initCameraData = {
 const initState = {
     bounds: initBounds,
     funcStr: initFuncStr,
-    func: funcParser(initFuncStr),
+    func: funcParser(initFuncStr, 'x', 't'),
     gridShow: true,
     cameraData: Object.assign({}, initCameraData)
 };
@@ -188,7 +190,7 @@ export default function App() {
     const funcAndBoundsInputCB = useCallback((newBounds, newFuncStr) => {
         setState(({ bounds, func, funcStr, ...rest }) => ({
             funcStr: newFuncStr,
-            func: funcParser(newFuncStr),
+            func: funcParser(newFuncStr, 'x', 't'),
             bounds: newBounds,
             ...rest
         }));

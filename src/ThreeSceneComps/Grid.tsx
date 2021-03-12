@@ -5,13 +5,13 @@ import { atom, useAtom, ReadOnlyAtom } from 'jotai';
 import * as THREE from 'three';
 
 import GridGeom from '../graphics/GridGeom.js';
-import { ArrayPoint2, Bounds2 } from '../my-types';
+import { ArrayPoint2, Bounds } from '../my-types';
 
 export interface GridProps {
     threeCBs?: Function;
     center?: ArrayPoint2;
     gridShow?: boolean;
-    boundsAtom?: ReadOnlyAtom<Bounds2>;
+    boundsAtom?: ReadOnlyAtom<Bounds>;
     gridCB?: Function;
 }
 

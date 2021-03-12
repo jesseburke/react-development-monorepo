@@ -22,12 +22,14 @@ export default function FunctionData({
     initVal = defaultInitVal,
     functionLabelAtom,
     functionLabelString = 'default label string',
-    inputSize = 15
+    inputSize = 15,
+    xVar = 'x',
+    yVar = 'y'
 }) {
     const functionStrAtom = atom(initVal);
 
     const functionAtom = atom((get) => ({
-        func: funcParser(get(functionStrAtom))
+        func: funcParser(get(functionStrAtom), xVar, yVar)
     }));
 
     const labelAtom = functionLabelAtom ? functionLabelAtom : atom(functionLabelString);
