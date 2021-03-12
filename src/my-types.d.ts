@@ -25,19 +25,23 @@ export interface AxesDataT {
     tickLabelDistance: number;
 }
 
-export interface Bounds2 {
+export interface Bounds {
     xMin?: number;
     xMax?: number;
     yMin?: number;
     yMax?: number;
+    zMin?: number;
+    zMax?: number;
 }
 
 // Bounds2Min(imized), for using in query-string
-export interface Bounds2Min {
+export interface BoundsMin {
     xp?: number;
     xm?: number;
     yp?: number;
     ym?: number;
+    zp?: number;
+    zm?: number;
 }
 
 export interface Bounds3 {
@@ -88,4 +92,12 @@ export interface LabelProps {
     text: string;
     style: LabelStyle;
     anchor: string;
+}
+
+export interface AnimationDataType {
+    animationTime: number;
+    t: number;
+    paused: boolean;
+    min: number;
+    max: number;
 }
