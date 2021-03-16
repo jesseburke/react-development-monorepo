@@ -59,8 +59,6 @@ const saveBtnClassStr = btnClassStr + ' bottom-40';
 
 const resetBtnClassStr = btnClassStr + ' bottom-24';
 
-/* const photoBtnClassStr = btnClassStr + ' bottom-8'; */
-
 const photoButtonClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
@@ -96,7 +94,10 @@ export default function App() {
                         />
                         <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <FunctionGraph3D funcAtom={funcAtom} boundsAtom={boundsAtom} />
-                        <CameraControls classStr={photoButtonClassStr} />
+                        <CameraControls
+                            classStr={photoButtonClassStr}
+                            cameraDataAtom={orthoCameraDataAtom}
+                        />
                     </ThreeSceneComp>
                     <CanvasComp>
                         <Axes2DCanv boundsAtom={boundsAtom} lineWidth={5} yLabel='z' />
