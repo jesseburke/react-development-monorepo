@@ -42,13 +42,10 @@ const initControlsData = {
     screenSpacePanning: true
 };
 
-const aspectRatio = window.innerWidth / window.innerHeight;
-
 const fixedCameraData = {
     up: [0, 1, 0],
     near: 0.1,
     far: 100,
-    aspectRatio,
     orthographic: true
 };
 

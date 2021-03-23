@@ -52,7 +52,7 @@ const ThreeScene: FunctionComponent = ({
         if (threeCanvasRef && threeCanvasRef.current) {
             const height = threeCanvasRef.current.offsetHeight;
             const width = threeCanvasRef.current.offsetWidth;
-            const pixelRatio = 1; //window.devicePixelRatio;
+            const pixelRatio = window.devicePixelRatio;
 
             if (height === 0 || width === 0) {
                 requestAnimationFrame(() => {
@@ -95,8 +95,6 @@ const ThreeScene: FunctionComponent = ({
                     controlsData,
                     clearColor,
                     cameraDebug,
-                    height: initialHeightPxs,
-                    width: initialWidthPxs,
                     debugDiv1: debugDiv1Ref.current,
                     debugDiv2: debugDiv2Ref.current
                 })
@@ -108,8 +106,6 @@ const ThreeScene: FunctionComponent = ({
                     labelContainerDiv: labelContainerRef.current,
                     fixedCameraData,
                     controlsData,
-                    height: initialHeightPxs,
-                    width: initialWidthPxs,
                     clearColor
                 })
             );

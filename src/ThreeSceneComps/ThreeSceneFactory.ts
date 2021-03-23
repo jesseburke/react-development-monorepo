@@ -39,6 +39,8 @@ export interface ThreeFactoryProps {
     alpha: boolean;
 }
 
+const defaultFov = 57;
+
 export default function ThreeSceneFactory({
     drawCanvas,
     labelContainerDiv,
@@ -47,13 +49,33 @@ export default function ThreeSceneFactory({
     controlsData,
     alpha = true,
     cameraDebug = false,
-    height,
-    width,
     debugDiv1 = null,
     debugDiv2 = null
 }: ThreeFactoryProps) {
-    let raycaster = new THREE.Raycaster();
+    let height, width, aspectRatio, pixelRatio;
 
+    if (!drawCanvas) {
+        console.log('ThreeSceneFactory called with null drawCanvas prop');
+        return;
+    }
+
+    function setHeightAndWidth() {
+        const canvHeight = drawCanvas.offsetHeight;
+        const canvWidth = drawCanvas.offsetWidth;
+        pixelRatio = window.devicePixelRatio;
+
+        height = canvHeight * pixelRatio;
+        width = canvWidth * pixelRatio;
+
+        if (!height || !width) requestAnimationFrame(setHeightAndWidth);
+        else aspectRatio = cameraDebug ? width / (2 * height) : width / height;
+
+        return null;
+    }
+
+    setHeightAndWidth();
+
+    let raycaster = new THREE.Raycaster();
     let isOrthoCamera = false;
 
     //----------------------------------------
@@ -65,8 +87,6 @@ export default function ThreeSceneFactory({
         return;
     }
 
-    let aspectRatio = cameraDebug ? width / (2 * height) : width / height;
-
     let renderer = new THREE.WebGLRenderer({
         canvas: drawCanvas,
         antialias: true,
@@ -75,7 +95,7 @@ export default function ThreeSceneFactory({
 
     renderer.setClearColor(clearColor);
     renderer.setSize(width, height, false);
-    //renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(pixelRatio);
 
     //----------------------------------------
     //
@@ -83,8 +103,7 @@ export default function ThreeSceneFactory({
 
     let scene = new THREE.Scene();
 
-    const fov = fixedCameraData.fov || 95;
-    const aspect = width! / height!; // the canvas default
+    const fov = fixedCameraData.fov || defaultFov;
     const near = fixedCameraData.near || 0.01;
     const far = fixedCameraData.far || 5000;
 
@@ -94,25 +113,13 @@ export default function ThreeSceneFactory({
     const viewHeight = 5; //initCameraData.viewHeight!;
 
     if (!fixedCameraData.orthographic) {
-        camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera = new THREE.PerspectiveCamera(fov, aspectRatio, near, far);
 
         if (cameraDebug) {
-            cameraForDebug = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            cameraForDebug = new THREE.PerspectiveCamera(fov, aspectRatio, near, far);
         }
     } else {
         isOrthoCamera = true;
-
-        if (!fixedCameraData.aspectRatio) {
-            console.log(
-                'need to have non-null aspectRatio in fixedCameraData for orthographic camera'
-            );
-            return;
-        }
-
-        // if (!initCameraData.viewHeight) {
-        //     console.log('need to have non-null viewHeight in cameraData for orthographic camera');
-        //     return;
-        // }
 
         camera = new THREE.OrthographicCamera(
             (viewHeight * aspectRatio) / -2,
@@ -313,7 +320,7 @@ export default function ThreeSceneFactory({
             return;
         }
 
-        const mult = 1; //cameraDebug ? 1 : window.devicePixelRatio;
+        const mult = cameraDebug ? 1 : window.devicePixelRatio;
 
         const newWidth = drawCanvas.clientWidth * mult;
         const newHeight = drawCanvas.clientHeight * mult;
@@ -331,7 +338,7 @@ export default function ThreeSceneFactory({
 
         if (!isOrthoCamera) {
             renderer.setSize(width, height, false);
-            camera.aspect = width / height;
+            camera.aspect = aspectRatio;
             controls.update();
         } else {
             renderer.setSize(width, height, false);
