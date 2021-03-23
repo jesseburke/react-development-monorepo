@@ -54,23 +54,30 @@ export default function ThreeSceneFactory({
 }: ThreeFactoryProps) {
     let height, width, aspectRatio, pixelRatio;
 
+    let canvHeight, canvWidth;
+
     if (!drawCanvas) {
         console.log('ThreeSceneFactory called with null drawCanvas prop');
         return;
     }
 
     function setHeightAndWidth() {
-        const canvHeight = drawCanvas.offsetHeight;
-        const canvWidth = drawCanvas.offsetWidth;
+        const oldHeight = height;
+        const oldWidth = width;
+
+        canvHeight = drawCanvas.offsetHeight;
+        canvWidth = drawCanvas.offsetWidth;
         pixelRatio = window.devicePixelRatio;
 
         height = canvHeight * pixelRatio;
         width = canvWidth * pixelRatio;
 
+        if (oldHeight == height && oldWidth == width) return false;
+
         if (!height || !width) requestAnimationFrame(setHeightAndWidth);
         else aspectRatio = cameraDebug ? width / (2 * height) : width / height;
 
-        return null;
+        return true;
     }
 
     setHeightAndWidth();
@@ -194,45 +201,64 @@ export default function ThreeSceneFactory({
 
     let cameraHelper = new THREE.CameraHelper(camera);
 
+    //----------------------------------------
+    //
+    // set up labels
+
+    let labelMaker;
+
+    // want to potentially use this for different cameras, is why it's a factory
     const threeToHtmlCoordFuncFactory = (cam) => (coord) => {
         cam.updateProjectionMatrix();
 
-        let temp = new THREE.Vector3(coord[0], coord[1], coord[2]);
-        temp.project(cam);
+        let tempVector = new THREE.Vector3(coord[0], coord[1], coord[2]);
+
+        // this projects tempVector into normalized device coordinate
+        // space, which is [-1,1] x [-1,1]
+        tempVector.project(cam);
 
         if (!cameraDebug) {
-            return [(temp.x * 0.5 + 0.5) * width, (temp.y * -0.5 + 0.5) * height];
+            // usual case
+            return [
+                (tempVector.x * 0.5 + 0.5) * canvWidth,
+                (tempVector.y * -0.5 + 0.5) * canvHeight
+            ];
+            // in this case, only using left half of screen
         } else {
-            return [((temp.x * 0.5 + 0.5) * width) / 2, (temp.y * -0.5 + 0.5) * height];
+            return [
+                ((tempVector.x * 0.5 + 0.5) * canvWidth) / 2,
+                (tempVector.y * -0.5 + 0.5) * canvHeight
+            ];
         }
     };
 
-    let addLabel, removeLabel, drawLabels;
-
     if (!cameraDebug) {
-        let lm = LabelMaker(labelContainerDiv, threeToHtmlCoordFuncFactory(camera), width, height);
-
-        addLabel = lm.addLabel;
-        removeLabel = lm.removeLabel;
-        drawLabels = lm.drawLabels;
+        labelMaker = LabelMaker(
+            labelContainerDiv,
+            threeToHtmlCoordFuncFactory(camera),
+            canvWidth,
+            canvHeight
+        );
     } else {
         let lm1 = LabelMaker(debugDiv1, threeToHtmlCoordFuncFactory(camera), width / 2, height);
         let lm2 = LabelMaker(
             debugDiv2,
             threeToHtmlCoordFuncFactory(cameraForDebug),
-            width / 2,
-            height
+            canvWidth / 2,
+            canvHeight
         );
 
-        addLabel = (args) => {
+        const addLabel = (args) => {
             lm1.addLabel(args);
             lm2.addLabel(args);
         };
-        removeLabel = () => null;
-        drawLabels = (args) => {
-            lm1.drawLabels(args);
-            lm2.drawLabels(args);
+        const removeLabel = () => null;
+        const drawLabels = () => {
+            lm1.drawLabels();
+            lm2.drawLabels();
         };
+
+        labelMaker = { addLabel, removeLabel, drawLabels };
     }
 
     //----------------------------------------
@@ -248,7 +274,7 @@ export default function ThreeSceneFactory({
 
         if (!cameraDebug) {
             renderer.render(scene, camera);
-            drawLabels();
+            labelMaker.drawLabels();
             return;
         }
 
@@ -289,7 +315,7 @@ export default function ThreeSceneFactory({
             renderer.render(scene, cameraForDebug);
         }
 
-        drawLabels();
+        labelMaker.drawLabels();
     };
 
     function setScissorForElement(elem, renderer, drawCanvas) {
@@ -320,38 +346,42 @@ export default function ThreeSceneFactory({
             return;
         }
 
-        const mult = cameraDebug ? 1 : window.devicePixelRatio;
+        // const mult = cameraDebug ? 1 : window.devicePixelRatio;
 
-        const newWidth = drawCanvas.clientWidth * mult;
-        const newHeight = drawCanvas.clientHeight * mult;
+        // const newWidth = drawCanvas.clientWidth * mult;
+        // const newHeight = drawCanvas.clientHeight * mult;
 
-        if (width == newWidth && height == newHeight) return;
+        // if (width == newWidth && height == newHeight) return;
 
-        aspectRatio = cameraDebug ? newWidth / (2 * newHeight) : newWidth / newHeight;
-        width = newWidth;
-        height = newHeight;
+        // aspectRatio = cameraDebug ? newWidth / (2 * newHeight) : newWidth / newHeight;
+        // width = newWidth;
+        // height = newHeight;
+
+        const changed = setHeightAndWidth();
+
+        if (!changed) return;
 
         if (!renderer || !camera) {
             console.log('handleResize called with null renderer or null camera');
             return;
         }
 
+        renderer.setSize(width, height, false);
+
         if (!isOrthoCamera) {
-            renderer.setSize(width, height, false);
             camera.aspect = aspectRatio;
-            controls.update();
         } else {
-            renderer.setSize(width, height, false);
             camera.left = (viewHeight * aspectRatio) / -2;
             camera.right = (viewHeight * aspectRatio) / 2;
             camera.top = viewHeight / 2;
             camera.bottom = viewHeight / -2;
-            controls.update();
         }
+        controls.update();
         camera.updateProjectionMatrix();
 
+        labelMaker.changeCoordFunc(threeToHtmlCoordFuncFactory(camera));
+        labelMaker.drawLabels();
         render();
-        drawLabels();
     };
 
     function add(threeObj) {
@@ -379,7 +409,7 @@ export default function ThreeSceneFactory({
         camera.position.set(...newPosition);
         camera.updateProjectionMatrix();
         controls.update();
-        drawLabels();
+        labelMaker.drawLabels();
         render();
     }
 
@@ -391,12 +421,12 @@ export default function ThreeSceneFactory({
         render();
         camera.updateProjectionMatrix();
         controls.update();
-        drawLabels();
+        labelMaker.drawLabels();
         render();
         //console.log('threeScene.setcameraposition over');
     }
 
-    drawLabels();
+    labelMaker.drawLabels();
     render();
 
     //----------------------------------------
@@ -470,7 +500,7 @@ export default function ThreeSceneFactory({
     }
 
     const controlsPubSub = pubsub();
-    controlsPubSub.subscribe(drawLabels);
+    controlsPubSub.subscribe(labelMaker.drawLabels);
 
     controls.addEventListener('change', () => {
         let v = new THREE.Vector3(0, 0, 0);
@@ -481,7 +511,7 @@ export default function ThreeSceneFactory({
             center: controls.target.toArray()
         });
         render();
-        drawLabels();
+        labelMaker.drawLabels();
     });
 
     if (cameraDebug) {
@@ -558,7 +588,7 @@ export default function ThreeSceneFactory({
 
         controls.update();
         render();
-        drawLabels;
+        labelMaker.drawLabels;
     };
 
     const resetControls = () => {
@@ -572,7 +602,7 @@ export default function ThreeSceneFactory({
         controls = Object.assign(controls, newControlsData);
         controls.update();
         render();
-        drawLabels();
+        labelMaker.drawLabels();
     };
 
     const getControlsTarget = () => controls.target;
@@ -585,7 +615,7 @@ export default function ThreeSceneFactory({
         controls.target = new THREE.Vector3(x, y, z);
         controls.update();
         render();
-        drawLabels();
+        labelMaker.drawLabels();
     };
 
     const getCanvas = () => drawCanvas;
@@ -610,9 +640,7 @@ export default function ThreeSceneFactory({
         add,
         remove,
         render,
-        addLabel,
-        removeLabel,
-        drawLabels,
+        ...labelMaker,
         setCameraPosition,
         setCameraLookAt,
         setCameraZoom,

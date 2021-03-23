@@ -2,14 +2,15 @@ import { css } from 'emotion';
 
 import { OrthoCamera, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
 
-export default function LabelMaker(labelContainerDiv, coordFunc, width, height) {
+export default function LabelMaker(labelContainerDiv, initCoordFunc, width, height) {
     //----------------------------------------
     //
     // set up labels
 
     let threeLabelData: (LabelProps | null)[] = [];
-    let htmlLabelData: (LabelProps | null)[] = [];
     let labelCounter = 0;
+
+    let coordFunc = initCoordFunc.bind({});
 
     function addLabel({
         pos,
@@ -34,17 +35,17 @@ export default function LabelMaker(labelContainerDiv, coordFunc, width, height) 
     }
 
     function drawLabels() {
-        // remove all previous labels
         if (!labelContainerDiv) {
             console.log('tried to draw labels in useThree with null labelContainerRef');
             return;
         }
 
+        // remove all previous labels
         while (labelContainerDiv.firstChild) {
             labelContainerDiv.removeChild(labelContainerDiv.firstChild);
         }
 
-        htmlLabelData = [];
+        const htmlLabelData: (LabelProps | null)[] = [];
 
         // following converts all coordinates of labels to html coordinates;
         // if they are in the window, they are added to htmlLabelData
@@ -58,11 +59,8 @@ export default function LabelMaker(labelContainerDiv, coordFunc, width, height) 
             [x, y] = coordFunc(threeLabelData[key].pos);
 
             if (0 < x && x < width && 0 < y && y < height) {
-                htmlLabelData[key] = {};
-                htmlLabelData[key].text = threeLabelData[key].text;
-                htmlLabelData[key].style = threeLabelData[key].style;
+                htmlLabelData[key] = { ...threeLabelData[key] };
                 htmlLabelData[key].pos = [x, y];
-                htmlLabelData[key].anchor = threeLabelData[key].anchor;
             }
         }
 
@@ -162,5 +160,10 @@ export default function LabelMaker(labelContainerDiv, coordFunc, width, height) 
         }
     }
 
-    return { addLabel, removeLabel, drawLabels };
+    function changeCoordFunc(newFunc) {
+        coordFunc = newFunc.bind({});
+        drawLabels();
+    }
+
+    return { addLabel, removeLabel, drawLabels, changeCoordFunc };
 }

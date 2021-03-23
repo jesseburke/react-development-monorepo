@@ -21,7 +21,7 @@ const colors = {
     tick: '#cf6c28' //#e19662'
 };
 
-const initBounds: Bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
+const initBounds: Bounds = { xMin: 0, xMax: 10, yMin: 0, yMax: 10, zMin: -5, zMax: 5 };
 
 const initFuncStr: string = '4*e^(-(x-2*t)^2)+sin(x+t)-cos(x-t)';
 
@@ -51,9 +51,9 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 
 //------------------------------------------------------------------------
 //
-// primitive atoms
+// atoms
 
-export const labelAtom = LabelData({ xLabel: 't', yLabel: 'x', twoD: true });
+export const labelAtom = LabelData({ yLabel: 't', twoD: true });
 export const axesDataAtom = AxesData({
     ...initAxesData,
     tickLabelStyle
@@ -64,17 +64,36 @@ const functionLabelAtom = atom((get) => 's(' + get(labelAtom).x + ', ' + get(lab
 export const funcAtom = FunctionData({
     initVal: initFuncStr,
     functionLabelAtom,
-    xVar: 't',
-    yVar: 'x'
+    xVar: 'x',
+    yVar: 't'
 });
+
 export const boundsAtom = BoundsData({
     initBounds,
     labelAtom
 });
 
-export const orthoCameraDataAtom = OrthoCameraData(initCameraData);
+const planeOverhang = 2;
+
+export const planeHeightWidthAtom = atom((get) => {
+    const { xMin, xMax, zMin, zMax } = get(boundsAtom);
+
+    return { width: xMax - xMin + planeOverhang, height: zMax - zMin };
+});
 
 export const animationDataAtom = AnimationData({ min: 0, max: initBounds.xMax });
+
+export const animationValueAtom = atom((get) => get(animationDataAtom).t);
+
+export const planeCenterAtom = atom((get) => [get(boundsAtom).xMax / 2, get(animationValueAtom)]);
+
+export const twoDFuncAtom = atom((get) => {
+    const t = get(animationValueAtom);
+
+    return { func: (x) => get(funcAtom).func(x, t) };
+});
+
+export const orthoCameraDataAtom = OrthoCameraData(initCameraData);
 
 const atomStoreAtom = atom({
     ls: labelAtom,

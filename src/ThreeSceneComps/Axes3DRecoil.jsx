@@ -35,10 +35,7 @@ export default React.memo(function Axes3D({
         tickLabelStyle
     } = useAtom(axesDataAtom)[0];
 
-    const { xMin, xMax, yMin, yMax } = useAtom(boundsAtom)[0];
-
-    const zMin = -5;
-    const zMax = 10;
+    const { xMin, xMax, yMin, yMax, zMin, zMax } = useAtom(boundsAtom)[0];
 
     const { x: xLabel, y: yLabel, z: zLabel } = useAtom(labelAtom)[0];
 
@@ -133,21 +130,21 @@ export default React.memo(function Axes3D({
             xLabelID = threeCBs.addLabel({
                 pos: [xMax, 0, 0],
                 text: xLabel,
-                anchor: 'lr',
+                //anchor: 'lr',
                 style: labelStyle
             });
 
             yLabelID = threeCBs.addLabel({
                 pos: [0, yMax, 0],
                 text: yLabel,
-                anchor: 'lr',
+                //anchor: 'lr',
                 style: labelStyle
             });
 
             zLabelID = threeCBs.addLabel({
                 pos: [0, 0, zMax],
                 text: zLabel,
-                anchor: 'lr',
+                //anchor: 'lr',
                 style: labelStyle
             });
 
