@@ -122,6 +122,11 @@ export default function ThreeSceneFactory({
     if (!fixedCameraData.orthographic) {
         camera = new THREE.PerspectiveCamera(fov, aspectRatio, near, far);
 
+        // camera is by default positioned at (0,0,0) and controls are targeted
+        // at same point by default, which makes controls
+        // unusable.
+        camera.position.set(1, 1, 1);
+
         if (cameraDebug) {
             cameraForDebug = new THREE.PerspectiveCamera(fov, aspectRatio, near, far);
         }
@@ -508,10 +513,11 @@ export default function ThreeSceneFactory({
         controlsPubSub.publish({
             position: v.toArray(),
             zoom: camera.zoom,
-            center: controls.target.toArray()
+            target: controls.target.toArray()
         });
         render();
         labelMaker.drawLabels();
+        //console.log('controls callback called');
     });
 
     if (cameraDebug) {
@@ -582,6 +588,8 @@ export default function ThreeSceneFactory({
 
     const setCameraZoom = (newZoom) => {
         if (newZoom === camera.zoom) return;
+
+        if (!isOrthoCamera) return;
 
         camera.zoom = newZoom;
         camera.updateProjectionMatrix();

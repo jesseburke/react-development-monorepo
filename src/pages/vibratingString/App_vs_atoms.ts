@@ -7,6 +7,7 @@ import FunctionData from '../../data/FunctionData.jsx';
 import AxesData from '../../data/AxesData.jsx';
 import BoundsData from '../../data/BoundsData';
 import AnimationData from '../../data/AnimationData';
+import PerspCameraData from '../../data/PerspCameraData';
 import OrthoCameraData from '../../data/OrthoCameraData';
 
 import { ObjectPoint2, Bounds, CurveData2, LabelStyle, AxesDataT } from '../../my-types';
@@ -31,10 +32,12 @@ const initAxesData: AxesDataT = {
     tickLabelDistance: 5
 };
 
+const initXLength = initBounds.xMax - initBounds.xMin;
+const initYLength = initBounds.yMax - initBounds.yMin;
+
 const initCameraData = {
-    center: [0, 0, 0],
-    zoom: 0.2,
-    position: [0, 0, 50]
+    target: [initXLength * (10.15 / 20), initYLength * (4.39 / 20), 0],
+    position: [(-16.7 / 20) * initXLength, (-26.1 / 20) * initYLength, 6.65]
 };
 
 export const labelStyle: LabelStyle = {
@@ -93,14 +96,14 @@ export const twoDFuncAtom = atom((get) => {
     return { func: (x) => get(funcAtom).func(x, t) };
 });
 
-export const orthoCameraDataAtom = OrthoCameraData(initCameraData);
+export const cameraDataAtom = PerspCameraData(initCameraData);
 
 const atomStoreAtom = atom({
     ls: labelAtom,
     ax: axesDataAtom,
     fn: funcAtom.functionStrAtom,
     bd: boundsAtom,
-    cd: orthoCameraDataAtom,
+    cd: cameraDataAtom,
     ad: animationDataAtom
 });
 

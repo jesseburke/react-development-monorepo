@@ -26,37 +26,34 @@ import {
     funcAtom,
     labelAtom,
     axesDataAtom,
-    orthoCameraDataAtom,
+    cameraDataAtom,
     animationDataAtom,
     DataComp
 } from './App_vs_atoms';
 
 const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.PAN },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN },
+    mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
+    touches: { ONE: THREE.MOUSE.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN },
     enableRotate: true,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    zoomSpeed: 2,
-    screenSpacePanning: true
+    screenSpacePanning: false
 };
 
 const fixedCameraData = {
-    up: [0, 1, 0],
+    up: [0, 0, 1],
     near: 0.1,
     far: 100,
-    orthographic: true
+    orthographic: false
 };
 
 const btnClassStr =
     'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
 
-const saveBtnClassStr = btnClassStr + ' bottom-40';
+const saveBtnClassStr = btnClassStr + ' bottom-24';
 
-const resetBtnClassStr = btnClassStr + ' bottom-24';
-
-const photoButtonClassStr = btnClassStr + ' bottom-8';
+const resetBtnClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
 
@@ -77,11 +74,9 @@ export default function App() {
 
                 <main className='flex-grow relative p-0'>
                     <ThreeSceneComp
+                        halfWidth={true}
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
-                        cameraDataAtom={orthoCameraDataAtom}
-                        photoButton={true}
-                        photoButtonClassStr={photoButtonClassStr}
                     >
                         <Axes3D
                             tickLabelDistance={1}
@@ -91,10 +86,8 @@ export default function App() {
                         />
                         <Grid boundsAtom={boundsAtom} gridShow={true} />
                         <FunctionGraph3D funcAtom={funcAtom} boundsAtom={boundsAtom} />
-                        <CameraControls
-                            classStr={photoButtonClassStr}
-                            cameraDataAtom={orthoCameraDataAtom}
                         />
+                        <CameraControls cameraDataAtom={cameraDataAtom} />
                     </ThreeSceneComp>
                     <CanvasComp>
                         <Axes2DCanv boundsAtom={boundsAtom} lineWidth={5} yLabel='z' />
@@ -157,7 +150,7 @@ function OptionsModal() {
                         <boundsAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <orthoCameraDataAtom.component />
+                        <cameraDataAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <labelAtom.component />

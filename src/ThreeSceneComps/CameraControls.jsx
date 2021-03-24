@@ -3,17 +3,17 @@ import { useAtom, atom } from 'jotai';
 
 import '../styles.css';
 
-export default function CameraControls({ cameraDataAtom, classStr, threeCBs }) {
+export default function CameraControls({ cameraDataAtom, threeCBs }) {
     const [cameraData, setCameraData] = useAtom(cameraDataAtom);
 
     useEffect(() => {
         if (!threeCBs) return;
 
-        const center = cameraData.center;
+        const target = cameraData.target;
         //console.log('cameraData.center = ', center);
 
-        threeCBs.setControlsTarget(center);
-    }, [threeCBs, cameraData.center]);
+        threeCBs.setControlsTarget(target);
+    }, [threeCBs, cameraData.target]);
 
     useEffect(() => {
         if (!threeCBs) return;

@@ -1,6 +1,11 @@
 export interface OrthoCamera {
-    center: ArrayPoint3;
+    target: ArrayPoint3;
     zoom: number;
+    position: ArrayPoint3;
+}
+
+export interface PerspCamera {
+    target: ArrayPoint3;
     position: ArrayPoint3;
 }
 

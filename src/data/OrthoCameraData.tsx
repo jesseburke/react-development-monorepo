@@ -10,7 +10,7 @@ import { OrthoCamera } from '../my-types';
 import '../styles.css';
 
 const defaultInitValues: OrthoCamera = {
-    center: [0, 0, 0],
+    target: [0, 0, 0],
     zoom: 0.2,
     position: [0, 0, 50]
 };
@@ -22,11 +22,11 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
 
     const serializeAtom = atom(null, (get, set, action) => {
         if (action.type === 'serialize') {
-            const { center, zoom, position } = diffObjects(get(cameraDataAtom), initValue);
+            const { target, zoom, position } = diffObjects(get(cameraDataAtom), initValue);
 
-            let ro: OrthoCamera = {};
+            let ro = {};
 
-            if (center) ro.c = queryString.stringify(center.map((x) => round(x, 2)));
+            if (target) ro.t = queryString.stringify(target.map((x) => round(x, 2)));
             if (zoom) ro.z = zoom;
             if (position) ro.p = queryString.stringify(position.map((x) => round(x, 2)));
 
@@ -47,10 +47,10 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
 
             const ro: OrthoCamera = {};
 
-            if (newKeys.includes('c')) {
-                const ct = queryString.parse(rawObj.c);
+            if (newKeys.includes('t')) {
+                const t = queryString.parse(rawObj.t);
 
-                ro.center = [Number(ct[0]), Number(ct[1]), Number(ct[2])];
+                ro.target = [Number(t[0]), Number(t[1]), Number(t[2])];
             }
             if (newKeys.includes('z')) ro.zoom = Number(rawObj.z);
             if (newKeys.includes('p')) {
@@ -66,44 +66,44 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
     const component = React.memo(function OrthoCameraOptionsInput({}) {
         const [cameraData, setData] = useAtom(cameraDataAtom);
 
-        let { center, zoom, position } = cameraData;
-        center = center.map((x) => round(x, 2));
+        let { target, zoom, position } = cameraData;
+        target = target.map((x) => round(x, 2));
 
         const zoomCB = useCallback(
             (inputStr) => setData((oldData) => ({ ...oldData, zoom: Number(inputStr) })),
             [setData]
         );
 
-        const centerXCB = useCallback(
+        const targetXCB = useCallback(
             (inputStr) =>
                 setData((oldData) => ({
                     ...oldData,
-                    center: [Number(inputStr), oldData.center[1], oldData.center[2]]
+                    target: [Number(inputStr), oldData.target[1], oldData.target[2]]
                 })),
             [setData]
         );
 
-        const centerYCB = useCallback(
+        const targetYCB = useCallback(
             (inputStr) =>
                 setData((oldData) => ({
                     ...oldData,
-                    center: [oldData.center[0], Number(inputStr), oldData.center[2]]
+                    target: [oldData.target[0], Number(inputStr), oldData.target[2]]
                 })),
             [setData]
         );
 
-        const centerZCB = useCallback(
+        const targetZCB = useCallback(
             (inputStr) =>
                 setData((oldData) => ({
                     ...oldData,
-                    center: [oldData.center[0], oldData.center[1], Number(inputStr)]
+                    target: [oldData.target[0], oldData.target[1], Number(inputStr)]
                 })),
             [setData]
         );
 
         const straightenCB = useCallback(() => {
             let diffAndSquaredArray = position.map(
-                (x, index) => (position[index] - center[index]) ** 2
+                (x, index) => (position[index] - target[index]) ** 2
             );
 
             const red = (acc, curVal) => acc + curVal;
@@ -112,8 +112,8 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
 
             setData((oldData) => ({
                 ...oldData,
-                position: [oldData.center[0], oldData.center[1], l],
-                center: [oldData.center[0], oldData.center[1], 0]
+                position: [oldData.target[0], oldData.target[1], l],
+                target: [oldData.target[0], oldData.target[1], 0]
             }));
         }, [position, setData]);
 
@@ -123,12 +123,12 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
 		items-center w-full h-full p-1'
             >
                 <div className='py-2'>
-                    <span className='text-center'>View center point: </span>
-                    <Input initValue={center[0]} size={4} onC={centerXCB} />
+                    <span className='text-center'>Camera target point: </span>
+                    <Input initValue={target[0]} size={4} onC={targetXCB} />
                     <span> , </span>
-                    <Input initValue={center[1]} size={4} onC={centerYCB} />
+                    <Input initValue={target[1]} size={4} onC={targetYCB} />
                     <span> , </span>
-                    <Input initValue={center[2]} size={4} onC={centerZCB} />
+                    <Input initValue={target[2]} size={4} onC={targetZCB} />
                 </div>
                 <div className='py-2'>
                     <span className='text-center'>Zoom:</span>
