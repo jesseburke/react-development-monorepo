@@ -76,6 +76,19 @@ export const boundsAtom = BoundsData({
     labelAtom
 });
 
+const gridOverhang = 2;
+
+export const gridBoundsAtom = atom((get) => {
+    const { xMin, xMax, yMin, yMax } = get(boundsAtom);
+
+    return {
+        xMin: xMin - gridOverhang,
+        xMax: xMax + gridOverhang,
+        yMin: yMin - gridOverhang,
+        yMax: yMax + gridOverhang
+    };
+});
+
 const planeOverhang = 2;
 
 export const planeHeightWidthAtom = atom((get) => {

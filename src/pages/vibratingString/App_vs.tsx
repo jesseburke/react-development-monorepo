@@ -23,6 +23,7 @@ import Axes2DCanv from '../../CanvasComps/Axes2DRecoil.jsx';
 
 import {
     boundsAtom,
+    gridBoundsAtom,
     funcAtom,
     labelAtom,
     axesDataAtom,
@@ -84,7 +85,7 @@ export default function App() {
                             axesDataAtom={axesDataAtom}
                             labelAtom={labelAtom}
                         />
-                        <Grid boundsAtom={boundsAtom} gridShow={true} />
+                        <Grid boundsAtom={gridBoundsAtom} gridShow={true} />
                         <FunctionGraph3D funcAtom={funcAtom} boundsAtom={boundsAtom} />
                         />
                         <CameraControls cameraDataAtom={cameraDataAtom} />
