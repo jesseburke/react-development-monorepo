@@ -32,6 +32,9 @@ import {
     DataComp
 } from './App_vs_atoms';
 
+
+import theme from '../../theme.js';
+
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
     touches: { ONE: THREE.MOUSE.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN },
@@ -59,6 +62,8 @@ const resetBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
+    console.log(theme.colors);
+
     return (
         <JotaiProvider>
             <div className='full-screen-base'>
