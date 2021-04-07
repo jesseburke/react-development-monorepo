@@ -15,23 +15,29 @@ import { ThreeSceneComp } from '../../components/ThreeScene';
 import CanvasComp from '../../components/CanvasCompHalfWidth.jsx';
 
 import Grid from '../../ThreeSceneComps/Grid';
+import Plane from '../../ThreeSceneComps/Plane';
 import Axes3D from '../../ThreeSceneComps/Axes3DRecoil.jsx';
 import FunctionGraph3D from '../../ThreeSceneComps/FunctionGraph3DRecoil.jsx';
 import CameraControls from '../../ThreeSceneComps/CameraControls.jsx';
 
-import Axes2DCanv from '../../CanvasComps/Axes2DRecoil.jsx';
+import Axes2DCanv from '../../CanvasComps/Axes2D.jsx';
+import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';
 
 import {
     boundsAtom,
+    canvasBoundsAtom,
     gridBoundsAtom,
     funcAtom,
+    twoDFuncAtom,
     labelAtom,
     axesDataAtom,
     cameraDataAtom,
     animationDataAtom,
+    animationValueAtom,
+    planeHeightAndWidthAtom,
+    planeCenterAtom,
     DataComp
 } from './App_vs_atoms';
-
 
 import theme from '../../theme.js';
 
@@ -62,13 +68,13 @@ const resetBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
-    console.log(theme.colors);
+    //console.log(theme.colors);
 
     return (
         <JotaiProvider>
             <div className='full-screen-base'>
                 <header
-                    className='control-bar bg-persian_blue-900 font-sans
+                    className='control-bar bg-royalblue-900 font-sans
 		    p-8 text-white'
                 >
                     <funcAtom.component />
@@ -85,18 +91,21 @@ export default function App() {
                         controlsData={initControlsData}
                     >
                         <Axes3D
-                            tickLabelDistance={1}
                             boundsAtom={boundsAtom}
                             axesDataAtom={axesDataAtom}
                             labelAtom={labelAtom}
                         />
                         <Grid boundsAtom={gridBoundsAtom} gridShow={true} />
                         <FunctionGraph3D funcAtom={funcAtom} boundsAtom={boundsAtom} />
+                        <Plane
+                            heightAndWidthAtom={planeHeightAndWidthAtom}
+                            centerAtom={planeCenterAtom}
                         />
                         <CameraControls cameraDataAtom={cameraDataAtom} />
                     </ThreeSceneComp>
                     <CanvasComp>
-                        <Axes2DCanv boundsAtom={boundsAtom} lineWidth={5} yLabel='z' />
+                        <Axes2DCanv boundsAtom={canvasBoundsAtom} lineWidth={5} yLabel='z' />
+                        <FunctionGraph2D funcAtom={twoDFuncAtom} boundsAtom={boundsAtom} />
                     </CanvasComp>
                     <DataComp
                         resetBtnClassStr={resetBtnClassStr}
@@ -144,22 +153,14 @@ function OptionsModal() {
             >
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
-                        <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
                         <Tab {...tab}>Camera Options</Tab>
-                        <Tab {...tab}>Variable labels</Tab>
                     </TabList>
-                    <TabPanel {...tab}>
-                        <axesDataAtom.component />
-                    </TabPanel>
                     <TabPanel {...tab}>
                         <boundsAtom.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <cameraDataAtom.component />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <labelAtom.component />
                     </TabPanel>
                 </>
             </Dialog>

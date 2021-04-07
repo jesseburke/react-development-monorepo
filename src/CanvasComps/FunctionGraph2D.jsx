@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { atom, useAtom } from 'jotai';
 
 import FunctionGraphPts2D from '../math/FunctionGraphPts2D.jsx';
 
 // compArray is an array of arrays; each array is a chain of points to be drawn
 export default React.memo(function FunctionGraph2D({
-    func,
-    bounds,
-    color = '#8BC34A',
+    funcAtom,
+    boundsAtom,
+    color = '#800000',
+    //color = '#8BC34A',
     lineWidth = 5,
     addFunc,
     removeFunc,
@@ -16,6 +18,10 @@ export default React.memo(function FunctionGraph2D({
     const [ctx] = useState(document.createElement('canvas').getContext('2d'), []);
 
     const [compArray, setCompArray] = useState();
+
+    const bounds = useAtom(boundsAtom)[0];
+
+    const func = useAtom(funcAtom)[0].func;
 
     useEffect(() => {
         if (!ctx) return;
@@ -37,7 +43,9 @@ export default React.memo(function FunctionGraph2D({
     }, [lineWidth, ctx]);
 
     useEffect(() => {
-        setCompArray(FunctionGraphPts2D({ func, bounds }));
+        const newBounds = { ...bounds, yMin: bounds.zMin, yMax: bounds.zMax };
+
+        setCompArray(FunctionGraphPts2D({ func, bounds: newBounds }));
     }, [func, bounds]);
 
     const clearCanvas = useCallback(() => {

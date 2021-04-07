@@ -22,14 +22,14 @@ const colors = {
     tick: '#cf6c28' //#e19662'
 };
 
-const initBounds: Bounds = { xMin: 0, xMax: 10, yMin: 0, yMax: 10, zMin: -5, zMax: 5 };
+const initBounds: Bounds = { xMin: -1, xMax: 10, yMin: -10, yMax: 10, zMin: -5, zMax: 5 };
 
 const initFuncStr: string = '4*e^(-(x-2*t)^2)+sin(x+t)-cos(x-t)';
 
 const initAxesData: AxesDataT = {
     radius: 0.02,
     show: true,
-    tickLabelDistance: 5
+    tickLabelDistance: 0
 };
 
 const initXLength = initBounds.xMax - initBounds.xMin;
@@ -68,12 +68,26 @@ export const funcAtom = FunctionData({
     initVal: initFuncStr,
     functionLabelAtom,
     xVar: 'x',
-    yVar: 't'
+    yVar: 't',
+    inputSize: 40
 });
 
 export const boundsAtom = BoundsData({
     initBounds,
     labelAtom
+});
+
+const xCanvOverhang = 0;
+
+export const canvasBoundsAtom = atom((get) => {
+    const { xMin, xMax, zMin, zMax } = get(boundsAtom);
+
+    return {
+        xMin: xMin - xCanvOverhang,
+        xMax,
+        yMin: zMin,
+        yMax: zMax
+    };
 });
 
 const gridOverhang = 2;
@@ -89,19 +103,27 @@ export const gridBoundsAtom = atom((get) => {
     };
 });
 
-const planeOverhang = 2;
+const minMaxForAnimationAtom = atom((get) => {
+    return { min: get(boundsAtom).yMin, max: get(boundsAtom).yMax };
+});
 
-export const planeHeightWidthAtom = atom((get) => {
+export const animationDataAtom = AnimationData({ minMaxAtom: minMaxForAnimationAtom });
+
+export const animationValueAtom = atom((get) => get(animationDataAtom).t);
+
+const planeOverhang = 0;
+
+export const planeHeightAndWidthAtom = atom((get) => {
     const { xMin, xMax, zMin, zMax } = get(boundsAtom);
 
     return { width: xMax - xMin + planeOverhang, height: zMax - zMin };
 });
 
-export const animationDataAtom = AnimationData({ min: 0, max: initBounds.xMax });
+export const planeCenterAtom = atom((get) => {
+    const { xMin, xMax } = get(boundsAtom);
 
-export const animationValueAtom = atom((get) => get(animationDataAtom).t);
-
-export const planeCenterAtom = atom((get) => [get(boundsAtom).xMax / 2, get(animationValueAtom)]);
+    return [(xMax - xMin) / 2 + xMin, get(animationValueAtom)];
+});
 
 export const twoDFuncAtom = atom((get) => {
     const t = get(animationValueAtom);

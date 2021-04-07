@@ -7,8 +7,7 @@
 	@apply fixed inset-0 border-0 m-0 flex flex-col p-0 antialiased
     }
     .control-bar {
-	@apply w-full m-0 border-0 flex items-end flex-col md:flex-row justify-between md:justify-around items-center
-	overflow-auto;
+	@apply w-full m-0 p-0 h-32 border-0 flex items-end flex-col md:flex-row justify-between md:justify-around items-center overflow-auto;
     }        
     .btn-focus {
         @apply focus:outline-none focus:ring-4 focus:ring-persian_blue-400;

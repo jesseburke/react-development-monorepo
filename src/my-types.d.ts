@@ -103,6 +103,4 @@ export interface AnimationDataType {
     animationTime: number;
     t: number;
     paused: boolean;
-    min: number;
-    max: number;
 }
