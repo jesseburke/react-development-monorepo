@@ -11,7 +11,7 @@ import './styles.css';
 //const title = 'Direction Field Grapher';
 
 //import App from './pages/vibratingString/App';
-import App from './pages/vibratingString/App_vs';
+import App from './App';
 const title = 'Vibrating string';
 
 function main() {
