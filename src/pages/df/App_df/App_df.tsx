@@ -85,7 +85,6 @@ export default function App() {
                     <ThreeSceneComp
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
-                        cameraDataAtom={orthoCameraDataAtom}
                         photoButton={true}
                         photoButtonClassStr={photoButtonClassStr}
                     >
@@ -110,7 +109,10 @@ export default function App() {
                             zHeightAtom={zHeightAtom}
                         />
 
-                        <CameraControls classStr={photoButtonClassStr} />
+                        <CameraControls
+                            classStr={photoButtonClassStr}
+                            cameraDataAtom={orthoCameraDataAtom}
+                        />
                     </ThreeSceneComp>
                     <DataComp
                         resetBtnClassStr={resetBtnClassStr}
