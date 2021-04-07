@@ -1,24 +1,24 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
+import { atom, useAtom } from 'jotai';
+
 export default React.memo(function Axes2DC({
     addFunc,
     removeFunc,
-    height,
-    width,
-    bounds,
-    color = '#006E31', //'#8BC34A',
+    boundsAtom,
+    color = '#000000', //'#006E31', //'#8BC34A',
     lineWidth = 1,
     showLabels = true,
-    tickDistance = 1,
-    tickRadius = 1.25,
-    tickColor = '#8BC34A',
     labelEps = 0.5,
-    labelStyle,
     xLabel = 'x',
     yLabel = 'y',
     canvasWidth = 1024,
     canvasHeight = 1024
 }) {
+    //console.log('axes2drecoil called');
+
+    const bounds = useAtom(boundsAtom)[0];
+
     const [ctx] = useState(document.createElement('canvas').getContext('2d'));
 
     useEffect(() => {
@@ -28,10 +28,17 @@ export default React.memo(function Axes2DC({
         ctx.canvas.height = canvasHeight;
         ctx.strokeStyle = color;
         ctx.lineWidth = lineWidth;
-    }, []);
+    }, [canvasWidth, canvasHeight, color, lineWidth]);
+
+    const clearCanvas = useCallback(() => {
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }, [ctx]);
 
     useEffect(() => {
-        // should clear context here
+        clearCanvas();
+
         const { xMin, xMax, yMin, yMax } = bounds;
 
         const xRange = xMax - xMin;
@@ -40,13 +47,13 @@ export default React.memo(function Axes2DC({
         const h = ctx.canvas.height;
         const w = ctx.canvas.width;
 
-        //console.log('Axes2DC with non-null ctx; h is ', h, ' and w is ', w);
-
         // scene to canvas
         const stc = (x, y) => [((x - xMin) / xRange) * w, (1 - (y - yMin) / yRange) * h];
 
         const oldColor = ctx.strokeStyle;
         ctx.strokeStyle = color;
+
+        //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         //console.log('Axes2DC with non-null ctx; color is ', color);
 
