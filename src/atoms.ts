@@ -20,7 +20,7 @@ const colors = {
     tick: '#cf6c28' //#e19662'
 };
 
-const initBounds: Bounds = { xMin: -1, xMax: 10, yMin: -10, yMax: 10, zMin: -5, zMax: 5 };
+const initBounds: Bounds = { xMin: -10, xMax: 10, yMin: -10, yMax: 10, zMin: -5, zMax: 5 };
 
 const initFuncStr: string = '4*e^(-(x-2*t)^2)+sin(x+t)-cos(x-t)';
 
@@ -34,7 +34,7 @@ const initXLength = initBounds.xMax - initBounds.xMin;
 const initYLength = initBounds.yMax - initBounds.yMin;
 
 const initCameraData = {
-    target: [initXLength * (10.15 / 20), initYLength * (4.39 / 20), 0],
+    target: [0, 0, 0],
     position: [(-16.7 / 20) * initXLength, (-26.1 / 20) * initYLength, 6.65]
 };
 

@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 const { resolve } = require('path');
 
 export default defineConfig({
-    base: '/u/jburke/directionFieldGrapher/',
+    base: '/u/jburke/vibrating_string/',
     plugins: [reactRefresh()],
     optimizeDeps: {
         include: [
