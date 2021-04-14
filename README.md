@@ -1,10 +1,12 @@
 # Vibrating string app
 
-...
+Graphs a function of two variables, s(x,t), and animates a fixed value
+of the second variable, called t0. Graphs the function s(x,t0) next to
+the 3d graph of s(x,t), so one can see how s(x,t0) changes as t0 changes.
 
 https://www.maths.usyd.edu.au/u/jburke/vibrating_string/
 
-## Features
+![title](assets/overview.gif)
 
 ## Implementation details
 
@@ -21,16 +23,25 @@ with the following structure, which is explained further below:
 function App() {
     return (
         <JotaiProvider>
-                <header>
-				  ...
-                </header>
-
-                <main>
-                    <ThreeSceneComp>
-                        ...
-                    </ThreeSceneComp>
-                    <DataComp/>
-                </main>
+			<header>
+				<funcAtom.component/>
+				<animationDataAtom.component/>
+				<OptionsModal/>
+			</header>
+			<main>
+				<ThreeSceneComp>
+					<Axes3d/>
+					<Grid/>
+					<FunctionGraph3D/>
+					<Plane/>
+					<CameraControls/>
+				</ThreeSceneComp>
+				<CanvasComp>
+					<Axes2D/>
+					<FunctionGraph2D/>
+				</CanvasComp>
+				<DataComp/>
+			</main>
         </JotaiProvider>
     );
 }
@@ -56,6 +67,9 @@ The children of ThreeSceneComp define what is shown in the ThreeJS
  null).  They receive ThreeCBs as a prop, and use it to, e.g., add or
  remove meshes from the scene in effects depending on various state
  (meshes are things that can be seen by the viewer).
+ 
+CanvasComp is analogous to ThreeSceneComp, except that its children
+are drawn on a 2d canvas.
   
 The component DataComp is described below.
 
@@ -84,13 +98,7 @@ creator of Recoil, a very similar library and predecessor to jotai,
 is the canonical explanation). The
 objects that hold jotai state are called atoms, and React components can use
 atoms to subscribe to jotai state. Atoms are stable under
-rerenders. As an example, in this app there is
-initialPointAtom that both InitialPointInput and IntegralCurve are
-passed as props. Since they are the only users of the state in this
-atom, they are the only components (and possibly their children) that are called when the
-initial point changes. The components have effects
-that move various meshes when initialPointAtom value changes. They
-only create and delete meshes on their first, and last, renders.
+rerenders. 
 
 All of the atoms used by the program are created in atoms.ts, and
 exported to App, which doles them out to components as needed. 
