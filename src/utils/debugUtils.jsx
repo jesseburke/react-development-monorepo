@@ -22,7 +22,7 @@ const useTrackAtom = (atom) => {
         console.log('atom ', atom, 'changed to ', atomValue);
 
         return () => {
-            console.log('returrn: atom ', atom, 'changed from ', atomValue);
+            console.log('return: atom ', atom, 'changed from ', atomValue);
         };
     }, [atomValue, atom]);
 };

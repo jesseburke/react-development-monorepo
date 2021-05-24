@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
-import { isEmpty } from '../utils/BaseUtils.ts';
+import { isEmpty } from '../utils/BaseUtils';
 
 export default function MainDataComp(atomStoreAtom) {
     const saveStuffAtom = atom({});
