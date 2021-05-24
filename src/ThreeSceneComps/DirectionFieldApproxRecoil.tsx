@@ -18,13 +18,15 @@ export interface DirectionFieldApproxProps {
     radius: number;
 }
 
+const zeroFuncAtom = atom({ func: (x, y) => 0 });
+
 export default function IntegralCurve({
     threeCBs,
     diffEqAtom,
     initialPointAtom = null,
     boundsAtom,
     curveDataAtom,
-    zHeightAtom,
+    zHeightAtom = zeroFuncAtom,
     radius = 0.05
 }) {
     const [mat, setMat] = useState();
@@ -39,9 +41,9 @@ export default function IntegralCurve({
 
     const { visible, color, approxH, width } = useAtom(curveDataAtom)[0];
 
-    const sphereColorAtom = atom((get) => get(curveDataAtom).color);
+    const sphereColor = useAtom(curveDataAtom)[0].color;
 
-    const zHeightFunc = zHeightAtom ? useAtom(zHeightAtom)[0].func : (x, y) => 0;
+    const zHeightFunc = useAtom(zHeightAtom)[0].func;
 
     useEffect(() => {
         setMat(
@@ -89,12 +91,12 @@ export default function IntegralCurve({
             if (dfag) dfag.dispose();
             if (mat) mat.dispose();
         };
-    }, [threeCBs, initialPt, bounds, func, width, approxH, mat, radius, visible]);
+    }, [threeCBs, initialPt, bounds, func, width, approxH, mat, radius, visible, zHeightFunc]);
 
     return visible ? (
         <DraggableSphere
             threeCBs={threeCBs}
-            colorAtom={sphereColorAtom}
+            color={sphereColor}
             dragPositionAtom={initialPointAtom}
             radius={(0.25 * width) / 0.1}
             funcAtom={diffEqAtom}

@@ -99,14 +99,12 @@ export default function App() {
                             diffEqAtom={diffEqAtom}
                             boundsAtom={boundsAtom}
                             arrowGridDataAtom={arrowGridDataAtom}
-                            zHeightAtom={zHeightAtom}
                         />
                         <DirectionFieldApprox
                             initialPointAtom={initialPointAtom}
                             boundsAtom={boundsAtom}
                             diffEqAtom={diffEqAtom}
                             curveDataAtom={solutionCurveDataAtom}
-                            zHeightAtom={zHeightAtom}
                         />
 
                         <CameraControls

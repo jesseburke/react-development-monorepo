@@ -4,17 +4,21 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
+import { useDebug } from '../utils/debugUtils';
+
 const defaultVisibleAtom = atom(true);
 
-const defaultColorAtom = atom('#0A2C3C');
+const defaultColor = '#0A2C3C';
+
+const zeroFuncAtom = atom({ func: (x, y) => 0 });
 
 export default React.memo(function DraggableSphere({
     threeCBs,
     radius = 2,
-    colorAtom = defaultColorAtom,
+    color = defaultColor,
     dragCB = null,
     dragPositionAtom = null,
-    zHeightAtom = null,
+    zHeightAtom = zeroFuncAtom,
     visibleAtom = defaultVisibleAtom
 }) {
     const [meshState, setMeshState] = useState();
@@ -23,9 +27,9 @@ export default React.memo(function DraggableSphere({
 
     const [visible] = useAtom(visibleAtom);
 
-    const color = useAtom(colorAtom)[0];
+    const zHeightFunc = useAtom(zHeightAtom)[0].func;
 
-    const zHeightFunc = zHeightAtom ? useAtom(zHeightAtom)[0].func : (x, y) => 0;
+    //useDebug([zHeightAtom]);
 
     //------------------------------------------------------------------------
     //
