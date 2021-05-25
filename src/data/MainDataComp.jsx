@@ -3,12 +3,8 @@ import { atom, useAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
-import { isEmpty } from '../utils/BaseUtils';
-
 export default function MainDataComp(atomStoreAtom) {
-    const saveStuffAtom = atom({});
-
-    const readAtomStoreSerializedAtom = atom(null, (get, set) => {
+    const readAtomStoreAtom = atom(null, (get, set, callback) => {
         let ro = {};
 
         const atomStore = get(atomStoreAtom);
@@ -26,28 +22,8 @@ export default function MainDataComp(atomStoreAtom) {
             });
         });
 
-        set(saveStuffAtom, ro);
-        //console.log('ro is ', ro);
+        callback(ro);
     });
-
-    function useSaveToAddressBar() {
-        const [saveStuff, setSaveStuff] = useAtom(saveStuffAtom);
-
-        const readAt = useAtom(readAtomStoreSerializedAtom)[1];
-
-        const saveCB = useCallback(() => {
-            readAt();
-        }, [readAt]);
-
-        // whenever saveStuff changes, update the search bar
-        useEffect(() => {
-            if (isEmpty(saveStuff)) return;
-            //console.log('saveStuff effect called with saveStuff = ', saveStuff);
-            window.history.pushState(saveStuff, null, '?' + queryString.stringify(saveStuff));
-        }, [saveStuff]);
-
-        return saveCB;
-    }
 
     const resetAtomStoreAtom = atom(null, (get, set) => {
         const atomStore = get(atomStoreAtom);
@@ -62,10 +38,6 @@ export default function MainDataComp(atomStoreAtom) {
         window.history.pushState(null, null, import.meta.env.BASE_URL);
     });
 
-    function useReset() {
-        return useAtom(resetAtomStoreAtom)[1];
-    }
-
     const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
         const atomStore = get(atomStoreAtom);
 
@@ -76,6 +48,24 @@ export default function MainDataComp(atomStoreAtom) {
             });
         });
     });
+
+    function useSaveToAddressBar() {
+        const readAt = useAtom(readAtomStoreAtom)[1];
+
+        const saveCB = useCallback(() => {
+            let saveObj;
+            readAt((obj) => {
+                saveObj = obj;
+            });
+            window.history.pushState(saveObj, null, '?' + queryString.stringify(saveObj));
+        }, [readAt]);
+
+        return saveCB;
+    }
+
+    function useReset() {
+        return useAtom(resetAtomStoreAtom)[1];
+    }
 
     // on load, parse the address bar data and dole it out to atoms
     function useReadAddressBar() {
