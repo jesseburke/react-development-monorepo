@@ -1,14 +1,14 @@
 import { atom } from 'jotai';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
-import LabelData from '../../data/LabelData.jsx';
-import PointData from '../../data/PointData.jsx';
-import FunctionData from '../../data/FunctionData.jsx';
-import AxesData from '../../data/AxesData.jsx';
-import BoundsData from '../../data/BoundsData';
+import LabelDataComp from '../../data/LabelDataComp.jsx';
+import PointDataComp from '../../data/PointDataComp.jsx';
+import FunctionDataComp from '../../data/FunctionDataComp.jsx';
+import AxesDataComp from '../../data/AxesDataComp.jsx';
+import BoundsDataComp from '../../data/BoundsDataComp';
 import AnimationData from '../../data/AnimationData';
 import PerspCameraData from '../../data/PerspCameraData';
-import OrthoCameraData from '../../data/OrthoCameraData';
+import OrthoCameraDataComp from '../../data/OrthoCameraDataComp';
 
 import { ObjectPoint2, Bounds, CurveData2, LabelStyle, AxesDataT } from '../../my-types';
 
@@ -56,15 +56,15 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // atoms
 
-export const labelAtom = LabelData({ yLabel: 't', twoD: true });
-export const axesDataAtom = AxesData({
+export const labelAtom = LabelDataComp({ yLabel: 't', twoD: true });
+export const axesDataAtom = AxesDataComp({
     ...initAxesData,
     tickLabelStyle
 });
 
 const functionLabelAtom = atom((get) => 's(' + get(labelAtom).x + ', ' + get(labelAtom).y + ') = ');
 
-export const funcAtom = FunctionData({
+export const funcAtom = FunctionDataComp({
     initVal: initFuncStr,
     functionLabelAtom,
     xVar: 'x',
@@ -72,7 +72,7 @@ export const funcAtom = FunctionData({
     inputSize: 40
 });
 
-export const boundsAtom = BoundsData({
+export const boundsAtom = BoundsDataComp({
     initBounds,
     labelAtom
 });

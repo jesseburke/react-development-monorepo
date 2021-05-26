@@ -9,9 +9,9 @@ import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import TexDisplayCompR from '../../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../../components/Slider.jsx';
 
-import AxesData from '../../../data/AxesData.jsx';
-import BoundsData from '../../../data/BoundsData.js';
-import CurveData from '../../../data/CurveData.js';
+import AxesDataComp from '../../../data/AxesDataComp.jsx';
+import BoundsDataComp from '../../../data/BoundsDataComp.js';
+import CurveDataComp from '../../../data/CurveDataComp.js';
 
 import funcParser from '../../../utils/funcParser.jsx';
 import { round } from '../../../utils/BaseUtils.ts';
@@ -101,7 +101,7 @@ export const {
     encode: boundsEncode,
     decode: boundsDecode,
     length: boundsDataLength
-} = BoundsData({
+} = BoundsDataComp({
     initBounds,
     xLabelAtom,
     yLabelAtom
@@ -112,7 +112,7 @@ export const {
     component: Axes2DDataInput,
     encode: axesDataEncode,
     decode: axesDataDecode
-} = AxesData({
+} = AxesDataComp({
     ...initAxesData,
     tickLabelStyle
 });
@@ -123,7 +123,7 @@ export const {
     encode: solutionCurveOptionsEncode,
     decode: solutionCurveOptionsDecode,
     length: scoel
-} = CurveData(initSolutionCurveData);
+} = CurveDataComp(initSolutionCurveData);
 
 //------------------------------------------------------------------------
 //

@@ -7,9 +7,9 @@ import styles from '../base_styles.module.css';
 import Input from '../../../components/Input.jsx';
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 
-import ArrowGridData from '../../../data/ArrowGridData.jsx';
-import BoundsData from '../../../data/BoundsData.js';
-import CurveData from '../../../data/CurveData.js';
+import ArrowGridDataComp from '../../../data/ArrowGridDataComp.jsx';
+import BoundsDataComp from '../../../data/BoundsDataComp.js';
+import CurveDataComp from '../../../data/CurveDataComp.js';
 
 import funcParser from '../../../utils/funcParser.jsx';
 import { round } from '../../../utils/BaseUtils.ts';
@@ -57,7 +57,7 @@ export const {
     encode: arrowGridOptionsEncode,
     decode: arrowGridOptionsDecode,
     length: agoel // agoel = arrow grid options encode length
-} = ArrowGridData(initArrowData);
+} = ArrowGridDataComp(initArrowData);
 
 export const {
     atom: boundsAtom,
@@ -65,7 +65,7 @@ export const {
     encode: boundsEncode,
     decode: boundsDecode,
     length: bel
-} = BoundsData({
+} = BoundsDataComp({
     initBounds,
     xLabelAtom,
     yLabelAtom
@@ -77,7 +77,7 @@ export const {
     encode: solutionCurveOptionsEncode,
     decode: solutionCurveOptionsDecode,
     length: scoel
-} = CurveData(initSolutionCurveData);
+} = CurveDataComp(initSolutionCurveData);
 
 //------------------------------------------------------------------------
 //

@@ -2,13 +2,13 @@ import { atom, useAtom } from 'jotai';
 import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
-import LabelData from '../../data/LabelData.jsx';
-import PointData from '../../data/PointData.jsx';
-import FunctionData from '../../data/FunctionData.jsx';
-import ArrowGridData from '../../data/ArrowGridData.jsx';
-import AxesData from '../../data/AxesData.jsx';
-import BoundsData from '../../data/BoundsData.js';
-import CurveData from '../../data/CurveData.js';
+import LabelDataComp from '../../data/LabelDataComp.jsx';
+import PointDataComp from '../../data/PointDataComp.jsx';
+import FunctionDataComp from '../../data/FunctionDataComp.jsx';
+import ArrowGridDataComp from '../../data/ArrowGridDataComp.jsx';
+import AxesDataComp from '../../data/AxesDataComp.jsx';
+import BoundsDataComp from '../../data/BoundsDataComp.js';
+import CurveDataComp from '../../data/CurveDataComp.js';
 
 import funcParser from '../../utils/funcParser.jsx';
 
@@ -51,7 +51,7 @@ export const {
     component: LabelInput,
     encode: labelEncode,
     decode: labelDecode
-} = LabelData({});
+} = LabelDataComp({});
 
 export const {
     atom: funcDataAtom,
@@ -59,14 +59,14 @@ export const {
     encode: funcStrEncode,
     decode: funcStrDecode,
     threeComp: FuncGraphComponent
-} = FunctionData({ labelAtom });
+} = FunctionDataComp({ labelAtom });
 
 export const {
     atom: axesDataAtom,
     component: AxesDataInput,
     encode: axesDataEncode,
     decode: axesDataDecode
-} = AxesData({
+} = AxesDataComp({
     ...initAxesData,
     tickLabelStyle
 });

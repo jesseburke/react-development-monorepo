@@ -16,18 +16,18 @@ import { ThreeSceneComp } from '../../../components/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
+import IntegralCurve from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
 import CameraControls from '../../../ThreeSceneComps/CameraControls.jsx';
 
 import {
-    arrowGridDataAtom,
-    boundsAtom,
-    initialPointAtom,
-    diffEqAtom,
-    labelAtom,
-    solutionCurveDataAtom,
-    axesDataAtom,
-    orthoCameraDataAtom,
+    arrowGridData,
+    boundsData,
+    initialPointData,
+    diffEqData,
+    labelData,
+    solutionCurveData,
+    axesData,
+    orthoCameraData,
     zHeightAtom,
     DataComp
 } from './App_df_atoms';
@@ -74,8 +74,8 @@ export default function App() {
                     className='control-bar bg-persian_blue-900 font-sans
 		    p-8 text-white'
                 >
-                    <diffEqAtom.component />
-                    <initialPointAtom.component />
+                    <diffEqData.component />
+                    <initialPointData.component />
                     <ReakitProvider unstable_system={system}>
                         <OptionsModal />
                     </ReakitProvider>
@@ -90,26 +90,28 @@ export default function App() {
                     >
                         <Axes2D
                             tickDistance={1}
-                            boundsAtom={boundsAtom}
-                            axesDataAtom={axesDataAtom}
-                            labelAtom={labelAtom}
+                            boundsAtom={boundsData.atom}
+                            axesDataAtom={axesData.atom}
+                            labelAtom={labelData.atom}
                         />
-                        <Grid boundsAtom={boundsAtom} gridShow={true} />
+                        <Grid boundsAtom={boundsData.atom} gridShow={true} />
                         <ArrowGrid
-                            diffEqAtom={diffEqAtom}
-                            boundsAtom={boundsAtom}
-                            arrowGridDataAtom={arrowGridDataAtom}
+                            diffEqAtom={diffEqData.funcAtom}
+                            boundsAtom={boundsData.atom}
+                            arrowGridDataAtom={arrowGridData.atom}
+                            zHeightAtom={zHeightAtom}
                         />
-                        <DirectionFieldApprox
-                            initialPointAtom={initialPointAtom}
-                            boundsAtom={boundsAtom}
-                            diffEqAtom={diffEqAtom}
-                            curveDataAtom={solutionCurveDataAtom}
+                        <IntegralCurve
+                            initialPointAtom={initialPointData.atom}
+                            boundsAtom={boundsData.atom}
+                            diffEqAtom={diffEqData.funcAtom}
+                            curveDataAtom={solutionCurveData.atom}
+                            zHeightAtom={zHeightAtom}
                         />
 
                         <CameraControls
                             classStr={photoButtonClassStr}
-                            cameraDataAtom={orthoCameraDataAtom}
+                            cameraDataAtom={orthoCameraData.atom}
                         />
                     </ThreeSceneComp>
                     <DataComp
@@ -166,22 +168,22 @@ function OptionsModal() {
                         <Tab {...tab}>Variable labels</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <arrowGridDataAtom.component />
+                        <arrowGridData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <axesDataAtom.component />
+                        <axesData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <boundsAtom.component />
+                        <boundsData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <orthoCameraDataAtom.component />
+                        <orthoCameraData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <solutionCurveDataAtom.component />
+                        <solutionCurveData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <labelAtom.component />
+                        <labelData.component />
                     </TabPanel>
                 </>
             </Dialog>

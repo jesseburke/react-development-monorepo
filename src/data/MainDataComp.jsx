@@ -8,14 +8,10 @@ export default function MainDataComp(atomStoreAtom) {
         let ro = {};
 
         const atomStore = get(atomStoreAtom);
-        console.log(
-            'atomStore, inside write function of readAtomStoreSerializedAtom, is',
-            atomStore
-        );
 
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
-            set(atom.serializeAtom, {
-                type: 'serialize',
+            set(atom.readWriteAtom, {
+                type: 'readToAddressBar',
                 callback: (obj) => {
                     if (obj) ro[abbrev] = myStringify(obj);
                 }
@@ -28,43 +24,47 @@ export default function MainDataComp(atomStoreAtom) {
     const resetAtomStoreAtom = atom(null, (get, set) => {
         const atomStore = get(atomStoreAtom);
 
-        // in the following, using that deserializing without value
-        // resets atom to original value
         Object.values(atomStore).forEach((atom) => {
-            set(atom.serializeAtom, {
-                type: 'deserialize'
+            set(atom.readWriteAtom, {
+                type: 'reset'
             });
         });
-        window.history.pushState(null, null, import.meta.env.BASE_URL);
     });
 
     const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
         const atomStore = get(atomStoreAtom);
 
         Object.keys(newObj).forEach((k) => {
-            set(atomStore[k].serializeAtom, {
-                type: 'deserialize',
+            set(atomStore[k].readWriteAtom, {
+                type: 'writeFromAddressBar',
                 value: newObj[k]
             });
         });
     });
 
     function useSaveToAddressBar() {
-        const readAt = useAtom(readAtomStoreAtom)[1];
+        const readAtomStore = useAtom(readAtomStoreAtom)[1];
 
         const saveCB = useCallback(() => {
             let saveObj;
-            readAt((obj) => {
+            readAtomStore((obj) => {
                 saveObj = obj;
             });
             window.history.pushState(saveObj, null, '?' + queryString.stringify(saveObj));
-        }, [readAt]);
+        }, [readAtomStore]);
 
         return saveCB;
     }
 
-    function useReset() {
-        return useAtom(resetAtomStoreAtom)[1];
+    function useResetAddressBar() {
+        const resetAtomStore = useAtom(resetAtomStoreAtom)[1];
+
+        const resetCB = useCallback(() => {
+            resetAtomStore();
+            window.history.pushState(null, null, import.meta.env.BASE_URL);
+        }, [resetAtomStore]);
+
+        return resetCB;
     }
 
     // on load, parse the address bar data and dole it out to atoms
@@ -75,7 +75,7 @@ export default function MainDataComp(atomStoreAtom) {
         useLayoutEffect(() => {
             const qsObj = queryString.parse(window.location.search.slice(1));
 
-            //console.log('read address bar effect called with qsObj = ', qsObj);
+            console.log('read address bar effect called with qsObj = ', qsObj);
 
             writeToAtomStoreFunc(qsObj);
         }, [writeToAtomStoreFunc]);
@@ -103,7 +103,7 @@ export default function MainDataComp(atomStoreAtom) {
     // the classname args will be added as className
     function DataComp({ saveComp, saveBtnClassStr, resetComp, resetBtnClassStr }) {
         const saveCB = useSaveToAddressBar();
-        const resetCB = useReset();
+        const resetCB = useResetAddressBar();
 
         useReadAddressBar();
 

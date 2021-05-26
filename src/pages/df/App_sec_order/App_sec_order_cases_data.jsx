@@ -9,8 +9,8 @@ import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import TexDisplayCompR from '../../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../../components/Slider.jsx';
 
-import BoundsData from '../../../data/BoundsData.js';
-import CurveData from '../../../data/CurveData.js';
+import BoundsDataComp from '../../../data/BoundsDataComp.js';
+import CurveDataComp from '../../../data/CurveDataComp.js';
 
 import funcParser from '../../../utils/funcParser.jsx';
 import { round } from '../../../utils/BaseUtils.ts';
@@ -74,7 +74,7 @@ export const {
     encode: boundsEncode,
     decode: boundsDecode,
     length: bel
-} = BoundsData({
+} = BoundsDataComp({
     initBounds,
     xLabelAtom,
     yLabelAtom
@@ -86,7 +86,7 @@ export const {
     encode: solutionCurveOptionsEncode,
     decode: solutionCurveOptionsDecode,
     length: scoel
-} = CurveData(initSolutionCurveData);
+} = CurveDataComp(initSolutionCurveData);
 
 //------------------------------------------------------------------------
 //

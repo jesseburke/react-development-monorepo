@@ -1,14 +1,14 @@
 import { atom } from 'jotai';
 
 import MainDataComp from '../../../data/MainDataComp.jsx';
-import LabelData from '../../../data/LabelData.jsx';
-import PointData from '../../../data/PointData.jsx';
-import FunctionData from '../../../data/FunctionData.jsx';
-import ArrowGridData from '../../../data/ArrowGridData.jsx';
-import AxesData from '../../../data/AxesData.jsx';
-import BoundsData from '../../../data/BoundsData';
-import CurveData from '../../../data/CurveData';
-import OrthoCameraData from '../../../data/OrthoCameraData';
+import LabelDataComp from '../../../data/LabelDataComp.jsx';
+import PointDataComp from '../../../data/PointDataComp.jsx';
+import FunctionDataComp from '../../../data/FunctionDataComp.jsx';
+import ArrowGridDataComp from '../../../data/ArrowGridDataComp.jsx';
+import AxesDataComp from '../../../data/AxesDataComp.jsx';
+import BoundsDataComp from '../../../data/BoundsDataComp';
+import CurveDataComp from '../../../data/CurveDataComp';
+import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
 import { ObjectPoint2, Bounds, CurveData2, LabelStyle, AxesDataT } from '../../../my-types';
 
@@ -65,39 +65,44 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-export const labelAtom = LabelData({ twoD: true });
-export const initialPointAtom = PointData(initInitialPoint, 'Initial Point: ');
-export const arrowGridDataAtom = ArrowGridData(initArrowData);
-export const axesDataAtom = AxesData({
+export const labelData = LabelDataComp({ twoD: true });
+export const initialPointData = PointDataComp(initInitialPoint, 'Initial Point: ');
+export const arrowGridData = ArrowGridDataComp(initArrowData);
+export const axesData = AxesDataComp({
     ...initAxesData,
     tickLabelStyle
 });
-export const solutionCurveDataAtom = CurveData(initSolutionCurveData);
+export const solutionCurveData = CurveDataComp(initSolutionCurveData);
 
-const functionLabelAtom = atom((get) => 'd' + get(labelAtom).y + '/d' + get(labelAtom).x + ' = ');
+const functionLabelAtom = atom(
+    (get) => 'd' + get(labelData.atom).y + '/d' + get(labelData.atom).x + ' = '
+);
 
-export const diffEqAtom = FunctionData({ initVal: initFuncStr, functionLabelAtom });
-export const boundsAtom = BoundsData({
+export const diffEqData = FunctionDataComp({
+    initVal: initFuncStr,
+    functionLabelAtom,
+    labelAtom: labelData.atom
+});
+export const boundsData = BoundsDataComp({
     initBounds,
-    labelAtom,
+    labelAtom: labelData.atom,
     twoD: true
 });
-
-export const orthoCameraDataAtom = OrthoCameraData(initCameraData);
+export const orthoCameraData = OrthoCameraDataComp(initCameraData);
 
 const atomStoreAtom = atom({
-    ls: labelAtom,
-    ip: initialPointAtom,
-    ag: arrowGridDataAtom,
-    ax: axesDataAtom,
-    sc: solutionCurveDataAtom,
-    fn: diffEqAtom.functionStrAtom,
-    bd: boundsAtom,
-    cd: orthoCameraDataAtom
+    ls: labelData,
+    ip: initialPointData,
+    ag: arrowGridData,
+    ax: axesData,
+    sc: solutionCurveData,
+    fn: diffEqData,
+    bd: boundsData,
+    cd: orthoCameraData
 });
 
 export const zHeightAtom = atom((get) => {
-    const f = get(diffEqAtom).func;
+    const f = get(diffEqData.funcAtom).func;
 
     function theta(a) {
         return Math.asin(a / Math.sqrt(a * a + 1));

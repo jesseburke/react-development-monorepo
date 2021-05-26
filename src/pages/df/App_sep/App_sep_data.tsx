@@ -5,13 +5,14 @@ import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 import styles from '../base_styles.module.css';
 
 import MainDataComp from '../../../data/MainDataComp.jsx';
-import LabelData from '../../../data/LabelData.jsx';
-import PointData from '../../../data/PointData.jsx';
+import LabelDataComp from '../../../data/LabelDataComp.jsx';
+import PointDataComp from '../../../data/PointDataComp.jsx';
 import EquationData from '../../../data/EquationData.jsx';
-import ArrowGridData from '../../../data/ArrowGridData.jsx';
-import AxesData from '../../../data/AxesData.jsx';
-import BoundsData from '../../../data/BoundsData';
-import CurveData from '../../../data/CurveData';
+import ArrowGridDataComp from '../../../data/ArrowGridDataComp.jsx';
+import AxesDataComp from '../../../data/AxesDataComp.jsx';
+import BoundsDataComp from '../../../data/BoundsDataComp';
+import CurveDataComp from '../../../data/CurveDataComp';
+import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
 import funcParser from '../../../utils/funcParser.jsx';
 
@@ -47,6 +48,12 @@ const initAxesData = {
     tickLabelDistance: 5
 };
 
+const initCameraData = {
+    center: [0, 0, 0],
+    zoom: 0.2,
+    position: [0, 0, 50]
+};
+
 export const labelStyle = {
     color: 'black',
     padding: '.1em',
@@ -63,31 +70,30 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // primitive atoms
 
-export const labelAtom = LabelData({ twoD: true });
-export const initialPointAtom = PointData(initInitialPoint, 'Initial Point: ');
-export const arrowGridDataAtom = ArrowGridData(initArrowData);
-export const axesDataAtom = AxesData({
+export const labelData = LabelDataComp({ twoD: true });
+export const initialPointData = PointDataComp(initInitialPoint, 'Initial Point: ');
+export const arrowGridData = ArrowGridDataComp(initArrowData);
+export const axesData = AxesDataComp({
     ...initAxesData,
     tickLabelStyle
 });
-export const solutionCurveDataAtom = CurveData(initSolutionCurveData);
+export const solutionCurveData = CurveDataComp(initSolutionCurveData);
 
-export const boundsAtom = BoundsData({
+export const boundsData = BoundsDataComp({
     initBounds,
-    labelAtom
+    labelAtom: labelData.atom
 });
 
-export const orthoCameraDataAtom = OrthoCameraData(initCameraData);
+export const orthoCameraDataAtom = OrthoCameraDataComp(initCameraData);
 
 const primObj = {
-    ls: LabelData({ twoD: true }),
-    ip: PointData(initInitialPoint, 'Initial Point: '),
-    ag: ArrowGridData(initArrowData),
-    ax: AxesData({
-        ...initAxesData,
-        tickLabelStyle
-    }),
-    sc: CurveData(initSolutionCurveData)
+    ls: labelData,
+    ip: initialPointData,
+    ag: arrowGridData,
+    ax: axesData,
+    sc: solutionCurveData,
+    bd: boundsData,
+    cd: orthoCameraData
 };
 
 const derObj = {
