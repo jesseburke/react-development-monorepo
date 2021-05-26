@@ -18,54 +18,63 @@ export interface BoundsDataProps {
     initBounds?: Bounds;
 }
 
-export default function BoundsData({
+export default function BoundsDataComp({
     labelAtom = defaultLabelAtom,
     initBounds = defaultInitBounds,
     twoD = false
 }: BoundsDataProps = {}) {
     const boundsAtom = atom(initBounds);
 
-    const serializeAtom = atom(null, (get, set, action) => {
-        if (action.type === 'serialize') {
-            const { xMin, xMax, yMin, yMax, zMin, zMax }: Bounds = diffObjects(
-                get(boundsAtom),
-                initBounds
-            );
-
-            let ro: BoundsMin = {};
-
-            if (xMax) ro.xp = xMax;
-            if (xMin) ro.xm = xMin;
-            if (yMax) ro.yp = yMax;
-            if (yMin) ro.ym = yMin;
-            if (zMax) ro.zp = zMax;
-            if (zMin) ro.zm = zMin;
-
-            if (isEmpty(ro)) return;
-
-            action.callback(ro);
-        } else if (action.type === 'deserialize') {
-            const objStr = action.value;
-
-            if (!objStr || !objStr.length || objStr.length === 0) {
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
                 set(boundsAtom, initBounds);
-                return;
-            }
+                break;
 
-            const rawObj = queryString.parse(objStr);
+            case 'readToAddressBar':
+                const { xMin, xMax, yMin, yMax, zMin, zMax }: Bounds = diffObjects(
+                    get(boundsAtom),
+                    initBounds
+                );
 
-            const newKeys = Object.keys(rawObj);
+                let ro: BoundsMin = {};
 
-            const ro: Bounds = {};
+                if (xMax) ro.xp = xMax;
+                if (xMin) ro.xm = xMin;
+                if (yMax) ro.yp = yMax;
+                if (yMin) ro.ym = yMin;
+                if (zMax) ro.zp = zMax;
+                if (zMin) ro.zm = zMin;
 
-            if (newKeys.includes('xm')) ro.xMin = Number(rawObj.xm);
-            if (newKeys.includes('xp')) ro.xMax = Number(rawObj.xp);
-            if (newKeys.includes('ym')) ro.yMin = Number(rawObj.ym);
-            if (newKeys.includes('yp')) ro.yMax = Number(rawObj.yp);
-            if (newKeys.includes('zm')) ro.zMin = Number(rawObj.zm);
-            if (newKeys.includes('zp')) ro.zMax = Number(rawObj.zp);
+                if (isEmpty(ro)) return;
 
-            set(boundsAtom, { ...initBounds, ...ro });
+                action.callback(ro);
+
+                break;
+
+            case 'writeFromAddressBar':
+                const objStr = action.value;
+
+                if (!objStr || !objStr.length || objStr.length === 0) {
+                    set(boundsAtom, initBounds);
+                    return;
+                }
+
+                const rawObj = queryString.parse(objStr);
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro: Bounds = {};
+
+                if (newKeys.includes('xm')) nro.xMin = Number(rawObj.xm);
+                if (newKeys.includes('xp')) nro.xMax = Number(rawObj.xp);
+                if (newKeys.includes('ym')) nro.yMin = Number(rawObj.ym);
+                if (newKeys.includes('yp')) nro.yMax = Number(rawObj.yp);
+                if (newKeys.includes('zm')) nro.zMin = Number(rawObj.zm);
+                if (newKeys.includes('zp')) nro.zMax = Number(rawObj.zp);
+
+                set(boundsAtom, { ...initBounds, ...nro });
+                break;
         }
     });
 
@@ -220,8 +229,5 @@ export default function BoundsData({
         );
     });
 
-    boundsAtom.component = twoD ? component2d : component;
-    boundsAtom.serializeAtom = serializeAtom;
-
-    return boundsAtom;
+    return { atom: boundsAtom, readWriteAtom, component: twoD ? component2d : component };
 }

@@ -23,45 +23,53 @@ function strArrayToArray(strArray, f = Number) {
     return strArray.split(',').map((x) => f(x));
 }
 
-export default function ArrowGridData(args) {
+export default function ArrowGridDataComp(args) {
     const initValue = { ...defaultInitValues, ...args };
 
     const agAtom = atom(initValue);
 
-    const serializeAtom = atom(null, (get, set, action) => {
-        if (action.type === 'serialize') {
-            const { density, thickness, length, color } = diffObjects(get(agAtom), initValue);
-
-            let ro = {};
-
-            if (density) ro.d = density;
-            if (thickness) ro.t = thickness;
-            if (length) ro.l = length;
-            if (color) ro.c = color;
-
-            if (isEmpty(ro)) return;
-
-            action.callback(ro);
-        } else if (action.type === 'deserialize') {
-            const objStr = action.value;
-
-            if (!objStr || !objStr.length || objStr.length === 0) {
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
                 set(agAtom, initValue);
-                return;
-            }
+                break;
 
-            const rawObj = queryString.parse(objStr);
+            case 'readToAddressBar':
+                const { density, thickness, length, color } = diffObjects(get(agAtom), initValue);
 
-            const newKeys = Object.keys(rawObj);
+                let ro = {};
 
-            const ro = {};
+                if (density) ro.d = density;
+                if (thickness) ro.t = thickness;
+                if (length) ro.l = length;
+                if (color) ro.c = color;
 
-            if (newKeys.includes('d')) ro.density = Number(rawObj.d);
-            if (newKeys.includes('t')) ro.thickness = Number(rawObj.t);
-            if (newKeys.includes('l')) ro.length = Number(rawObj.l);
-            if (newKeys.includes('c')) ro.color = rawObj.c;
+                if (isEmpty(ro)) return;
 
-            set(agAtom, { ...initValue, ...ro });
+                action.callback(ro);
+                break;
+
+            case 'writeFromAddressBar':
+                const objStr = action.value;
+
+                if (!objStr || !objStr.length || objStr.length === 0) {
+                    set(agAtom, initValue);
+                    return;
+                }
+
+                const rawObj = queryString.parse(objStr);
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro = {};
+
+                if (newKeys.includes('d')) nro.density = Number(rawObj.d);
+                if (newKeys.includes('t')) nro.thickness = Number(rawObj.t);
+                if (newKeys.includes('l')) nro.length = Number(rawObj.l);
+                if (newKeys.includes('c')) nro.color = rawObj.c;
+
+                set(agAtom, { ...initValue, ...nro });
+                break;
         }
     });
 
@@ -144,8 +152,5 @@ export default function ArrowGridData(args) {
         );
     });
 
-    agAtom.component = component;
-    agAtom.serializeAtom = serializeAtom;
-
-    return agAtom;
+    return { atom: agAtom, readWriteAtom, component };
 }

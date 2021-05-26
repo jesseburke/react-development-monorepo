@@ -18,45 +18,53 @@ const defaultInitValues: CurveData2 = {
     width: 0.1
 };
 
-export default function CurveData(args: CurveData2 = {}) {
+export default function CurveDataComp(args: CurveData2 = {}) {
     const initValue = { ...defaultInitValues, ...args };
 
     const cdAtom = atom(initValue);
 
-    const serializeAtom = atom(null, (get, set, action) => {
-        if (action.type === 'serialize') {
-            const { color, approxH, visible, width } = diffObjects(get(cdAtom), initValue);
-
-            let ro: CurveData2Min = {};
-
-            if (color) ro.c = color;
-            if (approxH) ro.a = approxH;
-            if (visible) ro.v = visible;
-            if (width) ro.w = width;
-
-            if (isEmpty(ro)) return;
-
-            action.callback(ro);
-        } else if (action.type === 'deserialize') {
-            const objStr = action.value;
-
-            if (!objStr || !objStr.length || objStr.length === 0) {
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
                 set(cdAtom, initValue);
-                return;
-            }
+                break;
 
-            const rawObj: CurveData2Min = queryString.parse(objStr);
+            case 'readToAddressBar':
+                const { color, approxH, visible, width } = diffObjects(get(cdAtom), initValue);
 
-            const newKeys = Object.keys(rawObj);
+                let ro: CurveData2Min = {};
 
-            const ro: CurveData2 = {};
+                if (color) ro.c = color;
+                if (approxH) ro.a = approxH;
+                if (visible) ro.v = visible;
+                if (width) ro.w = width;
 
-            if (newKeys.includes('a')) ro.approxH = Number(rawObj.a);
-            if (newKeys.includes('v')) ro.visible = rawObj.v === 0 ? false : true;
-            if (newKeys.includes('w')) ro.width = Number(rawObj.w);
-            if (newKeys.includes('c')) ro.color = rawObj.c;
+                if (isEmpty(ro)) return;
 
-            set(cdAtom, { ...initValue, ...ro });
+                action.callback(ro);
+                break;
+
+            case 'writeFromAddressBar':
+                const objStr = action.value;
+
+                if (!objStr || !objStr.length || objStr.length === 0) {
+                    set(cdAtom, initValue);
+                    return;
+                }
+
+                const rawObj: CurveData2Min = queryString.parse(objStr);
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro: CurveData2 = {};
+
+                if (newKeys.includes('a')) nro.approxH = Number(rawObj.a);
+                if (newKeys.includes('v')) nro.visible = rawObj.v === 0 ? false : true;
+                if (newKeys.includes('w')) nro.width = Number(rawObj.w);
+                if (newKeys.includes('c')) nro.color = rawObj.c;
+
+                set(cdAtom, { ...initValue, ...nro });
+                break;
         }
     });
 
@@ -141,8 +149,5 @@ export default function CurveData(args: CurveData2 = {}) {
         );
     });
 
-    cdAtom.component = component;
-    cdAtom.serializeAtom = serializeAtom;
-
-    return cdAtom;
+    return { atom: cdAtom, readWriteAtom, component };
 }

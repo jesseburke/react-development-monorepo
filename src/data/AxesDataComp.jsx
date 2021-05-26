@@ -32,43 +32,51 @@ const defaultInitValues = {
     tickLabelStyle: defaultTickLabelStyle
 };
 
-export default function AxesData(args) {
+export default function AxesDataComp(args) {
     const initValue = { ...defaultInitValues, ...args };
 
     const aoAtom = atom(initValue);
 
-    const serializeAtom = atom(null, (get, set, action) => {
-        if (action.type === 'serialize') {
-            const { radius, color, tickLabelDistance } = diffObjects(get(aoAtom), initValue);
-
-            let ro = {};
-
-            if (radius) ro.r = radius;
-            if (color) ro.c = color;
-            if (tickLabelDistance) ro.tld = tickLabelDistance;
-
-            if (isEmpty(ro)) return;
-
-            action.callback(ro);
-        } else if (action.type === 'deserialize') {
-            const objStr = action.value;
-
-            if (!objStr || !objStr.length || objStr.length === 0) {
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
                 set(aoAtom, initValue);
-                return;
-            }
+                break;
 
-            const rawObj = queryString.parse(objStr);
+            case 'readToAddressBar':
+                const { radius, color, tickLabelDistance } = diffObjects(get(aoAtom), initValue);
 
-            const newKeys = Object.keys(rawObj);
+                let ro = {};
 
-            const ro = {};
+                if (radius) ro.r = radius;
+                if (color) ro.c = color;
+                if (tickLabelDistance) ro.tld = tickLabelDistance;
 
-            if (newKeys.includes('r')) ro.radius = Number(rawObj.r);
-            if (newKeys.includes('tld')) ro.tickLabelDistance = Number(rawObj.tld);
-            if (newKeys.includes('c')) ro.color = rawObj.c;
+                if (isEmpty(ro)) return;
 
-            set(aoAtom, { ...initValue, ...ro });
+                action.callback(ro);
+                break;
+
+            case 'writeFromAddressBar':
+                const objStr = action.value;
+
+                if (!objStr || !objStr.length || objStr.length === 0) {
+                    set(aoAtom, initValue);
+                    return;
+                }
+
+                const rawObj = queryString.parse(objStr);
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro = {};
+
+                if (newKeys.includes('r')) nro.radius = Number(rawObj.r);
+                if (newKeys.includes('tld')) nro.tickLabelDistance = Number(rawObj.tld);
+                if (newKeys.includes('c')) nro.color = rawObj.c;
+
+                set(aoAtom, { ...initValue, ...nro });
+                break;
         }
     });
 
@@ -134,8 +142,5 @@ export default function AxesData(args) {
         );
     });
 
-    aoAtom.component = component;
-    aoAtom.serializeAtom = serializeAtom;
-
-    return aoAtom;
+    return { atom: aoAtom, readWriteAtom, component };
 }

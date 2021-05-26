@@ -10,49 +10,58 @@ import { diffObjects, isEmpty } from '../utils/BaseUtils';
 
 import '../styles.css';
 
-export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', twoD = 0 } = {}) {
+export default function LabelDataComp({ xLabel = 'x', yLabel = 'y', zLabel = 'z', twoD = 0 } = {}) {
     const initLabels = { x: xLabel, y: yLabel, z: zLabel };
     const labelAtom = atom(initLabels);
 
-    const serializeAtom = atom(null, (get, set, action) => {
-        if (action.type === 'serialize') {
-            const { x, y, z } = diffObjects(get(labelAtom), initLabels);
-
-            let ro = {};
-
-            if (x) {
-                ro.x = x;
-            }
-            if (y) {
-                ro.y = y;
-            }
-            if (z) {
-                ro.z = z;
-            }
-
-            if (isEmpty(ro)) {
-                return;
-            }
-
-            action.callback(ro);
-        } else if (action.type === 'deserialize') {
-            const objStr = action.value;
-
-            if (!objStr || !objStr.length || objStr.length === 0) {
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
                 set(labelAtom, initLabels);
-                return;
-            }
-            const rawObj = queryString.parse(objStr);
+                break;
 
-            const newKeys = Object.keys(rawObj);
+            case 'readToAddressBar':
+                const { x, y, z } = diffObjects(get(labelAtom), initLabels);
 
-            const ro = {};
+                let ro = {};
 
-            if (newKeys.includes('x')) ro.x = rawObj.x;
-            if (newKeys.includes('y')) ro.y = rawObj.y;
-            if (newKeys.includes('z')) ro.z = rawObj.z;
+                if (x) {
+                    ro.x = x;
+                }
+                if (y) {
+                    ro.y = y;
+                }
+                if (z) {
+                    ro.z = z;
+                }
 
-            set(labelAtom, { ...initLabels, ...ro });
+                if (isEmpty(ro)) {
+                    return;
+                }
+
+                action.callback(ro);
+                break;
+
+            case 'writeFromAddressBar':
+                const objStr = action.value;
+
+                if (!objStr || !objStr.length || objStr.length === 0) {
+                    set(labelAtom, initLabels);
+                    return;
+                }
+                const rawObj = queryString.parse(objStr);
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro = {};
+
+                if (newKeys.includes('x')) nro.x = rawObj.x;
+                if (newKeys.includes('y')) nro.y = rawObj.y;
+                if (newKeys.includes('z')) nro.z = rawObj.z;
+
+                set(labelAtom, { ...initLabels, ...nro });
+
+                break;
         }
     });
 
@@ -142,8 +151,5 @@ export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', tw
         );
     });
 
-    labelAtom.component = twoD ? component2d : component;
-    labelAtom.serializeAtom = serializeAtom;
-
-    return labelAtom;
+    return { atom: labelAtom, readWriteAtom, component: twoD ? component2d : component };
 }
