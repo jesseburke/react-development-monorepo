@@ -24,15 +24,15 @@ import Axes2DCanv from '../../CanvasComps/Axes2D.jsx';
 import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';
 
 import {
-    boundsAtom,
+    boundsData,
     canvasBoundsAtom,
     gridBoundsAtom,
-    funcAtom,
+    funcData,
     twoDFuncAtom,
-    labelAtom,
-    axesDataAtom,
-    cameraDataAtom,
-    animationDataAtom,
+    labelData,
+    axesData,
+    cameraData,
+    animationData,
     animationValueAtom,
     planeHeightAndWidthAtom,
     planeCenterAtom,
@@ -77,9 +77,9 @@ export default function App() {
                     className='control-bar bg-royalblue-900 font-sans
 		    p-8 text-white'
                 >
-                    <funcAtom.component />
+                    <funcData.component />
                     <ReakitProvider unstable_system={system}>
-                        <animationDataAtom.component />
+                        <animationData.component />
                         <OptionsModal />
                     </ReakitProvider>
                 </header>
@@ -91,21 +91,24 @@ export default function App() {
                         controlsData={initControlsData}
                     >
                         <Axes3D
-                            boundsAtom={boundsAtom}
-                            axesDataAtom={axesDataAtom}
-                            labelAtom={labelAtom}
+                            boundsAtom={boundsData.atom}
+                            axesDataAtom={axesData.atom}
+                            labelAtom={labelData.atom}
                         />
                         <Grid boundsAtom={gridBoundsAtom} gridShow={true} />
-                        <FunctionGraph3D funcAtom={funcAtom} boundsAtom={boundsAtom} />
+                        <FunctionGraph3D
+                            funcAtom={funcData.funcAtom}
+                            boundsAtom={boundsData.atom}
+                        />
                         <Plane
                             heightAndWidthAtom={planeHeightAndWidthAtom}
                             centerAtom={planeCenterAtom}
                         />
-                        <CameraControls cameraDataAtom={cameraDataAtom} />
+                        <CameraControls cameraDataAtom={cameraData.atom} />
                     </ThreeSceneComp>
                     <CanvasComp>
                         <Axes2DCanv boundsAtom={canvasBoundsAtom} lineWidth={5} yLabel='z' />
-                        <FunctionGraph2D funcAtom={twoDFuncAtom} boundsAtom={boundsAtom} />
+                        <FunctionGraph2D funcAtom={twoDFuncAtom} boundsAtom={boundsData.atom} />
                     </CanvasComp>
                     <DataComp
                         resetBtnClassStr={resetBtnClassStr}
@@ -157,10 +160,10 @@ function OptionsModal() {
                         <Tab {...tab}>Camera Options</Tab>
                     </TabList>
                     <TabPanel {...tab}>
-                        <boundsAtom.component />
+                        <boundsData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
-                        <cameraDataAtom.component />
+                        <cameraData.component />
                     </TabPanel>
                 </>
             </Dialog>

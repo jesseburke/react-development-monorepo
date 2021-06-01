@@ -29,38 +29,46 @@ export default function AnimationData({
 
     const animationAtom = atom(initValue);
 
-    const serializeAtom = atom(null, (get, set, action) => {
-        if (action.type === 'serialize') {
-            const { t, paused, animationTime } = diffObjects(get(animationAtom), initValue);
-
-            let ro: AnimationDataType = {};
-
-            if (t) ro.t = t;
-            if (paused) ro.p = paused ? 0 : 1;
-            if (animationTime) ro.a = animationTime;
-
-            if (isEmpty(ro)) return;
-
-            action.callback(ro);
-        } else if (action.type === 'deserialize') {
-            const objStr = action.value;
-
-            if (!objStr || !objStr.length || objStr.length === 0) {
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
                 set(animationAtom, initValue);
-                return;
-            }
+                break;
 
-            const rawObj: AnimationData = queryString.parse(objStr);
+            case 'readToAddressBar':
+                const { t, paused, animationTime } = diffObjects(get(animationAtom), initValue);
 
-            const newKeys = Object.keys(rawObj);
+                let ro: AnimationDataType = {};
 
-            const ro = {};
+                if (t) ro.t = t;
+                if (paused) ro.p = paused ? 0 : 1;
+                if (animationTime) ro.a = animationTime;
 
-            if (newKeys.includes('t')) ro.t = Number(rawObj.t);
-            if (newKeys.includes('p')) ro.paused = rawObj.p === 0 ? false : true;
-            if (newKeys.includes('a')) ro.animationTime = Number(rawObj.a);
+                if (isEmpty(ro)) return;
 
-            set(animationAtom, { ...initValue, ...ro });
+                action.callback(ro);
+                break;
+
+            case 'writeFromAddressBar':
+                const objStr = action.value;
+
+                if (!objStr || !objStr.length || objStr.length === 0) {
+                    set(animationAtom, initValue);
+                    return;
+                }
+
+                const rawObj: AnimationData = queryString.parse(objStr);
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro = {};
+
+                if (newKeys.includes('t')) nro.t = Number(rawObj.t);
+                if (newKeys.includes('p')) nro.paused = rawObj.p === 0 ? false : true;
+                if (newKeys.includes('a')) nro.animationTime = Number(rawObj.a);
+
+                set(animationAtom, { ...initValue, ...nro });
+                break;
         }
     });
 
@@ -132,10 +140,7 @@ export default function AnimationData({
         );
     });
 
-    animationAtom.serializeAtom = serializeAtom;
-    animationAtom.component = component;
-
-    return animationAtom;
+    return { atom: animationAtom, readWriteAtom, component };
 }
 
 const animFactory = ({

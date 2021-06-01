@@ -19,44 +19,53 @@ export default function PerspCameraData(args: PerspCamera = {}) {
 
     const cameraDataAtom = atom(initValue);
 
-    const serializeAtom = atom(null, (get, set, action) => {
-        if (action.type === 'serialize') {
-            const { target, position } = diffObjects(get(cameraDataAtom), initValue);
-
-            let ro = {};
-
-            if (target) ro.t = queryString.stringify(target.map((x) => round(x, 2)));
-            if (position) ro.p = queryString.stringify(position.map((x) => round(x, 2)));
-
-            if (isEmpty(ro)) return;
-
-            action.callback(ro);
-        } else if (action.type === 'deserialize') {
-            const objStr = action.value;
-
-            if (!objStr || !objStr.length || objStr.length === 0) {
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
                 set(cameraDataAtom, initValue);
-                return;
-            }
+                break;
 
-            const rawObj = queryString.parse(objStr);
+            case 'readToAddressBar':
+                const { target, position } = diffObjects(get(cameraDataAtom), initValue);
 
-            const newKeys = Object.keys(rawObj);
+                let ro = {};
 
-            const ro: OrthoCamera = {};
+                if (target) ro.t = queryString.stringify(target.map((x) => round(x, 2)));
+                if (position) ro.p = queryString.stringify(position.map((x) => round(x, 2)));
 
-            if (newKeys.includes('t')) {
-                const t = queryString.parse(rawObj.t);
+                if (isEmpty(ro)) return;
 
-                ro.target = [Number(t[0]), Number(t[1]), Number(t[2])];
-            }
-            if (newKeys.includes('p')) {
-                const ps = queryString.parse(rawObj.p);
+                action.callback(ro);
+                break;
 
-                ro.position = [Number(ps[0]), Number(ps[1]), Number(ps[2])];
-            }
+            case 'writeFromAddressBar':
+                const objStr = action.value;
 
-            set(cameraDataAtom, { ...initValue, ...ro });
+                if (!objStr || !objStr.length || objStr.length === 0) {
+                    set(cameraDataAtom, initValue);
+                    return;
+                }
+
+                const rawObj = queryString.parse(objStr);
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro: OrthoCamera = {};
+
+                if (newKeys.includes('t')) {
+                    const t = queryString.parse(rawObj.t);
+
+                    nro.target = [Number(t[0]), Number(t[1]), Number(t[2])];
+                }
+                if (newKeys.includes('p')) {
+                    const ps = queryString.parse(rawObj.p);
+
+                    nro.position = [Number(ps[0]), Number(ps[1]), Number(ps[2])];
+                }
+
+                set(cameraDataAtom, { ...initValue, ...nro });
+
+                break;
         }
     });
 
@@ -117,8 +126,5 @@ export default function PerspCameraData(args: PerspCamera = {}) {
         );
     });
 
-    cameraDataAtom.component = component;
-    cameraDataAtom.serializeAtom = serializeAtom;
-
-    return cameraDataAtom;
+    return { atom: cameraDataAtom, readWriteAtom, component };
 }

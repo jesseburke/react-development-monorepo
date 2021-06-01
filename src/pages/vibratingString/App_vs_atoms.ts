@@ -56,31 +56,32 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 //
 // atoms
 
-export const labelAtom = LabelDataComp({ yLabel: 't', twoD: true });
-export const axesDataAtom = AxesDataComp({
+export const labelData = LabelDataComp({ yLabel: 't', twoD: true });
+export const axesData = AxesDataComp({
     ...initAxesData,
     tickLabelStyle
 });
 
-const functionLabelAtom = atom((get) => 's(' + get(labelAtom).x + ', ' + get(labelAtom).y + ') = ');
+const functionLabelAtom = atom(
+    (get) => 's(' + get(labelData.atom).x + ', ' + get(labelData.atom).y + ') = '
+);
 
-export const funcAtom = FunctionDataComp({
+export const funcData = FunctionDataComp({
     initVal: initFuncStr,
     functionLabelAtom,
-    xVar: 'x',
-    yVar: 't',
+    labelAtom: labelData.atom,
     inputSize: 40
 });
 
-export const boundsAtom = BoundsDataComp({
+export const boundsData = BoundsDataComp({
     initBounds,
-    labelAtom
+    labelAtom: labelData.atom
 });
 
 const xCanvOverhang = 0;
 
 export const canvasBoundsAtom = atom((get) => {
-    const { xMin, xMax, zMin, zMax } = get(boundsAtom);
+    const { xMin, xMax, zMin, zMax } = get(boundsData.atom);
 
     return {
         xMin: xMin - xCanvOverhang,
@@ -93,7 +94,7 @@ export const canvasBoundsAtom = atom((get) => {
 const gridOverhang = 2;
 
 export const gridBoundsAtom = atom((get) => {
-    const { xMin, xMax, yMin, yMax } = get(boundsAtom);
+    const { xMin, xMax, yMin, yMax } = get(boundsData.atom);
 
     return {
         xMin: xMin - gridOverhang,
@@ -104,23 +105,23 @@ export const gridBoundsAtom = atom((get) => {
 });
 
 const minMaxForAnimationAtom = atom((get) => {
-    return { min: get(boundsAtom).yMin, max: get(boundsAtom).yMax };
+    return { min: get(boundsData.atom).yMin, max: get(boundsData.atom).yMax };
 });
 
-export const animationDataAtom = AnimationData({ minMaxAtom: minMaxForAnimationAtom });
+export const animationData = AnimationData({ minMaxAtom: minMaxForAnimationAtom });
 
-export const animationValueAtom = atom((get) => get(animationDataAtom).t);
+export const animationValueAtom = atom((get) => get(animationData.atom).t);
 
 const planeOverhang = 0;
 
 export const planeHeightAndWidthAtom = atom((get) => {
-    const { xMin, xMax, zMin, zMax } = get(boundsAtom);
+    const { xMin, xMax, zMin, zMax } = get(boundsData.atom);
 
     return { width: xMax - xMin + planeOverhang, height: zMax - zMin };
 });
 
 export const planeCenterAtom = atom((get) => {
-    const { xMin, xMax } = get(boundsAtom);
+    const { xMin, xMax } = get(boundsData.atom);
 
     return [(xMax - xMin) / 2 + xMin, get(animationValueAtom)];
 });
@@ -128,18 +129,18 @@ export const planeCenterAtom = atom((get) => {
 export const twoDFuncAtom = atom((get) => {
     const t = get(animationValueAtom);
 
-    return { func: (x) => get(funcAtom).func(x, t) };
+    return { func: (x) => get(funcData.funcAtom).func(x, t) };
 });
 
-export const cameraDataAtom = PerspCameraData(initCameraData);
+export const cameraData = PerspCameraData(initCameraData);
 
 const atomStoreAtom = atom({
-    ls: labelAtom,
-    ax: axesDataAtom,
-    fn: funcAtom.functionStrAtom,
-    bd: boundsAtom,
-    cd: cameraDataAtom,
-    ad: animationDataAtom
+    ls: labelData,
+    ax: axesData,
+    fn: funcData,
+    bd: boundsData,
+    cd: cameraData,
+    ad: animationData
 });
 
 export const DataComp = MainDataComp(atomStoreAtom);
