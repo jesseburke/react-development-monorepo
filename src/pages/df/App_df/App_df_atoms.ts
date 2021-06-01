@@ -101,12 +101,12 @@ const atomStoreAtom = atom({
     cd: orthoCameraData
 });
 
+function theta(a) {
+    return Math.asin(a / Math.sqrt(a * a + 1));
+}
+
 export const zHeightAtom = atom((get) => {
     const f = get(diffEqData.funcAtom).func;
-
-    function theta(a) {
-        return Math.asin(a / Math.sqrt(a * a + 1));
-    }
 
     return { func: (x, y) => 3 * theta(f(x, y)) };
 });
