@@ -16,7 +16,7 @@ import { ThreeSceneComp } from '../../../components/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import IntegralCurve from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
+import IntegralCurve from '../../../ThreeSceneComps/IntegralCurve';
 import CameraControls from '../../../ThreeSceneComps/CameraControls.jsx';
 
 import {

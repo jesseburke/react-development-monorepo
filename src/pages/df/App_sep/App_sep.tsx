@@ -9,13 +9,13 @@ import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
+import { ThreeSceneComp } from '../../../components/ThreeScene';
 import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
 
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGridRecoil.jsx';
-import DirectionFieldApprox from '../../../ThreeSceneComps/DirectionFieldApproxRecoil';
+import IntegralCurve from '../../../ThreeSceneComps/IntegralCurve';
 import CameraControls from '../../../ThreeSceneComps/CameraControls.jsx';
 
 import '../../../styles.css';
@@ -37,12 +37,6 @@ import {
 //
 // initial data
 //
-
-const initColors = {
-    solution: '#C2374F',
-    axes: '#0A2C3C',
-    controlBar: '#0A2C3C'
-};
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.PAN },
@@ -108,7 +102,7 @@ export default function App() {
                                 boundsAtom={boundsData.atom}
                                 arrowGridDataAtom={arrowGridData.atom}
                             />
-                            <DirectionFieldApprox
+                            <IntegralCurve
                                 initialPointAtom={initialPointData.atom}
                                 boundsAtom={boundsData.atom}
                                 diffEqAtom={funcAtom}
