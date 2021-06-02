@@ -13,6 +13,8 @@ import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
+import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
+
 //------------------------------------------------------------------------
 //
 // initial constants
@@ -126,12 +128,18 @@ export const funcAtom = atom((get) => ({
 export const SepEquationInput = React.memo(function SepEquationI({}) {
     const { x: xLabel, y: yLabel } = useAtom(labelData.atom)[0];
 
+    const LatexSepEquation = `\\frac{d${yLabel}}{d${xLabel}\} =
+    g(${xLabel}) \\cdot  h(${yLabel})`;
+
+    //console.log(LatexSepEquation);
+
     return (
         <div className='flex flex-col justify-center items-center h-full'>
-            <div className='px-2'>
-                d{yLabel}/d{xLabel} = <span>g({xLabel})</span>
-                <span>{'\u{00B7}'}</span>
-                <span>h({yLabel})</span>
+            <div className='px-2 py-3'>
+                <TexDisplayComp str={LatexSepEquation} />
+                {/* d{yLabel}/d{xLabel} = <span>g({xLabel})</span>
+                    <span>{'\u{00B7}'}</span>
+                    <span>h({yLabel})</span> */}
             </div>
             <div className='flex flex-col md:flex-row'>
                 <span className='px-2 py-1'>
