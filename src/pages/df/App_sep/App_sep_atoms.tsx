@@ -121,6 +121,16 @@ export const funcAtom = atom((get) => ({
     func: (x, y) => get(xFunctionData.funcAtom).func(x, 0) * get(yFunctionData.funcAtom).func(0, y)
 }));
 
+function theta(a) {
+    return Math.asin(a / Math.sqrt(a * a + 1));
+}
+
+export const zHeightAtom = atom((get) => {
+    const f = get(funcAtom).func;
+
+    return { func: (x, y) => 3 * theta(f(x, y)) };
+});
+
 //------------------------------------------------------------------------
 //
 // input components
@@ -128,18 +138,20 @@ export const funcAtom = atom((get) => ({
 export const SepEquationInput = React.memo(function SepEquationI({}) {
     const { x: xLabel, y: yLabel } = useAtom(labelData.atom)[0];
 
-    const LatexSepEquation = `\\frac{d${yLabel}}{d${xLabel}\} =
-    g(${xLabel}) \\cdot  h(${yLabel})`;
+    const [texEquation, setTexEquation] = useState();
 
-    //console.log(LatexSepEquation);
+    useEffect(() => {
+        setTexEquation(`\\frac{d${yLabel}}{d${xLabel}\} =
+    g(${xLabel}) \\cdot  h(${yLabel})`);
+    }, [xLabel, yLabel]);
 
     return (
         <div className='flex flex-col justify-center items-center h-full'>
             <div className='px-2 py-3'>
-                <TexDisplayComp str={LatexSepEquation} />
+                <TexDisplayComp str={texEquation} />
                 {/* d{yLabel}/d{xLabel} = <span>g({xLabel})</span>
-                    <span>{'\u{00B7}'}</span>
-                    <span>h({yLabel})</span> */}
+			    <span>{'\u{00B7}'}</span>
+			    <span>h({yLabel})</span> */}
             </div>
             <div className='flex flex-col md:flex-row'>
                 <span className='px-2 py-1'>

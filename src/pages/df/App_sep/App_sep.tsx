@@ -29,6 +29,7 @@ import {
     solutionCurveData,
     axesData,
     orthoCameraData,
+    zHeightAtom,
     DataComp,
     SepEquationInput
 } from './App_sep_atoms';
@@ -101,14 +102,15 @@ export default function App() {
                                 diffEqAtom={funcAtom}
                                 boundsAtom={boundsData.atom}
                                 arrowGridDataAtom={arrowGridData.atom}
+                                zHeightAtom={zHeightAtom}
                             />
                             <IntegralCurve
                                 initialPointAtom={initialPointData.atom}
                                 boundsAtom={boundsData.atom}
                                 diffEqAtom={funcAtom}
                                 curveDataAtom={solutionCurveData.atom}
+                                zHeightAtom={zHeightAtom}
                             />
-                            <ClickablePlaneComp clickPositionAtom={initialPointData.atom} />
                             <CameraControls cameraDataAtom={orthoCameraData.atom} />
                         </ThreeSceneComp>
                         <DataComp
@@ -156,6 +158,7 @@ function OptionsModal() {
                         <Tab {...tab}>Arrow grid</Tab>
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Camera Options</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                         <Tab {...tab}>Variables</Tab>
                     </TabList>
@@ -167,6 +170,9 @@ function OptionsModal() {
                     </TabPanel>
                     <TabPanel {...tab}>
                         <boundsData.component />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <orthoCameraData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <solutionCurveData.component />

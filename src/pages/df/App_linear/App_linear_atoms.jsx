@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import classnames from 'classnames';
-import styles from '../base_styles.module.css';
-
 import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
@@ -15,9 +12,6 @@ import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
-
-import funcParser from '../../../utils/funcParser.jsx';
-import { round } from '../../../utils/BaseUtils.ts';
 
 //------------------------------------------------------------------------
 //
@@ -126,6 +120,16 @@ export const funcAtom = atom((get) => ({
         get(pxFunctionData.funcAtom).func(x, 0) * -y + get(qxFunctionData.funcAtom).func(x, 0)
 }));
 
+function theta(a) {
+    return Math.asin(a / Math.sqrt(a * a + 1));
+}
+
+export const zHeightAtom = atom((get) => {
+    const f = get(funcAtom).func;
+
+    return { func: (x, y) => 3 * theta(f(x, y)) };
+});
+
 //------------------------------------------------------------------------
 //
 // input components
@@ -133,11 +137,16 @@ export const funcAtom = atom((get) => ({
 export const LinearEquationInput = React.memo(function LinearEquationI({}) {
     const { x: xLabel, y: yLabel } = useAtom(labelData.atom)[0];
 
-    const LatexLinearEquation = `\\frac{d${yLabel}}{d${xLabel}} + p(${xLabel})${yLabel} = q(${xLabel})`;
+    const [texEquation, setTexEquation] = useState();
+
+    useEffect(() => {
+        setTexEquation(`\\frac{d${yLabel}}{d${xLabel}} + p(${xLabel})${yLabel} = q(${xLabel})`);
+    }, [xLabel, yLabel]);
+
     return (
         <div className='flex flex-col justify-center items-center h-full'>
             <div className='px-2 py-3'>
-                <TexDisplayComp str={LatexLinearEquation} />
+                <TexDisplayComp str={texEquation} />
             </div>
             <div className='flex flex-col md:flex-row'>
                 <span className='px-2 py-1'>
