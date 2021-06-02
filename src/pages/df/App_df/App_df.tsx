@@ -109,10 +109,7 @@ export default function App() {
                             zHeightAtom={zHeightAtom}
                         />
 
-                        <CameraControls
-                            classStr={photoButtonClassStr}
-                            cameraDataAtom={orthoCameraData.atom}
-                        />
+                        <CameraControls cameraDataAtom={orthoCameraData.atom} />
                     </ThreeSceneComp>
                     <DataComp
                         resetBtnClassStr={resetBtnClassStr}

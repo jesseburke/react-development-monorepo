@@ -104,11 +104,11 @@ export const gridBoundsAtom = atom((get) => {
     };
 });
 
-const minMaxForAnimationAtom = atom((get) => {
-    return { min: get(boundsData.atom).yMin, max: get(boundsData.atom).yMax };
+export const animationData = AnimationData({
+    minMaxAtom: atom((get) => {
+        return { min: get(boundsData.atom).yMin, max: get(boundsData.atom).yMax };
+    })
 });
-
-export const animationData = AnimationData({ minMaxAtom: minMaxForAnimationAtom });
 
 export const animationValueAtom = atom((get) => get(animationData.atom).t);
 

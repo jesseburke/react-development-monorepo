@@ -1,20 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
-import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 import styles from '../base_styles.module.css';
 
 import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
-import EquationData from '../../../data/EquationData.jsx';
+import FunctionDataComp from '../../../data/FunctionDataComp.jsx';
 import ArrowGridDataComp from '../../../data/ArrowGridDataComp.jsx';
 import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
-
-import funcParser from '../../../utils/funcParser.jsx';
 
 //------------------------------------------------------------------------
 //
@@ -84,41 +81,42 @@ export const boundsData = BoundsDataComp({
     labelAtom: labelData.atom
 });
 
-export const orthoCameraDataAtom = OrthoCameraDataComp(initCameraData);
+export const orthoCameraData = OrthoCameraDataComp(initCameraData);
 
-const primObj = {
+const xFunctionData = FunctionDataComp({
+    initVal: initXFuncStr,
+    functionLabelAtom: atom((get) => 'g(' + get(labelData.atom).x + ') = '),
+    labelAtom: labelData.atom,
+    inputSize: 10
+});
+
+const yFunctionData = FunctionDataComp({
+    initVal: initYFuncStr,
+    functionLabelAtom: atom((get) => 'h(' + get(labelData.atom).y + ') = '),
+    labelAtom: labelData.atom,
+    inputSize: 10
+});
+
+const atomStoreAtom = atom({
     ls: labelData,
     ip: initialPointData,
     ag: arrowGridData,
     ax: axesData,
     sc: solutionCurveData,
     bd: boundsData,
-    cd: orthoCameraData
-};
+    cd: orthoCameraData,
+    xs: xFunctionData,
+    ys: yFunctionData
+});
 
-const derObj = {
-    xs: EquationData({
-        initVal: initXFuncStr,
-        equationLabelAtom: atom((get) => 'g(' + get(primObj.ls.atom).x + ') = '),
-        inputSize: 10
-    }),
-    ys: EquationData({
-        initVal: initYFuncStr,
-        equationLabelAtom: atom((get) => 'h(' + get(primObj.ls.atom).y + ') = '),
-        inputSize: 10
-    })
-};
-
-const atomStore = { ...primObj, ...derObj };
-
-export const DataComp = MainDataComp(atomStore);
+export const DataComp = MainDataComp(atomStoreAtom);
 
 //------------------------------------------------------------------------
 //
 // derived atoms
 
 export const funcAtom = atom((get) => ({
-    func: funcParser('(' + get(atomStore.xs.atom) + ')*(' + get(atomStore.ys.atom) + ')')
+    func: (x, y) => get(xFunctionData.funcAtom).func(x, 0) * get(yFunctionData.funcAtom).func(0, y)
 }));
 
 //------------------------------------------------------------------------
@@ -126,7 +124,7 @@ export const funcAtom = atom((get) => ({
 // input components
 
 export const SepEquationInput = React.memo(function SepEquationI({}) {
-    const { x: xLabel, y: yLabel } = useAtom(atomStore.ls.atom)[0];
+    const { x: xLabel, y: yLabel } = useAtom(labelData.atom)[0];
 
     return (
         <div className='flex flex-col justify-center items-center h-full'>
@@ -137,10 +135,10 @@ export const SepEquationInput = React.memo(function SepEquationI({}) {
             </div>
             <div className='flex flex-col md:flex-row'>
                 <span className='px-2 py-1'>
-                    <XEquationInput />
+                    <xFunctionData.component />
                 </span>
                 <span className='px-2 py-1'>
-                    <YEquationInput />
+                    <yFunctionData.component />
                 </span>
             </div>
         </div>

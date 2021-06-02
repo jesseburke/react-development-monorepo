@@ -75,7 +75,7 @@ export default function MainDataComp(atomStoreAtom) {
         useLayoutEffect(() => {
             const qsObj = queryString.parse(window.location.search.slice(1));
 
-            console.log('read address bar effect called with qsObj = ', qsObj);
+            //console.log('read address bar effect called with qsObj = ', qsObj);
 
             writeToAtomStoreFunc(qsObj);
         }, [writeToAtomStoreFunc]);

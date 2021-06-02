@@ -74,20 +74,20 @@ export const axesData = AxesDataComp({
 });
 export const solutionCurveData = CurveDataComp(initSolutionCurveData);
 
-const functionLabelAtom = atom(
-    (get) => 'd' + get(labelData.atom).y + '/d' + get(labelData.atom).x + ' = '
-);
-
 export const diffEqData = FunctionDataComp({
     initVal: initFuncStr,
-    functionLabelAtom,
+    functionLabelAtom: atom(
+        (get) => 'd' + get(labelData.atom).y + '/d' + get(labelData.atom).x + ' = '
+    ),
     labelAtom: labelData.atom
 });
+
 export const boundsData = BoundsDataComp({
     initBounds,
     labelAtom: labelData.atom,
     twoD: true
 });
+
 export const orthoCameraData = OrthoCameraDataComp(initCameraData);
 
 const atomStoreAtom = atom({
