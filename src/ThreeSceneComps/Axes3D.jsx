@@ -1,51 +1,61 @@
 import React, { useEffect } from 'react';
 
+import { useAtom, atom } from 'jotai';
+
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export default React.memo(function Axes3DTS({
+const defaultLabelAtom = atom({ x: 'x', y: 'y', z: 'z' });
+
+const defaultAxesDataAtom = atom({
+    radius: 0.01,
+    color: '#0A2C3C',
+    showLabels: true,
+    tickDistance: 1,
+    tickRadiusMultiple: 10,
+    tickLabelDistance: 2
+});
+
+export default React.memo(function Axes3D({
     threeCBs,
-    bounds,
-    radius = 0.05,
-    color,
+    boundsAtom,
+    axesDataAtom = defaultAxesDataAtom,
+    tickLabelDistanceFromEnds = 1,
     show = true,
-    showLabels = true,
-    xLabel = 'x',
-    yLabel = 'y',
-    zLabel = 'z',
-    labelStyle,
-    tickRadius = 2.5
+    labelAtom = defaultLabelAtom
 }) {
+    const {
+        radius,
+        color,
+        showLabels,
+        labelStyle,
+        tickDistance,
+        tickRadiusMultiple,
+        tickLabelDistance,
+        tickLabelStyle
+    } = useAtom(axesDataAtom)[0];
+
+    const { xMin, xMax, yMin, yMax, zMin, zMax } = useAtom(boundsAtom)[0];
+
+    const { x: xLabel, y: yLabel, z: zLabel } = useAtom(labelAtom)[0];
+
     useEffect(() => {
         if (!threeCBs) return;
-
-        const { xMin, xMax, yMin, yMax, zMin, zMax } = bounds;
 
         // this will hold axes and all adornments
         const axesGroup = new THREE.Group();
 
-        let tickGeomArray = [];
-
         if (show) {
-            // make two axes first
-            const material = new THREE.LineBasicMaterial({
-                color: color,
-                linewidth: 100
-            });
-
             const radiusTop = radius;
             const radiusBottom = radius;
-            let height;
-
             let radialSegments = 8;
             let heightSegments = 40;
             let openEnded = true;
 
-            height = xMax - xMin;
             const xa = new THREE.CylinderBufferGeometry(
                 radiusTop,
                 radiusBottom,
-                height,
+                xMax - xMin,
                 radialSegments,
                 heightSegments,
                 openEnded
@@ -53,45 +63,46 @@ export default React.memo(function Axes3DTS({
             xa.rotateZ(Math.PI / 2);
             xa.translate((xMax + xMin) / 2, 0, 0);
 
-            for (let i = 0; i < height; i++) {
-                tickGeomArray.push(RawTickGeometry(radius * tickRadius).translate(xMin + i, 0, 0));
-            }
-
-            height = yMax - yMin;
             const ya = new THREE.CylinderBufferGeometry(
                 radiusTop,
                 radiusBottom,
-                height,
+                yMax - yMin,
                 radialSegments,
                 heightSegments,
                 openEnded
             );
             ya.translate(0, (yMax + yMin) / 2, 0);
 
-            for (let i = 0; i < height; i++) {
-                tickGeomArray.push(RawTickGeometry(radius * tickRadius).translate(0, yMin + i, 0));
-            }
-
-            height = zMax - zMin;
             const za = new THREE.CylinderBufferGeometry(
                 radiusTop,
                 radiusBottom,
-                height,
+                zMax - zMin,
                 radialSegments,
                 heightSegments,
                 openEnded
             );
-            za.translate(0, 0, (zMax + zMin) / 2);
+            //za.translate(0, 0, (zMax + zMin) / 2);
             za.rotateX(Math.PI / 2);
-
-            for (let i = 0; i < height; i++) {
-                tickGeomArray.push(RawTickGeometry(radius * tickRadius).translate(0, 0, zMin + i));
-            }
 
             const axesMaterial = new THREE.MeshBasicMaterial({ color: color });
             axesGroup.add(new THREE.Mesh(xa, axesMaterial));
             axesGroup.add(new THREE.Mesh(ya, axesMaterial));
             axesGroup.add(new THREE.Mesh(za, axesMaterial));
+
+            // make ticks now
+            let tickGeomArray = [];
+
+            for (let i = xMin; i <= xMax; i++) {
+                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(i, 0, 0));
+            }
+
+            for (let i = yMin; i <= yMax; i++) {
+                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(0, i, 0));
+            }
+
+            for (let i = zMin; i <= zMax; i++) {
+                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(0, 0, i));
+            }
 
             // am not using tickColor for now
             const tickGeom = BufferGeometryUtils.mergeBufferGeometries(tickGeomArray);
@@ -106,40 +117,40 @@ export default React.memo(function Axes3DTS({
                 threeCBs.remove(axesGroup);
             }
         };
-    }, [threeCBs, show, radius, bounds, radius, tickRadius, color]);
+    }, [threeCBs, show, xMax, xMin, yMax, yMin, zMax, zMin, radius, tickRadiusMultiple, color]);
 
     useEffect(() => {
         if (!threeCBs || !show || !showLabels) return;
-
-        const { xMin, xMax, yMin, yMax, zMin, zMax } = bounds;
 
         let xLabelID;
         let yLabelID;
         let zLabelID;
 
-        xLabelID = threeCBs.addLabel({
-            pos: [xMax, 0, 0],
-            text: xLabel,
-            anchor: 'lr',
-            style: labelStyle
-        });
+        if (showLabels) {
+            xLabelID = threeCBs.addLabel({
+                pos: [xMax, 0, 0],
+                text: xLabel,
+                //anchor: 'lr',
+                style: labelStyle
+            });
 
-        yLabelID = threeCBs.addLabel({
-            pos: [0, yMax, 0],
-            text: yLabel,
-            anchor: 'lr',
-            style: labelStyle
-        });
+            yLabelID = threeCBs.addLabel({
+                pos: [0, yMax, 0],
+                text: yLabel,
+                //anchor: 'lr',
+                style: labelStyle
+            });
 
-        zLabelID = threeCBs.addLabel({
-            pos: [0, 0, zMax],
-            text: zLabel,
-            anchor: 'lr',
-            style: labelStyle
-        });
+            zLabelID = threeCBs.addLabel({
+                pos: [0, 0, zMax],
+                text: zLabel,
+                //anchor: 'lr',
+                style: labelStyle
+            });
 
-        threeCBs.drawLabels();
-        threeCBs.render();
+            threeCBs.drawLabels();
+            threeCBs.render();
+        }
 
         return () => {
             if (xLabelID) {
@@ -159,7 +170,79 @@ export default React.memo(function Axes3DTS({
 
             threeCBs.drawLabels();
         };
-    }, [threeCBs, show, showLabels, bounds, labelStyle]);
+    }, [threeCBs, show, showLabels, xMax, yMax, zMax, labelStyle, xLabel, yLabel, zLabel]);
+
+    // tick labeling
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        // following means no tick labels
+        if (tickLabelDistance === 0) return;
+
+        const labelArr = [];
+
+        //x labels
+        const noTickXLabels = (xMax - xMin - 2 * tickLabelDistanceFromEnds) / tickLabelDistance;
+
+        for (let i = 0; i <= noTickXLabels; i++) {
+            labelArr.push(
+                threeCBs.addLabel({
+                    pos: [xMin + i * tickLabelDistance + tickLabelDistanceFromEnds, 0, 0],
+                    text: xMin + i * tickLabelDistance + tickLabelDistanceFromEnds,
+                    style: tickLabelStyle
+                })
+            );
+        }
+
+        //y labels
+        const noTickYLabels = (yMax - yMin - 2 * tickLabelDistanceFromEnds) / tickLabelDistance;
+
+        for (let i = 0; i <= noTickYLabels; i++) {
+            labelArr.push(
+                threeCBs.addLabel({
+                    pos: [0, yMin + i * tickLabelDistance + tickLabelDistanceFromEnds, 0],
+                    text: yMin + i * tickLabelDistance + tickLabelDistanceFromEnds,
+                    style: tickLabelStyle
+                })
+            );
+        }
+
+        //z labels
+        const noTickZLabels = (zMax - zMin - 2 * tickLabelDistanceFromEnds) / tickLabelDistance;
+
+        for (let i = 0; i <= noTickZLabels; i++) {
+            labelArr.push(
+                threeCBs.addLabel({
+                    pos: [0, 0, zMin + i * tickLabelDistance + tickLabelDistanceFromEnds],
+                    text: zMin + i * tickLabelDistance + tickLabelDistanceFromEnds,
+                    style: tickLabelStyle
+                })
+            );
+        }
+
+        threeCBs.drawLabels();
+
+        return () => {
+            if (threeCBs || labelArr)
+                labelArr.forEach((l) => {
+                    threeCBs.removeLabel(l);
+                });
+
+            threeCBs.drawLabels();
+            threeCBs.render();
+        };
+    }, [
+        threeCBs,
+        tickLabelDistance,
+        tickLabelDistanceFromEnds,
+        tickLabelStyle,
+        xMin,
+        xMax,
+        yMin,
+        yMax,
+        zMin,
+        zMax
+    ]);
 
     return null;
 });

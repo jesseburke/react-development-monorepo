@@ -1,25 +1,37 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import ArrowGridGeom from '../graphics/ArrowGridGeom.jsx';
+import ArrowGridGeom from '../graphics/ArrowGridGeom.js';
 
-export default function ArrowGridTS({
+const zeroFuncAtom = atom({ func: (x, y) => 0 });
+
+export default function ArrowGrid({
     threeCBs,
-    func,
-    bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    arrowDensity,
-    arrowLength,
-    color = '#0A2C3C'
+    diffEqAtom,
+    boundsAtom,
+    arrowGridDataAtom,
+    zHeightAtom = zeroFuncAtom
 }) {
+    const { density, length, thickness, color } = useAtom(arrowGridDataAtom)[0];
+
+    const [func] = useAtom(diffEqAtom);
+    const [bounds] = useAtom(boundsAtom);
+
+    const zHeightFunc = useAtom(zHeightAtom)[0].func;
+
     useEffect(() => {
         if (!threeCBs) return;
 
         const geom = ArrowGridGeom({
-            arrowDensity,
-            arrowLength,
+            arrowDensity: density,
+            arrowLength: length,
+            arrowThickness: thickness,
             bounds,
-            func
+            func: func.func, //funcValue.func
+            zHeightFunc
         });
 
         const material = new THREE.MeshBasicMaterial({ color });
@@ -35,7 +47,7 @@ export default function ArrowGridTS({
             if (geom) geom.dispose();
             if (material) material.dispose();
         };
-    }, [threeCBs, arrowDensity, arrowLength, bounds, func]);
+    }, [threeCBs, density, length, thickness, bounds, func, color, zHeightFunc]);
 
     return null;
 }

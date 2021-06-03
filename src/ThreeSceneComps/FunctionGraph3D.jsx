@@ -1,23 +1,22 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
+import { atom, useAtom } from 'jotai';
+
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import FunctionGraph3DGeom from '../graphics/FunctionGraph3DGeom.jsx';
 
-export default React.memo(function FunctionGraph3DTS({
-    threeCBs,
-    func,
-    bounds,
-    color,
-    show = true
-}) {
+export default function FunctionGraph3D({ threeCBs, funcAtom, boundsAtom, color, show = true }) {
+    const func = useAtom(funcAtom)[0];
+    const bounds = useAtom(boundsAtom)[0];
+
     useEffect(() => {
         if (!threeCBs) return;
 
         const geometry = FunctionGraph3DGeom({
-            func,
-            bounds: { ...bounds, yMin: bounds.tMin, yMax: bounds.tMax },
+            func: func.func,
+            bounds,
             meshSize: 200
         });
 
@@ -35,12 +34,6 @@ export default React.memo(function FunctionGraph3DTS({
         const mesh = new THREE.Mesh(geometry, material);
         threeCBs.add(mesh);
 
-        //const helper = new THREE.VertexNormalsHelper(mesh, 0.25, 0x000000, 10);
-        //threeCBs.add(helper);
-
-        //const helper1 = new VertexTangentsHelper( mesh, .25, 0x000000, 10 );
-        //threeCBs.add(helper1);
-
         return () => {
             threeCBs.remove(mesh);
             geometry.dispose();
@@ -49,4 +42,4 @@ export default React.memo(function FunctionGraph3DTS({
     }, [threeCBs, func, color, bounds]);
 
     return null;
-});
+}

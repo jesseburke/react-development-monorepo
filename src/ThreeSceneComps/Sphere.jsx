@@ -1,15 +1,35 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-export default React.memo(function SphereTS({
+import { useDebug } from '../utils/debugUtils';
+
+const defaultVisibleAtom = atom(true);
+
+const defaultColor = '#0A2C3C';
+
+const zeroFuncAtom = atom({ func: (x, y) => 0 });
+
+export default React.memo(function DraggableSphere({
     threeCBs,
     radius = 2,
-    color = '#0A2C3C',
-    position = [0, 0],
-    dragCB = null
+    color = defaultColor,
+    dragCB = null,
+    dragPositionAtom = null,
+    zHeightAtom = zeroFuncAtom,
+    visibleAtom = defaultVisibleAtom
 }) {
     const [meshState, setMeshState] = useState();
+
+    const [position, setPosition] = useAtom(dragPositionAtom);
+
+    const [visible] = useAtom(visibleAtom);
+
+    const zHeightFunc = useAtom(zHeightAtom)[0].func;
+
+    //useDebug([zHeightAtom]);
 
     //------------------------------------------------------------------------
     //
@@ -22,12 +42,19 @@ export default React.memo(function SphereTS({
             return;
         }
 
+        if (!visible) {
+            if (meshState) threeCBs.remove(meshState);
+            setMeshState(null);
+            return;
+        }
+
         const geometry = new THREE.SphereBufferGeometry(radius, 15, 15);
         const material = new THREE.MeshBasicMaterial({ color });
 
         const mesh = new THREE.Mesh(geometry, material)
-            .translateX(position[0])
-            .translateY(position[1]);
+            .translateX(position.x)
+            .translateY(position.y)
+            .translateZ(zHeightFunc(position.x, position.y));
 
         threeCBs.add(mesh);
         setMeshState(mesh);
@@ -37,40 +64,50 @@ export default React.memo(function SphereTS({
             if (geometry) geometry.dispose();
             if (material) material.dispose();
         };
-    }, [color, radius, threeCBs]);
+    }, [visible, color, radius, threeCBs, zHeightFunc]);
 
     //------------------------------------------------------------------------
     //
     // updates mesh as position changes
     //
 
-    const oldPos = useRef();
-
-    useEffect(() => {
-        if (!threeCBs || !meshState) {
+    useLayoutEffect(() => {
+        if (!meshState) {
             return;
         }
 
-        if (!oldPos.current) {
-            oldPos.current = position;
-            return;
-        }
-
-        const dx = position[0] - oldPos.current[0];
-        const dy = position[1] - oldPos.current[1];
-
-        meshState.translateX(dx);
-        meshState.translateY(dy);
-
-        return () => {
-            oldPos.current = position;
-        };
-    }, [position, meshState]);
+        meshState.position.x = position.x;
+        meshState.position.y = position.y;
+        meshState.position.z = zHeightFunc(position.x, position.y);
+    }, [position, meshState, zHeightFunc]);
 
     //------------------------------------------------------------------------
     //
     // adds drag controls onto the mesh if dragCB is non-zero
     //
+
+    useEffect(() => {
+        if (!threeCBs || !dragPositionAtom || !meshState) return;
+
+        const newDragCB = (event) => {
+            if (!event.object.getWorldPosition) {
+                setPosition((s) => s);
+                return;
+            }
+
+            const vec = new THREE.Vector3();
+            event.object.getWorldPosition(vec);
+
+            //updatePosition([vec.x, vec.y]);
+            setPosition({ x: vec.x, y: vec.y });
+        };
+
+        const disposeFunc = threeCBs.addDrag({ mesh: meshState, dragCB: newDragCB });
+
+        return () => {
+            if (disposeFunc) disposeFunc();
+        };
+    }, [meshState, dragPositionAtom, threeCBs]);
 
     useEffect(() => {
         if (!threeCBs || !dragCB || !meshState) return;

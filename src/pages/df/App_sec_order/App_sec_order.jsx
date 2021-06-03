@@ -16,9 +16,9 @@ import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent
 import SaveStateComp from '../../../components/SaveStateComp.jsx';
 
 import GridAndOrigin from '../../../ThreeSceneComps/GridAndOriginRecoil.jsx';
-import Axes2D from '../../../ThreeSceneComps/Axes2DRecoil.jsx';
-import Sphere from '../../../ThreeSceneComps/SphereRecoil.jsx';
-import FunctionGraph2D from '../../../ThreeSceneComps/FunctionGraph2DRecoil.jsx';
+import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
+import Sphere from '../../../ThreeSceneComps/Sphere.jsx';
+import FunctionGraph2D from '../../../ThreeSceneComps/FunctionGraph2D.jsx';
 
 import { fonts, labelStyle } from '../constants.jsx';
 

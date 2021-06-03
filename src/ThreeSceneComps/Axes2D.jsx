@@ -1,23 +1,43 @@
 import React, { useEffect } from 'react';
 
+import { useAtom, atom } from 'jotai';
+
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export default React.memo(function Axes2DTS({
+const defaultLabelAtom = atom({ x: 'x', y: 'y' });
+
+const defaultAxesDataAtom = atom({
+    radius: 0.01,
+    color: '#0A2C3C',
+    showLabels: true,
+    tickDistance: 1,
+    tickRadiusMultiple: 10,
+    tickLabelDistance: 2
+});
+
+export default React.memo(function Axes2D({
     threeCBs,
-    bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 },
-    radius = 0.02,
-    color = '#0A2C3C',
+    boundsAtom,
+    axesDataAtom = defaultAxesDataAtom,
     show = true,
-    showLabels = false,
-    tickDistance = 1,
-    tickRadius = 1.25,
-    tickColor = '#8BC34A',
-    labelStyle,
-    xLabel = 'x',
-    yLabel = 'y'
+    tickLabelDistanceFromEnds = 1,
+    labelAtom = defaultLabelAtom
 }) {
-    const { xMin, xMax, yMin, yMax } = bounds;
+    const {
+        radius,
+        color,
+        showLabels,
+        labelStyle,
+        tickDistance,
+        tickRadiusMultiple,
+        tickLabelDistance,
+        tickLabelStyle
+    } = useAtom(axesDataAtom)[0];
+
+    const { xMin, xMax, yMin, yMax } = useAtom(boundsAtom)[0];
+
+    const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];
 
     useEffect(() => {
         if (!threeCBs) return;
@@ -64,22 +84,19 @@ export default React.memo(function Axes2DTS({
 
             // make ticks now
 
-            let geomArray = [];
+            let tickGeomArray = [];
 
             for (let i = xMin; i <= xMax; i++) {
-                geomArray.push(RawTickGeometry(radius * tickRadius).translate(i, 0, 0));
+                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(i, 0, 0));
             }
 
             for (let i = yMin; i <= yMax; i++) {
-                geomArray.push(RawTickGeometry(radius * tickRadius).translate(0, i, 0));
+                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(0, i, 0));
             }
 
-            let axesGeom = BufferGeometryUtils.mergeBufferGeometries(geomArray);
-
-            // am not using tickColor right now
+            const tickGeom = BufferGeometryUtils.mergeBufferGeometries(tickGeomArray);
             const tickMaterial = new THREE.MeshBasicMaterial({ color: color });
-
-            axesGroup.add(new THREE.Mesh(axesGeom, tickMaterial));
+            axesGroup.add(new THREE.Mesh(tickGeom, tickMaterial));
 
             threeCBs.add(axesGroup);
         }
@@ -89,10 +106,10 @@ export default React.memo(function Axes2DTS({
                 threeCBs.remove(axesGroup);
             }
         };
-    }, [threeCBs, show, xMin, xMax, yMin, yMax, radius, tickRadius, color]);
+    }, [threeCBs, show, xMin, xMax, yMin, yMax, radius, tickRadiusMultiple, color]);
 
     useEffect(() => {
-        if (!threeCBs) return;
+        if (!threeCBs || !show) return;
 
         let xLabelID;
         let yLabelID;
@@ -123,7 +140,64 @@ export default React.memo(function Axes2DTS({
 
             threeCBs.drawLabels();
         };
-    }, [threeCBs, showLabels, xMax, yMax, labelStyle]);
+    }, [threeCBs, show, showLabels, xMax, yMax, labelStyle, xLabel, yLabel]);
+
+    // tick labeling
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        // following means no tick labels
+        if (tickLabelDistance === 0) return;
+
+        const labelArr = [];
+
+        //x labels
+        const noTickXLabels = (xMax - xMin - 2 * tickLabelDistanceFromEnds) / tickLabelDistance;
+
+        for (let i = 0; i <= noTickXLabels; i++) {
+            labelArr.push(
+                threeCBs.addLabel({
+                    pos: [xMin + i * tickLabelDistance + tickLabelDistanceFromEnds, 0, 0],
+                    text: xMin + i * tickLabelDistance + tickLabelDistanceFromEnds,
+                    style: tickLabelStyle
+                })
+            );
+        }
+
+        //y labels
+        const noTickYLabels = (yMax - yMin - 2 * tickLabelDistanceFromEnds) / tickLabelDistance;
+
+        for (let i = 0; i <= noTickYLabels; i++) {
+            labelArr.push(
+                threeCBs.addLabel({
+                    pos: [0, yMin + i * tickLabelDistance + tickLabelDistanceFromEnds, 0],
+                    text: yMin + i * tickLabelDistance + tickLabelDistanceFromEnds,
+                    style: tickLabelStyle
+                })
+            );
+        }
+
+        threeCBs.drawLabels();
+
+        return () => {
+            if (threeCBs || labelArr)
+                labelArr.forEach((l) => {
+                    threeCBs.removeLabel(l);
+                });
+
+            threeCBs.drawLabels();
+            threeCBs.render();
+        };
+    }, [
+        threeCBs,
+        tickLabelDistance,
+        tickLabelDistanceFromEnds,
+        tickLabelStyle,
+        xMin,
+        xMax,
+        yMin,
+        yMax
+    ]);
 
     return null;
 });
