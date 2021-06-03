@@ -14,12 +14,11 @@ import './styles.css';
 //import App from './pages/df/App_linear/App_linear';
 //const title = 'Linear Differential Equation Direction Field';
 
-import App from './pages/df/App_logistic/App_logistic';
-const title = 'Logistic Differential Equation Direction Field';
+//import App from './pages/df/App_logistic/App_logistic';
+//const title = 'Logistic Differential Equation Direction Field';
 
-//import App from './pages/vibratingString/App';
-//import App from './pages/vibratingString/App_vs';
-//const title = 'Vibrating string';
+import App from './pages/vibratingString/App_vs';
+const title = 'Vibrating string';
 
 function main() {
     const element = document.createElement('div');

@@ -12,12 +12,12 @@ import * as system from 'reakit-system-bootstrap';
 import '../../styles.css';
 
 import { ThreeSceneComp } from '../../components/ThreeScene';
-import CanvasComp from '../../components/CanvasCompHalfWidth.jsx';
+import CanvasComp from '../../components/CanvasComp.jsx';
 
 import Grid from '../../ThreeSceneComps/Grid';
 import Plane from '../../ThreeSceneComps/Plane';
-import Axes3D from '../../ThreeSceneComps/Axes3DRecoil.jsx';
-import FunctionGraph3D from '../../ThreeSceneComps/FunctionGraph3DRecoil.jsx';
+import Axes3D from '../../ThreeSceneComps/Axes3D.jsx';
+import FunctionGraph3D from '../../ThreeSceneComps/FunctionGraph3D.jsx';
 import CameraControls from '../../ThreeSceneComps/CameraControls.jsx';
 
 import Axes2DCanv from '../../CanvasComps/Axes2D.jsx';
@@ -33,13 +33,10 @@ import {
     axesData,
     cameraData,
     animationData,
-    animationValueAtom,
     planeHeightAndWidthAtom,
     planeCenterAtom,
     DataComp
 } from './App_vs_atoms';
-
-import theme from '../../theme.js';
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
@@ -64,6 +61,8 @@ const btnClassStr =
 const saveBtnClassStr = btnClassStr + ' bottom-24';
 
 const resetBtnClassStr = btnClassStr + ' bottom-8';
+
+const canvasClassStr = 'absolute left-1/2 w-6/12 h-full block border-l-2 border-white';
 
 //------------------------------------------------------------------------
 
@@ -106,7 +105,7 @@ export default function App() {
                         />
                         <CameraControls cameraDataAtom={cameraData.atom} />
                     </ThreeSceneComp>
-                    <CanvasComp>
+                    <CanvasComp classStr={canvasClassStr}>
                         <Axes2DCanv boundsAtom={canvasBoundsAtom} lineWidth={5} yLabel='z' />
                         <FunctionGraph2D funcAtom={twoDFuncAtom} boundsAtom={boundsData.atom} />
                     </CanvasComp>

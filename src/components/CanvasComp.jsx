@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import styles from './CanvasComp.module.css';
-
 import { useImmer } from 'use-immer';
 import { enableMapSet } from 'immer';
 
@@ -14,9 +12,8 @@ const defaultHeightPxs = 1024;
 
 export default React.memo(function CanvasComp({
     aspectRatio = 1,
-    height = '100%',
-    width = '100%',
     clearColor = '#f0f0f0',
+    classStr = 'h-100 block',
     children
 }) {
     const canvasRef = useRef(null);
@@ -26,6 +23,7 @@ export default React.memo(function CanvasComp({
     const heightPxs = useRef(defaultHeightPxs);
     const widthPxs = useRef(heightPxs.current * aspectRatio);
 
+    // a set of canvases that will be merged for the final canvas
     const [canvasSet, setCanvasSet] = useImmer(new Set());
 
     useEffect(() => {
@@ -79,7 +77,7 @@ export default React.memo(function CanvasComp({
     return (
         <React.Fragment>
             <canvas
-                className={styles.canvas}
+                className={classStr}
                 width={widthPxs.current}
                 height={heightPxs.current}
                 ref={(elt) => (canvasRef.current = elt)}
@@ -97,7 +95,3 @@ export default React.memo(function CanvasComp({
         </React.Fragment>
     );
 });
-
-//------------------------------------------------------------------------
-//
-// draw on canvas
