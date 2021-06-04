@@ -16,8 +16,6 @@ import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
 
-import { diffObjects, isEmpty } from '../../../utils/BaseUtils';
-
 //------------------------------------------------------------------------
 //
 // initial constants
