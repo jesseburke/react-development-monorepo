@@ -77,7 +77,7 @@ export default function App() {
 			p-4 md:p-8 text-white'
                     >
                         <LinearEquationInput />
-                        <initialPointData.component />
+                        <initialPointData.component initialStr={'Initial Point: '} />
                         <OptionsModal />
                     </header>
 

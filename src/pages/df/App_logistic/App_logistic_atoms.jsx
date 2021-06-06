@@ -82,7 +82,7 @@ const lineLabelStyle = {
 // primitive atoms
 
 export const labelData = LabelDataComp({ twoD: true });
-export const initialPointData = PointDataComp(initInitialPoint, 'Initial Point: ');
+export const initialPointData = PointDataComp(initInitialPoint);
 export const arrowGridData = ArrowGridDataComp(initArrowData);
 export const axesData = AxesDataComp({
     ...initAxesData,

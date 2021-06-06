@@ -18,7 +18,7 @@ const defaultInitValues = {
     y: 0
 };
 
-export default function PointDataComp(initArgs, inputStr = 'Point: ') {
+export default function PointDataComp(initArgs) {
     const initValue = { ...defaultInitValues, ...initArgs };
 
     const ptAtom = atom(initValue);
@@ -67,7 +67,7 @@ export default function PointDataComp(initArgs, inputStr = 'Point: ') {
     });
 
     const component = React.memo(
-        ({ prefixString = '', infixString = ' , ', postfixString = '' }) => {
+        ({ inputStr = '', prefixStr = '', infixStr = ' , ', postfixStr = '' }) => {
             const [point, setPoint] = useAtom(ptAtom);
 
             const setX = useCallback((newX) => setPoint((old) => ({ ...old, x: Number(newX) })), [
@@ -80,11 +80,11 @@ export default function PointDataComp(initArgs, inputStr = 'Point: ') {
             return (
                 <div className='p-2'>
                     <div>{inputStr}</div>
-                    <span>{prefixString}</span>
+                    <span>{prefixStr}</span>
                     <Input initValue={round(point.x, 3)} size={6} onC={setX} />
-                    <span> {infixString} </span>
+                    <span> {infixStr} </span>
                     <Input initValue={round(point.y, 3)} size={6} onC={setY} />
-                    <span>{postfixString}</span>
+                    <span>{postfixStr}</span>
                 </div>
             );
         }

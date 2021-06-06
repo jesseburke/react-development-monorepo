@@ -2,7 +2,6 @@ import { atom } from 'jotai';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
 import LabelDataComp from '../../data/LabelDataComp.jsx';
-import PointDataComp from '../../data/PointDataComp.jsx';
 import FunctionDataComp from '../../data/FunctionDataComp.jsx';
 import AxesDataComp from '../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../data/BoundsDataComp';

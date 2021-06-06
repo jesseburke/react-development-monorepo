@@ -1,21 +1,20 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import classnames from 'classnames';
-import styles from '../base_styles.module.css';
+import MainDataComp from '../../../data/MainDataComp.jsx';
+import LabelDataComp from '../../../data/LabelDataComp.jsx';
+import NumberDataComp from '../../../data/NumberDataComp.jsx';
+import AxesDataComp from '../../../data/AxesDataComp.jsx';
+import BoundsDataComp from '../../../data/BoundsDataComp';
+import CurveDataComp from '../../../data/CurveDataComp';
+import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
-import Input from '../../../components/Input.jsx';
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
-import TexDisplayCompR from '../../../components/TexDisplayCompRecoil.jsx';
 import Slider from '../../../components/Slider.jsx';
 
-import AxesDataComp from '../../../data/AxesDataComp.jsx';
-import BoundsDataComp from '../../../data/BoundsDataComp.js';
-import CurveDataComp from '../../../data/CurveDataComp.js';
+import { processNum } from '../../../utils/BaseUtils';
 
-import funcParser from '../../../utils/funcParser.jsx';
-import { round } from '../../../utils/BaseUtils.ts';
-import { processNum } from '../../../utils/BaseUtils.ts';
+import { round, processNum } from '../../../utils/BaseUtils.ts';
 
 import { solnStrs } from '../../../math/differentialEquations/secOrderConstantCoeff.jsx';
 

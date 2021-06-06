@@ -80,7 +80,7 @@ export default function App() {
 			p-4 md:p-8 text-white'
                     >
                         <LogisticEquationInput />
-                        <initialPointData.component />
+                        <initialPointData.component inputStr={'Initial Point: '} />
                         <OptionsModal />
                     </header>
 

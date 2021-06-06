@@ -75,7 +75,7 @@ export default function App() {
 		    p-8 text-white'
                 >
                     <diffEqData.component />
-                    <initialPointData.component />
+                    <initialPointData.component inputStr={'Initial Point: '} />
                     <ReakitProvider unstable_system={system}>
                         <OptionsModal />
                     </ReakitProvider>
