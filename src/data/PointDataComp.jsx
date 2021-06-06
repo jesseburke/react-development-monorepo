@@ -66,25 +66,29 @@ export default function PointDataComp(initArgs, inputStr = 'Point: ') {
         }
     });
 
-    const component = React.memo(() => {
-        const [point, setPoint] = useAtom(ptAtom);
+    const component = React.memo(
+        ({ prefixString = '', infixString = ' , ', postfixString = '' }) => {
+            const [point, setPoint] = useAtom(ptAtom);
 
-        const setX = useCallback((newX) => setPoint((old) => ({ ...old, x: Number(newX) })), [
-            setPoint
-        ]);
-        const setY = useCallback((newY) => setPoint((old) => ({ ...old, y: Number(newY) })), [
-            setPoint
-        ]);
+            const setX = useCallback((newX) => setPoint((old) => ({ ...old, x: Number(newX) })), [
+                setPoint
+            ]);
+            const setY = useCallback((newY) => setPoint((old) => ({ ...old, y: Number(newY) })), [
+                setPoint
+            ]);
 
-        return (
-            <div className='p-2'>
-                <div>{inputStr}</div>
-                <Input initValue={round(point.x, 3)} size={6} onC={setX} />
-                <span> , </span>
-                <Input initValue={round(point.y, 3)} size={6} onC={setY} />
-            </div>
-        );
-    });
+            return (
+                <div className='p-2'>
+                    <div>{inputStr}</div>
+                    <span>{prefixString}</span>
+                    <Input initValue={round(point.x, 3)} size={6} onC={setX} />
+                    <span> {infixString} </span>
+                    <Input initValue={round(point.y, 3)} size={6} onC={setY} />
+                    <span>{postfixString}</span>
+                </div>
+            );
+        }
+    );
 
     return { atom: ptAtom, readWriteAtom, component };
 }
