@@ -61,7 +61,7 @@ export default function MainDataComp(atomStoreAtom) {
 
         const resetCB = useCallback(() => {
             resetAtomStore();
-            window.history.pushState(null, null, import.meta.env.BASE_URL);
+            window.history.pushState(null, null, location.href.split('?')[0]);
         }, [resetAtomStore]);
 
         return resetCB;
