@@ -4,6 +4,7 @@ import { atom, useAtom } from 'jotai';
 import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import NumberDataComp from '../../../data/NumberDataComp.jsx';
+import PointDataComp from '../../../data/PointDataComp.jsx';
 import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
@@ -12,9 +13,8 @@ import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
 
-import { processNum } from '../../../utils/BaseUtils';
-
-import { round, processNum } from '../../../utils/BaseUtils.ts';
+import { round, processNum } from '../../../utils/BaseUtils';
+import funcParser from '../../../utils/funcParser.jsx';
 
 import { solnStrs } from '../../../math/differentialEquations/secOrderConstantCoeff.jsx';
 
@@ -22,25 +22,37 @@ import { solnStrs } from '../../../math/differentialEquations/secOrderConstantCo
 //
 // initial constants
 
+const precision = 4;
+const sliderPrecision = 2;
+
 const colors = {
-    arrows: '#B01A46', //'#C2374F'
-    solutionCurve: '#4e6d87', //'#C2374F'
-    tick: '#e19662',
-    solutionCurve: '#C2374F',
-    point1: '#C2374F',
-    point2: '#C2374F'
+    solutionCurve: '#B01A46', //'#C2374F'
+    //solutionCurve: '#4e6d87', //'#C2374F'
+    tick: '#e19662'
 };
-
-const initBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20 };
-
-const initXLabel = 'x';
-const initYLabel = 'y';
 
 const initAVal = 0.2;
 const initBVal = 3.0;
 
-const initialInitialPoint1 = { x: 4, y: 7 };
-const initialInitialPoint2 = { x: 7, y: 5 };
+// will have -abBound < a^2 - 4b > abBound
+const abBound = 20;
+const aMax = 5;
+const aMin = -5;
+const aStep = 0.1;
+
+const initBounds = { xMin: -70, xMax: 70, yMin: -28, yMax: 28 };
+
+const initAxesData = {
+    radius: 0.01,
+    show: true,
+    tickLabelDistance: 10
+};
+
+const initCameraData = {
+    target: [0, 0, 0],
+    zoom: 0.085,
+    position: [0, 0, 50]
+};
 
 const initSolutionCurveData = {
     color: colors.solutionCurve,
@@ -49,27 +61,10 @@ const initSolutionCurveData = {
     width: 0.1
 };
 
-const initAxesData = {
-    radius: 0.01,
-    show: true,
-    showLabels: true,
-    tickRadiusMultiple: 5
-};
-
-// will have -abBound < a^2 - 4b > abBound
-const abBound = 20;
-const aMax = 5;
-const aMin = -5;
-const aStep = 0.1;
-
-const initPrecision = 4;
-const sliderPrecision = 3;
-
 export const labelStyle = {
     color: 'black',
     padding: '.1em',
     margin: '.5em',
-    padding: '.4em',
     fontSize: '1.5em'
 };
 
@@ -78,376 +73,190 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
     color: colors.tick
 });
 
+const initInitialPoint1 = { x: 4, y: 7 };
+const initInitialPoint2 = { x: 7, y: 5 };
+
 //------------------------------------------------------------------------
 //
 // primitive atoms
 
-export const xLabelAtom = atom(initXLabel);
-export const yLabelAtom = atom(initYLabel);
-
-export const aValAtom = atom(initAVal);
-export const bValAtom = atom(initBVal);
-
-export const initialPoint1Atom = atom(initialInitialPoint1);
-export const initialPoint2Atom = atom(initialInitialPoint2);
-
-export const initialPoint1ColorAtom = atom(colors.point1);
-export const initialPoint2ColorAtom = atom(colors.point2);
-
-export const {
-    atom: boundsAtom,
-    component: BoundsInput,
-    encode: boundsEncode,
-    decode: boundsDecode,
-    length: boundsDataLength
-} = BoundsDataComp({
-    initBounds,
-    xLabelAtom,
-    yLabelAtom
-});
-
-export const {
-    atom: axesDataAtom,
-    component: Axes2DDataInput,
-    encode: axesDataEncode,
-    decode: axesDataDecode
-} = AxesDataComp({
+export const labelData = LabelDataComp({ xLabel: 't', twoD: true });
+export const axesData = AxesDataComp({
     ...initAxesData,
     tickLabelStyle
 });
 
-export const {
-    atom: solutionCurveOptionsAtom,
-    component: SolutionCurveOptionsInput,
-    encode: solutionCurveOptionsEncode,
-    decode: solutionCurveOptionsDecode,
-    length: scoel
-} = CurveDataComp(initSolutionCurveData);
+export const solutionCurveData = CurveDataComp(initSolutionCurveData);
 
-//------------------------------------------------------------------------
-//
-// encode and decode functions for primitive atoms
-//
+export const boundsData = BoundsDataComp({
+    initBounds,
+    labelAtom: labelData.atom
+});
 
-// everything depends on order of following:
+export const orthoCameraData = OrthoCameraDataComp(initCameraData);
 
-export const atomArray = [
-    boundsAtom,
-    solutionCurveOptionsAtom,
-    aValAtom,
-    bValAtom,
-    xLabelAtom,
-    yLabelAtom,
-    initialPoint1Atom,
-    initialPoint2Atom
-];
+export const aData = NumberDataComp(initAVal);
+export const bData = NumberDataComp(initBVal);
 
-// should be pure function
+export const initialPoint1Data = PointDataComp(initInitialPoint1);
+export const initialPoint2Data = PointDataComp(initInitialPoint2);
 
-export const encode = ([
-    bounds,
-    solutionCurveOptions,
-    aVal,
-    bVal,
-    xLabel,
-    yLabel,
-    initialPoint1,
-    initialPoint2
-]) => {
-    const be = boundsEncode(bounds);
+const atomStoreAtom = atom({
+    ls: labelData,
+    ax: axesData,
+    sc: solutionCurveData,
+    bd: boundsData,
+    cd: orthoCameraData,
+    a: aData,
+    b: bData,
+    ip1: initialPoint1Data,
+    ip2: initialPoint2Data
+});
 
-    const scoe = solutionCurveOptionsEncode(solutionCurveOptions);
-
-    return [
-        ...be,
-        ...scoe,
-        aVal,
-        bVal,
-        xLabel,
-        yLabel,
-        initialPoint1.x,
-        initialPoint1.y,
-        initialPoint2.x,
-        initialPoint2.y
-    ];
-};
-
-// this function expects an array in the form returned by encode,
-// returns an array that can be cycled through and used to set the
-// value of each atom (this has to be done in react)
-export function decode(valueArray) {
-    // aga = arrow grid array
-    const ba = valueArray.slice(0, boundsDataLength);
-    const scoa = valueArray.slice(boundsDataLength, boundsDataLength + scoel);
-
-    const n = boundsDataLength + scoel;
-
-    return [
-        boundsDecode(ba),
-        solutionCurveOptionsDecode(scoa),
-        Number(valueArray[n]),
-        Number(valueArray[n + 1]),
-        valueArray[n + 2],
-        valueArray[n + 3],
-        { x: Number(valueArray[n + 4]), y: Number(valueArray[n + 5]) },
-        { x: Number(valueArray[n + 6]), y: Number(valueArray[n + 7]) }
-    ];
-}
+export const DataComp = MainDataComp(atomStoreAtom);
 
 //------------------------------------------------------------------------
 //
 // derived atoms
 
-export const texEquationAtom = atom(
-    (get) =>
-        '\\ddot{' +
-        get(yLabelAtom) +
-        '} + a \\cdot \\dot{' +
-        get(yLabelAtom) +
-        '} + b \\cdot ' +
-        get(yLabelAtom) +
-        '  = 0'
-);
+export const texEquationAtom = atom((get) => {
+    const { y } = get(labelData.atom);
+
+    return `\\ddot{ ${y} } + a \\cdot \\dot{ ${y} } + b \\cdot
+        ${y} = 0`;
+});
 
 export const solnAtom = atom((get) => {
-    const ss = solnStrs(Number.parseFloat(get(aValAtom)), Number.parseFloat(get(bValAtom)), [
-        [get(initialPoint1Atom).x, get(initialPoint1Atom).y],
-        [get(initialPoint2Atom).x, get(initialPoint2Atom).y]
+    const ss = solnStrs(Number.parseFloat(get(aData.atom)), Number.parseFloat(get(bData.atom)), [
+        [get(initialPoint1Data.atom).x, get(initialPoint1Data.atom).y],
+        [get(initialPoint2Data.atom).x, get(initialPoint2Data.atom).y]
     ]);
 
     const func = funcParser(ss.str);
 
     // a and b are for debugging
-    return Object.assign({ func, a: get(aValAtom), b: get(bValAtom) }, ss);
+    return Object.assign({ func, a: get(aData.atom), b: get(bData.atom) }, ss);
 });
 export const solnTexStrAtom = atom((get) => get(solnAtom).texStr);
+
+const caseStrAtom = atom((get) => {
+    const a = get(aData.atom);
+    const b = get(bData.atom);
+    const n = round(a * a - 4 * b);
+
+    if (n > 0) {
+        return { cse: 1, caseStr: `a^2 - 4b = ${n} > 0` };
+    }
+
+    if (n < 0) {
+        return { cse: 2, caseStr: `a^2 - 4b = ${n} < 0` };
+    }
+
+    if (n === 0) {
+        return { cse: 3, caseStr: `a^2 - 4b = ${n} = 0` };
+    }
+});
 
 //------------------------------------------------------------------------
 //
 // input components
 
-const useInitialPoint = (ipAtom) => {
-    const [initialPoint, setInitialPoint] = useAtom(ipAtom);
-
-    const setX = useCallback((newX) => setInitialPoint((old) => ({ ...old, x: Number(newX) })), [
-        setInitialPoint
-    ]);
-    const setY = useCallback((newY) => setInitialPoint((old) => ({ ...old, y: Number(newY) })), [
-        setInitialPoint
-    ]);
-
-    return { initialPoint, setX, setY };
-};
-
 export const InitialPointsInput = React.memo(({}) => {
-    const { initialPoint: ip1, setX: ip1setX, setY: ip1setY } = useInitialPoint(initialPoint1Atom);
-    const { initialPoint: ip2, setX: ip2setX, setY: ip2setY } = useInitialPoint(initialPoint2Atom);
-
-    const yLabel = useAtom(yLabelAtom)[0];
+    const { y: yLabel } = useAtom(labelData.atom)[0];
 
     return (
         <div
-            className={classnames(
-                styles['center-flex-column'],
-                styles['zero-large-top-side-padding'],
-                styles['font-size-med-large']
-            )}
+            className='flex justify-center items-center h-100 py-0
+            px-4 text-l'
         >
             <fieldset>
                 <legend>Initial Conditions</legend>
 
-                <div className={classnames(styles['med-vlarge-top-side-padding'])}>
-                    <span>{yLabel + '('}</span>
-                    <Input initValue={ip1.x} onC={ip1setX} size={4} /> <span>) = </span>
-                    <Input initValue={ip1.y} onC={ip1setY} size={4} />
+                <div className='py-0 px-6 text-l'>
+                    <initialPoint1Data.component prefixStr={yLabel + '('} infixStr={') = '} />
                 </div>
-                <div className={classnames(styles['med-vlarge-top-side-padding'])}>
-                    <span>{yLabel + '\u{0307}'}(</span>
-                    <Input initValue={ip2.x} onC={ip2setX} size={4} />
-                    <span>) = </span>
-                    <Input initValue={ip2.y} onC={ip2setY} size={4} />
+                <div className='py-0 px-6'>
+                    <initialPoint2Data.component
+                        prefixStr={yLabel + '\u{0307}' + '('}
+                        infixStr={') = '}
+                    />
                 </div>
             </fieldset>
         </div>
     );
 });
 
-export const CoefficientInput = React.memo(function CoeffInput({}) {
-    const [aVal, setAVal] = useAtom(aValAtom);
-    const [bVal, setBVal] = useAtom(bValAtom);
+export const SecondOrderInput = React.memo(({}) => {
+    const [a, setA] = useAtom(aData.atom);
+    const [b, setB] = useAtom(bData.atom);
 
-    const aCB = useCallback((val) => setAVal(Number.parseFloat(val)), [setAVal]);
-    const aInputCB = useCallback(
-        (str) => {
-            setAVal(Number(str));
-        },
-        [setAVal]
-    );
+    const texEquation = useAtom(texEquationAtom)[0];
+    const { cse, caseStr } = useAtom(caseStrAtom)[0];
 
-    const bCB = useCallback((val) => setBVal(Number.parseFloat(val)), [setBVal]);
-    const bInputCB = useCallback((str) => setBVal(Number(str)), [setBVal]);
-
-    return (
-        <div className={classnames(styles['center-flex-column'])}>
-            <Slider
-                value={aVal}
-                label={'a'}
-                CB={aCB}
-                max={aMax}
-                min={aMin}
-                step={aStep}
-                precision={sliderPrecision}
-            />
-            <div>
-                <span>a = </span>
-                <Input onC={aInputCB} initValue={aVal} size={4} />
-            </div>
-            <Slider
-                value={bVal}
-                label={'b'}
-                CB={bCB}
-                min={(aVal * aVal - abBound) / 4}
-                max={(aVal * aVal + abBound) / 4}
-                precision={sliderPrecision}
-            />
-            <div>
-                <span>b = </span>
-                <Input onC={bInputCB} initValue={bVal} size={4} />
-            </div>
-        </div>
-    );
-});
-
-export const TitleEquationComp = React.memo(({}) => {
     return (
         <div
-            className={classnames(
-                styles['center-flex-column'],
-                styles['font-size-med-large'],
-                styles['zero-margin']
-            )}
+            className='flex justify-around items-baseline h-full py-0
+            px-0 m-0'
         >
             <div
-                className={classnames(
-                    styles['small-zero-top-side-padding'],
-                    styles['text-align-center']
-                )}
+                className='flex flex-col justify-center items-center
+        h-full text-l m-0 pr-8 hidden xl:block'
             >
-                2nd order linear, w/ constant coefficients
+                <div className='pb-2 px-0 text-center'>
+                    2nd order linear, w/ constant coefficients
+                </div>
+                <div className='pt-2 px-0 text-xl whitespace-no-wrap'>
+                    <TexDisplayComp str={texEquation} />
+                </div>
             </div>
             <div
-                className={classnames(
-                    styles['white-space-no-wrap'],
-                    styles['small-zero-top-side-padding'],
-                    styles['font-size-med-large']
-                )}
+                className='flex flex-col justify-center items-center
+        h-full px-8'
             >
-                <TexDisplayCompR strAtom={texEquationAtom} />
+                <Slider
+                    value={a}
+                    label={'a'}
+                    CB={(val) => setA(Number.parseFloat(val))}
+                    max={aMax}
+                    min={aMin}
+                    step={aStep}
+                    precision={sliderPrecision}
+                />
+                <Slider
+                    value={b}
+                    label={'b'}
+                    CB={(val) => setB(Number.parseFloat(val))}
+                    min={(a * a - abBound) / 4}
+                    max={(a * a + abBound) / 4}
+                    precision={sliderPrecision}
+                />
+            </div>
+            <div
+                className='flex flex-col justify-center items center
+        h-full text-l m-0 pr-8 hidden xl:block'
+            >
+                <div className='pb-2 px-0 text-center'>
+                    <TexDisplayComp str={caseStr} />
+                </div>
+                <div className='pt-2 px-0 text-center'>
+                    <span>Case {cse}</span>
+                </div>
             </div>
         </div>
     );
 });
 
 export const SolutionDisplayComp = React.memo(({}) => {
+    const solnTexStr = useAtom(solnTexStrAtom)[0];
+
     return (
         <div
-            className={classnames(
-                styles['med-zero-top-side-padding'],
-                styles['center-flex-column'],
-                styles['fixed-width-twelve-em']
-            )}
+            className='py-2 px-0 flex flex-col justify-center
+    align-center h-100 w-12'
         >
             <div>Solution:</div>
-            <div
-                className={classnames(
-                    styles['white-space-no-wrap'],
-                    styles['small-zero-top-side-padding']
-                )}
-            >
-                <TexDisplayCompR strAtom={solnTexStrAtom} />
-            </div>
-        </div>
-    );
-});
-
-export const VariablesOptionsInput = React.memo(function VariablesOptions({}) {
-    const [xLabel, setXLabel] = useAtom(xLabelAtom);
-    const [yLabel, setYLabel] = useAtom(yLabelAtom);
-
-    const xCB = useCallback((inputStr) => setXLabel(inputStr), [setXLabel]);
-    const yCB = useCallback((inputStr) => setYLabel(inputStr), [setYLabel]);
-
-    return (
-        <div className={classnames(styles['center-flex-column'], styles['med-padding'])}>
-            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                <span className={styles['text-align-center']}>Independent variable</span>
-                <span className={styles['med-padding']}>
-                    <Input size={4} initValue={xLabel} onC={xCB} />
-                </span>
-            </div>
-
-            <div className={classnames(styles['center-flex-row'], styles['med-padding'])}>
-                <span className={styles['text-align-center']}>Dependent variable:</span>
-                <span className={styles['med-padding']}>
-                    <Input size={4} initValue={yLabel} onC={yCB} />
-                </span>
-            </div>
-        </div>
-    );
-});
-
-export const CaseDisplay = React.memo(() => {
-    const a = useAtom(aValAtom)[0];
-    const b = useAtom(bValAtom)[0];
-
-    const [str, setStr] = useState();
-    const [cse, setCase] = useState();
-
-    useEffect(() => {
-        const n = round(a * a - 4 * b);
-
-        if (n > 0) {
-            setCase(1);
-            setStr('a^2 - 4b = ' + n + ' > 0');
-            return;
-        }
-
-        if (n < 0) {
-            setCase(2);
-            setStr('a^2 - 4b = ' + n + ' < 0');
-            return;
-        }
-
-        if (n === 0) {
-            setCase(3);
-            setStr('a^2 - 4b = ' + n + ' = 0');
-            return;
-        }
-    }, [a, b]);
-
-    return (
-        <div
-            className={classnames(
-                styles['center-flex-column'],
-                styles['font-size-med-large'],
-                styles['zero-margin']
-            )}
-        >
-            <div
-                className={classnames(
-                    styles['small-zero-top-side-padding'],
-                    styles['text-align-center']
-                )}
-            >
-                <TexDisplayComp str={str} />
-            </div>
-            <div
-                className={classnames(
-                    styles['small-zero-top-side-padding'],
-                    styles['text-align-center']
-                )}
-            >
-                <span>Case {cse}</span>
+            <div className='whitespace-no-wrap py-1 px-0'>
+                <TexDisplayComp str={solnTexStr} />
             </div>
         </div>
     );
