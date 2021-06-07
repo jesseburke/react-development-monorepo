@@ -10,27 +10,22 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 
 import * as system from 'reakit-system-bootstrap';
 
-import { useThreeCBs, ThreeSceneComp } from '../../components/ThreeScene.js';
-import ControlBar from '../../components/ControlBar.jsx';
-import Main from '../../components/Main.jsx';
-import ClickablePlaneComp from '../../components/RecoilClickablePlaneComp.jsx';
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+import { ThreeSceneComp } from '../../components/ThreeScene';
 
-import Grid from '../../ThreeSceneComps/Grid.js';
-import Axes2D from '../../ThreeSceneComps/Axes2D.jsx';
-import ArrowGrid from '../../ThreeSceneComps/ArrowGrid.jsx';
-import DirectionFieldApprox from '../../ThreeSceneComps/DirectionFieldApproxRecoil.js';
-
-import { fonts, labelStyle } from './constants.jsx';
+import Grid from '../../ThreeSceneComps/Grid';
+import Axes3D from '../../ThreeSceneComps/Axes3D.jsx';
+import FunctionGraph3D from '../../ThreeSceneComps/FunctionGraph3D';
+import CameraControls from '../../ThreeSceneComps/CameraControls.jsx';
 
 import {
-    funcAtom,
-    labelAtom,
-    FuncStrInput,
-    axesDataAtom,
-    AxesDataInput,
+    funcData,
+    boundsData,
+    gridBoundsAtom,
+    labelData,
+    cameraData,
+    axesData,
     DataComp
-} from './App_fg_data.jsx';
+} from './App_fg_atoms';
 
 const initColors = {
     arrows: '#C2374F',
@@ -40,13 +35,14 @@ const initColors = {
     testFunc: '#E16962', //#DBBBB0',
     axes: '#0A2C3C',
     controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0'
+    clearColor: '#f0f0f0',
+    funcGraph: '#E53935'
 };
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
     touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY, THREE: THREE.MOUSE.ROTATE },
-    enableRotate: false,
+    enableRotate: true,
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
@@ -54,90 +50,73 @@ const initControlsData = {
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
-//const frustumSize = 20;
-const frustumSize = 3.8;
 
-const initCameraData = {
-    position: [0, 0, 1],
+const fixedCameraData = {
     up: [0, 0, 1],
-    //fov: 75,
-    near: -100,
-    far: 100,
-    rotation: { order: 'XYZ' },
-    orthographic: {
-        left: (frustumSize * aspectRatio) / -2,
-        right: (frustumSize * aspectRatio) / 2,
-        top: frustumSize / 2,
-        bottom: frustumSize / -2
-    }
+    near: 0.1,
+    far: 1000,
+    aspectRatio,
+    orthographic: false
 };
 
-// percentage of screen appBar will take (at the top)
-// (should make this a certain minimum number of pixels?)
-const controlBarHeight = 13;
+const btnClassStr =
+    'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
 
-// (relative) font sizes (first in em's)
-const fontSize = 1;
-const controlBarFontSize = 1;
+const saveBtnClassStr = btnClassStr + ' bottom-40';
+
+const resetBtnClassStr = btnClassStr + ' bottom-24';
+
+const photoBtnClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
 
 export default function App() {
-    const threeSceneRef = useRef();
-
-    //useHackyThreeInitDisplay(threeSceneRef);
     return (
         <JProvider>
-            <FullScreenBaseComponent backgroundColor={initColors.controlBar} fonts={fonts}>
-                <Provider unstable_system={system}>
-                    <ControlBar
-                        height={controlBarHeight}
-                        fontSize={fontSize * controlBarFontSize}
-                        padding='0em'
-                    >
-                        <div className='center-flex-row'>
-                            <FuncStrInput />
-                        </div>
+            <div className='full-screen-base'>
+                <header
+                    className='control-bar bg-persian_blue-900 font-sans
+		    p-8 text-white'
+                >
+                    <funcData.component />
+                    <Provider unstable_system={system}>
                         <OptionsModal />
-                    </ControlBar>
-                </Provider>
+                    </Provider>
+                </header>
 
-                <Main height={100 - controlBarHeight} fontSize={fontSize * controlBarFontSize}>
+                <main className='flex-grow relative p-0'>
                     <ThreeSceneComp
-                        initCameraData={initCameraData}
+                        fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
-                        ref={(elt) => (threeSceneRef.current = elt)}
-                        showPhotoButton={false}
-                    ></ThreeSceneComp>
-                    <DataComp />
-                </Main>
-            </FullScreenBaseComponent>
+                        photoButton={true}
+                        photoBtnClassStr={photoBtnClassStr}
+                    >
+                        <Axes3D
+                            tickDistance={1}
+                            boundsAtom={gridBoundsAtom}
+                            axesDataAtom={axesData.atom}
+                            labelAtom={labelData.atom}
+                        />
+                        <Grid boundsAtom={gridBoundsAtom} gridShow={true} />
+                        <FunctionGraph3D
+                            funcAtom={funcData.funcAtom}
+                            boundsAtom={boundsData.atom}
+                            color={initColors.funcGraph}
+                        />
+                        <CameraControls cameraDataAtom={cameraData.atom} />
+                    </ThreeSceneComp>
+                    <DataComp
+                        resetBtnClassStr={resetBtnClassStr}
+                        saveBtnClassStr={saveBtnClassStr}
+                    />
+                </main>
+            </div>
         </JProvider>
     );
 }
 
-function useHackyThreeInitDisplay(threeSceneRef) {
-    // following is very hacky way to get three displayed on initial render
-    const threeCBs = useThreeCBs(threeSceneRef);
-
-    const [loadAgain, setLoadAgain] = useState(0);
-
-    useEffect(() => {
-        if (!threeCBs) return;
-
-        window.dispatchEvent(new Event('resize'));
-        setLoadAgain(1);
-    }, [threeCBs]);
-
-    useEffect(() => {
-        if (loadAgain < 1) return;
-
-        window.dispatchEvent(new Event('resize'));
-    }, [loadAgain]);
-}
-
 function OptionsModal() {
-    const dialog = useDialogState();
+    const dialog = useDialogState({ modal: false });
     const tab = useTabState();
 
     useEffect(() => {
@@ -148,25 +127,47 @@ function OptionsModal() {
         transform: 'none',
         top: '15%',
         left: 'auto',
+        backgroundColor: 'white',
         right: 20,
-        width: 400,
-        height: 250
+        width: 600,
+        height: 300
     });
 
-    const cssRef1 = useRef({ width: '8em' });
-
-    const cssRef2 = useRef({ backgroundColor: 'white', color: initColors.controlBar });
+    const cssRef1 = useRef({
+        backgroundColor: 'white',
+        color: '#0A2C3C'
+    });
 
     return (
-        <div zindex={-10}>
-            <DialogDisclosure style={cssRef2.current} {...dialog}>
-                <span style={cssRef1.current}>
-                    {!dialog.visible ? 'Show options' : 'Hide options'}
-                </span>
+        <div zindex={-10} className='text-sm'>
+            <DialogDisclosure style={cssRef1.current} {...dialog}>
+                <span className='w-32'>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
             </DialogDisclosure>
-            <Dialog {...dialog} style={cssRef.current} aria-label='Welcome'>
+            <Dialog
+                {...dialog}
+                style={cssRef.current}
+                aria-label='Options'
+                hideOnClickOutside={false}
+            >
                 <>
-                    <TabList {...tab} aria-label='Option tabs'></TabList>
+                    <TabList {...tab} aria-label='Option tabs'>
+                        <Tab {...tab}>Axes</Tab>
+                        <Tab {...tab}>Bounds</Tab>
+                        <Tab {...tab}>Camera Options</Tab>
+                        <Tab {...tab}>Variable labels</Tab>
+                    </TabList>
+                    <TabPanel {...tab}>
+                        <axesData.component />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <boundsData.component />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <cameraData.component />
+                    </TabPanel>
+                    <TabPanel {...tab}>
+                        <labelData.component />
+                    </TabPanel>
                 </>
             </Dialog>
         </div>
