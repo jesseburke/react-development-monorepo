@@ -6,7 +6,7 @@ import FunctionDataComp from '../../data/FunctionDataComp.jsx';
 import AxesDataComp from '../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../data/BoundsDataComp';
 import AnimationData from '../../data/AnimationData';
-import PerspCameraData from '../../data/PerspCameraData';
+import PerspCameraData from '../../data/PerspCameraDataComp';
 import OrthoCameraDataComp from '../../data/OrthoCameraDataComp';
 
 import { ObjectPoint2, Bounds, CurveData2, LabelStyle, AxesDataT } from '../../my-types';

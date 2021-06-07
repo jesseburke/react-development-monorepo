@@ -98,6 +98,7 @@ export default function App() {
                         <FunctionGraph3D
                             funcAtom={funcData.funcAtom}
                             boundsAtom={boundsData.atom}
+                            meshNormal={true}
                         />
                         <Plane
                             heightAndWidthAtom={planeHeightAndWidthAtom}

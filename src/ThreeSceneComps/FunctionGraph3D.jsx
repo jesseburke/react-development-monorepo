@@ -7,7 +7,13 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 import FunctionGraph3DGeom from '../graphics/FunctionGraph3DGeom.jsx';
 
-export default function FunctionGraph3D({ threeCBs, funcAtom, boundsAtom, color, show = true }) {
+export default function FunctionGraph3D({
+    threeCBs,
+    funcAtom,
+    boundsAtom,
+    color = '#E53935',
+    meshNormal = false
+}) {
     const func = useAtom(funcAtom)[0];
     const bounds = useAtom(boundsAtom)[0];
 
@@ -20,11 +26,18 @@ export default function FunctionGraph3D({ threeCBs, funcAtom, boundsAtom, color,
             meshSize: 200
         });
 
-        const material = new THREE.MeshNormalMaterial({
-            color,
-            side: THREE.DoubleSide
-        });
-        material.shininess = 0;
+        let material;
+
+        if (meshNormal)
+            material = new THREE.MeshNormalMaterial({
+                side: THREE.DoubleSide
+            });
+        else
+            material = new THREE.MeshPhongMaterial({
+                color,
+                side: THREE.DoubleSide
+            });
+        //material.shininess = 0;
         //material.transparent = true;
         //material.opacity = .6;
         //material.wireframe = true;
