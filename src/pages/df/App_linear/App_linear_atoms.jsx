@@ -145,7 +145,7 @@ export const LinearEquationInput = React.memo(function LinearEquationI({}) {
 
     return (
         <div className='flex flex-col justify-center items-center h-full'>
-            <div className='px-2 py-3'>
+            <div className='px-2 py-3 text-xl'>
                 <TexDisplayComp str={texEquation} />
             </div>
             <div className='flex flex-col md:flex-row'>

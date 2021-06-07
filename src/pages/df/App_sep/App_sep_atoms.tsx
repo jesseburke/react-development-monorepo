@@ -147,7 +147,7 @@ export const SepEquationInput = React.memo(function SepEquationI({}) {
 
     return (
         <div className='flex flex-col justify-center items-center h-full'>
-            <div className='px-2 py-3'>
+            <div className='px-2 py-3 text-xl'>
                 <TexDisplayComp str={texEquation} />
                 {/* d{yLabel}/d{xLabel} = <span>g({xLabel})</span>
 			    <span>{'\u{00B7}'}</span>

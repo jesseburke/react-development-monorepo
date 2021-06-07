@@ -67,25 +67,14 @@ const fixedCameraData = {
     orthographic: true
 };
 
-const saveBtnClassStr =
-    'absolute left-8 bottom-40 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const btnClassStr =
+    'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
 
-const resetBtnClassStr =
-    'absolute left-8 bottom-24 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const saveBtnClassStr = btnClassStr + ' bottom-40';
 
-const photoBtnClassStr =
-    'absolute left-8 bottom-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl';
+const resetBtnClassStr = btnClassStr + ' bottom-24';
 
-const initColors = {
-    arrows: '#C2374F',
-    solution: '#C2374F',
-    firstPt: '#C2374F',
-    secPt: '#C2374F',
-    testFunc: '#E16962', //#DBBBB0',
-    axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0'
-};
+const photoBtnClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
 
@@ -107,7 +96,7 @@ export default function App() {
                         <ThreeSceneComp
                             fixedCameraData={fixedCameraData}
                             controlsData={initControlsData}
-                            showPhotoButton={true}
+                            photoButton={true}
                             photoBtnClassStr={photoBtnClassStr}
                         >
                             <Grid boundsAtom={boundsData.atom} gridShow={true} />

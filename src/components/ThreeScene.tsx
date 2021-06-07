@@ -33,7 +33,7 @@ const ThreeScene: FunctionComponent = ({
     clearColor = '#f0f0f0',
     aspectRatio = 1,
     photoButton = false,
-    photoButtonClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
+    photoBtnClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
     cameraDebug = false,
     halfWidth = false,
     children
@@ -192,7 +192,7 @@ const ThreeScene: FunctionComponent = ({
             <div ref={(elt) => (labelContainerRef.current = elt)} />
             {photoButton ? (
                 <div onClick={threeSceneCBs ? threeSceneCBs.downloadPicture : null}>
-                    <button className={photoButtonClassStr}>Photo</button>
+                    <button className={photoBtnClassStr}>Photo</button>
                 </div>
             ) : null}
         </div>

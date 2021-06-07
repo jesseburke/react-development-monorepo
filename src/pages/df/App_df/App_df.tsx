@@ -60,9 +60,7 @@ const saveBtnClassStr = btnClassStr + ' bottom-40';
 
 const resetBtnClassStr = btnClassStr + ' bottom-24';
 
-/* const photoBtnClassStr = btnClassStr + ' bottom-8'; */
-
-const photoButtonClassStr = btnClassStr + ' bottom-8';
+const photoBtnClassStr = btnClassStr + ' bottom-8';
 
 //------------------------------------------------------------------------
 
@@ -86,7 +84,7 @@ export default function App() {
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
                         photoButton={true}
-                        photoButtonClassStr={photoButtonClassStr}
+                        photoBtnClassStr={photoBtnClassStr}
                     >
                         <Axes2D
                             tickDistance={1}
