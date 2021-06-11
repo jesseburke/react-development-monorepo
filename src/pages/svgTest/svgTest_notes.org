@@ -1,0 +1,27 @@
+* to fix
+
+ - [ ] control bar height shrink when window is resized
+
+
+
+ 
+* to add
+
+** DONE coordinate transform atom(s)
+   :LOGBOOK:
+   - State "DONE"       from              [2021-06-11 Fri 10:52]
+   :END:
+  
+** graph paper
+
+would like some range of squares to always be displayed, e.g., 
+   
+** axes
+   
+** function graph
+   
+** zoom buttons
+
+   also display level of zoom, and make that editable?
+   
+** zoom with touch pad
