@@ -176,7 +176,7 @@ const ThreeScene: FunctionComponent = ({
     )[0];
 
     return (
-        <div className={'absolute h-full bg-gray point-events-none' + widthStr}>
+        <div className={'absolute h-full bg-gray' + widthStr}>
             <canvas
                 className='h-full w-full block outline-none'
                 ref={(elt) => (threeCanvasRef.current = elt)}

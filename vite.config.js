@@ -13,7 +13,8 @@ export default defineConfig({
                 App_linear: resolve(__dirname, 'public_pages/linearGrapher/index.html'),
                 App_logistic: resolve(__dirname, 'public_pages/logisticGrapher/index.html'),
                 App_resonance: resolve(__dirname, 'public_pages/resonance/index.html'),
-                App_vs: resolve(__dirname, 'public_pages/vibrating_string/index.html')
+                App_vs: resolve(__dirname, 'public_pages/vibrating_string/index.html'),
+                App_fg: resolve(__dirname, 'public_pages/fg3d/index.html')
             },
             output: {
                 dir: 'dist'
