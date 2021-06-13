@@ -13,16 +13,31 @@ const size = 30;
 const margin = 8;
 const radius = 6;
 
-const toolNumber = 3;
+const toolNumber = 4;
 
-export default function SvgZoomBar({ zoomAtom, heightAndWidthAtom, upperLeftPointAtom }) {
+export default function SvgZoomBar({
+    zoomAtom,
+    heightAndWidthAtom,
+    modeAtom,
+    svgBoundsAtom,
+    upperLeftPointAtom
+}) {
     const [zoom, setZoom] = useAtom(zoomAtom);
-    const [{ x: ulX, y: ulY }, setUL] = useAtom(upperLeftPointAtom);
     const { height, width } = useAtom(heightAndWidthAtom)[0];
+
+    const { xMin, xMax, yMin, yMax } = useAtom(svgBoundsAtom)[0];
 
     const toolBarHeight = margin + (size + margin) * toolNumber + margin;
 
     const top = height - toolBarHeight - 2 * margin;
+
+    const [mode, setMode] = useAtom(modeAtom);
+
+    const setUL = useAtom(upperLeftPointAtom)[1];
+
+    const centerCB = useCallback(() => {
+        setMode('center');
+    }, []);
 
     return (
         <g
@@ -33,7 +48,7 @@ export default function SvgZoomBar({ zoomAtom, heightAndWidthAtom, upperLeftPoin
             onTouchStart={(e) => {
                 e.stopPropagation();
             }}
-            transform={`translate(${ulX + 10 / zoom} ${ulY + 10 / zoom}) scale(${1 / zoom})`}
+            transform={`translate(${xMin + 10 / zoom} ${yMin + 10 / zoom}) scale(${1 / zoom})`}
         >
             <rect
                 x={left + margin}
@@ -101,6 +116,7 @@ export default function SvgZoomBar({ zoomAtom, heightAndWidthAtom, upperLeftPoin
                 onClick={() => {
                     setZoom(1);
                     setUL({ x: 0, y: 0 });
+                    setMode('pan');
                 }}
                 fill='#aaa'
                 opacity='0.8'
@@ -116,6 +132,29 @@ export default function SvgZoomBar({ zoomAtom, heightAndWidthAtom, upperLeftPoin
                 fontSize={size * 0.7}
             >
                 {'\u21ba'}
+            </text>
+            <rect
+                x={left + 2 * margin}
+                y={top + margin + 3 * (size + margin)}
+                rx={radius}
+                ry={radius}
+                width={size}
+                height={size}
+                onClick={centerCB}
+                fill='#aaa'
+                opacity='0.8'
+            />
+            <text
+                x={left + 2 * margin + size / 2}
+                y={top + margin + size / 2 + 3 * (size + margin)}
+                fill='none'
+                stroke='#333'
+                textAnchor='middle'
+                dominantBaseline='central'
+                style={{ userSelect: 'none', pointerEvents: 'none' }}
+                fontSize={size * 0.7}
+            >
+                {'c'}
             </text>
         </g>
     );

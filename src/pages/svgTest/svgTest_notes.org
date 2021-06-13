@@ -7,21 +7,38 @@
  
 * to add
 
-** DONE coordinate transform atom(s)
+** coordinate transform atom(s)
    :LOGBOOK:
    - State "DONE"       from              [2021-06-11 Fri 10:52]
    :END:
+
+- axes display and center click don't work on zooming  
+
+- should test transform functions...write tests for them?
+    
   
 ** graph paper
 
-would like some range of squares to always be displayed, e.g., 
+would like some range of squares to always be displayed, e.g., between
+40 and 60 
    
 ** axes
+
+display xMin, xMax, yMin, yMax on the graph   
    
 ** function graph
    
-** zoom buttons
+** DONE zoom buttons
+   :LOGBOOK:
+   - State "DONE"       from              [2021-06-11 Fri 12:54]
+   :END:
 
    also display level of zoom, and make that editable?
    
 ** zoom with touch pad
+
+
+   
+* idea: can we pass SvgScene children a context, that they can get atoms from?
+
+  

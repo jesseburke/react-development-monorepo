@@ -9,15 +9,18 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
 import SvgScene from '../../SVGComps/SvgScene';
+import SvgAxes from '../../SVGComps/SvgAxes';
 
 import {
     funcData,
-    boundsAtom,
+    mathBoundsAtom,
+    svgBoundsAtom,
     upperLeftPointData,
     zoomData,
     axesData,
     svgHeightAndWidthAtom,
     mathToSvgFuncAtom,
+    modeAtom,
     DataComp
 } from './App_svgTest_atoms';
 
@@ -59,11 +62,18 @@ export default function App() {
                 <main className='flex-grow relative p-0'>
                     <SvgScene
                         heightAndWidthAtom={svgHeightAndWidthAtom}
-                        boundsAtom={boundsAtom}
+                        svgBoundsAtom={svgBoundsAtom}
                         mathToSvgFuncAtom={mathToSvgFuncAtom}
                         upperLeftPointAtom={upperLeftPointData.atom}
                         zoomAtom={zoomData.atom}
-                    />
+                        modeAtom={modeAtom}
+                    >
+                        <SvgAxes
+                            mathBoundsAtom={mathBoundsAtom}
+                            svgBoundsAtom={svgBoundsAtom}
+                            zoomAtom={zoomData.atom}
+                        />
+                    </SvgScene>
                 </main>
             </div>
         </JProvider>

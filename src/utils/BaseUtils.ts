@@ -59,7 +59,7 @@ function scalarMultiply(vec, s) {
     return newVec;
 }
 
-function round(x, n = 3) {
+function round(x, n = 2) {
     // x = -2.336596841557143
 
     return Math.round(x * Math.pow(10, n)) / Math.pow(10, n);

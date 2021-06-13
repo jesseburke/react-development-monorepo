@@ -7,24 +7,25 @@ const pixelRatio = 1; //window.devicePixelRatio;
 
 const SvgScene: FunctionComponent = ({
     heightAndWidthAtom,
-    boundsAtom,
+    svgBoundsAtom,
     upperLeftPointAtom,
     zoomAtom,
     mathToSvgFuncAtom,
+    modeAtom,
     children
 }) => {
     const svgParentRef = useRef(null);
     const svgRef = useRef(null);
 
-    const { xMin, xMax, yMin, yMax } = useAtom(boundsAtom)[0];
+    const { xMin, xMax, yMin, yMax } = useAtom(svgBoundsAtom)[0];
 
-    const [{ x: ulX, y: ulY }, setCenter] = useAtom(upperLeftPointAtom);
+    const [{ x: ulX, y: ulY }, setUpperLeftPoint] = useAtom(upperLeftPointAtom);
 
     const zoom = useAtom(zoomAtom)[0];
 
     const [{ height, width }, setHeightAndWidth] = useAtom(heightAndWidthAtom);
 
-    const mathToSvgFunc = useAtom(mathToSvgFuncAtom)[0].func;
+    const [mode, setMode] = useAtom(modeAtom);
 
     const isDown = useRef<null | 'mouse' | 'touch'>(null);
     const lastPosition = useRef<[number, number]>();
@@ -75,6 +76,31 @@ const SvgScene: FunctionComponent = ({
 
     //----------------------------------------
     //
+    // mouse pointer management
+
+    useEffect(() => {
+        if (mode === 'pan') {
+            document.body.style.cursor = 'auto';
+        }
+
+        if (mode === 'center') {
+            document.body.style.cursor = 'crosshair';
+        }
+    }, [mode]);
+
+    const domToSvgCoords = useCallback(({ x: dx, y: dy }) => {
+        if (!svgRef.current) return;
+
+        const pt = svgRef.current.createSVGPoint();
+
+        pt.x = dx;
+        pt.y = dy;
+
+        return pt.matrixTransform(svgRef.current.getScreenCTM().inverse());
+    }, []);
+
+    //----------------------------------------
+    //
     // component
 
     return (
@@ -85,7 +111,16 @@ const SvgScene: FunctionComponent = ({
                 //console.log('mouse down event fired');
                 if (e.button === 0 && !isDown.current) {
                     isDown.current = 'mouse';
-                    lastPosition.current = [e.clientX, e.clientY];
+                    if (mode === 'pan') {
+                        lastPosition.current = [e.clientX, e.clientY];
+                    }
+                    if (mode === 'center') {
+                        const { x: newX, y: newY } = domToSvgCoords({ x: e.clientX, y: e.clientY });
+                        console.log(newX, newY);
+                        console.log(width / 2, height / 2);
+                        setUpperLeftPoint({ x: newX - width / 2, y: newY - height / 2 });
+                        setMode('pan');
+                    }
                 }
             }}
             onMouseUp={(e) => {
@@ -102,7 +137,7 @@ const SvgScene: FunctionComponent = ({
                         const diffX = pos[0] - lastPosition.current[0];
                         const diffY = pos[1] - lastPosition.current[1];
                         lastPosition.current = pos;
-                        setCenter((prev) => ({
+                        setUpperLeftPoint((prev) => ({
                             x: prev.x - diffX / zoom,
                             y: prev.y - diffY / zoom
                         }));
@@ -120,7 +155,7 @@ const SvgScene: FunctionComponent = ({
             }}
         >
             <svg
-                viewBox={`${ulX} ${ulY} ${width / zoom} ${height / zoom}`}
+                viewBox={`${xMin} ${yMin} ${width / zoom} ${height / zoom}`}
                 className='h-full w-full'
                 ref={(elt) => (svgRef.current = elt)}
             >
@@ -131,14 +166,15 @@ const SvgScene: FunctionComponent = ({
                 <SvgZoomBar
                     zoomAtom={zoomAtom}
                     heightAndWidthAtom={heightAndWidthAtom}
+                    svgBoundsAtom={svgBoundsAtom}
+                    modeAtom={modeAtom}
                     upperLeftPointAtom={upperLeftPointAtom}
                 />
+
+                {children}
             </svg>
         </div>
     );
 };
 
 export default React.memo(SvgScene);
-
-/* transform={`scale(${width / (xMax - xMin)})
- *         rotate(180) translate(-20,-13)`} */

@@ -2,24 +2,15 @@ import { atom, useAtom } from 'jotai';
 import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
-import LabelDataComp from '../../data/LabelDataComp.jsx';
 import FunctionDataComp from '../../data/FunctionDataComp.jsx';
 import AxesDataComp from '../../data/AxesDataComp.jsx';
-import BoundsDataComp from '../../data/BoundsDataComp';
 import NumberDataComp from '../../data/NumberDataComp';
 import PointDataComp from '../../data/PointDataComp';
-
-import { Bounds } from '../../my-types';
+import MatrixFactory from '../../math/MatrixFactory';
 
 //------------------------------------------------------------------------
 //
 // initial constants
-
-const colors = {
-    arrows: '#B01A46', //'#C2374F'
-    solutionCurve: '#4e6d87', //'#C2374F'
-    tick: '#e19662'
-};
 
 const initFuncStr = 'x^2 + 2x + 3';
 
@@ -30,9 +21,10 @@ const initAxesData = {
     tickLabelDistance: 0
 };
 
-const initBounds: Bounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20, zMin: -20, zMax: 20 };
+const initXBounds = { xMin: -10, xMax: 10 };
 
-const zoom1HalfWidth = 20;
+// should be (yMax  - yMin)/2 + yMin (if we knew those already)
+const initYCenter = 0;
 
 //------------------------------------------------------------------------
 //
@@ -49,38 +41,78 @@ export const funcData = FunctionDataComp({
 
 export const svgHeightAndWidthAtom = atom({ height: 0, width: 0 });
 
+export const svgToMathFuncAtom = atom((get) => {
+    const { height, width } = get(svgHeightAndWidthAtom);
+
+    const xWidth = initXBounds.xMax - initXBounds.xMin;
+
+    const scale = width / xWidth;
+
+    const m = MatrixFactory([
+        [1 / scale, 0, initXBounds.xMin],
+        [0, -1 / scale, initYCenter + (((1 / 2) * height) / width) * xWidth],
+        [0, 0, 1]
+    ]);
+
+    const func = ({ x, y }) => {
+        const vec = m.multiply_with_vec([x, y, 1]);
+        return { x: vec[0], y: vec[1] };
+    };
+
+    return { func };
+});
+
+export const mathToSvgFuncAtom = atom((get) => {
+    const { width } = get(svgHeightAndWidthAtom);
+
+    const xWidth = initXBounds.xMax - initXBounds.xMin;
+
+    const scale = width / xWidth;
+
+    const m = MatrixFactory([
+        [scale, 0, xWidth / 2],
+        [0, -scale, initYCenter],
+        [0, 0, 1]
+    ]);
+
+    const func = ({ x, y }) => {
+        const vec = m.multiply_with_vec([x, y, 1]);
+        return { x: vec[0], y: vec[1] };
+    };
+
+    return { func };
+});
+
 export const zoomData = NumberDataComp(1);
 
 export const upperLeftPointData = PointDataComp({ x: 0, y: 0 });
 
-export const boundsAtom = atom((get) => {
-    const { height, width } = get(svgHeightAndWidthAtom);
+export const svgBoundsAtom = atom((get) => {
     const zoom = get(zoomData.atom);
-    const center = get(upperLeftPointData.atom);
+    const { height, width } = get(svgHeightAndWidthAtom);
+    const { x: ulX, y: ulY } = get(upperLeftPointData.atom);
 
-    const zw = zoom1HalfWidth;
-    const zl = width === 0 ? 0 : (zw * height) / width;
+    const svgCenterX = (width / 2) * zoom + ulX;
+    const svgCenterY = (height / 2) * zoom + ulY;
 
-    const xMin = center.x - zw / zoom;
-    const xMax = center.x + zw / zoom;
-    const yMin = center.y - zl / zoom;
-    const yMax = center.y + zl / zoom;
+    const xMin = svgCenterX - width / (2 * zoom);
+    const xMax = svgCenterX + width / (2 * zoom);
+    const yMin = svgCenterY - height / (2 * zoom);
+    const yMax = svgCenterY + height / (2 * zoom);
+
+    console.log('svgBounds = ', { xMin, xMax, yMin, yMax });
 
     return { xMin, xMax, yMin, yMax };
 });
 
-export const mathToSvgFuncAtom = atom((get) => {
-    const { xMin, yMin, xMax, yMax } = get(boundsAtom);
-    const { height, width } = get(svgHeightAndWidthAtom);
+export const mathBoundsAtom = atom((get) => {
+    const { xMin: svgxn, xMax: svgxm, yMin: svgyn, yMax: svgym } = get(svgBoundsAtom);
+    const svgToMath = get(svgToMathFuncAtom).func;
 
-    const func = ({ x, y }) => {
-        const xt = (x - xMin) / (xMax - xMin);
-        const yt = (y - yMin) / (yMax - yMin);
+    const { x: xMin, y: yMin } = svgToMath({ x: svgxn, y: svgym });
+    const { x: xMax, y: yMax } = svgToMath({ x: svgxm, y: svgxn });
 
-        return { x: xt * width, y: yt * height };
-    };
-
-    return { func };
+    return { xMin, xMax, yMin, yMax };
 });
 
 const atomStoreAtom = atom({
@@ -89,5 +121,7 @@ const atomStoreAtom = atom({
     z: zoomData,
     c: upperLeftPointData
 });
+
+export const modeAtom = atom('pan');
 
 export const DataComp = MainDataComp(atomStoreAtom);
