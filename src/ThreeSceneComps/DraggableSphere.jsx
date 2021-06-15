@@ -12,7 +12,7 @@ const defaultColor = '#0A2C3C';
 
 const zeroFuncAtom = atom({ func: (x, y) => 0 });
 
-export default React.memo(function DraggableSphere({
+export default function DraggableSphere({
     threeCBs,
     radius = 2,
     color = defaultColor,
@@ -120,4 +120,4 @@ export default React.memo(function DraggableSphere({
     }, [meshState, dragCB, threeCBs]);
 
     return null;
-});
+}

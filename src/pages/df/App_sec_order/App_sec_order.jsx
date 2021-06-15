@@ -13,7 +13,7 @@ import { ThreeSceneComp } from '../../../components/ThreeScene';
 
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-import Sphere from '../../../ThreeSceneComps/Sphere.jsx';
+import Sphere from '../../../ThreeSceneComps/DraggableSphere.jsx';
 import FunctionGraph2D from '../../../ThreeSceneComps/FunctionGraph2D.jsx';
 
 import {

@@ -5,7 +5,7 @@ import { atom, useAtom, PrimitiveAtom } from 'jotai';
 import * as THREE from 'three';
 
 import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
-import DraggableSphere from './Sphere.jsx';
+import DraggableSphere from './DraggableSphere.jsx';
 
 import { ArrayPoint2, Bounds, CurveData2 } from '../my-types';
 
