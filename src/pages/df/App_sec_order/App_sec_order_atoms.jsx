@@ -161,7 +161,7 @@ const caseStrAtom = atom((get) => {
 //
 // input components
 
-export const InitialPointsInput = React.memo(({}) => {
+export const InitialPointsInput = ({}) => {
     const { y: yLabel } = useAtom(labelData.atom)[0];
 
     return (
@@ -184,9 +184,9 @@ export const InitialPointsInput = React.memo(({}) => {
             </fieldset>
         </div>
     );
-});
+};
 
-export const SecondOrderInput = React.memo(({}) => {
+export const SecondOrderInput = ({}) => {
     const [a, setA] = useAtom(aData.atom);
     const [b, setB] = useAtom(bData.atom);
 
@@ -244,9 +244,9 @@ export const SecondOrderInput = React.memo(({}) => {
             </div>
         </div>
     );
-});
+};
 
-export const SolutionDisplayComp = React.memo(({}) => {
+export const SolutionDisplayComp = ({}) => {
     const solnTexStr = useAtom(solnTexStrAtom)[0];
 
     return (
@@ -260,4 +260,4 @@ export const SolutionDisplayComp = React.memo(({}) => {
             </div>
         </div>
     );
-});
+};

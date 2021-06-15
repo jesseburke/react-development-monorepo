@@ -69,7 +69,7 @@ export default function PerspCameraData(args: PerspCamera = {}) {
         }
     });
 
-    const component = React.memo(function OrthoCameraOptionsInput({}) {
+    const component = function OrthoCameraOptionsInput({}) {
         const [cameraData, setData] = useAtom(cameraDataAtom);
 
         let { target, position } = cameraData;
@@ -124,7 +124,7 @@ export default function PerspCameraData(args: PerspCamera = {}) {
                 </div>
             </div>
         );
-    });
+    };
 
     return { atom: cameraDataAtom, readWriteAtom, component };
 }

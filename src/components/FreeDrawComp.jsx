@@ -4,9 +4,8 @@ import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
 import Button from '../components/Button.jsx';
-import ArrowGeometry from '../graphics/ArrowGeometry';
 
-function FreeDrawComp({
+export default function FreeDrawComp({
     threeCBs,
     startingGeom = null,
     doneCBs = [() => null],
@@ -49,15 +48,14 @@ function FreeDrawComp({
                 top: '90%',
                 left: '10%',
                 fontSize
-            }}>
+            }}
+        >
             <div css={{ cursor: 'pointer' }}>
                 <Button onClickFunc={resetCB}>Clear Figure</Button>
             </div>
         </div>
     );
 }
-
-export default React.memo(FreeDrawComp);
 
 function FreeDrawFactory({
     threeCBs,

@@ -65,7 +65,7 @@ export default function LabelDataComp({ xLabel = 'x', yLabel = 'y', zLabel = 'z'
         }
     });
 
-    const component = React.memo(function LabelInput({}) {
+    const component = function LabelInput({}) {
         const [{ x, y, z }, setLabels] = useAtom(labelAtom);
 
         const xCB = useCallback((inputStr) => setLabels((old) => ({ ...old, x: inputStr })), [
@@ -112,9 +112,9 @@ export default function LabelDataComp({ xLabel = 'x', yLabel = 'y', zLabel = 'z'
                 </div>
             </div>
         );
-    });
+    };
 
-    const component2d = React.memo(function LabelInput({}) {
+    const component2d = function LabelInput({}) {
         const [{ x, y, z }, setLabels] = useAtom(labelAtom);
 
         const xCB = useCallback((inputStr) => setLabels((old) => ({ ...old, x: inputStr })), [
@@ -149,7 +149,7 @@ export default function LabelDataComp({ xLabel = 'x', yLabel = 'y', zLabel = 'z'
                 </div>
             </div>
         );
-    });
+    };
 
     return { atom: labelAtom, readWriteAtom, component: twoD ? component2d : component };
 }

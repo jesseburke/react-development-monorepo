@@ -10,7 +10,7 @@ enableMapSet();
 
 const defaultHeightPxs = 1024;
 
-export default React.memo(function CanvasComp({
+export default function CanvasComp({
     aspectRatio = 1,
     clearColor = '#f0f0f0',
     classStr = 'h-100 block',
@@ -94,4 +94,4 @@ export default React.memo(function CanvasComp({
             </React.Fragment>
         </React.Fragment>
     );
-});
+}

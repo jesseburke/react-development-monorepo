@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 
 import { atom, useAtom, ReadOnlyAtom } from 'jotai';
 
@@ -15,7 +15,7 @@ export interface GridProps {
     gridCB?: Function;
 }
 
-export default React.memo(function GridTS({
+export default (function GridTS({
     threeCBs,
     center = [0, 0],
     gridShow = true,

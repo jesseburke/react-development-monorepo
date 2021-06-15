@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
-export default React.memo(function Axes2DC({
+export default function Axes2DC({
     addFunc,
     removeFunc,
     boundsAtom,
@@ -101,4 +101,4 @@ export default React.memo(function Axes2DC({
     });
 
     return null;
-});
+}

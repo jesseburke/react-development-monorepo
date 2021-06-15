@@ -134,7 +134,7 @@ export const zHeightAtom = atom((get) => {
 //
 // input components
 
-export const LinearEquationInput = React.memo(function LinearEquationI({}) {
+export const LinearEquationInput = function LinearEquationI({}) {
     const { x: xLabel, y: yLabel } = useAtom(labelData.atom)[0];
 
     const [texEquation, setTexEquation] = useState();
@@ -158,4 +158,4 @@ export const LinearEquationInput = React.memo(function LinearEquationI({}) {
             </div>
         </div>
     );
-});
+};

@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 import FunctionGraphPts2D from '../math/FunctionGraphPts2D.jsx';
 
 // compArray is an array of arrays; each array is a chain of points to be drawn
-export default React.memo(function FunctionGraph2D({
+export default function FunctionGraph2D({
     funcAtom,
     boundsAtom,
     color = '#800000',
@@ -91,4 +91,4 @@ export default React.memo(function FunctionGraph2D({
     });
 
     return null;
-});
+}

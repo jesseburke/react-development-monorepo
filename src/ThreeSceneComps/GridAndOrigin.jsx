@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as THREE from 'three';
 
-export default React.memo(function GridAndOriginTS({
+export default function GridAndOriginTS({
     threeCBs,
     gridQuadSize = 20,
     center = [0, 0],
@@ -45,4 +45,4 @@ export default React.memo(function GridAndOriginTS({
     }, [threeCBs, gridQuadSize, center, gridShow, originColor]);
 
     return null;
-});
+}

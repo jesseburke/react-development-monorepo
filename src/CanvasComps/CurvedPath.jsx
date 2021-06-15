@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 // compArray is an array of arrays; each array is a chain of points to be drawn
-export default React.memo(function CurvedPath({
+export default function CurvedPath({
     compArray,
     bounds,
     color = '#8BC34A',
@@ -63,4 +63,4 @@ export default React.memo(function CurvedPath({
     });
 
     return null;
-});
+}

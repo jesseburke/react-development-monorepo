@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-import '../styles.css';
-
-export default React.memo(function Input({ onC, initValue, size = 10 }) {
+export default (function Input({ onC, initValue, size = 10 }) {
     const inputElt = useRef(null);
 
     const handleBlur = useCallback(

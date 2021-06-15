@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-export default React.memo(function PlaneTS({
+export default function Plane({
     threeCBs,
     color = '#82BFCD',
     heightAndWidthAtom,
@@ -49,4 +49,4 @@ export default React.memo(function PlaneTS({
     }, [meshRef, planeMesh]);
 
     return null;
-});
+}

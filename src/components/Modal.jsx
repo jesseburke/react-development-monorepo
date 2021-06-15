@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-function modal({
+export default function Modal({
     children,
     show = false,
     topPerc = 25,
@@ -44,7 +44,3 @@ function modal({
         </div>
     );
 }
-
-const Modal = React.memo(modal);
-
-export default Modal;

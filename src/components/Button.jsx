@@ -3,7 +3,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 
-function Button({
+export default memo(function Button({
     children,
     onClickFunc = () => null,
     fontSize = '1em',
@@ -59,6 +59,4 @@ function Button({
             {children}
         </span>
     );
-}
-
-export default React.memo(Button);
+});

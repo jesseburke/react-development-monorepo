@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 
 import { atom, useAtom, PrimitiveAtom } from 'jotai';
 
@@ -78,7 +78,7 @@ export default function BoundsDataComp({
         }
     });
 
-    const component = React.memo(function BoundsInput({}) {
+    const component = memo(function BoundsInput({}) {
         const [bounds, setBounds] = useAtom(boundsAtom);
 
         const { x: xLabel, y: yLabel, z: zLabel } = useAtom(labelAtom)[0];
@@ -165,7 +165,7 @@ export default function BoundsDataComp({
         );
     });
 
-    const component2d = React.memo(function BoundsInput({}) {
+    const component2d = memo(function BoundsInput({}) {
         const [bounds, setBounds] = useAtom(boundsAtom);
 
         const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];

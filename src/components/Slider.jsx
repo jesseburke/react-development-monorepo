@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from 'react';
 
-function Slider({
+export default function Slider({
     value,
     step = 0.1,
     CB = () => null,
@@ -33,5 +33,3 @@ function Slider({
         </div>
     );
 }
-
-export default React.memo(Slider);

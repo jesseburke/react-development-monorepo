@@ -2,7 +2,7 @@ import React from 'react';
 
 // height is assumed to be number, giving percentage of screen appBar will take (at the top)
 
-function fullScreenBaseComponent({ children, backgroundColor, fonts }) {
+export default function FullScreenBaseComponent({ children, backgroundColor, fonts }) {
     const css1 = React.useRef(
         {
             // external layout
@@ -27,6 +27,3 @@ function fullScreenBaseComponent({ children, backgroundColor, fonts }) {
 
     return <div style={css1.current}>{children}</div>;
 }
-
-const FullScreenBaseComponent = React.memo(fullScreenBaseComponent);
-export default FullScreenBaseComponent;

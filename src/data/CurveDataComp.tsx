@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
@@ -68,7 +68,7 @@ export default function CurveDataComp(args: CurveData2 = {}) {
         }
     });
 
-    const component = React.memo(function CurveOptionsInput({}) {
+    const component = memo(function CurveOptionsInput({}) {
         const [data, setData] = useAtom(cdAtom);
 
         const { color, approxH, visible, width } = data;

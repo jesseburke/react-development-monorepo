@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default React.memo(function controlBar({ children, height, fontSize, backgroundColor }) {
+export default function ControlBar({ children, height, fontSize, backgroundColor }) {
     const cssRef = React.useRef(
         Object.assign(
             {
@@ -27,10 +27,4 @@ export default React.memo(function controlBar({ children, height, fontSize, back
     );
 
     return <header style={cssRef.current}>{children}</header>;
-});
-
-//const ControlBar = React.memo(controlBar);
-
-//export default ControlBar;
-
-//...make this a tailwind component? can we customize those further?
+}

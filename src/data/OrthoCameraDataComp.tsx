@@ -71,7 +71,7 @@ export default function OrthoCameraDataComp(args: OrthoCamera = {}) {
         }
     });
 
-    const component = React.memo(function OrthoCameraOptionsInput({}) {
+    const component = function OrthoCameraOptionsInput({}) {
         const [cameraData, setData] = useAtom(cameraDataAtom);
 
         let { target, zoom, position } = cameraData;
@@ -159,7 +159,7 @@ export default function OrthoCameraDataComp(args: OrthoCamera = {}) {
                 </div>
             </div>
         );
-    });
+    };
 
     return { atom: cameraDataAtom, readWriteAtom, component };
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
@@ -10,7 +10,7 @@ const defaultColorAtom = atom('#3285ab');
 
 const defaultLabelAtom = atom(null);
 
-export default React.memo(function Line({
+export default function Line({
     threeCBs,
     radius = 0.1,
     colorAtom = defaultColorAtom,
@@ -86,4 +86,4 @@ export default React.memo(function Line({
     }, [threeCBs, labelObj]);
 
     return null;
-});
+}

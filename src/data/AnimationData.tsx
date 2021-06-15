@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 import gsap from 'gsap';
 import queryString from 'query-string-esm';
@@ -72,7 +72,7 @@ export default function AnimationData({
         }
     });
 
-    const component = React.memo(() => {
+    const component = () => {
         //----------------------------------------
         //
         // animationData related
@@ -138,7 +138,7 @@ export default function AnimationData({
                 </span>
             </div>
         );
-    });
+    };
 
     return { atom: animationAtom, readWriteAtom, component };
 }

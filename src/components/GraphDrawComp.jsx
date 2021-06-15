@@ -5,7 +5,7 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 import Button from '../components/Button.jsx';
 
-function GraphDrawComp({
+export default function GraphDrawComp({
     threeCBs,
     doneCBs = [() => null],
     transforms = [],
@@ -56,7 +56,8 @@ function GraphDrawComp({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 fontSize
-            }}>
+            }}
+        >
             <div css={{ cursor: 'pointer' }}>
                 <Button onClickFunc={resetCB}>Clear Figure</Button>
             </div>
@@ -69,7 +70,8 @@ function GraphDrawComp({
                     // next line stops cursor from changing to text selection on hover
                     cursor: 'pointer'
                 }}
-                onClick={undoCB}>
+                onClick={undoCB}
+            >
                 <span css={{ padding: '.15em', fontSize: '2rem', userSelect: 'none' }}>
                     {'\u{270F}'}
                 </span>
@@ -77,8 +79,6 @@ function GraphDrawComp({
         </div>
     );
 }
-
-export default React.memo(GraphDrawComp);
 
 function GraphDrawFactory({
     threeCBs,

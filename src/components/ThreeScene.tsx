@@ -19,7 +19,7 @@ export interface ThreeSceneProps {
     children: null;
 }
 
-const ThreeScene: FunctionComponent = ({
+export const ThreeSceneComp: FunctionComponent = ({
     controlsCB = null,
     fixedCameraData,
     controlsData = {
@@ -198,5 +198,3 @@ const ThreeScene: FunctionComponent = ({
         </div>
     );
 };
-
-export const ThreeSceneComp = React.memo(ThreeScene);

@@ -73,7 +73,7 @@ export default function ArrowGridDataComp(args) {
         }
     });
 
-    const component = React.memo(() => {
+    const component = () => {
         const [agda, setAgda] = useAtom(agAtom);
 
         const { density, thickness, length, color } = agda;
@@ -150,7 +150,7 @@ export default function ArrowGridDataComp(args) {
                 </div>
             </div>
         );
-    });
+    };
 
     return { atom: agAtom, readWriteAtom, component };
 }

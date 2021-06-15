@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import { useAtom, atom } from 'jotai';
 
@@ -16,7 +16,7 @@ const defaultAxesDataAtom = atom({
     tickLabelDistance: 2
 });
 
-export default React.memo(function Axes2D({
+export default memo(function Axes2D({
     threeCBs,
     boundsAtom,
     axesDataAtom = defaultAxesDataAtom,

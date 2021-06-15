@@ -80,7 +80,7 @@ export default function AxesDataComp(args) {
         }
     });
 
-    const component = React.memo(() => {
+    const component = () => {
         const [ao, setAo] = useAtom(aoAtom);
 
         const { radius, color, tickLabelDistance } = ao;
@@ -140,7 +140,7 @@ export default function AxesDataComp(args) {
                 </div>
             </div>
         );
-    });
+    };
 
     return { atom: aoAtom, readWriteAtom, component };
 }

@@ -5,9 +5,10 @@ import SvgZoomBar from './SvgZoomBar';
 
 const pixelRatio = 1; //window.devicePixelRatio;
 
-const SvgScene: FunctionComponent = ({
+export default ({
     heightAndWidthAtom,
     svgBoundsAtom,
+    mathBoundsAtom,
     upperLeftPointAtom,
     zoomAtom,
     mathToSvgFuncAtom,
@@ -170,11 +171,12 @@ const SvgScene: FunctionComponent = ({
                     modeAtom={modeAtom}
                     upperLeftPointAtom={upperLeftPointAtom}
                 />
-
-                {children}
+                <React.Fragment>
+                    {React.Children.map(children, (el) =>
+                        React.cloneElement(el, { mathBoundsAtom, svgBoundsAtom, zoomAtom })
+                    )}
+                </React.Fragment>
             </svg>
         </div>
     );
 };
-
-export default React.memo(SvgScene);

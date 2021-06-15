@@ -2,7 +2,14 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-function ClickablePlaneComp({ threeCBs, clickCB, paused, xSize = 1000, ySize = 1000, mesh }) {
+export default function ClickablePlaneComp({
+    threeCBs,
+    clickCB,
+    paused,
+    xSize = 1000,
+    ySize = 1000,
+    mesh
+}) {
     const [clickPlane, setClickPlane] = useState(null);
 
     useEffect(() => {
@@ -104,5 +111,3 @@ function ClickPlane({ threeCBs, clickCB, mesh = null, xSize, ySize }) {
 
     return { dispose, reset, getPt, pause, play };
 }
-
-export default React.memo(ClickablePlaneComp);

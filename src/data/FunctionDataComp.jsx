@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import Input from '../components/Input.jsx';
@@ -60,7 +60,7 @@ export default function FunctionDataComp({
         }
     });
 
-    const component = React.memo(() => {
+    const component = () => {
         const [eqStr, setEqStr] = useAtom(functionStrAtom);
         const [equationLabel] = useAtom(newFunctionLabelAtom);
 
@@ -72,7 +72,7 @@ export default function FunctionDataComp({
                 <Input size={inputSize} initValue={eqStr} onC={eqInputCB} />
             </div>
         );
-    });
+    };
 
     return { funcAtom: functionAtom, strAtom: functionStrAtom, readWriteAtom, component };
 }

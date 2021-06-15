@@ -135,7 +135,7 @@ export const zHeightAtom = atom((get) => {
 //
 // input components
 
-export const SepEquationInput = React.memo(function SepEquationI({}) {
+export const SepEquationInput = function SepEquationI({}) {
     const { x: xLabel, y: yLabel } = useAtom(labelData.atom)[0];
 
     const [texEquation, setTexEquation] = useState();
@@ -163,4 +163,4 @@ export const SepEquationInput = React.memo(function SepEquationI({}) {
             </div>
         </div>
     );
-});
+};
