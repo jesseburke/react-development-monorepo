@@ -10,6 +10,8 @@ import { atom, useAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
+import { myStringify } from '../utils/BaseUtils';
+
 export default function MainDataComp(atomStoreAtom) {
     const readAtomStoreAtom = atom(null, (get, set, callback) => {
         let ro = {};
@@ -171,10 +173,4 @@ function DiscIconSaveComp({ saveCB }) {
             <span style={cssRef2.current}>{'\u{1F4BE}'}</span>
         </div>
     );
-}
-
-function myStringify(obj) {
-    if (typeof obj === 'string') return obj;
-
-    return queryString.stringify(obj);
 }

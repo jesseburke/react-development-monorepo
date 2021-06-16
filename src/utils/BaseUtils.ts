@@ -1,14 +1,16 @@
+import queryString from 'query-string-esm';
+
 function identity(x) {
     return x;
 }
 
-function isZero(x) {
+export function isZero(x) {
     return Math.abs(x) < 10 * Number.EPSILON;
 }
 
 // returns a unit vector in the direction of vec, if vec is nonzero
 // if vec is zero, returns 0
-function unitVector(vec, round = identity) {
+export function unitVector(vec, round = identity) {
     const length = vectorLength(vec);
 
     if (isZero(length)) {
@@ -24,7 +26,7 @@ function unitVector(vec, round = identity) {
     return new_arr;
 }
 
-function vectorLength(vec) {
+export function vectorLength(vec) {
     let sum = 0;
 
     for (let i = 0; i < vec.length; i++) {
@@ -34,7 +36,7 @@ function vectorLength(vec) {
     return Math.sqrt(sum);
 }
 
-function vectorAdd(v, w) {
+export function vectorAdd(v, w) {
     const newVector = [];
     const m = Math.max(v.length, w.length);
 
@@ -51,7 +53,7 @@ function vectorAdd(v, w) {
     return newVector;
 }
 
-function scalarMultiply(vec, s) {
+export function scalarMultiply(vec, s) {
     let newVec = [];
     for (let i = 0; i < vec.length; i++) {
         newVec[i] = vec[i] * s;
@@ -59,14 +61,14 @@ function scalarMultiply(vec, s) {
     return newVec;
 }
 
-function round(x, n = 2) {
+export function round(x, n = 2) {
     // x = -2.336596841557143
 
     return Math.round(x * Math.pow(10, n)) / Math.pow(10, n);
 }
 
 // from the book 'Discover Functional Javascript', p. 58
-function throttle(fn, interval) {
+export function throttle(fn, interval) {
     let lastTime;
 
     return function throttled(...args) {
@@ -77,7 +79,7 @@ function throttle(fn, interval) {
     };
 }
 
-function processNum(num, precision = 5, epsilon = 10 ** -precision) {
+export function processNum(num, precision = 5, epsilon = 10 ** -precision) {
     if (Math.abs(num) < epsilon) return { str: '0', texStr: '0' };
 
     let x = num.toPrecision(precision);
@@ -110,7 +112,7 @@ function processNum(num, precision = 5, epsilon = 10 ** -precision) {
 // input: positive integer arguments a, b
 // output: {gdc, aCoeff, bCoeff} with gdc = a*aCoeff + b*Coeff
 
-const eGCD = (a, b) => {
+export function eGCD(a, b) {
     if (!Number.isInteger(a) || !Number.isInteger(b)) {
         console.log('eGCD was called with a non-integer argument; returned null');
         return;
@@ -148,7 +150,7 @@ const eGCD = (a, b) => {
     if (swapped) return { gcd, aCoeff: aCoeff - q * bCoeff, bCoeff };
 
     return { gcd, aCoeff: bCoeff, bCoeff: aCoeff - q * bCoeff };
-};
+}
 
 const a = 121209;
 const b = 1070107;
@@ -213,14 +215,8 @@ export function pubsub() {
     };
 }
 
-export {
-    isZero,
-    scalarMultiply,
-    unitVector,
-    vectorAdd,
-    vectorLength,
-    round,
-    throttle,
-    processNum,
-    eGCD
-};
+export function myStringify(obj) {
+    if (typeof obj === 'string') return obj;
+
+    return queryString.stringify(obj);
+}
