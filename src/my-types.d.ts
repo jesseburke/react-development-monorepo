@@ -1,6 +1,6 @@
 export interface OrthoCamera {
     target: ArrayPoint3;
-    zoom: number;
+    positionzoom: number;
     position: ArrayPoint3;
 }
 
