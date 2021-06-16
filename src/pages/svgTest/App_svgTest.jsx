@@ -63,16 +63,13 @@ export default function App() {
                     <SvgScene
                         heightAndWidthAtom={svgHeightAndWidthAtom}
                         svgBoundsAtom={svgBoundsAtom}
+                        mathBoundsAtom={mathBoundsAtom}
                         mathToSvgFuncAtom={mathToSvgFuncAtom}
                         upperLeftPointAtom={upperLeftPointData.atom}
                         zoomAtom={zoomData.atom}
                         modeAtom={modeAtom}
                     >
-                        <SvgAxes
-                            mathBoundsAtom={mathBoundsAtom}
-                            svgBoundsAtom={svgBoundsAtom}
-                            zoomAtom={zoomData.atom}
-                        />
+                        <SvgAxes />
                     </SvgScene>
                 </main>
             </div>

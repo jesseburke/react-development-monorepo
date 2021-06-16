@@ -1,4 +1,4 @@
-import { round } from '../utils/BaseUtils.ts';
+import { round } from '../utils/BaseUtils.js';
 
 // global variables for this module
 let w, h;

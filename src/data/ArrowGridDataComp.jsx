@@ -5,7 +5,7 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects, isEmpty } from '../utils/BaseUtils.ts';
+import { diffObjects, isEmpty } from '../utils/BaseUtils.js';
 
 import '../styles.css';
 

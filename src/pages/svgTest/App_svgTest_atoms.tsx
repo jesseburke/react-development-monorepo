@@ -21,10 +21,10 @@ const initAxesData = {
     tickLabelDistance: 0
 };
 
-const initXBounds = { xMin: -10, xMax: 10 };
+export const initXBounds = { xMin: -10, xMax: 10 };
 
 // should be (yMax  - yMin)/2 + yMin (if we knew those already)
-const initYCenter = 0;
+export const initYCenter = 0;
 
 //------------------------------------------------------------------------
 //
@@ -55,7 +55,7 @@ export const svgToMathFuncAtom = atom((get) => {
     ]);
 
     const func = ({ x, y }) => {
-        const vec = m.multiply_with_vec([x, y, 1]);
+        const vec = m.multiplyWithVec([x, y, 1]);
         return { x: vec[0], y: vec[1] };
     };
 
@@ -63,20 +63,20 @@ export const svgToMathFuncAtom = atom((get) => {
 });
 
 export const mathToSvgFuncAtom = atom((get) => {
-    const { width } = get(svgHeightAndWidthAtom);
+    const { width, height } = get(svgHeightAndWidthAtom);
 
     const xWidth = initXBounds.xMax - initXBounds.xMin;
 
     const scale = width / xWidth;
 
     const m = MatrixFactory([
-        [scale, 0, xWidth / 2],
-        [0, -scale, initYCenter],
+        [scale, 0, width / 2],
+        [0, -scale, height / 2],
         [0, 0, 1]
     ]);
 
     const func = ({ x, y }) => {
-        const vec = m.multiply_with_vec([x, y, 1]);
+        const vec = m.multiplyWithVec([x, y, 1]);
         return { x: vec[0], y: vec[1] };
     };
 
@@ -92,15 +92,15 @@ export const svgBoundsAtom = atom((get) => {
     const { height, width } = get(svgHeightAndWidthAtom);
     const { x: ulX, y: ulY } = get(upperLeftPointData.atom);
 
-    const svgCenterX = (width / 2) * zoom + ulX;
-    const svgCenterY = (height / 2) * zoom + ulY;
+    const svgCenterX = width / 2 + ulX;
+    const svgCenterY = height / 2 + ulY;
 
     const xMin = svgCenterX - width / (2 * zoom);
     const xMax = svgCenterX + width / (2 * zoom);
     const yMin = svgCenterY - height / (2 * zoom);
     const yMax = svgCenterY + height / (2 * zoom);
 
-    console.log('svgBounds = ', { xMin, xMax, yMin, yMax });
+    //console.log('svgBounds = ', { xMin, xMax, yMin, yMax });
 
     return { xMin, xMax, yMin, yMax };
 });

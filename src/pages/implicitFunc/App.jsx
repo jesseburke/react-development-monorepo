@@ -20,7 +20,7 @@ import ImplicitFuncGraph, {
     ptOnSide
 } from '../../math/ImplicitFuncGraph.jsx';
 
-import { round } from '../../utils/BaseUtils.ts';
+import { round } from '../../utils/BaseUtils.js';
 
 //------------------------------------------------------------------------
 //

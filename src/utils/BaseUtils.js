@@ -1,4 +1,4 @@
-import queryString from 'query-string-esm';
+import qs from 'query-string-esm';
 
 function identity(x) {
     return x;
@@ -218,5 +218,5 @@ export function pubsub() {
 export function myStringify(obj) {
     if (typeof obj === 'string') return obj;
 
-    return queryString.stringify(obj);
+    return qs.stringify(obj);
 }

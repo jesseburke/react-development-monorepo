@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 
-import { round } from '../utils/BaseUtils.ts';
+import { round } from '../utils/BaseUtils.js';
 
 export default function usePointPicker({
     threeCBs,

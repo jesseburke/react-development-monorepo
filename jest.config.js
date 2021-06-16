@@ -11,7 +11,7 @@ module.exports = {
             diagnostics: false
         }
     },
-    transformIgnorePatterns: ['node_modules/(?!(three|React)/)'],
+    transformIgnorePatterns: ['node_modules/(?!(three|React|query-string-esm)/)'],
     moduleNameMapper: { '^.+\\.(css|less)$': '<rootDir>/src/cssStub.js' }
     //preset: 'ts-jest/presets/default-esm' //'ts-jest'
 };
