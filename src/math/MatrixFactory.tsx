@@ -1,8 +1,20 @@
-// mat is an array of arrays, with each inner array representing a row of the matrix
+// mat is an array of arrays, with each inner array representing a row
+// of the matrix
 
-export default function MatrixFactory(mat) {
+export interface MyMatrix {
+    rows: () => number;
+    cols: () => number;
+    multiplyWithVec: (vec: number[]) => number[];
+    getEntry: (i: number, j: number) => number;
+    setEntry: (i: number, j: number, value: number) => void;
+    add: (secMatrix: MyMatrix) => MyMatrix;
+}
+
+type MathMatrix = ReturnType<typeof MatrixFactory>;
+
+export default function MatrixFactory(mat: number[][]) {
     // don't compute this until the rref function is called
-    let rref_of_mat = [];
+    let rref_of_mat: number[][];
 
     function rows() {
         return mat.length;
@@ -13,46 +25,28 @@ export default function MatrixFactory(mat) {
     }
 
     // returns A^n*vec
-    function multiply_with_vec(vec, n = 1) {
-        function add(reduction, element) {
-            return reduction + element;
-        }
-
-        let vec1 = vec;
-        let vec_ar = [vec];
-        for (let i = 1; i <= n; i++) {
-            vec1 = mat.map((i) => i.map((j, index) => j * vec1[index]).reduce(add, 0));
-            vec_ar.push(vec1);
-        }
-
-        return vec1;
+    function multiplyWithVec(vec: number[], n = 1) {
+        return mat.map((row) => row.map((entry, j) => entry * vec[j]).reduce((x, y) => x + y));
     }
 
-    // seems like this shouldn't need any loops
-    function set_entry(i, j, value) {
-        for (let row = 0; row < mat.length; row++) {
-            for (let col = 0; col < mat[row].length; col++) {
-                if (i === row && j === col) {
-                    mat[row][col] = value;
-                }
-            }
-        }
+    function getEntry(i: number, j: number) {
+        return mat[i][j];
     }
 
-    function add(sec_mat) {
+    function setEntry(i: number, j: number, value: number) {
+        mat[i][j] = value;
+    }
+
+    function add(secMat: MathMatrix) {
         return MatrixFactory(
             mat.map((row, i) =>
-                row.map((col, j) => Number(mat[i][j]) + Number(sec_mat.get_entry(i, j)))
+                row.map((_, j) => Number(mat[i][j]) + Number(secMat.getEntry(i, j)))
             )
         );
     }
 
-    function scalar_multiply(s) {
-        return MatrixFactory(mat.map((row, i) => row.map((col, j) => s * Number(mat[i][j]))));
-    }
-
-    function get_entry(i, j) {
-        return mat[i][j];
+    function scalarMultiply(s: number) {
+        return MatrixFactory(mat.map((row, i) => row.map((_, j) => s * Number(mat[i][j]))));
     }
 
     function getArray() {
@@ -70,16 +64,16 @@ export default function MatrixFactory(mat) {
     }
 
     // returns mat2 stacked under mat
-    function vert_concat(mat2) {
+    function vertConcat(mat2: MathMatrix) {
         return MatrixFactory(mat.concat(mat2.getArray()));
     }
 
-    function horiz_concat(mat2) {
-        return transpose().vert_concat(mat2.transpose()).transpose();
+    function horizConcat(mat2: MathMatrix) {
+        return transpose().vertConcat(mat2.transpose()).transpose();
     }
 
     // returns new matrix with rows i and j swapped
-    function row_op_swap(i, j) {
+    function rowOpSwap(i: number, j: number) {
         let new_mat = mat.map((r, index) => {
             if (index === j) {
                 return mat[i];
@@ -92,7 +86,7 @@ export default function MatrixFactory(mat) {
     }
 
     // returns new matrix with row i multiplied by n
-    function row_op_mult(n, i) {
+    function rowOpMult(n: number, i: number) {
         let new_mat = mat.map((r, index) => {
             if (index !== i) {
                 return r;
@@ -104,7 +98,7 @@ export default function MatrixFactory(mat) {
     }
 
     // returns new matrix with n*row i subtracted from row j
-    function row_op_subtract(n, i, j) {
+    function rowOpSubtract(n: number, i: number, j: number) {
         let new_mat = mat.map((r, index) => {
             if (index !== j) {
                 return r;
@@ -117,13 +111,13 @@ export default function MatrixFactory(mat) {
 
     // algorithm adapted from https://rosettacode.org/wiki/Reduced_row_echelon_form#JavaScript
     function rref() {
-        if (rref_of_mat.length > 0) {
-            return rref_of_mat;
+        if (rref_of_mat) {
+            return MatrixFactory(rref_of_mat);
         }
 
         let lead_col = 0;
         let new_mat = MatrixFactory(mat);
-        let i;
+        let i: number;
 
         for (let r = 0; r < rows(); r++) {
             if (cols() <= lead_col) {
@@ -131,7 +125,7 @@ export default function MatrixFactory(mat) {
             }
 
             i = r;
-            while (Math.abs(new_mat.get_entry(i, lead_col)) < Number.EPSILON) {
+            while (Math.abs(new_mat.getEntry(i, lead_col)) < Number.EPSILON) {
                 i = i + 1;
                 if (rows() === i) {
                     i = r;
@@ -142,34 +136,36 @@ export default function MatrixFactory(mat) {
                 }
             }
 
-            new_mat = new_mat.row_op_swap(i, r);
+            new_mat = new_mat.rowOpSwap(i, r);
 
-            if (Math.abs(new_mat.get_entry(r, lead_col)) > Number.EPSILON) {
-                new_mat = new_mat.row_op_mult(1 / new_mat.get_entry(r, lead_col), r);
+            if (Math.abs(new_mat.getEntry(r, lead_col)) > Number.EPSILON) {
+                new_mat = new_mat.rowOpMult(1 / new_mat.getEntry(r, lead_col), r);
                 for (let j = 0; j < rows(); j++) {
                     if (j !== r) {
-                        new_mat = new_mat.row_op_subtract(new_mat.get_entry(j, lead_col), r, j);
+                        new_mat = new_mat.rowOpSubtract(new_mat.getEntry(j, lead_col), r, j);
                     }
                 }
             }
 
             lead_col = lead_col + 1;
         }
-        rref_of_mat = MatrixFactory(
+        const rv = MatrixFactory(
             new_mat.getArray().map((row, i) =>
-                row.map((col, j) => {
-                    if (Math.abs(new_mat.get_entry(i, j)) > Number.EPSILON) {
-                        return Number(new_mat.get_entry(i, j).toPrecision(10));
+                row.map((_, j) => {
+                    if (Math.abs(new_mat.getEntry(i, j)) > Number.EPSILON) {
+                        return Number(new_mat.getEntry(i, j).toPrecision(10));
                     }
                     return 0;
                 })
             )
         );
-        return rref_of_mat;
+        rref_of_mat = rv.getArray();
+
+        return rv;
     }
 
     // returns an array with entries the ordered list of columns that contain a leading 1
-    function pivot_cols() {
+    function pivotCols() {
         // this will have an entry for each row
         let piv_ar = rref()
             .getArray()
@@ -181,8 +177,8 @@ export default function MatrixFactory(mat) {
         return piv_ar.slice(0, i);
     }
 
-    function basis_null_space() {
-        let pc = pivot_cols();
+    function basisNullSpace() {
+        let pc = pivotCols();
         let npc = [];
 
         for (let i = 0; i < cols(); i++) {
@@ -200,44 +196,44 @@ export default function MatrixFactory(mat) {
                 if (npc.indexOf(j) >= 0) {
                     return 0;
                 }
-                return -rref().get_entry(pc.indexOf(j), i);
+                return -rref().getEntry(pc.indexOf(j), i);
             });
         });
         return basis_ar;
     }
 
     return {
-        multiply_with_vec,
+        multiplyWithVec,
         rows,
         cols,
         add,
-        scalar_multiply,
-        set_entry,
-        get_entry,
-        row_op_swap,
-        row_op_subtract,
-        row_op_mult,
-        rref,
+        scalarMultiply,
+        setEntry,
+        getEntry,
         getArray,
         transpose,
-        vert_concat,
-        basis_null_space,
-        pivot_cols,
-        horiz_concat
+        vertConcat,
+        horizConcat,
+        rowOpSwap,
+        rowOpSubtract,
+        rowOpMult,
+        rref,
+        basisNullSpace,
+        pivotCols
     };
 }
 
-function identityMatrixFactory(n) {
-    let arr = new Array(n).fill(0);
-    arr = arr.map((v) => new Array(n).fill(0));
-    arr = arr.map((row, i) =>
-        row.map((col, j) => {
-            if (i === j) {
-                return 1;
-            }
-            return 0;
-        })
-    );
-
-    return MatrixFactory(arr);
-}
+/* function identityMatrixFactory(n) {
+ *     let arr = new Array(n).fill(0);
+ *     arr = arr.map((v) => new Array(n).fill(0));
+ *     arr = arr.map((row, i) =>
+ *         row.map((col, j) => {
+ *             if (i === j) {
+ *                 return 1;
+ *             }
+ *             return 0;
+ *         })
+ *     );
+ *
+ *     return MatrixFactory(arr);
+ * } */
