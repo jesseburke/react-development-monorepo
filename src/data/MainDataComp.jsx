@@ -1,4 +1,11 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, {
+    useState,
+    useRef,
+    useEffect,
+    useLayoutEffect,
+    useCallback,
+    cloneElement
+} from 'react';
 import { atom, useAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
@@ -110,10 +117,10 @@ export default function MainDataComp(atomStoreAtom) {
         return (
             <div>
                 {saveComp
-                    ? React.cloneElement(saveComp, { onClick: saveCB })
+                    ? cloneElement(saveComp, { onClick: saveCB })
                     : DefaultSaveComp(saveCB, saveBtnClassStr)}
                 {resetComp
-                    ? React.cloneElement(resetComp, { onClick: resetCB })
+                    ? cloneElement(resetComp, { onClick: resetCB })
                     : DefaultResetComp(resetCB, resetBtnClassStr)}
             </div>
         );

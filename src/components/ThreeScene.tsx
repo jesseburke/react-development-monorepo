@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback, FunctionComponent } from 'react';
+import React, {
+    useState,
+    useRef,
+    useEffect,
+    Fragment,
+    FunctionComponent,
+    Children,
+    cloneElement
+} from 'react';
 import * as THREE from 'three';
 import { atom, useAtom } from 'jotai';
 
@@ -184,11 +192,9 @@ export const ThreeSceneComp: FunctionComponent = ({
                 height={initialHeightPxs}
             />
             {cameraDebug ? cameraDebugComp : null}
-            <React.Fragment>
-                {React.Children.map(children, (el) =>
-                    React.cloneElement(el, { threeCBs: threeSceneCBs })
-                )}
-            </React.Fragment>
+            <Fragment>
+                {Children.map(children, (el) => cloneElement(el, { threeCBs: threeSceneCBs }))}
+            </Fragment>
             <div ref={(elt) => (labelContainerRef.current = elt)} />
             {photoButton ? (
                 <div onClick={threeSceneCBs ? threeSceneCBs.downloadPicture : null}>

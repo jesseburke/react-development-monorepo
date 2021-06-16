@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { Fragment, useState, useRef, useEffect, useCallback } from 'react';
 
 import queryString from 'query-string';
 
@@ -597,7 +597,7 @@ export default function App() {
     const css8 = useRef({ padding: '0em' }, []);
 
     return (
-        <React.Fragment>
+        <React>
             <Helmet>
                 <title>Streamlines App</title>
             </Helmet>
@@ -648,7 +648,7 @@ export default function App() {
                     <SaveButton onClickFunc={saveButtonCB} />
                 </Main>
             </FullScreenBaseComponent>
-        </React.Fragment>
+        </Fragment>
     );
 }
 

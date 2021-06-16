@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 
 import { atom, useAtom, ReadOnlyAtom } from 'jotai';
 
-import * as THREE from 'three';
-
 import GridGeom from '../graphics/GridGeom.js';
 import { ArrayPoint2, Bounds } from '../my-types';
 
@@ -24,7 +22,7 @@ export default (function GridTS({
 }: GridProps) {
     const { xMax, xMin, yMax, yMin } = useAtom(boundsAtom)[0];
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!gridShow || !threeCBs) return;
 
         const grid = GridGeom({ length: yMax - yMin, width: xMax - xMin, llc: [xMin, yMin] });

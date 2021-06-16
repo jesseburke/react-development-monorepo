@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 
 import * as THREE from 'three';
 
@@ -12,7 +12,7 @@ export default function GridAndOriginTS({
     originRadius = 0.25,
     gridCB = () => null
 }) {
-    React.useEffect(() => {
+    useEffect(() => {
         if (!gridShow || !threeCBs) return;
 
         const grid = new THREE.GridHelper(2 * gridQuadSize, 2 * gridQuadSize);

@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, {
+    useState,
+    useRef,
+    useEffect,
+    useCallback,
+    Fragment,
+    Children,
+    cloneElement
+} from 'react';
 
 import { useImmer } from 'use-immer';
 import { enableMapSet } from 'immer';
@@ -75,23 +83,23 @@ export default function CanvasComp({
     }, [ctx, canvasSet]);
 
     return (
-        <React.Fragment>
+        <Fragment>
             <canvas
                 className={classStr}
                 width={widthPxs.current}
                 height={heightPxs.current}
                 ref={(elt) => (canvasRef.current = elt)}
             />
-            <React.Fragment>
-                {React.Children.map(children, (el) =>
-                    React.cloneElement(el, {
+            <Fragment>
+                {Children.map(children, (el) =>
+                    cloneElement(el, {
                         addFunc: addCanvasToSet,
                         removeFunc: removeCanvasFromSet,
                         canvasWidth: widthPxs.current,
                         canvasHeight: heightPxs.current
                     })
                 )}
-            </React.Fragment>
-        </React.Fragment>
+            </Fragment>
+        </Fragment>
     );
 }

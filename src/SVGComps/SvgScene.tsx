@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback, FunctionComponent } from 'react';
+import React, {
+    Fragment,
+    useState,
+    useRef,
+    useEffect,
+    useCallback,
+    Children,
+    cloneElement
+} from 'react';
 import { atom, useAtom } from 'jotai';
 
 import SvgZoomBar from './SvgZoomBar';
@@ -171,11 +179,11 @@ export default ({
                     modeAtom={modeAtom}
                     upperLeftPointAtom={upperLeftPointAtom}
                 />
-                <React.Fragment>
-                    {React.Children.map(children, (el) =>
-                        React.cloneElement(el, { mathBoundsAtom, svgBoundsAtom, zoomAtom })
+                <Fragment>
+                    {Children.map(children, (el) =>
+                        cloneElement(el, { mathBoundsAtom, svgBoundsAtom, zoomAtom })
                     )}
-                </React.Fragment>
+                </Fragment>
             </svg>
         </div>
     );

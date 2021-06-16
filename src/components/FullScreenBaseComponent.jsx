@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 // height is assumed to be number, giving percentage of screen appBar will take (at the top)
 
 export default function FullScreenBaseComponent({ children, backgroundColor, fonts }) {
-    const css1 = React.useRef(
+    const css1 = useRef(
         {
             // external layout
             position: 'fixed',
