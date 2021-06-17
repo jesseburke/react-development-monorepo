@@ -165,7 +165,7 @@ export default ({
         >
             <svg
                 viewBox={`${xMin} ${yMin} ${width / zoom} ${height / zoom}`}
-                className='h-full w-full'
+                className='absolute h-full w-full'
                 ref={(elt) => (svgRef.current = elt)}
             >
                 <rect x='0' y='0' fill='red' width='10' height='10' />
