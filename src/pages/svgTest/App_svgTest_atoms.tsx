@@ -1,5 +1,4 @@
-import { atom, useAtom } from 'jotai';
-import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
+import { atom } from 'jotai';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
 import FunctionDataComp from '../../data/FunctionDataComp.jsx';
@@ -21,7 +20,9 @@ const initAxesData = {
     tickLabelDistance: 0
 };
 
-export const initXBounds = { xMin: -10, xMax: 10 };
+export const initXWidth = 20;
+
+export const initXCenter = 0;
 
 // should be (yMax  - yMin)/2 + yMin (if we knew those already)
 export const initYCenter = 0;
@@ -44,13 +45,11 @@ export const svgHeightAndWidthAtom = atom({ height: 0, width: 0 });
 export const svgToMathFuncAtom = atom((get) => {
     const { height, width } = get(svgHeightAndWidthAtom);
 
-    const xWidth = initXBounds.xMax - initXBounds.xMin;
-
-    const scale = width / xWidth;
+    const scale = width / initXWidth;
 
     const m = MatrixFactory([
-        [1 / scale, 0, initXBounds.xMin],
-        [0, -1 / scale, initYCenter + (((1 / 2) * height) / width) * xWidth],
+        [1 / scale, 0, initXCenter - initXWidth / 2],
+        [0, -1 / scale, initYCenter + (((1 / 2) * height) / width) * initXWidth],
         [0, 0, 1]
     ]);
 
@@ -65,9 +64,7 @@ export const svgToMathFuncAtom = atom((get) => {
 export const mathToSvgFuncAtom = atom((get) => {
     const { width, height } = get(svgHeightAndWidthAtom);
 
-    const xWidth = initXBounds.xMax - initXBounds.xMin;
-
-    const scale = width / xWidth;
+    const scale = width / initXWidth;
 
     const m = MatrixFactory([
         [scale, 0, width / 2],

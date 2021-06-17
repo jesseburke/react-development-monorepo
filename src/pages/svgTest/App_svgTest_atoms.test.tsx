@@ -2,10 +2,8 @@ import { atom, useAtom } from 'jotai';
 
 import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 
-import { round } from '../../utils/BaseUtils';
-
 import {
-    initXBounds,
+    initXCenter,
     initYCenter,
     upperLeftPointData,
     svgToMathFuncAtom,
@@ -18,8 +16,6 @@ import {
 const testHeight = 200;
 const testWidth = 300;
 
-const xCenter = (initXBounds.xMax + initXBounds.xMin) / 2;
-
 describe('svgToMath and mathToSvg tests', () => {
     const setHeightAndWidth = renderHook(() => useAtom(svgHeightAndWidthAtom)).result.current[1];
 
@@ -31,12 +27,12 @@ describe('svgToMath and mathToSvg tests', () => {
     test('that svg center is mapped to math center', () => {
         const { x: newX, y: newY } = svgToMathFunc({ x: testWidth / 2, y: testHeight / 2 });
 
-        expect(newX).toBeCloseTo(xCenter);
+        expect(newX).toBeCloseTo(initXCenter);
         expect(newY).toBeCloseTo(initYCenter);
     });
 
     test('that math center is mapped to svg center', () => {
-        const { x: newX, y: newY } = mathToSvgFunc({ x: xCenter, y: initYCenter });
+        const { x: newX, y: newY } = mathToSvgFunc({ x: initXCenter, y: initYCenter });
 
         expect(newX).toBeCloseTo(testWidth / 2);
         expect(newY).toBeCloseTo(testHeight / 2);
