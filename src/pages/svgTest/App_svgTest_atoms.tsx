@@ -21,10 +21,9 @@ const initAxesData = {
 };
 
 export const initXWidth = 20;
+// y width will be determined by aspect ratio of svg
 
 export const initXCenter = 0;
-
-// should be (yMax  - yMin)/2 + yMin (if we knew those already)
 export const initYCenter = 0;
 
 //------------------------------------------------------------------------
@@ -82,6 +81,38 @@ export const mathToSvgFuncAtom = atom((get) => {
 
 export const zoomData = NumberDataComp(1);
 
+const zoomFactor = 2;
+
+const zoomMax = 2 ** 15;
+const zoomMin = 1 / zoomMax;
+
+// how can the zoom in button know when max is reached? (so it can be disabled)
+
+export const zoomAtom = atom(
+    (get) => get(zoomData.atom),
+    (get, set, action) => {
+        const z = get(zoomData.atom);
+
+        switch (action) {
+            case 'zoom in':
+                if (z < zoomMax) {
+                    set(zoomData.atom, zoomFactor * z);
+                }
+                break;
+
+            case 'zoom out':
+                if (z > zoomMin) {
+                    set(zoomData.atom, z / zoomFactor);
+                }
+                break;
+
+            case 'reset':
+                set(zoomData.atom, 1);
+                break;
+        }
+    }
+);
+
 export const upperLeftPointData = PointDataComp({ x: 0, y: 0 });
 
 export const svgBoundsAtom = atom((get) => {
@@ -107,7 +138,7 @@ export const mathBoundsAtom = atom((get) => {
     const svgToMath = get(svgToMathFuncAtom).func;
 
     const { x: xMin, y: yMin } = svgToMath({ x: svgxn, y: svgym });
-    const { x: xMax, y: yMax } = svgToMath({ x: svgxm, y: svgxn });
+    const { x: xMax, y: yMax } = svgToMath({ x: svgxm, y: svgyn });
 
     return { xMin, xMax, yMin, yMax };
 });

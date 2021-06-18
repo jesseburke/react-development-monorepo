@@ -22,7 +22,7 @@ export default function SvgZoomBar({
     svgBoundsAtom,
     upperLeftPointAtom
 }) {
-    const [zoom, setZoom] = useAtom(zoomAtom);
+    const [zoom, zoomReducer] = useAtom(zoomAtom);
     const { height, width } = useAtom(heightAndWidthAtom)[0];
 
     const { xMin, xMax, yMin, yMax } = useAtom(svgBoundsAtom)[0];
@@ -67,7 +67,7 @@ export default function SvgZoomBar({
                 ry={radius}
                 width={size}
                 height={size}
-                onClick={() => setZoom((z) => 1.2 * z)}
+                onClick={() => zoomReducer('zoom in')}
                 fill='#aaa'
                 opacity='0.8'
             />
@@ -90,7 +90,7 @@ export default function SvgZoomBar({
                 ry={radius}
                 width={size}
                 height={size}
-                onClick={() => setZoom((z) => z / 1.2)}
+                onClick={() => zoomReducer('zoom out')}
                 fill='#aaa'
                 opacity='0.8'
             />
@@ -114,7 +114,7 @@ export default function SvgZoomBar({
                 width={size}
                 height={size}
                 onClick={() => {
-                    setZoom(1);
+                    zoomReducer('reset');
                     setUL({ x: 0, y: 0 });
                     setMode('pan');
                 }}

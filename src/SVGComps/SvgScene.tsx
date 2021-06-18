@@ -10,8 +10,11 @@ import React, {
 import { atom, useAtom } from 'jotai';
 
 import SvgZoomBar from './SvgZoomBar';
+import NumberDataComp from '../data/NumberDataComp';
 
 const pixelRatio = 1; //window.devicePixelRatio;
+
+const newZoomData = NumberDataComp(1);
 
 export default ({
     heightAndWidthAtom,
@@ -21,6 +24,7 @@ export default ({
     zoomAtom,
     mathToSvgFuncAtom,
     modeAtom,
+    atomStoreAtom,
     children
 }) => {
     const svgParentRef = useRef(null);
@@ -38,6 +42,12 @@ export default ({
 
     const isDown = useRef<null | 'mouse' | 'touch'>(null);
     const lastPosition = useRef<[number, number]>();
+
+    const [asa, setAsa] = useAtom(atomStoreAtom);
+
+    useEffect(() => {
+        setAsa((oldAs) => ({ ...oldAs, z: newZoomData }));
+    }, []);
 
     useEffect(() => {
         if (!svgParentRef.current) {
@@ -125,8 +135,6 @@ export default ({
                     }
                     if (mode === 'center') {
                         const { x: newX, y: newY } = domToSvgCoords({ x: e.clientX, y: e.clientY });
-                        console.log(newX, newY);
-                        console.log(width / 2, height / 2);
                         setUpperLeftPoint({ x: newX - width / 2, y: newY - height / 2 });
                         setMode('pan');
                     }
@@ -168,10 +176,16 @@ export default ({
                 className='absolute h-full w-full'
                 ref={(elt) => (svgRef.current = elt)}
             >
-                <rect x='0' y='0' fill='red' width='10' height='10' />
-                <text x='100' y='20' style={{ userSelect: 'none', pointerEvents: 'none' }}>
-                    "Hello!"
-                </text>
+                <Fragment>
+                    {Children.map(children, (el) =>
+                        cloneElement(el, {
+                            mathBoundsAtom,
+                            svgBoundsAtom,
+                            zoomAtom,
+                            mathToSvgFuncAtom
+                        })
+                    )}
+                </Fragment>
                 <SvgZoomBar
                     zoomAtom={zoomAtom}
                     heightAndWidthAtom={heightAndWidthAtom}
@@ -179,11 +193,6 @@ export default ({
                     modeAtom={modeAtom}
                     upperLeftPointAtom={upperLeftPointAtom}
                 />
-                <Fragment>
-                    {Children.map(children, (el) =>
-                        cloneElement(el, { mathBoundsAtom, svgBoundsAtom, zoomAtom })
-                    )}
-                </Fragment>
             </svg>
         </div>
     );

@@ -1,6 +1,8 @@
 * to fix
 
- - [ ] control bar height shrink when window is resized
+ - [X] control bar height shrink when window is resized
+   ( was due to svg not being absolutely positioned)
+ - [X] origin circle is getting too big on large zoom
 
 
 
