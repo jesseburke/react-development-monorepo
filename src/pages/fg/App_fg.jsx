@@ -11,7 +11,7 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
 import { ThreeSceneComp } from '../../components/ThreeScene';
-
+import MainDataComp from '../../data/MainDataComp.jsx';
 import Grid from '../../ThreeSceneComps/Grid';
 import Axes3D from '../../ThreeSceneComps/Axes3D.jsx';
 import FunctionGraph3D from '../../ThreeSceneComps/FunctionGraph3D';
@@ -24,7 +24,7 @@ import {
     labelData,
     cameraData,
     axesData,
-    DataComp
+    atomStoreAtom
 } from './App_fg_atoms';
 
 const initColors = {
@@ -71,6 +71,8 @@ const photoBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
+    const DataComp = MainDataComp(atomStoreAtom);
+
     return (
         <JProvider>
             <div className='full-screen-base'>

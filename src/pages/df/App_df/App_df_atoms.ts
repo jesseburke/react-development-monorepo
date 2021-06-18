@@ -1,6 +1,5 @@
 import { atom } from 'jotai';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
 import FunctionDataComp from '../../../data/FunctionDataComp.jsx';
@@ -90,7 +89,7 @@ export const boundsData = BoundsDataComp({
 
 export const orthoCameraData = OrthoCameraDataComp(initCameraData);
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ls: labelData,
     ip: initialPointData,
     ag: arrowGridData,
@@ -110,5 +109,3 @@ export const zHeightAtom = atom((get) => {
 
     return { func: (x, y) => 3 * theta(f(x, y)) };
 });
-
-export const DataComp = MainDataComp(atomStoreAtom);

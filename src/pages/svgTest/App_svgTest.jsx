@@ -5,8 +5,9 @@ import { Provider as JProvider, useAtom } from 'jotai';
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
 import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
-
 import * as system from 'reakit-system-bootstrap';
+
+import MainDataComp from '../../data/MainDataComp.jsx';
 
 import SvgScene from '../../SVGComps/SvgScene';
 import SvgAxes from '../../SVGComps/SvgAxes';
@@ -16,12 +17,12 @@ import {
     mathBoundsAtom,
     svgBoundsAtom,
     upperLeftPointData,
-    zoomData,
+    zoomAtom,
     axesData,
     svgHeightAndWidthAtom,
     mathToSvgFuncAtom,
     modeAtom,
-    DataComp
+    atomStoreAtom
 } from './App_svgTest_atoms';
 
 const initColors = {
@@ -37,7 +38,7 @@ const initColors = {
 };
 
 const btnClassStr =
-    'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
+    'absolute right-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
 
 const saveBtnClassStr = btnClassStr + ' bottom-24';
 
@@ -46,6 +47,8 @@ const resetBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
+    const DataComp = MainDataComp(atomStoreAtom);
+
     return (
         <JProvider>
             <div className='full-screen-base'>
@@ -61,16 +64,22 @@ export default function App() {
 
                 <main className='flex-grow relative p-0'>
                     <SvgScene
+                        atomStoreAtom={atomStoreAtom}
                         heightAndWidthAtom={svgHeightAndWidthAtom}
                         svgBoundsAtom={svgBoundsAtom}
                         mathBoundsAtom={mathBoundsAtom}
                         mathToSvgFuncAtom={mathToSvgFuncAtom}
                         upperLeftPointAtom={upperLeftPointData.atom}
-                        zoomAtom={zoomData.atom}
+                        zoomAtom={zoomAtom}
                         modeAtom={modeAtom}
+                        atomStoreAtom={atomStoreAtom}
                     >
                         <SvgAxes />
                     </SvgScene>
+                    <DataComp
+                        resetBtnClassStr={resetBtnClassStr}
+                        saveBtnClassStr={saveBtnClassStr}
+                    />
                 </main>
             </div>
         </JProvider>

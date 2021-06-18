@@ -10,7 +10,7 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
 import { ThreeSceneComp } from '../../../components/ThreeScene';
-
+import MainDataComp from '../../../data/MainDataComp.jsx';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import FunctionGraph2D from '../../../ThreeSceneComps/FunctionGraph2D.jsx';
@@ -23,7 +23,7 @@ import {
     solutionCurveData,
     orthoCameraData,
     axesData,
-    DataComp,
+    atomStoreAtom,
     SecondOrderInput
 } from './App_resonance_atoms.jsx';
 
@@ -73,6 +73,8 @@ const resetBtnClassStr = btnClassStr + ' bottom-24';
 const photoBtnClassStr = btnClassStr + ' bottom-8';
 
 export default function App() {
+    const DataComp = MainDataComp(atomStoreAtom);
+
     return (
         <JProvider>
             <div className='full-screen-base'>

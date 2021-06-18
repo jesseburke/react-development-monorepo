@@ -112,13 +112,12 @@ export const mathBoundsAtom = atom((get) => {
     return { xMin, xMax, yMin, yMax };
 });
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ax: axesData,
     fn: funcData,
-    z: zoomData,
     c: upperLeftPointData
 });
 
 export const modeAtom = atom('pan');
 
-export const DataComp = MainDataComp(atomStoreAtom);
+//export const DataComp = MainDataComp(atomStoreAtom);

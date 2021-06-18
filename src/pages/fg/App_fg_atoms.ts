@@ -1,7 +1,5 @@
 import { atom, useAtom } from 'jotai';
-import { useAtomCallback, useUpdateAtom, atomWithReset } from 'jotai/utils';
 
-import MainDataComp from '../../data/MainDataComp.jsx';
 import LabelDataComp from '../../data/LabelDataComp.jsx';
 import FunctionDataComp from '../../data/FunctionDataComp.jsx';
 import AxesDataComp from '../../data/AxesDataComp.jsx';
@@ -88,12 +86,10 @@ export const gridBoundsAtom = atom((get) => {
 
 export const cameraData = PerspCameraDataComp(initCameraData);
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ls: labelData,
     ax: axesData,
     fn: funcData,
     bd: boundsData,
     cd: cameraData
 });
-
-export const DataComp = MainDataComp(atomStoreAtom);

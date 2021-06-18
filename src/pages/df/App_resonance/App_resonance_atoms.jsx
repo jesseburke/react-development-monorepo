@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import NumberDataComp from '../../../data/NumberDataComp.jsx';
 import AxesDataComp from '../../../data/AxesDataComp.jsx';
@@ -86,7 +85,7 @@ export const fData = NumberDataComp(initFVal);
 export const wData = NumberDataComp(initWVal);
 export const w0Data = NumberDataComp(initW0Val);
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ls: labelData,
     ax: axesData,
     sc: solutionCurveData,
@@ -96,8 +95,6 @@ const atomStoreAtom = atom({
     w: wData,
     w0: w0Data
 });
-
-export const DataComp = MainDataComp(atomStoreAtom);
 
 //------------------------------------------------------------------------
 //

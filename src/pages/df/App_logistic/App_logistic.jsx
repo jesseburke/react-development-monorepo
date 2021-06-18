@@ -10,7 +10,9 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
 import { ThreeSceneComp } from '../../../components/ThreeScene';
+import queryString from 'query-string-esm';
 
+import MainDataComp from '../../../data/MainDataComp.jsx';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGrid.jsx';
@@ -27,13 +29,13 @@ import {
     solutionCurveData,
     axesData,
     orthoCameraData,
-    DataComp,
     linePoint1Atom,
     linePoint2Atom,
     lineLabelAtom,
     lineColorAtom,
     LogisticEquationInput,
-    zHeightAtom
+    zHeightAtom,
+    atomStoreAtom
 } from './App_logistic_atoms.jsx';
 
 //------------------------------------------------------------------------
@@ -71,6 +73,7 @@ const resetBtnClassStr = btnClassStr + ' bottom-24';
 const photoBtnClassStr = btnClassStr + ' bottom-8';
 
 export default function App() {
+    const DataComp = MainDataComp(atomStoreAtom);
     return (
         <JProvider>
             <div className='full-screen-base'>

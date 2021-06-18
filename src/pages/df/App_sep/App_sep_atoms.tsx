@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
-import styles from '../base_styles.module.css';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
 import FunctionDataComp from '../../../data/FunctionDataComp.jsx';
@@ -99,7 +97,7 @@ const yFunctionData = FunctionDataComp({
     inputSize: 10
 });
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ls: labelData,
     ip: initialPointData,
     ag: arrowGridData,
@@ -110,8 +108,6 @@ const atomStoreAtom = atom({
     xs: xFunctionData,
     ys: yFunctionData
 });
-
-export const DataComp = MainDataComp(atomStoreAtom);
 
 //------------------------------------------------------------------------
 //

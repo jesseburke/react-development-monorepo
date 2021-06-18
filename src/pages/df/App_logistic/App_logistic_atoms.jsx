@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import queryString from 'query-string-esm';
-
-import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
 import NumberDataComp from '../../../data/NumberDataComp.jsx';
@@ -100,7 +97,7 @@ export const orthoCameraData = OrthoCameraDataComp(initCameraData);
 export const bData = NumberDataComp(initBVal);
 export const kData = NumberDataComp(initKVal);
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ls: labelData,
     ip: initialPointData,
     ag: arrowGridData,
@@ -111,8 +108,6 @@ const atomStoreAtom = atom({
     b: bData,
     k: kData
 });
-
-export const DataComp = MainDataComp(atomStoreAtom);
 
 //------------------------------------------------------------------------
 //

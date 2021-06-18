@@ -10,8 +10,7 @@ import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
 import { ThreeSceneComp } from '../../../components/ThreeScene';
-import ClickablePlaneComp from '../../../components/RecoilClickablePlaneComp.jsx';
-
+import MainDataComp from '../../../data/MainDataComp.jsx';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGrid.jsx';
@@ -30,7 +29,7 @@ import {
     axesData,
     orthoCameraData,
     zHeightAtom,
-    DataComp,
+    atomStoreAtom,
     SepEquationInput
 } from './App_sep_atoms';
 
@@ -71,6 +70,7 @@ const photoBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
+    const DataComp = MainDataComp(atomStoreAtom);
     return (
         <JProvider>
             <div className='full-screen-base'>

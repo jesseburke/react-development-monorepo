@@ -13,10 +13,16 @@ import queryString from 'query-string-esm';
 import { myStringify } from '../utils/BaseUtils';
 
 export default function MainDataComp(atomStoreAtom) {
+    const atomStore = useAtom(atomStoreAtom)[0];
+
+    return WrappedComp({ atomStore });
+}
+
+function WrappedComp({ atomStore }) {
     const readAtomStoreAtom = atom(null, (get, set, callback) => {
         let ro = {};
 
-        const atomStore = get(atomStoreAtom);
+        //const atomStore = get(atomStoreAtom);
 
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
             set(atom.readWriteAtom, {
@@ -31,7 +37,7 @@ export default function MainDataComp(atomStoreAtom) {
     });
 
     const resetAtomStoreAtom = atom(null, (get, set) => {
-        const atomStore = get(atomStoreAtom);
+        //const atomStore = get(atomStoreAtom);
 
         Object.values(atomStore).forEach((atom) => {
             set(atom.readWriteAtom, {
@@ -41,7 +47,7 @@ export default function MainDataComp(atomStoreAtom) {
     });
 
     const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
-        const atomStore = get(atomStoreAtom);
+        //const atomStore = get(atomStoreAtom);
 
         Object.keys(newObj).forEach((k) => {
             set(atomStore[k].readWriteAtom, {

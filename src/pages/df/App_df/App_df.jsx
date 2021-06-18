@@ -12,6 +12,7 @@ import * as system from 'reakit-system-bootstrap';
 import '../../../styles.css';
 
 import { ThreeSceneComp } from '../../../components/ThreeScene';
+import MainDataComp from '../../../data/MainDataComp.jsx';
 
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
@@ -29,7 +30,7 @@ import {
     axesData,
     orthoCameraData,
     zHeightAtom,
-    DataComp
+    atomStoreAtom
 } from './App_df_atoms';
 
 const initControlsData = {
@@ -65,6 +66,8 @@ const photoBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
+    const DataComp = MainDataComp(atomStoreAtom);
+
     return (
         <JotaiProvider>
             <div className='full-screen-base'>

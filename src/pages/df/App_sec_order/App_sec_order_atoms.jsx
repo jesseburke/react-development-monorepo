@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import NumberDataComp from '../../../data/NumberDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
@@ -101,7 +100,7 @@ export const bData = NumberDataComp(initBVal);
 export const initialPoint1Data = PointDataComp(initInitialPoint1);
 export const initialPoint2Data = PointDataComp(initInitialPoint2);
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ls: labelData,
     ax: axesData,
     sc: solutionCurveData,
@@ -112,8 +111,6 @@ const atomStoreAtom = atom({
     ip1: initialPoint1Data,
     ip2: initialPoint2Data
 });
-
-export const DataComp = MainDataComp(atomStoreAtom);
 
 //------------------------------------------------------------------------
 //
