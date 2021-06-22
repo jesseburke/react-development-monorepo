@@ -1,17 +1,17 @@
 import { atom } from 'jotai';
 
-import MainDataComp from '../../data/MainDataComp.jsx';
 import FunctionDataComp from '../../data/FunctionDataComp.jsx';
 import AxesDataComp from '../../data/AxesDataComp.jsx';
 import NumberDataComp from '../../data/NumberDataComp';
 import PointDataComp from '../../data/PointDataComp';
 import MatrixFactory from '../../math/MatrixFactory';
+import CurveDataComp from '../../data/CurveDataComp';
 
 //------------------------------------------------------------------------
 //
 // initial constants
 
-const initFuncStr = 'x^2 + 2x + 3';
+const initFuncStr = 'sin(1/x)';
 
 const initAxesData = {
     radius: 0.01,
@@ -20,11 +20,20 @@ const initAxesData = {
     tickLabelDistance: 0
 };
 
-export const initXWidth = 20;
+export const initXWidth = 10;
 // y width will be determined by aspect ratio of svg
 
 export const initXCenter = 0;
 export const initYCenter = 0;
+
+export const initApproxH = 0.01;
+
+const initSolutionCurveData = {
+    color: '#B01A46',
+    approxH: 0.01,
+    visible: true,
+    width: 4
+};
 
 //------------------------------------------------------------------------
 //
@@ -143,10 +152,14 @@ export const mathBoundsAtom = atom((get) => {
     return { xMin, xMax, yMin, yMax };
 });
 
+export const curveData = CurveDataComp(initSolutionCurveData);
+
 export const atomStoreAtom = atom({
     ax: axesData,
     fn: funcData,
-    c: upperLeftPointData
+    c: upperLeftPointData,
+    z: zoomData,
+    cd: curveData
 });
 
 export const modeAtom = atom('pan');

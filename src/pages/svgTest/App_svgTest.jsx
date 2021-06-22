@@ -11,6 +11,7 @@ import MainDataComp from '../../data/MainDataComp.jsx';
 
 import SvgScene from '../../SVGComps/SvgScene';
 import SvgAxes from '../../SVGComps/SvgAxes';
+import SvgFunctionGraph from '../../SVGComps/SvgFunctionGraph';
 
 import {
     funcData,
@@ -22,20 +23,9 @@ import {
     svgHeightAndWidthAtom,
     mathToSvgFuncAtom,
     modeAtom,
+    curveData,
     atomStoreAtom
 } from './App_svgTest_atoms';
-
-const initColors = {
-    arrows: '#C2374F',
-    solution: '#C2374F',
-    firstPt: '#C2374F',
-    secPt: '#C2374F',
-    testFunc: '#E16962', //#DBBBB0',
-    axes: '#0A2C3C',
-    controlBar: '#0A2C3C',
-    clearColor: '#f0f0f0',
-    funcGraph: '#E53935'
-};
 
 const btnClassStr =
     'absolute right-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
@@ -50,39 +40,33 @@ export default function App() {
     const DataComp = MainDataComp(atomStoreAtom);
 
     return (
-        <JProvider>
-            <div className='full-screen-base'>
-                <header
-                    className='control-bar bg-persian_blue-900 font-sans
+        <div className='full-screen-base'>
+            <header
+                className='control-bar bg-persian_blue-900 font-sans
 		    p-8 text-white'
-                >
-                    <funcData.component />
-                    <Provider unstable_system={system}>
-                        <OptionsModal />
-                    </Provider>
-                </header>
+            >
+                <funcData.component />
+                <Provider unstable_system={system}>
+                    <OptionsModal />
+                </Provider>
+            </header>
 
-                <main className='flex-grow relative p-0'>
-                    <SvgScene
-                        atomStoreAtom={atomStoreAtom}
-                        heightAndWidthAtom={svgHeightAndWidthAtom}
-                        svgBoundsAtom={svgBoundsAtom}
-                        mathBoundsAtom={mathBoundsAtom}
-                        mathToSvgFuncAtom={mathToSvgFuncAtom}
-                        upperLeftPointAtom={upperLeftPointData.atom}
-                        zoomAtom={zoomAtom}
-                        modeAtom={modeAtom}
-                        atomStoreAtom={atomStoreAtom}
-                    >
-                        <SvgAxes />
-                    </SvgScene>
-                    <DataComp
-                        resetBtnClassStr={resetBtnClassStr}
-                        saveBtnClassStr={saveBtnClassStr}
-                    />
-                </main>
-            </div>
-        </JProvider>
+            <main className='flex-grow relative p-0'>
+                <SvgScene
+                    heightAndWidthAtom={svgHeightAndWidthAtom}
+                    svgBoundsAtom={svgBoundsAtom}
+                    mathBoundsAtom={mathBoundsAtom}
+                    mathToSvgFuncAtom={mathToSvgFuncAtom}
+                    upperLeftPointAtom={upperLeftPointData.atom}
+                    zoomAtom={zoomAtom}
+                    modeAtom={modeAtom}
+                >
+                    <SvgAxes />
+                    <SvgFunctionGraph funcAtom={funcData.funcAtom} curveDataAtom={curveData.atom} />
+                </SvgScene>
+                <DataComp resetBtnClassStr={resetBtnClassStr} saveBtnClassStr={saveBtnClassStr} />
+            </main>
+        </div>
     );
 }
 

@@ -14,8 +14,6 @@ import NumberDataComp from '../data/NumberDataComp';
 
 const pixelRatio = 1; //window.devicePixelRatio;
 
-const newZoomData = NumberDataComp(1);
-
 export default ({
     heightAndWidthAtom,
     svgBoundsAtom,
@@ -24,7 +22,6 @@ export default ({
     zoomAtom,
     mathToSvgFuncAtom,
     modeAtom,
-    atomStoreAtom,
     children
 }) => {
     const svgParentRef = useRef(null);
@@ -42,12 +39,6 @@ export default ({
 
     const isDown = useRef<null | 'mouse' | 'touch'>(null);
     const lastPosition = useRef<[number, number]>();
-
-    const [asa, setAsa] = useAtom(atomStoreAtom);
-
-    useEffect(() => {
-        setAsa((oldAs) => ({ ...oldAs, z: newZoomData }));
-    }, []);
 
     useEffect(() => {
         if (!svgParentRef.current) {
