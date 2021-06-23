@@ -15,10 +15,10 @@ export default function FunctionGraphPts2D({ func, bounds, approxH = 0.1 }) {
 
         if (ty === Infinity) ty = Number.MAX_SAFE_INTEGER;
         else if (isNaN(ty)) {
-            tx = i * approxH - 1 / Number.MAX_SAFE_INTEGER;
+            tx = i * approxH - 10 / Number.MAX_SAFE_INTEGER;
             ty = func(tx);
             helper(tx, ty);
-            tx = i * approxH + 1 / Number.MAX_SAFE_INTEGER;
+            tx = i * approxH + 10 / Number.MAX_SAFE_INTEGER;
             ty = func(tx);
             helper(tx, ty);
         } else helper(tx, ty);
