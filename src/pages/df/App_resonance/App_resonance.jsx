@@ -9,22 +9,27 @@ import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
 import * as system from 'reakit-system-bootstrap';
 
-import { ThreeSceneComp } from '../../../components/ThreeScene';
 import MainDataComp from '../../../data/MainDataComp.jsx';
-import Grid from '../../../ThreeSceneComps/Grid';
-import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-import FunctionGraph2D from '../../../ThreeSceneComps/FunctionGraph2D.jsx';
-import CameraControls from '../../../ThreeSceneComps/CameraControls.jsx';
+
+import SvgScene from '../../../SVGComps/SvgScene';
+import SvgAxes from '../../../SVGComps/SvgBorderAxes';
+import SvgFunctionGraph from '../../../SVGComps/SvgFunctionGraph';
 
 import {
     boundsData,
     funcAtom,
     labelData,
     solutionCurveData,
-    orthoCameraData,
     axesData,
     atomStoreAtom,
-    SecondOrderInput
+    SecondOrderInput,
+    mathBoundsAtom,
+    svgBoundsAtom,
+    upperLeftPointData,
+    zoomAtom,
+    svgHeightAndWidthAtom,
+    mathToSvgFuncAtom,
+    modeAtom
 } from './App_resonance_atoms.jsx';
 
 //------------------------------------------------------------------------
@@ -32,43 +37,12 @@ import {
 // initial data
 //
 
-const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.PAN },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN },
-    enableRotate: true,
-    enablePan: true,
-    enabled: true,
-    keyPanSpeed: 50,
-    zoomSpeed: 2,
-    screenSpacePanning: true
-};
-
-/* const initControlsData = {
- *     mouseButtons: { LEFT: THREE.MOUSE.PAN },
- *     touches: { ONE: THREE.MOUSE.PAN },
- *     enableRotate: false,
- *     enablePan: true,
- *     enabled: true,
- *     keyPanSpeed: 50,
- *     screenSpaceSpanning: true
- * };
- *  */
-const aspectRatio = window.innerWidth / window.innerHeight;
-
-const fixedCameraData = {
-    up: [0, 1, 0],
-    near: 0.1,
-    far: 100,
-    aspectRatio,
-    orthographic: true
-};
-
 const btnClassStr =
-    'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
+    'absolute right-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
 
-const saveBtnClassStr = btnClassStr + ' bottom-40';
+const saveBtnClassStr = btnClassStr + ' bottom-24';
 
-const resetBtnClassStr = btnClassStr + ' bottom-24';
+const resetBtnClassStr = btnClassStr + ' bottom-8';
 
 const photoBtnClassStr = btnClassStr + ' bottom-8';
 
@@ -88,26 +62,22 @@ export default function App() {
                     </header>
 
                     <main className='flex-grow relative p-0'>
-                        <ThreeSceneComp
-                            fixedCameraData={fixedCameraData}
-                            controlsData={initControlsData}
-                            photoButton={true}
-                            photoBtnClassStr={photoBtnClassStr}
+                        <SvgScene
+                            heightAndWidthAtom={svgHeightAndWidthAtom}
+                            svgBoundsAtom={svgBoundsAtom}
+                            mathBoundsAtom={mathBoundsAtom}
+                            mathToSvgFuncAtom={mathToSvgFuncAtom}
+                            upperLeftPointAtom={upperLeftPointData.atom}
+                            zoomAtom={zoomAtom}
+                            modeAtom={modeAtom}
                         >
-                            <Grid boundsAtom={boundsData.atom} gridShow={true} />
-                            <Axes2D
-                                tickLabelDistance={1}
-                                boundsAtom={boundsData.atom}
-                                axesDataAtom={axesData.atom}
-                                labelAtom={labelData.atom}
-                            />
-                            <FunctionGraph2D
+                            <SvgAxes />
+                            <SvgFunctionGraph
                                 funcAtom={funcAtom}
-                                boundsAtom={boundsData.atom}
-                                curveOptionsAtom={solutionCurveData.atom}
+                                curveDataAtom={solutionCurveData.atom}
                             />
-                            <CameraControls cameraDataAtom={orthoCameraData.atom} />
-                        </ThreeSceneComp>
+                        </SvgScene>
+
                         <DataComp
                             resetBtnClassStr={resetBtnClassStr}
                             saveBtnClassStr={saveBtnClassStr}
@@ -152,7 +122,6 @@ function OptionsModal() {
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Axes</Tab>
                         <Tab {...tab}>Bounds</Tab>
-                        <Tab {...tab}>Camera Options</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                         <Tab {...tab}>Variables</Tab>
                     </TabList>
@@ -161,9 +130,6 @@ function OptionsModal() {
                     </TabPanel>
                     <TabPanel {...tab}>
                         <boundsData.component />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <orthoCameraData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <solutionCurveData.component />

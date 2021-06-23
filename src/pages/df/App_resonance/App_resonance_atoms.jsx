@@ -6,11 +6,11 @@ import NumberDataComp from '../../../data/NumberDataComp.jsx';
 import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
-import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
+import PointDataComp from '../../../data/PointDataComp';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
-
+import MatrixFactory from '../../../math/MatrixFactory';
 import { processNum } from '../../../utils/BaseUtils';
 //------------------------------------------------------------------------
 //
@@ -37,17 +37,11 @@ const initAxesData = {
     tickLabelDistance: 10
 };
 
-const initCameraData = {
-    target: [0, 0, 0],
-    zoom: 0.085,
-    position: [0, 0, 50]
-};
-
 const initSolutionCurveData = {
     color: colors.solutionCurve,
-    approxH: 0.1,
+    approxH: 0.01,
     visible: true,
-    width: 0.1
+    width: 4
 };
 
 export const labelStyle = {
@@ -61,6 +55,14 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
     fontSize: '1em',
     color: colors.tick
 });
+
+export const initXWidth = 10;
+// y width will be determined by aspect ratio of svg
+
+export const initXCenter = 0;
+export const initYCenter = 0;
+
+export const initApproxH = 0.01;
 
 //------------------------------------------------------------------------
 //
@@ -79,22 +81,127 @@ export const boundsData = BoundsDataComp({
     labelAtom: labelData.atom
 });
 
-export const orthoCameraData = OrthoCameraDataComp(initCameraData);
-
 export const fData = NumberDataComp(initFVal);
 export const wData = NumberDataComp(initWVal);
 export const w0Data = NumberDataComp(initW0Val);
+
+export const svgHeightAndWidthAtom = atom({ height: 0, width: 0 });
+
+export const svgToMathFuncAtom = atom((get) => {
+    const { height, width } = get(svgHeightAndWidthAtom);
+
+    const scale = width / initXWidth;
+
+    const m = MatrixFactory([
+        [1 / scale, 0, initXCenter - initXWidth / 2],
+        [0, -1 / scale, initYCenter + (((1 / 2) * height) / width) * initXWidth],
+        [0, 0, 1]
+    ]);
+
+    const func = ({ x, y }) => {
+        const vec = m.multiplyWithVec([x, y, 1]);
+        return { x: vec[0], y: vec[1] };
+    };
+
+    return { func };
+});
+
+export const mathToSvgFuncAtom = atom((get) => {
+    const { width, height } = get(svgHeightAndWidthAtom);
+
+    const scale = width / initXWidth;
+
+    const m = MatrixFactory([
+        [scale, 0, width / 2],
+        [0, -scale, height / 2],
+        [0, 0, 1]
+    ]);
+
+    const func = ({ x, y }) => {
+        const vec = m.multiplyWithVec([x, y, 1]);
+        return { x: vec[0], y: vec[1] };
+    };
+
+    return { func };
+});
+
+export const zoomData = NumberDataComp(1);
+
+const zoomFactor = 2;
+
+const zoomMax = 2 ** 15;
+const zoomMin = 1 / zoomMax;
+
+// how can the zoom in button know when max is reached? (so it can be disabled)
+
+export const zoomAtom = atom(
+    (get) => get(zoomData.atom),
+    (get, set, action) => {
+        const z = get(zoomData.atom);
+
+        switch (action) {
+            case 'zoom in':
+                if (z < zoomMax) {
+                    set(zoomData.atom, zoomFactor * z);
+                }
+                break;
+
+            case 'zoom out':
+                if (z > zoomMin) {
+                    set(zoomData.atom, z / zoomFactor);
+                }
+                break;
+
+            case 'reset':
+                set(zoomData.atom, 1);
+                break;
+        }
+    }
+);
+
+export const upperLeftPointData = PointDataComp({ x: 0, y: 0 });
+
+export const svgBoundsAtom = atom((get) => {
+    const zoom = get(zoomData.atom);
+    const { height, width } = get(svgHeightAndWidthAtom);
+    const { x: ulX, y: ulY } = get(upperLeftPointData.atom);
+
+    const svgCenterX = width / 2 + ulX;
+    const svgCenterY = height / 2 + ulY;
+
+    const xMin = svgCenterX - width / (2 * zoom);
+    const xMax = svgCenterX + width / (2 * zoom);
+    const yMin = svgCenterY - height / (2 * zoom);
+    const yMax = svgCenterY + height / (2 * zoom);
+
+    //console.log('svgBounds = ', { xMin, xMax, yMin, yMax });
+
+    return { xMin, xMax, yMin, yMax };
+});
+
+export const mathBoundsAtom = atom((get) => {
+    const { xMin: svgxn, xMax: svgxm, yMin: svgyn, yMax: svgym } = get(svgBoundsAtom);
+    const svgToMath = get(svgToMathFuncAtom).func;
+
+    const { x: xMin, y: yMin } = svgToMath({ x: svgxn, y: svgym });
+    const { x: xMax, y: yMax } = svgToMath({ x: svgxm, y: svgyn });
+
+    return { xMin, xMax, yMin, yMax };
+});
 
 export const atomStoreAtom = atom({
     ls: labelData,
     ax: axesData,
     sc: solutionCurveData,
     bd: boundsData,
-    cd: orthoCameraData,
     f: fData,
     w: wData,
-    w0: w0Data
+    w0: w0Data,
+    c: upperLeftPointData,
+    z: zoomData
 });
+
+export const modeAtom = atom('pan');
 
 //------------------------------------------------------------------------
 //
