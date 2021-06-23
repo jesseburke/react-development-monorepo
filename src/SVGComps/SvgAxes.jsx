@@ -3,7 +3,15 @@ import { atom, useAtom } from 'jotai';
 
 import { round } from '../utils/BaseUtils';
 
-export default function SvgAxes({ mathBoundsAtom, svgBoundsAtom, zoomAtom, mathToSvgFuncAtom }) {
+const logVar = (v, text = '') => console.log(text, v);
+
+export default function SvgAxes({
+    mathBoundsAtom,
+    svgBoundsAtom,
+    zoomAtom,
+    mathToSvgFuncAtom,
+    graphSqWAtom
+}) {
     const { xMin: xMinMath, xMax: xMaxMath, yMin: yMinMath, yMax: yMaxMath } = useAtom(
         mathBoundsAtom
     )[0];
@@ -16,17 +24,56 @@ export default function SvgAxes({ mathBoundsAtom, svgBoundsAtom, zoomAtom, mathT
 
     const zoom = useAtom(zoomAtom)[0];
 
-    const { x: svgXC, y: svgYC } = mathToSvgFunc({ x: 0, y: 0 });
+    const { x: xcSvg, y: ycSvg } = mathToSvgFunc({ x: 0, y: 0 });
+
+    const graphSqW = useAtom(graphSqWAtom)[0];
+
+    const [lineArray, setLineArray] = useState();
+
+    useEffect(() => {
+        const firstX = graphSqW * Math.ceil(xMinMath / graphSqW);
+        const firstY = graphSqW * Math.ceil(yMinMath / graphSqW);
+
+        let ptArray = [];
+
+        for (let i = 0; i <= Math.floor((xMaxMath - xMinMath) / graphSqW); i++) {
+            ptArray.push([
+                mathToSvgFunc({ x: firstX + i * graphSqW, y: yMinMath }),
+                mathToSvgFunc({ x: firstX + i * graphSqW, y: yMaxMath })
+            ]);
+        }
+
+        for (let i = 0; i <= Math.floor((yMaxMath - yMinMath) / graphSqW); i++) {
+            ptArray.push([
+                mathToSvgFunc({ y: firstY + i * graphSqW, x: xMinMath }),
+                mathToSvgFunc({ y: firstY + i * graphSqW, x: xMaxMath })
+            ]);
+        }
+
+        setLineArray(
+            ptArray.map(([{ x: x1, y: y1 }, { x: x2, y: y2 }], i) => (
+                <line
+                    x1={`${x1}`}
+                    y1={`${y1}`}
+                    x2={`${x2}`}
+                    y2={`${y2}`}
+                    key={`${x1}${x2}${y1}${y2}`}
+                    stroke='black'
+                    strokeWidth={`${1 / zoom}`}
+                />
+            ))
+        );
+    }, [mathToSvgFunc, graphSqW, xMinSvg, xMaxSvg, yMinSvg, yMaxSvg]);
 
     let xOnScreen = false;
 
-    if (xMinSvg <= svgXC && svgXC <= xMaxSvg) {
+    if (xMinSvg <= xcSvg && xcSvg <= xMaxSvg) {
         xOnScreen = true;
     }
 
     let yOnScreen = false;
 
-    if (yMinSvg <= svgYC && svgYC <= yMaxSvg) {
+    if (yMinSvg <= ycSvg && ycSvg <= yMaxSvg) {
         yOnScreen = true;
     }
 
@@ -34,70 +81,40 @@ export default function SvgAxes({ mathBoundsAtom, svgBoundsAtom, zoomAtom, mathT
     const axesWidth = 2;
 
     return (
-        <>
-            <g>
-                {xOnScreen ? (
-                    <line
-                        x1={svgXC}
-                        y1={yMinSvg}
-                        x2={svgXC}
-                        y2={yMaxSvg}
-                        stroke='black'
-                        strokeWidth={axesWidth / zoom}
-                    />
-                ) : null}
-                {yOnScreen ? (
-                    <line
-                        y1={svgYC}
-                        x1={xMinSvg}
-                        y2={svgYC}
-                        x2={xMaxSvg}
-                        stroke='black'
-                        strokeWidth={axesWidth / zoom}
-                    />
-                ) : null}
-                {xOnScreen && yOnScreen ? (
-                    <circle
-                        cx={0}
-                        cy={0}
-                        r={originRadius}
-                        stroke='red'
-                        fill='red'
-                        transform={`translate(${mathToSvgFunc({ x: 0, y: 0 }).x} ${
-                            mathToSvgFunc({ x: 0, y: 0 }).y
-                        }) scale(${1 / zoom})`}
-                    />
-                ) : null}
-            </g>
-            <text
-                style={{ userSelect: 'none', pointerEvents: 'none' }}
-                transform={`translate(${(xMaxSvg - xMinSvg) / 2 + xMinSvg} ${
-                    yMinSvg + 20 / zoom
-                }) scale(${1 / zoom})`}
-            >
-                {`(${round((xMaxMath - xMinMath) / 2 + xMinMath)}, ${round(yMaxMath)})`}
-            </text>
-            <text
-                style={{ userSelect: 'none', pointerEvents: 'none' }}
-                transform={`translate(${(xMaxSvg - xMinSvg) / 2 + xMinSvg} ${yMaxSvg - 10 / zoom})
-        scale(${1 / zoom})`}
-            >
-                {`(${round(xMinMath + (xMaxMath - xMinMath) / 2)}, ${round(yMinMath)})`}
-            </text>
-            <text
-                style={{ userSelect: 'none', pointerEvents: 'none' }}
-                transform={`translate(${xMaxSvg - 80 / zoom}
-		    ${(yMaxSvg - yMinSvg) / 2 + yMinSvg})  scale(${1 / zoom})`}
-            >
-                {`(${round(xMaxMath)}, ${round((yMaxMath - yMinMath) / 2 + yMinMath)})`}
-            </text>
-            <text
-                style={{ userSelect: 'none', pointerEvents: 'none' }}
-                transform={`translate(${xMinSvg + 20 / zoom}
-		    ${(yMaxSvg - yMinSvg) / 2 + yMinSvg})  scale(${1 / zoom})`}
-            >
-                {`(${round(xMinMath)}, ${round((yMaxMath - yMinMath) / 2 + yMinMath)})`}
-            </text>
-        </>
+        <g>
+            {xOnScreen ? (
+                <line
+                    x1={xcSvg}
+                    y1={yMinSvg}
+                    x2={xcSvg}
+                    y2={yMaxSvg}
+                    stroke='black'
+                    strokeWidth={axesWidth / zoom}
+                />
+            ) : null}
+            {yOnScreen ? (
+                <line
+                    y1={ycSvg}
+                    x1={xMinSvg}
+                    y2={ycSvg}
+                    x2={xMaxSvg}
+                    stroke='black'
+                    strokeWidth={axesWidth / zoom}
+                />
+            ) : null}
+            {xOnScreen && yOnScreen ? (
+                <circle
+                    cx={0}
+                    cy={0}
+                    r={originRadius}
+                    stroke='red'
+                    fill='red'
+                    transform={`translate(${mathToSvgFunc({ x: 0, y: 0 }).x} ${
+                        mathToSvgFunc({ x: 0, y: 0 }).y
+                    }) scale(${1 / zoom})`}
+                />
+            ) : null}
+            <g>{lineArray}</g>
+        </g>
     );
 }

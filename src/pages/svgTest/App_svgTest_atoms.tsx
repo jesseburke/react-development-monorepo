@@ -20,11 +20,15 @@ const initAxesData = {
     tickLabelDistance: 0
 };
 
-export const initXWidth = 10;
+export const initXWidth = 20;
 // y width will be determined by aspect ratio of svg
+
+export const labelWidth = 1;
 
 export const initXCenter = 0;
 export const initYCenter = 0;
+
+export const initGraphSqW = 1;
 
 export const initApproxH = 0.01;
 
@@ -92,10 +96,9 @@ export const zoomData = NumberDataComp(1);
 
 const zoomFactor = 2;
 
+// how can the zoom in button know when max is reached? (so it can be disabled)
 const zoomMax = 2 ** 15;
 const zoomMin = 1 / zoomMax;
-
-// how can the zoom in button know when max is reached? (so it can be disabled)
 
 export const zoomAtom = atom(
     (get) => get(zoomData.atom),
@@ -105,7 +108,7 @@ export const zoomAtom = atom(
         switch (action) {
             case 'zoom in':
                 if (z < zoomMax) {
-                    set(zoomData.atom, zoomFactor * z);
+                    set(zoomData.atom, z * zoomFactor);
                 }
                 break;
 
@@ -121,6 +124,8 @@ export const zoomAtom = atom(
         }
     }
 );
+
+export const graphSqWAtom = atom((get) => initGraphSqW / get(zoomAtom));
 
 export const upperLeftPointData = PointDataComp({ x: 0, y: 0 });
 

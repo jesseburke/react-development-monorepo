@@ -10,6 +10,7 @@ import * as system from 'reakit-system-bootstrap';
 import MainDataComp from '../../data/MainDataComp.jsx';
 
 import SvgScene from '../../SVGComps/SvgScene';
+import SvgBorderAxes from '../../SVGComps/SvgBorderAxes';
 import SvgAxes from '../../SVGComps/SvgAxes';
 import SvgFunctionGraph from '../../SVGComps/SvgFunctionGraph';
 
@@ -24,6 +25,7 @@ import {
     mathToSvgFuncAtom,
     modeAtom,
     curveData,
+    graphSqWAtom,
     atomStoreAtom
 } from './App_svgTest_atoms';
 
@@ -43,7 +45,7 @@ export default function App() {
         <div className='full-screen-base'>
             <header
                 className='control-bar bg-persian_blue-900 font-sans
-		    p-8 text-white'
+		p-8 text-white'
             >
                 <funcData.component />
                 <Provider unstable_system={system}>
@@ -61,8 +63,9 @@ export default function App() {
                     zoomAtom={zoomAtom}
                     modeAtom={modeAtom}
                 >
-                    <SvgAxes />
                     <SvgFunctionGraph funcAtom={funcData.funcAtom} curveDataAtom={curveData.atom} />
+                    <SvgAxes graphSqWAtom={graphSqWAtom} />
+                    <SvgBorderAxes />
                 </SvgScene>
                 <DataComp resetBtnClassStr={resetBtnClassStr} saveBtnClassStr={saveBtnClassStr} />
             </main>
