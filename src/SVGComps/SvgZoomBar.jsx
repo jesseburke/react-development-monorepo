@@ -67,7 +67,7 @@ export default function SvgZoomBar({
                 ry={radius}
                 width={size}
                 height={size}
-                onClick={() => zoomReducer('zoom in')}
+                onClick={() => zoomReducer('zoom in button')}
                 fill='#aaa'
                 opacity='0.8'
             />
@@ -90,7 +90,7 @@ export default function SvgZoomBar({
                 ry={radius}
                 width={size}
                 height={size}
-                onClick={() => zoomReducer('zoom out')}
+                onClick={() => zoomReducer('zoom out button')}
                 fill='#aaa'
                 opacity='0.8'
             />

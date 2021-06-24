@@ -14,7 +14,10 @@ function main() {
     ReactDOM.render(
         <>
             <Helmet>
-                <meta name='viewport' content='width=device-width, user-scalable=no' />
+                <meta
+                    name='viewport'
+                    content='width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no'
+                />
                 <title>{title}</title>
             </Helmet>
 
@@ -27,3 +30,11 @@ function main() {
 }
 
 document.body.appendChild(main());
+document.addEventListener(
+    'wheel',
+    function (e) {
+        e.preventDefault();
+        //console.log('wheel event fired on document');
+    },
+    { passive: false, capture: false }
+);

@@ -1,15 +1,8 @@
-import React, {
-    Fragment,
-    useState,
-    useRef,
-    useEffect,
-    useCallback,
-    Children,
-    cloneElement
-} from 'react';
+import React, { Fragment, useRef, useEffect, useCallback, Children, cloneElement } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import SvgZoomBar from './SvgZoomBar';
+
 import NumberDataComp from '../data/NumberDataComp';
 
 const pixelRatio = 1; //window.devicePixelRatio;
@@ -31,7 +24,7 @@ export default ({
 
     const [{ x: ulX, y: ulY }, setUpperLeftPoint] = useAtom(upperLeftPointAtom);
 
-    const zoom = useAtom(zoomAtom)[0];
+    const [zoom, zoomReducer] = useAtom(zoomAtom);
 
     const [{ height, width }, setHeightAndWidth] = useAtom(heightAndWidthAtom);
 
@@ -150,6 +143,15 @@ export default ({
                             y: prev.y - diffY / zoom
                         }));
                     }
+                }
+            }}
+            onWheel={(e) => {
+                if (e.deltaY < 0) {
+                    zoomReducer('zoom in wheel');
+                    console.log('wheel zoom in');
+                } else if (e.deltaY > 0) {
+                    zoomReducer('zoom out wheel');
+                    console.log('wheel zoom out');
                 }
             }}
             onTouchStart={(e) => {

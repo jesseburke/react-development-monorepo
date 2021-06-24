@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { Provider as JProvider, useAtom } from 'jotai';
-
 import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
 import { Provider } from 'reakit/Provider';
 import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
@@ -63,9 +61,9 @@ export default function App() {
                     zoomAtom={zoomAtom}
                     modeAtom={modeAtom}
                 >
-                    <SvgFunctionGraph funcAtom={funcData.funcAtom} curveDataAtom={curveData.atom} />
                     <SvgAxes graphSqWAtom={graphSqWAtom} />
                     <SvgBorderAxes />
+                    <SvgFunctionGraph funcAtom={funcData.funcAtom} curveDataAtom={curveData.atom} />
                 </SvgScene>
                 <DataComp resetBtnClassStr={resetBtnClassStr} saveBtnClassStr={saveBtnClassStr} />
             </main>

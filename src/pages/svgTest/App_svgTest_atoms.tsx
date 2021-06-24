@@ -94,7 +94,8 @@ export const mathToSvgFuncAtom = atom((get) => {
 
 export const zoomData = NumberDataComp(1);
 
-const zoomFactor = 2;
+const zoomFactorButton = 2;
+const zoomFactorWheel = 1.1;
 
 // how can the zoom in button know when max is reached? (so it can be disabled)
 const zoomMax = 2 ** 15;
@@ -106,15 +107,27 @@ export const zoomAtom = atom(
         const z = get(zoomData.atom);
 
         switch (action) {
-            case 'zoom in':
+            case 'zoom in button':
                 if (z < zoomMax) {
-                    set(zoomData.atom, z * zoomFactor);
+                    set(zoomData.atom, z * zoomFactorButton);
                 }
                 break;
 
-            case 'zoom out':
+            case 'zoom in wheel':
+                if (z < zoomMax) {
+                    set(zoomData.atom, z * zoomFactorWheel);
+                }
+                break;
+
+            case 'zoom out button':
                 if (z > zoomMin) {
-                    set(zoomData.atom, z / zoomFactor);
+                    set(zoomData.atom, z / zoomFactorButton);
+                }
+                break;
+
+            case 'zoom out wheel':
+                if (z > zoomMin) {
+                    set(zoomData.atom, z / zoomFactorWheel);
                 }
                 break;
 

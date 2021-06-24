@@ -58,7 +58,7 @@ export default function SvgAxes({
                     x2={`${x2}`}
                     y2={`${y2}`}
                     key={`${x1}${x2}${y1}${y2}`}
-                    stroke='black'
+                    stroke='lightgray'
                     strokeWidth={`${1 / zoom}`}
                 />
             ))
@@ -82,6 +82,7 @@ export default function SvgAxes({
 
     return (
         <g>
+            <g>{lineArray}</g>
             {xOnScreen ? (
                 <line
                     x1={xcSvg}
@@ -114,7 +115,6 @@ export default function SvgAxes({
                     }) scale(${1 / zoom})`}
                 />
             ) : null}
-            <g>{lineArray}</g>
         </g>
     );
 }
