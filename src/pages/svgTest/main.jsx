@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import App from './App_svgTest';
+import App from './App_svgFuncGrapher';
 const title = 'svg Test';
 
 function main() {

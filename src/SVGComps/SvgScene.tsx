@@ -7,16 +7,17 @@ import NumberDataComp from '../data/NumberDataComp';
 
 const pixelRatio = 1; //window.devicePixelRatio;
 
-export default ({
-    heightAndWidthAtom,
-    svgBoundsAtom,
-    mathBoundsAtom,
-    upperLeftPointAtom,
-    zoomAtom,
-    mathToSvgFuncAtom,
-    modeAtom,
-    children
-}) => {
+export default ({ svgData, modeAtom, children }) => {
+    const {
+        svgHeightAndWidthAtom,
+        svgBoundsAtom,
+        mathBoundsAtom,
+        upperLeftPointAtom,
+        graphSqWAtom,
+        zoomAtom,
+        mathToSvgFuncAtom
+    } = svgData;
+
     const svgParentRef = useRef(null);
     const svgRef = useRef(null);
 
@@ -26,7 +27,7 @@ export default ({
 
     const [zoom, zoomReducer] = useAtom(zoomAtom);
 
-    const [{ height, width }, setHeightAndWidth] = useAtom(heightAndWidthAtom);
+    const [{ height, width }, setHeightAndWidth] = useAtom(svgHeightAndWidthAtom);
 
     const [mode, setMode] = useAtom(modeAtom);
 
@@ -175,13 +176,14 @@ export default ({
                             mathBoundsAtom,
                             svgBoundsAtom,
                             zoomAtom,
-                            mathToSvgFuncAtom
+                            mathToSvgFuncAtom,
+                            graphSqWAtom
                         })
                     )}
                 </Fragment>
                 <SvgZoomBar
                     zoomAtom={zoomAtom}
-                    heightAndWidthAtom={heightAndWidthAtom}
+                    heightAndWidthAtom={svgHeightAndWidthAtom}
                     svgBoundsAtom={svgBoundsAtom}
                     modeAtom={modeAtom}
                     upperLeftPointAtom={upperLeftPointAtom}

@@ -22,8 +22,6 @@ function WrappedComp({ atomStore }) {
     const readAtomStoreAtom = atom(null, (get, set, callback) => {
         let ro = {};
 
-        //const atomStore = get(atomStoreAtom);
-
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
             set(atom.readWriteAtom, {
                 type: 'readToAddressBar',
@@ -37,8 +35,6 @@ function WrappedComp({ atomStore }) {
     });
 
     const resetAtomStoreAtom = atom(null, (get, set) => {
-        //const atomStore = get(atomStoreAtom);
-
         Object.values(atomStore).forEach((atom) => {
             set(atom.readWriteAtom, {
                 type: 'reset'
@@ -47,8 +43,6 @@ function WrappedComp({ atomStore }) {
     });
 
     const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
-        //const atomStore = get(atomStoreAtom);
-
         Object.keys(newObj).forEach((k) => {
             set(atomStore[k].readWriteAtom, {
                 type: 'writeFromAddressBar',

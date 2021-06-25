@@ -2,16 +2,16 @@ import { atom, useAtom } from 'jotai';
 
 import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 
-import {
-    initXCenter,
-    initYCenter,
-    upperLeftPointData,
+import SvgDataComp, { initXCenter, initYCenter, zoomFactorButton } from './SvgDataComp';
+
+const {
+    upperLeftPointAtom,
     svgToMathFuncAtom,
     mathToSvgFuncAtom,
     svgHeightAndWidthAtom,
     svgBoundsAtom,
-    zoomData
-} from './App_svgTest_atoms';
+    zoomAtom
+} = SvgDataComp();
 
 const testHeight = 200;
 const testWidth = 300;
@@ -62,28 +62,32 @@ test('svgBounds test', () => {
     expect(yMin).toBe(0);
     expect(yMax).toBe(testHeight);
 
-    const { result: ulpResult, rerender: ulpRender } = renderHook(() =>
-        useAtom(upperLeftPointData.atom)
-    );
-    const setUpperLeftPoint = ulpResult.current[1];
+    const setUpperLeftPoint = renderHook(() => useAtom(upperLeftPointAtom)).result.current[1];
 
     act(() => setUpperLeftPoint({ x: -100, y: -100 }));
     svgRender();
+
     expect(svgResult.current[0].xMin).toBe(-100);
     expect(svgResult.current[0].xMax).toBe(-100 + testWidth);
     expect(svgResult.current[0].yMin).toBe(-100);
     expect(svgResult.current[0].yMax).toBe(-100 + testHeight);
 
-    const { result: zoomResult, rerender: zoomRender } = renderHook(() => useAtom(zoomData.atom));
+    const setZoom = renderHook(() => useAtom(zoomAtom)).result.current[1];
 
-    const setZoom = zoomResult.current[1];
-
-    act(() => setZoom(1.5));
+    act(() => setZoom('zoom in button'));
     svgRender();
 
     const curCenter = { x: testWidth / 2, y: testHeight / 2 };
-    expect(svgResult.current[0].xMin).toBeCloseTo(curCenter.x - testWidth / (2 * 1.5) - 100);
-    expect(svgResult.current[0].yMin).toBeCloseTo(curCenter.y - testHeight / (2 * 1.5) - 100);
-    expect(svgResult.current[0].xMax).toBeCloseTo(curCenter.x + testWidth / (2 * 1.5) - 100);
-    expect(svgResult.current[0].yMax).toBeCloseTo(curCenter.y + testHeight / (2 * 1.5) - 100);
+    expect(svgResult.current[0].xMin).toBeCloseTo(
+        curCenter.x - testWidth / (2 * zoomFactorButton) - 100
+    );
+    expect(svgResult.current[0].yMin).toBeCloseTo(
+        curCenter.y - testHeight / (2 * zoomFactorButton) - 100
+    );
+    expect(svgResult.current[0].xMax).toBeCloseTo(
+        curCenter.x + testWidth / (2 * zoomFactorButton) - 100
+    );
+    expect(svgResult.current[0].yMax).toBeCloseTo(
+        curCenter.y + testHeight / (2 * zoomFactorButton) - 100
+    );
 });

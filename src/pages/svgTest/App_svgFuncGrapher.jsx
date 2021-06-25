@@ -14,18 +14,12 @@ import SvgFunctionGraph from '../../SVGComps/SvgFunctionGraph';
 
 import {
     funcData,
-    mathBoundsAtom,
-    svgBoundsAtom,
-    upperLeftPointData,
-    zoomAtom,
+    svgData,
     axesData,
-    svgHeightAndWidthAtom,
-    mathToSvgFuncAtom,
     modeAtom,
     curveData,
-    graphSqWAtom,
     atomStoreAtom
-} from './App_svgTest_atoms';
+} from './App_svgFuncGrapher_atoms';
 
 const btnClassStr =
     'absolute right-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
@@ -52,16 +46,8 @@ export default function App() {
             </header>
 
             <main className='flex-grow relative p-0'>
-                <SvgScene
-                    heightAndWidthAtom={svgHeightAndWidthAtom}
-                    svgBoundsAtom={svgBoundsAtom}
-                    mathBoundsAtom={mathBoundsAtom}
-                    mathToSvgFuncAtom={mathToSvgFuncAtom}
-                    upperLeftPointAtom={upperLeftPointData.atom}
-                    zoomAtom={zoomAtom}
-                    modeAtom={modeAtom}
-                >
-                    <SvgAxes graphSqWAtom={graphSqWAtom} />
+                <SvgScene svgData={svgData} modeAtom={modeAtom}>
+                    <SvgAxes />
                     <SvgBorderAxes />
                     <SvgFunctionGraph funcAtom={funcData.funcAtom} curveDataAtom={curveData.atom} />
                 </SvgScene>
