@@ -1,12 +1,7 @@
-import React, {
-    useState,
-    useRef,
-    useEffect,
-    useCallback,
-    Fragment,
-    FunctionComponent
-} from 'react';
+import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import { atom, useAtom } from 'jotai';
+
+import { SvgContext } from './SvgScene';
 
 const left = 0;
 const size = 30;

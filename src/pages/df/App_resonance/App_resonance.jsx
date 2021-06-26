@@ -16,19 +16,13 @@ import SvgAxes from '../../../SVGComps/SvgBorderAxes';
 import SvgFunctionGraph from '../../../SVGComps/SvgFunctionGraph';
 
 import {
-    boundsData,
     funcAtom,
     labelData,
     solutionCurveData,
     axesData,
     atomStoreAtom,
     SecondOrderInput,
-    mathBoundsAtom,
-    svgBoundsAtom,
-    upperLeftPointData,
-    zoomAtom,
-    svgHeightAndWidthAtom,
-    mathToSvgFuncAtom,
+    svgData,
     modeAtom
 } from './App_resonance_atoms.jsx';
 
@@ -62,15 +56,7 @@ export default function App() {
                     </header>
 
                     <main className='flex-grow relative p-0'>
-                        <SvgScene
-                            heightAndWidthAtom={svgHeightAndWidthAtom}
-                            svgBoundsAtom={svgBoundsAtom}
-                            mathBoundsAtom={mathBoundsAtom}
-                            mathToSvgFuncAtom={mathToSvgFuncAtom}
-                            upperLeftPointAtom={upperLeftPointData.atom}
-                            zoomAtom={zoomAtom}
-                            modeAtom={modeAtom}
-                        >
+                        <SvgScene svgData={svgData} modeAtom={modeAtom}>
                             <SvgAxes />
                             <SvgFunctionGraph
                                 funcAtom={funcAtom}
@@ -121,15 +107,11 @@ function OptionsModal() {
                 <>
                     <TabList {...tab} aria-label='Option tabs'>
                         <Tab {...tab}>Axes</Tab>
-                        <Tab {...tab}>Bounds</Tab>
                         <Tab {...tab}>Solution curve</Tab>
                         <Tab {...tab}>Variables</Tab>
                     </TabList>
                     <TabPanel {...tab}>
                         <axesData.component />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <boundsData.component />
                     </TabPanel>
                     <TabPanel {...tab}>
                         <solutionCurveData.component />

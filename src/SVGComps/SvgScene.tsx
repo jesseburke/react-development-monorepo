@@ -1,4 +1,12 @@
-import React, { Fragment, useRef, useEffect, useCallback, Children, cloneElement } from 'react';
+import React, {
+    Fragment,
+    useRef,
+    useEffect,
+    useCallback,
+    Children,
+    cloneElement,
+    createContext
+} from 'react';
 import { atom, useAtom } from 'jotai';
 
 import SvgZoomBar from './SvgZoomBar';
@@ -6,6 +14,8 @@ import SvgZoomBar from './SvgZoomBar';
 import NumberDataComp from '../data/NumberDataComp';
 
 const pixelRatio = 1; //window.devicePixelRatio;
+
+export const SvgContext = createContext({});
 
 export default ({ svgData, modeAtom, children }) => {
     const {
@@ -170,24 +180,24 @@ export default ({ svgData, modeAtom, children }) => {
                 className='absolute h-full w-full'
                 ref={(elt) => (svgRef.current = elt)}
             >
-                <Fragment>
-                    {Children.map(children, (el) =>
-                        cloneElement(el, {
-                            mathBoundsAtom,
-                            svgBoundsAtom,
-                            zoomAtom,
-                            mathToSvgFuncAtom,
-                            graphSqWAtom
-                        })
-                    )}
-                </Fragment>
-                <SvgZoomBar
-                    zoomAtom={zoomAtom}
-                    heightAndWidthAtom={svgHeightAndWidthAtom}
-                    svgBoundsAtom={svgBoundsAtom}
-                    modeAtom={modeAtom}
-                    upperLeftPointAtom={upperLeftPointAtom}
-                />
+                <SvgContext.Provider
+                    value={{
+                        mathBoundsAtom,
+                        svgBoundsAtom,
+                        zoomAtom,
+                        mathToSvgFuncAtom,
+                        graphSqWAtom
+                    }}
+                >
+                    {children}
+                    <SvgZoomBar
+                        zoomAtom={zoomAtom}
+                        heightAndWidthAtom={svgHeightAndWidthAtom}
+                        svgBoundsAtom={svgBoundsAtom}
+                        modeAtom={modeAtom}
+                        upperLeftPointAtom={upperLeftPointAtom}
+                    />
+                </SvgContext.Provider>
             </svg>
         </div>
     );

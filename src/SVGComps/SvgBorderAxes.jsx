@@ -1,9 +1,19 @@
-import React, { useState, useRef, useEffect, useCallback, FunctionComponent } from 'react';
+import React, {
+    useState,
+    useRef,
+    useEffect,
+    useCallback,
+    FunctionComponent,
+    useContext
+} from 'react';
 import { atom, useAtom } from 'jotai';
 
 import { round } from '../utils/BaseUtils';
+import { SvgContext } from './SvgScene';
 
-export default function SvgAxes({ mathBoundsAtom, svgBoundsAtom, zoomAtom, mathToSvgFuncAtom }) {
+export default function SvgAxes() {
+    const { mathBoundsAtom, svgBoundsAtom, zoomAtom, mathToSvgFuncAtom } = useContext(SvgContext);
+
     const { xMin: xMinMath, xMax: xMaxMath, yMin: yMinMath, yMax: yMaxMath } = useAtom(
         mathBoundsAtom
     )[0];
