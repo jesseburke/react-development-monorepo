@@ -7,21 +7,30 @@ import MatrixFactory from '../math/MatrixFactory';
 
 import { diffObjects, isEmpty, myStringify } from '../utils/BaseUtils.js';
 
-export const zoom1XWidth = 20;
+export const defaultZoom1XWidth = 20;
 // y width will be determined by aspect ratio of svg
 
-export const initXCenter = 0;
-export const initYCenter = 0;
+export const defaultInitXCenter = 0;
+export const defaultInitYCenter = 0;
 
-const initGraphSqW = 1;
+const defaultInitGraphSqW = 1;
 
-export const zoomFactorButton = 2;
-const zoomFactorWheel = 1.1;
+export const defaultZoomFactorButton = 2;
+const defaultZoomFactorWheel = 1.1;
 
-const zoomMax = 2 ** 15;
-const zoomMin = 1 / zoomMax;
+const defaultZoomMax = 2 ** 15;
+const defaultZoomMin = 1 / defaultZoomMax;
 
-export default function SvgDataComp() {
+export default function SvgDataComp({
+    zoom1XWidth = defaultZoom1XWidth,
+    initXCenter = defaultInitXCenter,
+    initYCenter = defaultInitYCenter,
+    initGraphSqW = defaultInitGraphSqW,
+    zoomFactorButton = defaultZoomFactorButton,
+    zoomFactorWheel = defaultZoomFactorWheel,
+    zoomMax = defaultZoomMax,
+    zoomMin = defaultZoomMin
+} = {}) {
     const svgHeightAndWidthAtom = atom({ height: 0, width: 0 });
 
     const svgToMathFuncAtom = atom((get) => {

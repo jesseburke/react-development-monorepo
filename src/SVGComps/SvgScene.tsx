@@ -10,12 +10,16 @@ import React, {
 import { atom, useAtom } from 'jotai';
 
 import SvgZoomBar from './SvgZoomBar';
+import SvgDataComp from './SvgDataComp';
 
 const pixelRatio = 1; //window.devicePixelRatio;
 
 export const SvgContext = createContext({});
 
-export default ({ svgData, modeAtom, children }) => {
+const defaultSvgData = SvgDataComp();
+const defaultModeAtom = atom('pan');
+
+export default ({ svgData = defaultSvgData, modeAtom = defaultModeAtom, children = {} } = {}) => {
     const {
         svgHeightAndWidthAtom,
         svgBoundsAtom,
@@ -162,10 +166,8 @@ export default ({ svgData, modeAtom, children }) => {
             onWheel={(e) => {
                 if (e.deltaY < 0) {
                     zoomReducer('zoom in wheel');
-                    console.log('wheel zoom in');
                 } else if (e.deltaY > 0) {
                     zoomReducer('zoom out wheel');
-                    console.log('wheel zoom out');
                 }
             }}
             onTouchStart={(e) => {
