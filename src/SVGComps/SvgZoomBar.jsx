@@ -15,7 +15,9 @@ export default function SvgZoomBar({
     heightAndWidthAtom,
     modeAtom,
     svgBoundsAtom,
-    upperLeftPointAtom
+    upperLeftPointAtom,
+    zoomAtMax,
+    zoomAtMin
 }) {
     const [zoom, zoomReducer] = useAtom(zoomAtom);
     const { height, width } = useAtom(heightAndWidthAtom)[0];
@@ -64,7 +66,7 @@ export default function SvgZoomBar({
                 height={size}
                 onClick={() => zoomReducer('zoom in button')}
                 fill='#aaa'
-                opacity='0.8'
+                opacity={zoomAtMax ? '0.1' : '0.8'}
             />
             <text
                 x={left + 2 * margin + size / 2}
@@ -75,6 +77,7 @@ export default function SvgZoomBar({
                 dominantBaseline='central'
                 style={{ userSelect: 'none', pointerEvents: 'none' }}
                 fontSize={size * 0.7}
+                opacity={zoomAtMax ? '0.1' : '0.8'}
             >
                 {'\u002B'}
             </text>
@@ -87,7 +90,7 @@ export default function SvgZoomBar({
                 height={size}
                 onClick={() => zoomReducer('zoom out button')}
                 fill='#aaa'
-                opacity='0.8'
+                opacity={zoomAtMin ? '0.1' : '0.8'}
             />
             <text
                 x={left + 2 * margin + size / 2}
@@ -98,6 +101,7 @@ export default function SvgZoomBar({
                 dominantBaseline='central'
                 style={{ userSelect: 'none', pointerEvents: 'none' }}
                 fontSize={size * 0.7}
+                opacity={zoomAtMin ? '0.1' : '0.8'}
             >
                 {'\u2212'}
             </text>

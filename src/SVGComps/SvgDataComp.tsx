@@ -101,6 +101,9 @@ export default function SvgDataComp() {
         }
     );
 
+    const zoomAtMaxAtom = atom((get) => get(zoomAtom) >= zoomMax);
+    const zoomAtMinAtom = atom((get) => get(zoomAtom) <= zoomMin);
+
     const graphSqWAtom = atom((get) => initGraphSqW / get(zoomAtom));
 
     const upperLeftPointData = PointDataComp({ x: 0, y: 0 });
@@ -139,7 +142,9 @@ export default function SvgDataComp() {
         graphSqWAtom,
         upperLeftPointAtom: upperLeftPointData.atom,
         svgBoundsAtom,
-        mathBoundsAtom
+        mathBoundsAtom,
+        zoomAtMaxAtom,
+        zoomAtMinAtom
     };
 }
 

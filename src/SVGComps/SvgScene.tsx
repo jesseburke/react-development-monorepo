@@ -11,8 +11,6 @@ import { atom, useAtom } from 'jotai';
 
 import SvgZoomBar from './SvgZoomBar';
 
-import NumberDataComp from '../data/NumberDataComp';
-
 const pixelRatio = 1; //window.devicePixelRatio;
 
 export const SvgContext = createContext({});
@@ -25,7 +23,9 @@ export default ({ svgData, modeAtom, children }) => {
         upperLeftPointAtom,
         graphSqWAtom,
         zoomAtom,
-        mathToSvgFuncAtom
+        mathToSvgFuncAtom,
+        zoomAtMaxAtom,
+        zoomAtMinAtom
     } = svgData;
 
     const svgParentRef = useRef(null);
@@ -43,6 +43,9 @@ export default ({ svgData, modeAtom, children }) => {
 
     const isDown = useRef<null | 'mouse' | 'touch'>(null);
     const lastPosition = useRef<[number, number]>();
+
+    const zoomAtMax = useAtom(zoomAtMaxAtom)[0];
+    const zoomAtMin = useAtom(zoomAtMinAtom)[0];
 
     useEffect(() => {
         if (!svgParentRef.current) {
@@ -196,6 +199,8 @@ export default ({ svgData, modeAtom, children }) => {
                         svgBoundsAtom={svgBoundsAtom}
                         modeAtom={modeAtom}
                         upperLeftPointAtom={upperLeftPointAtom}
+                        zoomAtMax={zoomAtMax}
+                        zoomAtMin={zoomAtMin}
                     />
                 </SvgContext.Provider>
             </svg>
