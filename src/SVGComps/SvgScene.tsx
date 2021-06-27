@@ -142,11 +142,6 @@ export default ({ svgData = defaultSvgData, modeAtom = defaultModeAtom, children
                     }
                 }
             }}
-            onMouseUp={(e) => {
-                if (isDown.current === 'mouse') {
-                    isDown.current = null;
-                }
-            }}
             onMouseMove={(e) => {
                 //console.log('mouse move event fired');
                 if (isDown.current === 'mouse') {
@@ -163,6 +158,11 @@ export default ({ svgData = defaultSvgData, modeAtom = defaultModeAtom, children
                     }
                 }
             }}
+            onMouseUp={(e) => {
+                if (isDown.current === 'mouse') {
+                    isDown.current = null;
+                }
+            }}
             onWheel={(e) => {
                 if (e.deltaY < 0) {
                     zoomReducer('zoom in wheel');
@@ -171,13 +171,40 @@ export default ({ svgData = defaultSvgData, modeAtom = defaultModeAtom, children
                 }
             }}
             onTouchStart={(e) => {
-                e.stopPropagation();
-            }}
-            onTouchEnd={(e) => {
-                e.stopPropagation();
+                if (e.touches.length === 1 && !isDown.current) {
+                    isDown.current = 'touch';
+                    if (mode === 'pan') {
+                        lastPosition.current = [e.touches[0].clientX, e.touches[0].clientY];
+                    }
+                    if (mode === 'center') {
+                        const { x: newX, y: newY } = domToSvgCoords({
+                            x: e.touches[0].clientX,
+                            y: e.touches[0].clientY
+                        });
+                        setUpperLeftPoint({ x: newX - width / 2, y: newY - height / 2 });
+                        setMode('pan');
+                    }
+                }
             }}
             onTouchMove={(e) => {
-                e.stopPropagation();
+                if (isDown.current === 'touch') {
+                    const pos = [e.touches[0].clientX, e.touches[0].clientY];
+
+                    if (lastPosition.current) {
+                        const diffX = pos[0] - lastPosition.current[0];
+                        const diffY = pos[1] - lastPosition.current[1];
+                        lastPosition.current = pos;
+                        setUpperLeftPoint((prev) => ({
+                            x: prev.x - diffX / zoom,
+                            y: prev.y - diffY / zoom
+                        }));
+                    }
+                }
+            }}
+            onTouchEnd={(e) => {
+                if (isDown.current === 'touch') {
+                    isDown.current = null;
+                }
             }}
         >
             <svg
