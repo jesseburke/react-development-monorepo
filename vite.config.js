@@ -22,12 +22,6 @@ export default defineConfig({
         }
     },
     optimizeDeps: {
-        include: [
-            'jotai/utils',
-            'reakit/Checkbox',
-            'reakit/Dialog',
-            'reakit/Provider',
-            'reakit/Tab'
-        ]
+        include: ['jotai/utils']
     }
 });

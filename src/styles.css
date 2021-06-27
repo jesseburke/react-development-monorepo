@@ -24,5 +24,10 @@
     .light-colors {
 	@apply text-persian_blue-800 bg-apple_green-50;  
     }
+
+    .tab-trigger[data-state="active"] {
+	@apply text-black underline;
+    }
+
 }
 

@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
-import { Checkbox } from 'reakit/Checkbox';
+import * as Checkbox from '@radix-ui/react-checkbox';
 
 import Input from '../components/Input.jsx';
 import { diffObjects, isEmpty } from '../utils/BaseUtils';
@@ -102,10 +102,20 @@ export default function CurveDataComp(args: CurveData2 = {}) {
                 className='flex flex-col justify-center
 		items-center h-full p-1'
             >
-                <label>
-                    <Checkbox checked={visible} onChange={visibleCB} />
-                    <span className='p-1'>Show solution curve</span>
-                </label>
+                <div className='flex items-baseline'>
+                    <input
+                        type='checkbox'
+                        id='showSC'
+                        name='showSC'
+                        value='show solution curve'
+                        checked={visible}
+                        onChange={visibleCB}
+                        className='px-2'
+                    />
+                    <label htmlFor='showSC' className='px-2'>
+                        Show solution curve
+                    </label>
+                </div>
                 <div>
                     <div
                         className='flex justify-center items-center

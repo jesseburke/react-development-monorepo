@@ -24,8 +24,7 @@ https://www.maths.usyd.edu.au/u/jburke/directionFieldGrapher
 
 ### Structure
 
-The raw ingredients are [React](https://reactjs.org/), [ThreeJS](https://threejs.org/), and [jotai](https://github.com/pmndrs/jotai), with [Tailwind](https://tailwindcss.com/) for styling
-and [Reakit](https://reakit.io/) for an accessible modal. 
+The raw ingredients are [React](https://reactjs.org/), [ThreeJS](https://threejs.org/), and [jotai](https://github.com/pmndrs/jotai), with [Tailwind](https://tailwindcss.com/) for styling.
 
 The program is structured as follows:
 

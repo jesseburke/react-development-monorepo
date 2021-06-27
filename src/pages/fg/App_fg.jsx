@@ -4,11 +4,7 @@ import { Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
 
-import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
-import { Provider } from 'reakit/Provider';
-import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
-
-import * as system from 'reakit-system-bootstrap';
+import OptionsTabComp from '../../components/OptionsTabComp';
 
 import { ThreeSceneComp } from '../../components/ThreeScene';
 import MainDataComp from '../../data/MainDataComp.jsx';
@@ -81,9 +77,15 @@ export default function App() {
 		    p-8 text-white'
                 >
                     <funcData.component />
-                    <Provider unstable_system={system}>
-                        <OptionsModal />
-                    </Provider>
+                    <OptionsTabComp
+                        className={'w-32 bg-gray-50 text-persian_blue-900 p-2 rounded'}
+                        nameComponentArray={[
+                            ['Axes', axesData.component],
+                            ['Bounds', boundsData.component],
+                            ['Camera', cameraData.component],
+                            ['Variable labels', labelData.component]
+                        ]}
+                    />
                 </header>
 
                 <main className='flex-grow relative p-0'>
@@ -114,64 +116,5 @@ export default function App() {
                 </main>
             </div>
         </JProvider>
-    );
-}
-
-function OptionsModal() {
-    const dialog = useDialogState({ modal: false });
-    const tab = useTabState();
-
-    useEffect(() => {
-        window.dispatchEvent(new Event('resize'));
-    });
-
-    const cssRef = useRef({
-        transform: 'none',
-        top: '15%',
-        left: 'auto',
-        backgroundColor: 'white',
-        right: 20,
-        width: 600,
-        height: 300
-    });
-
-    const cssRef1 = useRef({
-        backgroundColor: 'white',
-        color: '#0A2C3C'
-    });
-
-    return (
-        <div zindex={-10} className='text-sm'>
-            <DialogDisclosure style={cssRef1.current} {...dialog}>
-                <span className='w-32'>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
-            </DialogDisclosure>
-            <Dialog
-                {...dialog}
-                style={cssRef.current}
-                aria-label='Options'
-                hideOnClickOutside={false}
-            >
-                <>
-                    <TabList {...tab} aria-label='Option tabs'>
-                        <Tab {...tab}>Axes</Tab>
-                        <Tab {...tab}>Bounds</Tab>
-                        <Tab {...tab}>Camera Options</Tab>
-                        <Tab {...tab}>Variable labels</Tab>
-                    </TabList>
-                    <TabPanel {...tab}>
-                        <axesData.component />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <boundsData.component />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <cameraData.component />
-                    </TabPanel>
-                    <TabPanel {...tab}>
-                        <labelData.component />
-                    </TabPanel>
-                </>
-            </Dialog>
-        </div>
     );
 }

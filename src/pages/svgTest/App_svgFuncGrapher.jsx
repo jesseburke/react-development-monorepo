@@ -1,10 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { useDialogState, Dialog, DialogDisclosure } from 'reakit/Dialog';
-import { Provider } from 'reakit/Provider';
-import { useTabState, Tab, TabList, TabPanel } from 'reakit/Tab';
-import * as system from 'reakit-system-bootstrap';
-
 import MainDataComp from '../../data/MainDataComp.jsx';
 
 import SvgScene from '../../SVGComps/SvgScene';
@@ -40,9 +35,6 @@ export default function App() {
 		p-8 text-white'
             >
                 <funcData.component />
-                <Provider unstable_system={system}>
-                    <OptionsModal />
-                </Provider>
             </header>
 
             <main className='flex-grow relative p-0'>
@@ -53,53 +45,6 @@ export default function App() {
                 </SvgScene>
                 <DataComp resetBtnClassStr={resetBtnClassStr} saveBtnClassStr={saveBtnClassStr} />
             </main>
-        </div>
-    );
-}
-
-function OptionsModal() {
-    const dialog = useDialogState({ modal: false });
-    const tab = useTabState();
-
-    useEffect(() => {
-        window.dispatchEvent(new Event('resize'));
-    });
-
-    const cssRef = useRef({
-        transform: 'none',
-        top: '15%',
-        left: 'auto',
-        backgroundColor: 'white',
-        right: 20,
-        width: 600,
-        height: 300
-    });
-
-    const cssRef1 = useRef({
-        backgroundColor: 'white',
-        color: '#0A2C3C'
-    });
-
-    return (
-        <div zindex={-10} className='text-sm'>
-            <DialogDisclosure style={cssRef1.current} {...dialog}>
-                <span className='w-32'>{!dialog.visible ? 'Show options' : 'Hide options'}</span>
-            </DialogDisclosure>
-            <Dialog
-                {...dialog}
-                style={cssRef.current}
-                aria-label='Options'
-                hideOnClickOutside={false}
-            >
-                <>
-                    <TabList {...tab} aria-label='Option tabs'>
-                        <Tab {...tab}>Axes</Tab>
-                    </TabList>
-                    <TabPanel {...tab}>
-                        <axesData.component />
-                    </TabPanel>
-                </>
-            </Dialog>
         </div>
     );
 }
