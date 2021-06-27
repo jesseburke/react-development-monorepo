@@ -30,3 +30,11 @@ function main() {
 }
 
 document.body.appendChild(main());
+document.addEventListener(
+    'wheel',
+    function (e) {
+        e.preventDefault();
+        //console.log('wheel event fired on document');
+    },
+    { passive: false, capture: false }
+);
