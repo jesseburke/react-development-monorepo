@@ -108,9 +108,7 @@ export const solnStrAtom = atom((get) => {
         if (w != w0) {
             const A = f / (w0 * w0 - w * w);
 
-            return `${y}=${
-                processNum(A, precision - 1).texStr
-            }( \\cos(${w}${x}) - \\cos(${w0}${x}))`;
+            return `${y}=${processNum(A, precision).texStr}( \\cos(${w}${x}) - \\cos(${w0}${x}))`;
         }
 
         return `${y}=${
@@ -162,11 +160,11 @@ export function SecondOrderInput() {
     return (
         <div
             className='flex justify-around items-center h-full py-2
-            px-4 text-xl m-0'
+            px-4 text-xl m-0 flex-grow'
         >
             <div
                 className='m-0 flex flex-col justify-center
-		content-center py-2 pr-8 lg:pr-16 hidden xl:block'
+		content-center py-2 pl-8 pr-16 lg:pr-32 hidden xl:block'
             >
                 <div className='pb-2 px-0 whitespace-nowrap'>
                     <TexDisplayComp str={resonanceEqTex} />
@@ -178,7 +176,7 @@ export function SecondOrderInput() {
 
             <div
                 className='m-0 flex flex-col justify-center
-		content-center py-2 px-8 lg:px-16'
+		content-center py-2 pl-8 lg:px-16 flex-grow'
             >
                 <div className='py-1'>
                     <Slider
@@ -215,8 +213,8 @@ export function SecondOrderInput() {
                 </div>
             </div>
             <div
-                className='m-0 flex flex-col justify-center
-		content-center py-2 px-16'
+                className='mr-auto ml-auto flex flex-col justify-center
+		content-center py-2 pl-8 pr-16 flex-grow'
             >
                 <div
                     className='m-0 flex flex-col justify-center

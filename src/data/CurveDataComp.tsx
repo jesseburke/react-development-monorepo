@@ -68,7 +68,7 @@ export default function CurveDataComp(args: CurveData2 = {}) {
         }
     });
 
-    const component = memo(function CurveOptionsInput({}) {
+    const component = memo(function CurveOptionsInput({ offerToShow = true } = {}) {
         const [data, setData] = useAtom(cdAtom);
 
         const { color, approxH, visible, width } = data;
@@ -102,20 +102,22 @@ export default function CurveDataComp(args: CurveData2 = {}) {
                 className='flex flex-col justify-center
 		items-center h-full p-1'
             >
-                <div className='flex items-baseline'>
-                    <input
-                        type='checkbox'
-                        id='showSC'
-                        name='showSC'
-                        value='show solution curve'
-                        checked={visible}
-                        onChange={visibleCB}
-                        className='px-2'
-                    />
-                    <label htmlFor='showSC' className='px-2'>
-                        Show solution curve
-                    </label>
-                </div>
+                {offerToShow ? (
+                    <div className='flex items-baseline'>
+                        <input
+                            type='checkbox'
+                            id='showSC'
+                            name='showSC'
+                            value='show solution curve'
+                            checked={visible}
+                            onChange={visibleCB}
+                            className='px-2'
+                        />
+                        <label htmlFor='showSC' className='px-2'>
+                            Show solution curve
+                        </label>
+                    </div>
+                ) : null}
                 <div>
                     <div
                         className='flex justify-center items-center

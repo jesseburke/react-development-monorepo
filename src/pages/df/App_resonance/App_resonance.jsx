@@ -48,11 +48,11 @@ export default function App() {
                 >
                     <SecondOrderInput />
                     <OptionsTabComp
-                        className={'w-32 bg-gray-50 text-persian_blue-900 p-2 rounded'}
+                        className={
+                            'w-32 bg-gray-50 text-persian_blue-900 p-2 rounded hidden lg:block'
+                        }
                         nameComponentArray={[
-                            ['Axes', axesData.component],
-                            ['Solution curve', solutionCurveData.component],
-                            ['Variable labels', labelData.component]
+                            ['Solution curve', solutionCurveData.component, { offerToShow: false }]
                         ]}
                     />
                 </header>

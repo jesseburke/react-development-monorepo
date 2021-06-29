@@ -8,6 +8,7 @@ import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
+import SvgDataComp from '../../../SVGComps/SvgDataComp';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
@@ -39,25 +40,17 @@ const aMax = 5;
 const aMin = -5;
 const aStep = 0.1;
 
-const initBounds = { xMin: -70, xMax: 70, yMin: -28, yMax: 28 };
-
 const initAxesData = {
     radius: 0.01,
     show: true,
     tickLabelDistance: 10
 };
 
-const initCameraData = {
-    target: [0, 0, 0],
-    zoom: 0.085,
-    position: [0, 0, 50]
-};
-
 const initSolutionCurveData = {
     color: colors.solutionCurve,
     approxH: 0.1,
     visible: true,
-    width: 0.1
+    width: 3
 };
 
 export const labelStyle = {
@@ -75,6 +68,8 @@ const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
 const initInitialPoint1 = { x: 4, y: 7 };
 const initInitialPoint2 = { x: 7, y: 5 };
 
+const zoom1XWidth = 80;
+
 //------------------------------------------------------------------------
 //
 // primitive atoms
@@ -87,12 +82,7 @@ export const axesData = AxesDataComp({
 
 export const solutionCurveData = CurveDataComp(initSolutionCurveData);
 
-export const boundsData = BoundsDataComp({
-    initBounds,
-    labelAtom: labelData.atom
-});
-
-export const orthoCameraData = OrthoCameraDataComp(initCameraData);
+//solutionCurveData.component = (() =>
 
 export const aData = NumberDataComp(initAVal);
 export const bData = NumberDataComp(initBVal);
@@ -100,12 +90,12 @@ export const bData = NumberDataComp(initBVal);
 export const initialPoint1Data = PointDataComp(initInitialPoint1);
 export const initialPoint2Data = PointDataComp(initInitialPoint2);
 
+export const svgData = SvgDataComp({ zoom1XWidth });
+
 export const atomStoreAtom = atom({
     ls: labelData,
     ax: axesData,
     sc: solutionCurveData,
-    bd: boundsData,
-    cd: orthoCameraData,
     a: aData,
     b: bData,
     ip1: initialPoint1Data,
@@ -158,16 +148,16 @@ const caseStrAtom = atom((get) => {
 //
 // input components
 
-export const InitialPointsInput = ({}) => {
+export const InitialPointsInput = ({ className }) => {
     const { y: yLabel } = useAtom(labelData.atom)[0];
 
     return (
         <div
             className='flex justify-center items-center h-100 py-0
-            px-4 text-l'
+        px-8 text-l'
         >
             <fieldset>
-                <legend>Initial Conditions</legend>
+                <legend align='center'>Initial Conditions</legend>
 
                 <div className='py-0 px-6 text-l'>
                     <initialPoint1Data.component prefixStr={yLabel + '('} infixStr={') = '} />
@@ -193,11 +183,11 @@ export const SecondOrderInput = ({}) => {
     return (
         <div
             className='flex justify-around items-baseline h-full py-0
-            px-0 m-0'
+            px-0 m-0 flex-grow'
         >
             <div
                 className='flex flex-col justify-center items-center
-        h-full text-l m-0 pr-8 hidden xl:block'
+        h-full text-l m-0 px-12 hidden xl:block'
             >
                 <div className='pb-2 px-0 text-center'>
                     2nd order linear, w/ constant coefficients
@@ -230,7 +220,7 @@ export const SecondOrderInput = ({}) => {
             </div>
             <div
                 className='flex flex-col justify-center items center
-        h-full text-l m-0 pr-8 hidden xl:block'
+        h-full text-l m-0 px-8 hidden xl:block flex-grow'
             >
                 <div className='pb-2 px-0 text-center'>
                     <TexDisplayComp str={caseStr} />

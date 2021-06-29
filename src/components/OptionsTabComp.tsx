@@ -14,9 +14,9 @@ export default function OptionsModalComp({ nameComponentArray, className }) {
         </TabTrigger>
     ));
 
-    const contentArray = nameComponentArray.map(([name, comp]) => (
+    const contentArray = nameComponentArray.map(([name, comp, props]) => (
         <TabContent value={name} key={name}>
-            {React.createElement(comp)}
+            {React.createElement(comp, props)}
         </TabContent>
     ));
 
@@ -26,7 +26,7 @@ export default function OptionsModalComp({ nameComponentArray, className }) {
                 {optionsOpen ? 'Show options' : 'Hide options'}
             </Popover.Trigger>
 
-            <Popover.Content className='border-3 p-6 bg-gray-50'>
+            <Popover.Content className='relative border-3 p-6 bg-gray-50 w-full'>
                 <TabsComp triggerArray={triggerArray} contentArray={contentArray} />
             </Popover.Content>
         </Popover.Root>
