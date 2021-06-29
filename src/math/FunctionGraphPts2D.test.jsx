@@ -8,8 +8,8 @@ const testFunc1 = (x) => Math.sin(x ^ (2 + 1));
 const testFunc2 = (x) => x ** 3 - 2 * x;
 const testBounds = { xMin: -10, yMin: -5, xMax: 10, yMax: 10 };
 
-const comps1 = FunctionGraphPts2D({ func: testFunc1, bounds: testBounds, approxH: 1 });
-const comps2 = FunctionGraphPts2D({ func: testFunc2, bounds: testBounds, approxH: 1 });
+const comps1 = FunctionGraphPts2D({ func: testFunc1, bounds: testBounds, approxH: 0.1 });
+const comps2 = FunctionGraphPts2D({ func: testFunc2, bounds: testBounds, approxH: 0.1 });
 
 test('returned points are within bounds', () => {
     comps1.forEach((ptArray) => {

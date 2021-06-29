@@ -2,7 +2,11 @@ import { atom, useAtom } from 'jotai';
 
 import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 
-import SvgDataComp, { initXCenter, initYCenter, zoomFactorButton } from './SvgDataComp';
+import SvgDataComp, {
+    defaultInitXCenter,
+    defaultInitYCenter,
+    defaultZoomFactorButton
+} from './SvgDataComp';
 
 const {
     upperLeftPointAtom,
@@ -27,12 +31,15 @@ describe('svgToMath and mathToSvg tests', () => {
     test('that svg center is mapped to math center', () => {
         const { x: newX, y: newY } = svgToMathFunc({ x: testWidth / 2, y: testHeight / 2 });
 
-        expect(newX).toBeCloseTo(initXCenter);
-        expect(newY).toBeCloseTo(initYCenter);
+        expect(newX).toBeCloseTo(defaultInitXCenter);
+        expect(newY).toBeCloseTo(defaultInitYCenter);
     });
 
     test('that math center is mapped to svg center', () => {
-        const { x: newX, y: newY } = mathToSvgFunc({ x: initXCenter, y: initYCenter });
+        const { x: newX, y: newY } = mathToSvgFunc({
+            x: defaultInitXCenter,
+            y: defaultInitYCenter
+        });
 
         expect(newX).toBeCloseTo(testWidth / 2);
         expect(newY).toBeCloseTo(testHeight / 2);
@@ -79,15 +86,15 @@ test('svgBounds test', () => {
 
     const curCenter = { x: testWidth / 2, y: testHeight / 2 };
     expect(svgResult.current[0].xMin).toBeCloseTo(
-        curCenter.x - testWidth / (2 * zoomFactorButton) - 100
+        curCenter.x - testWidth / (2 * defaultZoomFactorButton) - 100
     );
     expect(svgResult.current[0].yMin).toBeCloseTo(
-        curCenter.y - testHeight / (2 * zoomFactorButton) - 100
+        curCenter.y - testHeight / (2 * defaultZoomFactorButton) - 100
     );
     expect(svgResult.current[0].xMax).toBeCloseTo(
-        curCenter.x + testWidth / (2 * zoomFactorButton) - 100
+        curCenter.x + testWidth / (2 * defaultZoomFactorButton) - 100
     );
     expect(svgResult.current[0].yMax).toBeCloseTo(
-        curCenter.y + testHeight / (2 * zoomFactorButton) - 100
+        curCenter.y + testHeight / (2 * defaultZoomFactorButton) - 100
     );
 });

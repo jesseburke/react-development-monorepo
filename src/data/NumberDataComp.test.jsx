@@ -5,47 +5,51 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import NumberDataComp from './NumberDataComp.jsx';
 import { myStringify } from '../utils/BaseUtils';
 
-test('number data component', () => {
+describe('number data component', () => {
     const testNumberData = NumberDataComp(5);
-
-    const { result, rerender } = renderHook(() => useAtom(testNumberData.atom));
-
-    expect(result.current[0]).toBe(5);
-
-    act(() => {
-        result.current[1](10);
-    });
-
-    rerender();
-
-    expect(result.current[0]).toBe(10);
-
-    let abbrev;
 
     const readWriteFunc = renderHook(() => useAtom(testNumberData.readWriteAtom)).result.current[1];
 
-    act(() => {
-        readWriteFunc({
-            type: 'readToAddressBar',
-            callback: (obj) => {
-                if (obj) abbrev = myStringify(obj);
-            }
-        });
+    test('get, set, and reset', () => {
+        const { result, rerender } = renderHook(() => useAtom(testNumberData.atom));
+        expect(result.current[0]).toBe(5);
 
-        readWriteFunc({
-            type: 'reset'
+        act(() => {
+            result.current[1](10);
         });
+        rerender();
+        expect(result.current[0]).toBe(10);
+
+        act(() => {
+            readWriteFunc({
+                type: 'reset'
+            });
+        });
+        rerender();
+        expect(result.current[0]).toBe(5);
     });
 
-    rerender();
+    test('read and write', () => {
+        const { result, rerender } = renderHook(() => useAtom(testNumberData.atom));
+        let queryString;
 
-    expect(result.current[0]).toBe(5);
+        act(() => {
+            // set testNumber to 10
+            result.current[1](10);
+            // read that value to adddress bar string
+            readWriteFunc({
+                type: 'readToAddressBar',
+                callback: (obj) => {
+                    if (obj) queryString = myStringify(obj);
+                }
+            });
+            // set testNumber back to 5
+            result.current[1](5);
 
-    act(() => {
-        readWriteFunc({ type: 'writeFromAddressBar', value: abbrev });
+            // read value from address bar
+            readWriteFunc({ type: 'writeFromAddressBar', value: queryString });
+        });
+        rerender();
+        expect(result.current[0]).toBe(10);
     });
-
-    rerender();
-
-    expect(result.current[0]).toBe(10);
 });
