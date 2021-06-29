@@ -79,8 +79,6 @@ export const atomStoreAtom = atom({
     w0: w0Data
 });
 
-export const modeAtom = atom('pan');
-
 //------------------------------------------------------------------------
 //
 // derived atoms

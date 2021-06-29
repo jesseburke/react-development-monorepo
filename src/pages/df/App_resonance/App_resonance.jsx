@@ -19,8 +19,7 @@ import {
     axesData,
     atomStoreAtom,
     SecondOrderInput,
-    svgData,
-    modeAtom
+    svgData
 } from './App_resonance_atoms.jsx';
 
 //------------------------------------------------------------------------
@@ -59,7 +58,7 @@ export default function App() {
                 </header>
 
                 <main className='flex-grow relative p-0'>
-                    <SvgScene svgData={svgData} modeAtom={modeAtom}>
+                    <SvgScene svgData={svgData}>
                         <SvgAxes />
                         <SvgBorderAxes />
                         <SvgFunctionGraph

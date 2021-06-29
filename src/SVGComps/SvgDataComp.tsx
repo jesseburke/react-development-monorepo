@@ -143,6 +143,8 @@ export default function SvgDataComp({
         return { xMin, xMax, yMin, yMax };
     });
 
+    const modeAtom = atom('pan');
+
     return {
         svgHeightAndWidthAtom,
         svgToMathFuncAtom,
@@ -153,7 +155,8 @@ export default function SvgDataComp({
         svgBoundsAtom,
         mathBoundsAtom,
         zoomAtMaxAtom,
-        zoomAtMinAtom
+        zoomAtMinAtom,
+        modeAtom
     };
 }
 

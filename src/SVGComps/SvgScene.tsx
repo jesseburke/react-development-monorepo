@@ -14,12 +14,11 @@ import SvgDataComp from './SvgDataComp';
 
 const pixelRatio = 1; //window.devicePixelRatio;
 
+const defaultSvgData = SvgDataComp();
+
 export const SvgContext = createContext({});
 
-const defaultSvgData = SvgDataComp();
-const defaultModeAtom = atom('pan');
-
-export default ({ svgData = defaultSvgData, modeAtom = defaultModeAtom, children = {} } = {}) => {
+export default ({ svgData = defaultSvgData, children = {} } = {}) => {
     const {
         svgHeightAndWidthAtom,
         svgBoundsAtom,
@@ -29,7 +28,8 @@ export default ({ svgData = defaultSvgData, modeAtom = defaultModeAtom, children
         zoomAtom,
         mathToSvgFuncAtom,
         zoomAtMaxAtom,
-        zoomAtMinAtom
+        zoomAtMinAtom,
+        modeAtom
     } = svgData;
 
     const svgParentRef = useRef(null);
