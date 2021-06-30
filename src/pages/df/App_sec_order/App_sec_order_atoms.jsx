@@ -93,13 +93,13 @@ export const initialPoint2Data = PointDataComp(initInitialPoint2);
 export const svgData = SvgDataComp({ zoom1XWidth });
 
 export const atomStoreAtom = atom({
-    ls: labelData,
-    ax: axesData,
-    sc: solutionCurveData,
-    a: aData,
-    b: bData,
-    ip1: initialPoint1Data,
-    ip2: initialPoint2Data
+    ls: labelData.readWriteAtom,
+    ax: axesData.readWriteAtom,
+    sc: solutionCurveData.readWriteAtom,
+    a: aData.readWriteAtom,
+    b: bData.readWriteAtom,
+    ip1: initialPoint1Data.readWriteAtom,
+    ip2: initialPoint2Data.readWriteAtom
 });
 
 //------------------------------------------------------------------------

@@ -71,12 +71,12 @@ export const w0Data = NumberDataComp(initW0Val);
 export const svgData = SvgDataComp();
 
 export const atomStoreAtom = atom({
-    ls: labelData,
-    ax: axesData,
-    sc: solutionCurveData,
-    f: fData,
-    w: wData,
-    w0: w0Data
+    ls: labelData.readWriteAtom,
+    ax: axesData.readWriteAtom,
+    sc: solutionCurveData.readWriteAtom,
+    f: fData.readWriteAtom,
+    w: wData.readWriteAtom,
+    w0: w0Data.readWriteAtom
 });
 
 //------------------------------------------------------------------------

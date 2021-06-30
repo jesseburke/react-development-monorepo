@@ -90,14 +90,14 @@ export const boundsData = BoundsDataComp({
 export const orthoCameraData = OrthoCameraDataComp(initCameraData);
 
 export const atomStoreAtom = atom({
-    ls: labelData,
-    ip: initialPointData,
-    ag: arrowGridData,
-    ax: axesData,
-    sc: solutionCurveData,
-    fn: diffEqData,
-    bd: boundsData,
-    cd: orthoCameraData
+    ls: labelData.readWriteAtom,
+    ip: initialPointData.readWriteAtom,
+    ag: arrowGridData.readWriteAtom,
+    ax: axesData.readWriteAtom,
+    sc: solutionCurveData.readWriteAtom,
+    fn: diffEqData.readWriteAtom,
+    bd: boundsData.readWriteAtom,
+    cd: orthoCameraData.readWriteAtom
 });
 
 function theta(a) {

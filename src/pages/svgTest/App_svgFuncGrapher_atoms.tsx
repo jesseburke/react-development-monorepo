@@ -34,8 +34,8 @@ export const curveData = CurveDataComp(initSolutionCurveData);
 export const svgData = SvgDataComp();
 
 export const atomStoreAtom = atom({
-    fn: funcData,
-    cd: curveData
+    fn: funcData.readWriteAtom,
+    cd: curveData.readWriteAtom
 });
 
 //export const DataComp = MainDataComp(atomStoreAtom);

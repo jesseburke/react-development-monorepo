@@ -134,12 +134,12 @@ export const twoDFuncAtom = atom((get) => {
 export const cameraData = PerspCameraData(initCameraData);
 
 const atomStoreAtom = atom({
-    ls: labelData,
-    ax: axesData,
-    fn: funcData,
-    bd: boundsData,
-    cd: cameraData,
-    ad: animationData
+    ls: labelData.readWriteAtom,
+    ax: axesData.readWriteAtom,
+    fn: funcData.readWriteAtom,
+    bd: boundsData.readWriteAtom,
+    cd: cameraData.readWriteAtom,
+    ad: animationData.readWriteAtom
 });
 
 export const DataComp = MainDataComp(atomStoreAtom);

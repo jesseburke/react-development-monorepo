@@ -87,9 +87,9 @@ export const gridBoundsAtom = atom((get) => {
 export const cameraData = PerspCameraDataComp(initCameraData);
 
 export const atomStoreAtom = atom({
-    ls: labelData,
-    ax: axesData,
-    fn: funcData,
-    bd: boundsData,
-    cd: cameraData
+    ls: labelData.readWriteAtom,
+    ax: axesData.readWriteAtom,
+    fn: funcData.readWriteAtom,
+    bd: boundsData.readWriteAtom,
+    cd: cameraData.readWriteAtom
 });

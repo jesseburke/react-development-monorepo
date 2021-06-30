@@ -97,15 +97,15 @@ const qxFunctionData = FunctionDataComp({
 });
 
 export const atomStoreAtom = atom({
-    ls: labelData,
-    ip: initialPointData,
-    ag: arrowGridData,
-    ax: axesData,
-    sc: solutionCurveData,
-    bd: boundsData,
-    cd: orthoCameraData,
-    px: pxFunctionData,
-    qx: qxFunctionData
+    ls: labelData.readWriteAtom,
+    ip: initialPointData.readWriteAtom,
+    ag: arrowGridData.readWriteAtom,
+    ax: axesData.readWriteAtom,
+    sc: solutionCurveData.readWriteAtom,
+    bd: boundsData.readWriteAtom,
+    cd: orthoCameraData.readWriteAtom,
+    px: pxFunctionData.readWriteAtom,
+    qx: qxFunctionData.readWriteAtom
 });
 
 //------------------------------------------------------------------------

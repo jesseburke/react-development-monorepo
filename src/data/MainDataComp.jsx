@@ -7,8 +7,8 @@ import React, {
     cloneElement
 } from 'react';
 import { atom, useAtom } from 'jotai';
-
 import queryString from 'query-string-esm';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 import { myStringify } from '../utils/BaseUtils';
 
@@ -23,7 +23,7 @@ function WrappedComp({ atomStore }) {
         let ro = {};
 
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
-            set(atom.readWriteAtom, {
+            set(atom, {
                 type: 'readToAddressBar',
                 callback: (obj) => {
                     if (obj) ro[abbrev] = myStringify(obj);
@@ -36,7 +36,7 @@ function WrappedComp({ atomStore }) {
 
     const resetAtomStoreAtom = atom(null, (get, set) => {
         Object.values(atomStore).forEach((atom) => {
-            set(atom.readWriteAtom, {
+            set(atom, {
                 type: 'reset'
             });
         });
@@ -44,7 +44,7 @@ function WrappedComp({ atomStore }) {
 
     const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
         Object.keys(newObj).forEach((k) => {
-            set(atomStore[k].readWriteAtom, {
+            set(atomStore[k], {
                 type: 'writeFromAddressBar',
                 value: newObj[k]
             });
