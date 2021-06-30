@@ -99,7 +99,8 @@ export const atomStoreAtom = atom({
     a: aData.readWriteAtom,
     b: bData.readWriteAtom,
     ip1: initialPoint1Data.readWriteAtom,
-    ip2: initialPoint2Data.readWriteAtom
+    ip2: initialPoint2Data.readWriteAtom,
+    svg: svgData.svgSaveDataAtom
 });
 
 //------------------------------------------------------------------------

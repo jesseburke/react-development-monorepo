@@ -76,7 +76,8 @@ export const atomStoreAtom = atom({
     sc: solutionCurveData.readWriteAtom,
     f: fData.readWriteAtom,
     w: wData.readWriteAtom,
-    w0: w0Data.readWriteAtom
+    w0: w0Data.readWriteAtom,
+    svg: svgData.svgSaveDataAtom
 });
 
 //------------------------------------------------------------------------

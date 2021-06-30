@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 
 import NumberDataComp from '../data/NumberDataComp';
 import PointDataComp from '../data/PointDataComp';
+import CombineReadWriteAtoms from '../data/CombineRWAtoms';
 
 import MatrixFactory from '../math/MatrixFactory';
 
@@ -117,6 +118,11 @@ export default function SvgDataComp({
 
     const upperLeftPointData = PointDataComp({ x: 0, y: 0 });
 
+    const svgSaveDataAtom = CombineReadWriteAtoms({
+        zm: zoomData.readWriteAtom,
+        ulp: upperLeftPointData.readWriteAtom
+    });
+
     const svgBoundsAtom = atom((get) => {
         const zoom = get(zoomData.atom);
         const { height, width } = get(svgHeightAndWidthAtom);
@@ -156,38 +162,7 @@ export default function SvgDataComp({
         mathBoundsAtom,
         zoomAtMaxAtom,
         zoomAtMinAtom,
-        modeAtom
+        modeAtom,
+        svgSaveDataAtom
     };
-}
-
-function CombineReadWriteAtoms(atomStore) {
-    const newRWAtom = atom(null, (get, set, action) => {
-        switch (action.type) {
-            case 'reset':
-                Object.values(atomStore).forEach((atom) => {
-                    set(atom.readWriteAtom, {
-                        type: 'reset'
-                    });
-                });
-                break;
-
-            case 'readToAddressBar':
-                let ro = {};
-
-                Object.entries(atomStore).forEach(([abbrev, atom]) =>
-                    set(atom.readWriteAtom, {
-                        type: 'readToAddressBar',
-                        callback: (obj) => {
-                            if (obj) ro[abbrev] = myStringify(obj);
-                        }
-                    })
-                );
-
-                if (isEmpty(ro)) return;
-                action.callback(ro);
-                break;
-        }
-    });
-
-    return newRWAtom;
 }

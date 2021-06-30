@@ -60,11 +60,11 @@ export default function App() {
                 <main className='flex-grow relative p-0'>
                     <SvgScene svgData={svgData}>
                         <SvgAxes />
-                        <SvgBorderAxes />
                         <SvgFunctionGraph
                             funcAtom={funcAtom}
                             curveDataAtom={solutionCurveData.atom}
                         />
+                        <SvgBorderAxes />
                     </SvgScene>
 
                     <DataComp
