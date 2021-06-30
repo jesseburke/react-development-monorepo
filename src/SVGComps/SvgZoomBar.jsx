@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import { atom, useAtom } from 'jotai';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 import { SvgContext } from './SvgScene';
 
@@ -67,7 +68,9 @@ export default function SvgZoomBar({
                 onClick={() => zoomReducer('zoom in button')}
                 fill='#aaa'
                 opacity={zoomAtMax ? '0.1' : '0.8'}
-            />
+            >
+                <title>Zoom in</title>
+            </rect>
             <text
                 x={left + 2 * margin + size / 2}
                 y={top + margin + size / 2}
@@ -91,7 +94,10 @@ export default function SvgZoomBar({
                 onClick={() => zoomReducer('zoom out button')}
                 fill='#aaa'
                 opacity={zoomAtMin ? '0.1' : '0.8'}
-            />
+            >
+                {' '}
+                <title>Zoom out</title>
+            </rect>
             <text
                 x={left + 2 * margin + size / 2}
                 y={top + margin + size / 2 + size + margin}
@@ -119,7 +125,10 @@ export default function SvgZoomBar({
                 }}
                 fill='#aaa'
                 opacity='0.8'
-            />
+            >
+                {' '}
+                <title>Reset view</title>
+            </rect>
             <text
                 x={left + 2 * margin + size / 2}
                 y={top + margin + size / 2 + 2 * (size + margin)}
@@ -142,7 +151,10 @@ export default function SvgZoomBar({
                 onClick={centerCB}
                 fill='#aaa'
                 opacity='0.8'
-            />
+            >
+                {' '}
+                <title>Choose view center</title>
+            </rect>
             <text
                 x={left + 2 * margin + size / 2}
                 y={top + margin + size / 2 + 3 * (size + margin)}

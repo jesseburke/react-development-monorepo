@@ -136,9 +136,12 @@ function DefaultSaveComp(
     classNameStr = 'absolute left-8 bottom-40 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl'
 ) {
     return (
-        <div onClick={saveCB}>
-            <button className={classNameStr}>Save</button>
-        </div>
+        <Tooltip.Root>
+            <Tooltip.Trigger className={classNameStr} onClick={saveCB}>
+                Save
+            </Tooltip.Trigger>
+            <Tooltip.Content>Save the state in the address bar</Tooltip.Content>
+        </Tooltip.Root>
     );
 }
 
@@ -147,9 +150,15 @@ function DefaultResetComp(
     classNameStr = 'absolute left-8 bottom-24 p-2 border-2 rounded-md border-solid border-persian_blue-900 cursor-pointer text-xl'
 ) {
     return (
-        <div onClick={resetCB}>
-            <button className={classNameStr}>Reset</button>
-        </div>
+        <Tooltip.Root>
+            <Tooltip.Trigger className={classNameStr} onClick={resetCB}>
+                Reset
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+                Reset the app to its initial state. If you first click save, the back button will
+                return to the current state after reset.
+            </Tooltip.Content>
+        </Tooltip.Root>
     );
 }
 
