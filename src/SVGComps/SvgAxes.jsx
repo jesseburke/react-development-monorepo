@@ -5,6 +5,9 @@ import { round } from '../utils/BaseUtils';
 
 import { SvgContext } from './SvgScene';
 
+const originRadius = 5;
+const axesWidth = 2;
+
 export default function SvgAxes({}) {
     const { mathBoundsAtom, svgBoundsAtom, zoomAtom, mathToSvgFuncAtom, graphSqWAtom } = useContext(
         SvgContext
@@ -74,9 +77,6 @@ export default function SvgAxes({}) {
     if (yMinSvg <= ycSvg && ycSvg <= yMaxSvg) {
         yOnScreen = true;
     }
-
-    const originRadius = 10;
-    const axesWidth = 2;
 
     return (
         <g>

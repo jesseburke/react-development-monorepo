@@ -4,7 +4,7 @@
    ( was due to svg not being absolutely positioned)
  - [X] origin circle is getting too big on large zoom
 
-
+ - [ ] grey out the zoom buttons when max/min is reached
 
  
 * to add
@@ -20,17 +20,25 @@
 - [X] should test transform functions...write tests for them?
     
   
-** graph paper
-
-would like some range of squares to always be displayed, e.g., between
-40 and 60...should use actual height of svg for part of bound? e.g.,
-should show more squares on large monitor than on cell phone. 
+** DONE graph paper
+   :LOGBOOK:
+   - State "DONE"       from              [2021-06-24 Thu 18:03]
+   :END:
    
 ** axes
 
-display xMin, xMax, yMin, yMax on the graph   
+- [X] display xMin, xMax, yMin, yMax on the graph
+
+- [ ] pass, and use, axesData
    
-** function graph
+** DONE function graph
+   :LOGBOOK:
+   - State "DONE"       from              [2021-06-24 Thu 18:03]
+   :END:
+
+** touch gestures
+
+   including pinch to zoom in/out
    
 ** DONE zoom buttons
    :LOGBOOK:
@@ -41,8 +49,20 @@ display xMin, xMax, yMin, yMax on the graph
    
 ** zoom with touch pad
 
+   - [X] have to make zoom atom accept argument for zooming
+   - [ ] move svg atom code from App_svgTest_atoms to somewhere that it's
+     reusable?
+
+
 
    
-* idea: can we pass SvgScene children a context, that they can get atoms from?
+* symmetry apps
 
+- would like to keep points the primary data
+- these can transformed into svg or mesh
+- maybe have mesh component that wraps such points data, and can use
+  it to create 'expanding mesh'
+- no need to create one big mesh, can have array of meshes. will be
+  useful for: un/redoing, erasing, transforming pieces, etc.
+- would be very cool to have mode to edit the points that define the shape
   

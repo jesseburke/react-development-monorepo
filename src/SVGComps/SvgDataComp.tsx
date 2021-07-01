@@ -17,7 +17,7 @@ export const defaultInitYCenter = 0;
 const defaultInitGraphSqW = 1;
 
 export const defaultZoomFactorButton = 2;
-const defaultZoomFactorWheel = 1.1;
+const defaultZoomFactorWheel = 1.03;
 
 const defaultZoomMax = 2 ** 15;
 const defaultZoomMin = 1 / defaultZoomMax;

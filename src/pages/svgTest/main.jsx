@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { Helmet } from 'react-helmet';
 
 import App from './App_svgFuncGrapher';
-const title = 'svg Test';
+const title = 'Function grapher';
 
 function main() {
     const element = document.createElement('div');
