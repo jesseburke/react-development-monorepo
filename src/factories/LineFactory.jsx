@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 // vec1 and vec2 are Three.Vector3's, with z component assumed to be 0
 // vec2 defaults to (0,0,0), so can pass in one argument to get line

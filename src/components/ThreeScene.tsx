@@ -27,25 +27,28 @@ export interface ThreeSceneProps {
     children: null;
 }
 
-export const ThreeSceneComp: FunctionComponent = ({
-    controlsCB = null,
-    fixedCameraData,
-    controlsData = {
-        mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
-        touches: { ONE: THREE.MOUSE.ROTATE, TWO: THREE.TOUCH.PAN, THREE: THREE.MOUSE.DOLLY },
-        enableRotate: true,
-        enableKeys: true,
-        enabled: false,
-        keyPanSpeed: 50
+const ThreeScene: FunctionComponent = (
+    {
+        controlsCB = null,
+        fixedCameraData,
+        controlsData = {
+            mouseButtons: { LEFT: THREE.MOUSE.ROTATE },
+            touches: { ONE: THREE.MOUSE.ROTATE, TWO: THREE.TOUCH.PAN, THREE: THREE.MOUSE.DOLLY },
+            enableRotate: true,
+            enableKeys: true,
+            enabled: false,
+            keyPanSpeed: 50
+        },
+        clearColor = '#f0f0f0',
+        aspectRatio = 1,
+        photoButton = false,
+        photoBtnClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
+        cameraDebug = false,
+        halfWidth = false,
+        children
     },
-    clearColor = '#f0f0f0',
-    aspectRatio = 1,
-    photoButton = false,
-    photoBtnClassStr = 'absolute left-6 bottom-6 p-1 border rounded-sm border-solid cursor-pointer text-xl',
-    cameraDebug = false,
-    halfWidth = false,
-    children
-}) => {
+    ref
+) => {
     const threeCanvasRef = useRef(null);
     const labelContainerRef = useRef(null);
 
@@ -130,6 +133,91 @@ export const ThreeSceneComp: FunctionComponent = ({
         initialWidthPxs
     ]);
 
+    React.useImperativeHandle(ref, () => ({
+        add: (mesh) => {
+            //console.log('threeCBs.add called with mesh = ', mesh);
+            threeSceneCBs.add(mesh);
+            threeSceneCBs.render();
+        },
+
+        remove: (mesh) => {
+            threeSceneCBs.remove(mesh);
+            threeSceneCBs.render();
+        },
+
+        render: () => threeSceneCBs.render(),
+
+        getCamera: () => threeSceneCBs.getCamera(),
+
+        // pos and up are three entry arrays, each representing a point
+        setCameraPosition: (pos, up) => {
+            //console.log('threeCBs.setcameraposition called with pos = ', pos);
+            threeSceneCBs.setCameraPosition(pos, up);
+        },
+
+        // pos is a three entry array representing a point
+        setCameraLookAt: (pos) => {
+            threeSceneCBs.setCameraLookAt(pos);
+        },
+
+        getCanvas: () => threeCanvasRef.current,
+
+        getMouseCoords: (e, mesh) => threeSceneCBs.getMouseCoords(e, mesh),
+
+        screenToWorldCoords: (screenX, screenY) =>
+            threeSceneCBs.screenToWorldCoords(screenX, screenY),
+
+        resetControls: () => threeSceneCBs.resetControls(),
+
+        changeControls: (newControlsData) => threeSceneCBs.changeControls(newControlsData),
+
+        getControlsTarget: () => threeSceneCBs.getControlsTarget(),
+
+        downloadGLTF: (fileName) => threeSceneCBs.downloadGLTF(fileName),
+
+        // labelObj = {pos, text, style}
+        // pos = array of three numbers
+        // test = string
+        // style = axesLabelStyle
+        //
+        // returns id to remove later
+        addLabel: (labelObj) => threeSceneCBs.addLabel(labelObj),
+
+        removeLabel: (id) => threeSceneCBs.removeLabel(id),
+
+        drawLabels: () => threeSceneCBs.drawLabels(),
+
+        // dragendCB is called with the object that is being dragged as argument
+        addDragControls: ({ meshArray, dragCB, dragendCB }) =>
+            threeSceneCBs.addDragControls({ meshArray, dragCB, dragendCB })
+    }));
+
+    // think these can be gotten rid of...
+    /* useEffect(() => {
+     *     setThreeCBs({
+     *         ...threeSceneCBs,
+     *         add: (mesh) => {
+     *             //console.log('threeCBs.add called with mesh = ', mesh);
+     *             threeSceneCBs.add(mesh);
+     *             threeSceneCBs.render();
+     *         },
+     *         remove: (mesh) => {
+     *             threeSceneCBs.remove(mesh);
+     *             threeSceneCBs.render();
+     *         },
+     *         getCanvas: () => threeCanvasRef.current,
+     *         getMouseCoords: (e, mesh) => {
+     *             //console.log('new version of getMouseCoords called');
+     *             return threeSceneCBs.getMouseCoords(e, mesh);
+     *         },
+     *         // dragendCB is called with the object that is being dragged as argument
+     *         addDragControls: ({ meshArray, dragCB, dragendCB }) =>
+     *             threeSceneCBs.addDragControls({ meshArray, dragCB, dragendCB })
+     *     });
+
+     *     threeSceneCBs.render();
+     * }, [threeSceneCBs]); */
+
     //----------------------------------------
     //
     // setup resize observer
@@ -204,3 +292,68 @@ export const ThreeSceneComp: FunctionComponent = ({
         </div>
     );
 };
+
+export const ThreeSceneComp = React.memo(React.forwardRef(ThreeScene));
+
+// should get rid of this as soon as possible
+export function useThreeCBs(threeRef) {
+    const [threeCBs, setThreeCBs] = useState(null);
+
+    useEffect(() => {
+        if (!threeRef.current) return;
+
+        const getCanvas = threeRef.current.getCanvas;
+
+        const getCamera = threeRef.current.getCamera;
+
+        const setCameraPosition = threeRef.current.setCameraPosition;
+
+        const setCameraLookAt = threeRef.current.setCameraLookAt;
+
+        const getMouseCoords = threeRef.current.getMouseCoords;
+
+        // calculates where ray into the screen at (screenX, screenY) intersects mesh
+        const screenToWorldCoords = threeRef.current.screenToWorldCoords;
+
+        const add = threeRef.current.add;
+
+        const remove = threeRef.current.remove;
+
+        const render = threeRef.current.render;
+
+        const resetControls = threeRef.current.resetControls;
+
+        const changeControls = threeRef.current.changeControls;
+
+        const getControlsTarget = threeRef.current.getControlsTarget;
+
+        const addLabel = threeRef.current.addLabel;
+
+        const removeLabel = threeRef.current.removeLabel;
+
+        const drawLabels = threeRef.current.drawLabels;
+
+        const addDragControls = threeRef.current.addDragControls;
+
+        setThreeCBs({
+            getCanvas,
+            getCamera,
+            setCameraPosition,
+            setCameraLookAt,
+            getMouseCoords,
+            add,
+            remove,
+            render,
+            resetControls,
+            changeControls,
+            getControlsTarget,
+            screenToWorldCoords,
+            addLabel,
+            removeLabel,
+            drawLabels,
+            addDragControls
+        });
+    }, [threeRef]);
+
+    return threeCBs;
+}

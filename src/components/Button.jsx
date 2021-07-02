@@ -1,7 +1,7 @@
 // see https://stackoverflow.com/questions/17481660/darken-background-image-on-hover
 // for ideas on how to change hover behavior
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, memo } from 'react';
 
 export default memo(function Button({
     children,

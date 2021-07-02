@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
+
+import '../styles.css';
 
 import Button from '../components/Button.jsx';
 
@@ -96,7 +98,7 @@ function FreeDrawFactory({
     const planeMat = new THREE.MeshBasicMaterial({ color: 'rgba(100, 100, 100, 1)' });
 
     planeMat.transparent = true;
-    planeMat.opacity = 0.0;
+    planeMat.opacity = 0.5;
     planeMat.side = THREE.DoubleSide;
     planeMat.depthWrite = false;
 
