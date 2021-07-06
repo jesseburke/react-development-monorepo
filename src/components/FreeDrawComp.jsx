@@ -1,63 +1,131 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-
+import React, { useState, useRef, useContext, useEffect, useCallback } from 'react';
+import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
-import '../styles.css';
-
 import Button from '../components/Button.jsx';
 
-export default function FreeDrawComp({
-    threeCBs,
-    startingGeom = null,
-    doneCBs = [() => null],
-    transforms = [],
-    material,
-    clearCB,
-    fontSize = '1.25em'
-}) {
-    const [freeDraw, setFreeDraw] = useState(null);
+const freeDrawMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(0xc2374f),
+    opacity: 1.0,
+    side: THREE.FrontSide
+});
 
-    const resetCB = useCallback(() => {
-        if (freeDraw) freeDraw.reset();
+const fixedMaterial = freeDrawMaterial.clone();
+fixedMaterial.opacity = 0.35;
+fixedMaterial.transparent = true;
 
-        if (clearCB) clearCB();
-    }, [freeDraw, clearCB]);
+const defaultDrawingAtom = atom(true);
 
-    // following sets up FreeDraw
-    useEffect(() => {
-        let fd;
+function FreeDrawComp(
+    { startingGeom = null, transforms = [], activeAtom = defaultDrawingAtom, threeCBs },
+    ref
+) {
+    const drawing = useAtom(activeAtom)[0];
 
-        if (!threeCBs || !material) {
-            setFreeDraw(null);
-        } else {
-            fd = FreeDrawFactory({ threeCBs, startingGeom, material, transforms });
-            setFreeDraw(fd);
+    const mainMeshRef = useRef(null);
+    const fixedMeshRef = useRef(null);
+    const freeDrawRef = useRef(null);
+
+    //------------------------------------------------------------------------
+
+    React.useImperativeHandle(ref, () => ({
+        mainMesh: mainMeshRef.current,
+        fixedMesh: fixedMeshRef.current
+    }));
+
+    const clearCB = useCallback(() => {
+        if (freeDrawRef.current) {
+            freeDrawRef.current.reset();
+            //freeDrawRef.current = null;
         }
-        // minus is clockwise
+
+        if (mainMeshRef.current) {
+            threeCBs.remove(mainMeshRef.current);
+            mainMeshRef.current.geometry.dispose();
+            mainMeshRef.current = null;
+        }
+
+        if (fixedMeshRef.current) {
+            threeCBs.remove(fixedMeshRef.current);
+            fixedMeshRef.current.geometry.dispose();
+            fixedMeshRef.current = null;
+        }
+    }, [threeCBs, freeDrawRef, mainMeshRef, fixedMeshRef]);
+
+    const doneCBs = [
+        useCallback(
+            (newMesh) => {
+                if (!newMesh) return;
+
+                if (!mainMeshRef.current) {
+                    mainMeshRef.current = newMesh;
+                    threeCBs.add(mainMeshRef.current);
+                } else {
+                    mainMeshRef.current.geometry = BufferGeometryUtils.mergeBufferGeometries(
+                        [mainMeshRef.current.geometry, newMesh.geometry].filter((e) => e)
+                    );
+                }
+                threeCBs.render();
+            },
+            [mainMeshRef, threeCBs]
+        ),
+        useCallback(
+            (newMesh) => {
+                if (!newMesh) return;
+
+                if (!fixedMeshRef.current) {
+                    fixedMeshRef.current = new THREE.Mesh();
+                    fixedMeshRef.current.geometry = newMesh.geometry;
+                    fixedMeshRef.current.material = fixedMaterial;
+                    threeCBs.add(fixedMeshRef.current);
+                } else {
+                    fixedMeshRef.current.geometry = BufferGeometryUtils.mergeBufferGeometries(
+                        [fixedMeshRef.current.geometry, newMesh.geometry].filter((e) => e)
+                    );
+                }
+                threeCBs.render();
+            },
+            [fixedMeshRef, threeCBs]
+        )
+    ];
+
+    // sets up FreeDraw
+    useEffect(() => {
+        if (!threeCBs) return;
+
+        if (drawing) {
+            freeDrawRef.current = FreeDrawFactory({
+                threeCBs,
+                startingGeom,
+                material: freeDrawMaterial,
+                transforms
+            });
+        } else {
+            if (freeDrawRef.current) {
+                freeDrawRef.current.dispose();
+            }
+            freeDrawRef.current = null;
+        }
+
         return () => {
-            if (fd) {
-                doneCBs.map((cb) => cb(fd.getMesh()));
-                fd.dispose();
+            if (freeDrawRef.current) {
+                doneCBs.map((cb) => cb(freeDrawRef.current.getMesh()));
+                freeDrawRef.current.dispose();
             }
         };
-    }, [threeCBs, material, startingGeom, transforms]);
+    }, [threeCBs, startingGeom, transforms, drawing, freeDrawRef]);
 
     return (
-        <div
-            css={{
-                position: 'absolute',
-                top: '90%',
-                left: '10%',
-                fontSize
-            }}
-        >
-            <div css={{ cursor: 'pointer' }}>
-                <Button onClickFunc={resetCB}>Clear Figure</Button>
+        <div className='absolute bottom-20 left-20 text-xl'>
+            <div className='cursor-pointer'>
+                {drawing ? <Button onClickFunc={clearCB}>Clear Figure</Button> : null}
             </div>
         </div>
     );
 }
+
+export default React.forwardRef(FreeDrawComp);
 
 function FreeDrawFactory({
     threeCBs,
@@ -66,8 +134,7 @@ function FreeDrawFactory({
     material = new THREE.MeshBasicMaterial({ color: 0xff00ff }),
     meshOptions = { tubularSegments: 128, radius: 0.15, radialSegments: 4, closed: false }
 }) {
-    const { getCanvas, add, remove } = threeCBs;
-    const getMouseCoords = threeCBs.getMouseCoords;
+    const { getCanvas, add, remove, getMouseCoords } = threeCBs;
 
     const canvas = getCanvas();
 
@@ -98,7 +165,7 @@ function FreeDrawFactory({
     const planeMat = new THREE.MeshBasicMaterial({ color: 'rgba(100, 100, 100, 1)' });
 
     planeMat.transparent = true;
-    planeMat.opacity = 0.5;
+    planeMat.opacity = 0.0;
     planeMat.side = THREE.DoubleSide;
     planeMat.depthWrite = false;
 
@@ -197,7 +264,7 @@ function FreeDrawFactory({
             add(curCompMesh);
         }
 
-        // otherwise user clicked, and let up mouse, without moving
+        // otherwise user clicked, and let up mouse, without moving.
         // add a sphere at the clicked point, in this case
         else {
             const pt = getMouseCoords(e, planeMesh);

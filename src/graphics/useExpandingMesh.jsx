@@ -9,47 +9,34 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 // is responsible for disposing it
 
 export default function useExpandingMesh({ startingMesh = null, threeCBs }) {
-    const [mesh, setMesh] = useState(startingMesh);
+    const meshRef = useRef(startingMesh);
 
-    const [newMesh, setNewMesh] = useState(null);
+    const expandCB = useCallback(
+        (newMesh) => {
+            //setNewMesh(nm);
 
-    const expandCB = useCallback((nm) => {
-        setNewMesh(nm);
-    }, []);
+            if (!newMesh || !threeCBs) return;
 
-    useEffect(() => {
-        if (!newMesh || !threeCBs) return;
+            if (!meshRef.current) {
+                meshRef.current = newMesh;
+                return;
+            }
 
-        const workingMesh = new THREE.Mesh();
+            meshRef.current.geometry = BufferGeometryUtils.mergeBufferGeometries(
+                [meshRef.current.geometry, newMesh.geometry].filter((e) => e)
+            );
+        },
+        [meshRef]
+    );
 
-        if (mesh) {
-            const newGeomArray = [mesh.geometry, newMesh.geometry].filter((e) => e);
-            workingMesh.geometry = BufferGeometryUtils.mergeBufferGeometries(newGeomArray);
-        } else {
-            workingMesh.geometry = newMesh.geometry;
-        }
-
-        workingMesh.material = newMesh.material;
-
-        setMesh(workingMesh);
-        threeCBs.add(workingMesh);
-
-        // get rid of old mesh
-        if (mesh) {
-            threeCBs.remove(mesh);
-            mesh.geometry.dispose();
-        }
-    }, [threeCBs, newMesh]);
-
-    const getMesh = useCallback(() => mesh, [mesh]);
+    const getMesh = useCallback(() => meshRef.current, [meshRef]);
 
     const clear = () => {
-        if (mesh) {
-            threeCBs.remove(mesh);
-            mesh.geometry.dispose();
+        if (meshRef.current) {
+            threeCBs.remove(meshRef.current);
+            meshRef.current.geometry.dispose();
         }
-
-        setMesh(null);
+        meshRef.current = null;
     };
 
     return { expandCB, getMesh, clear };

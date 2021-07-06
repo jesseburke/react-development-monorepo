@@ -7,13 +7,15 @@ import * as THREE from 'three';
 export default function ClickablePlaneComp({
     threeCBs,
     clickPointAtom,
-    paused,
+    pausedAtom,
     xSize = 1000,
     ySize = 1000,
     mesh
 }) {
     const [clickPlane, setClickPlane] = useState(null);
     const [clickPoint, setClickPoint] = useAtom(clickPointAtom);
+
+    const paused = useAtom(pausedAtom)[0];
 
     useEffect(() => {
         let cp;

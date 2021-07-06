@@ -5,7 +5,7 @@
         "dev": "NODE_ENV=development vite",
         "build": "vite build",
         "serve": "vite preview",
-        "test": "jest --silent --watchjks"
+        "test": "jest --silent --watch"
     },
     "dependencies": {
         "@radix-ui/react-checkbox": "^0.0.16",

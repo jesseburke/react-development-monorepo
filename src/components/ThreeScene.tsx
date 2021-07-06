@@ -27,6 +27,8 @@ export interface ThreeSceneProps {
     children: null;
 }
 
+export const ThreeCBsContext = React.createContext({});
+
 const ThreeScene: FunctionComponent = (
     {
         controlsCB = null,
@@ -133,90 +135,68 @@ const ThreeScene: FunctionComponent = (
         initialWidthPxs
     ]);
 
-    React.useImperativeHandle(ref, () => ({
-        add: (mesh) => {
-            //console.log('threeCBs.add called with mesh = ', mesh);
-            threeSceneCBs.add(mesh);
-            threeSceneCBs.render();
-        },
+    React.useImperativeHandle(
+        ref,
+        () => ({
+            add: (mesh) => {
+                //console.log('threeCBs.add called with mesh = ', mesh);
+                threeSceneCBs.add(mesh);
+                threeSceneCBs.render();
+            },
 
-        remove: (mesh) => {
-            threeSceneCBs.remove(mesh);
-            threeSceneCBs.render();
-        },
+            remove: (mesh) => {
+                threeSceneCBs.remove(mesh);
+                threeSceneCBs.render();
+            },
 
-        render: () => threeSceneCBs.render(),
+            render: () => threeSceneCBs.render(),
 
-        getCamera: () => threeSceneCBs.getCamera(),
+            getCamera: () => threeSceneCBs.getCamera(),
 
-        // pos and up are three entry arrays, each representing a point
-        setCameraPosition: (pos, up) => {
-            //console.log('threeCBs.setcameraposition called with pos = ', pos);
-            threeSceneCBs.setCameraPosition(pos, up);
-        },
+            // pos and up are three entry arrays, each representing a point
+            setCameraPosition: (pos, up) => {
+                //console.log('threeCBs.setcameraposition called with pos = ', pos);
+                threeSceneCBs.setCameraPosition(pos, up);
+            },
 
-        // pos is a three entry array representing a point
-        setCameraLookAt: (pos) => {
-            threeSceneCBs.setCameraLookAt(pos);
-        },
+            // pos is a three entry array representing a point
+            setCameraLookAt: (pos) => {
+                threeSceneCBs.setCameraLookAt(pos);
+            },
 
-        getCanvas: () => threeCanvasRef.current,
+            getCanvas: () => threeCanvasRef.current,
 
-        getMouseCoords: (e, mesh) => threeSceneCBs.getMouseCoords(e, mesh),
+            getMouseCoords: (e, mesh) => threeSceneCBs.getMouseCoords(e, mesh),
 
-        screenToWorldCoords: (screenX, screenY) =>
-            threeSceneCBs.screenToWorldCoords(screenX, screenY),
+            screenToWorldCoords: (screenX, screenY) =>
+                threeSceneCBs.screenToWorldCoords(screenX, screenY),
 
-        resetControls: () => threeSceneCBs.resetControls(),
+            resetControls: () => threeSceneCBs.resetControls(),
 
-        changeControls: (newControlsData) => threeSceneCBs.changeControls(newControlsData),
+            changeControls: (newControlsData) => threeSceneCBs.changeControls(newControlsData),
 
-        getControlsTarget: () => threeSceneCBs.getControlsTarget(),
+            getControlsTarget: () => threeSceneCBs.getControlsTarget(),
 
-        downloadGLTF: (fileName) => threeSceneCBs.downloadGLTF(fileName),
+            downloadGLTF: (fileName) => threeSceneCBs.downloadGLTF(fileName),
 
-        // labelObj = {pos, text, style}
-        // pos = array of three numbers
-        // test = string
-        // style = axesLabelStyle
-        //
-        // returns id to remove later
-        addLabel: (labelObj) => threeSceneCBs.addLabel(labelObj),
+            // labelObj = {pos, text, style}
+            // pos = array of three numbers
+            // test = string
+            // style = axesLabelStyle
+            //
+            // returns id to remove later
+            addLabel: (labelObj) => threeSceneCBs.addLabel(labelObj),
 
-        removeLabel: (id) => threeSceneCBs.removeLabel(id),
+            removeLabel: (id) => threeSceneCBs.removeLabel(id),
 
-        drawLabels: () => threeSceneCBs.drawLabels(),
+            drawLabels: () => threeSceneCBs.drawLabels(),
 
-        // dragendCB is called with the object that is being dragged as argument
-        addDragControls: ({ meshArray, dragCB, dragendCB }) =>
-            threeSceneCBs.addDragControls({ meshArray, dragCB, dragendCB })
-    }));
-
-    // think these can be gotten rid of...
-    /* useEffect(() => {
-     *     setThreeCBs({
-     *         ...threeSceneCBs,
-     *         add: (mesh) => {
-     *             //console.log('threeCBs.add called with mesh = ', mesh);
-     *             threeSceneCBs.add(mesh);
-     *             threeSceneCBs.render();
-     *         },
-     *         remove: (mesh) => {
-     *             threeSceneCBs.remove(mesh);
-     *             threeSceneCBs.render();
-     *         },
-     *         getCanvas: () => threeCanvasRef.current,
-     *         getMouseCoords: (e, mesh) => {
-     *             //console.log('new version of getMouseCoords called');
-     *             return threeSceneCBs.getMouseCoords(e, mesh);
-     *         },
-     *         // dragendCB is called with the object that is being dragged as argument
-     *         addDragControls: ({ meshArray, dragCB, dragendCB }) =>
-     *             threeSceneCBs.addDragControls({ meshArray, dragCB, dragendCB })
-     *     });
-
-     *     threeSceneCBs.render();
-     * }, [threeSceneCBs]); */
+            // dragendCB is called with the object that is being dragged as argument
+            addDragControls: ({ meshArray, dragCB, dragendCB }) =>
+                threeSceneCBs.addDragControls({ meshArray, dragCB, dragendCB })
+        }),
+        [threeSceneCBs]
+    );
 
     //----------------------------------------
     //
@@ -272,24 +252,26 @@ const ThreeScene: FunctionComponent = (
     )[0];
 
     return (
-        <div className={'absolute h-full bg-gray' + widthStr}>
-            <canvas
-                className='h-full w-full block outline-none'
-                ref={(elt) => (threeCanvasRef.current = elt)}
-                width={initialWidthPxs}
-                height={initialHeightPxs}
-            />
-            {cameraDebug ? cameraDebugComp : null}
-            <Fragment>
-                {Children.map(children, (el) => cloneElement(el, { threeCBs: threeSceneCBs }))}
-            </Fragment>
-            <div ref={(elt) => (labelContainerRef.current = elt)} />
-            {photoButton ? (
-                <div onClick={threeSceneCBs ? threeSceneCBs.downloadPicture : null}>
-                    <button className={photoBtnClassStr}>Photo</button>
-                </div>
-            ) : null}
-        </div>
+        <ThreeCBsContext.Provider value={threeSceneCBs}>
+            <div className={'absolute h-full bg-gray' + widthStr}>
+                <canvas
+                    className='h-full w-full block outline-none'
+                    ref={(elt) => (threeCanvasRef.current = elt)}
+                    width={initialWidthPxs}
+                    height={initialHeightPxs}
+                />
+                {cameraDebug ? cameraDebugComp : null}
+                <Fragment>
+                    {Children.map(children, (el) => cloneElement(el, { threeCBs: threeSceneCBs }))}
+                </Fragment>
+                <div ref={(elt) => (labelContainerRef.current = elt)} />
+                {photoButton ? (
+                    <div onClick={threeSceneCBs ? threeSceneCBs.downloadPicture : null}>
+                        <button className={photoBtnClassStr}>Photo</button>
+                    </div>
+                ) : null}
+            </div>
+        </ThreeCBsContext.Provider>
     );
 };
 
@@ -319,7 +301,7 @@ export function useThreeCBs(threeRef) {
 
         const remove = threeRef.current.remove;
 
-        const render = threeRef.current.render;
+        const render = () => threeRef.current.render();
 
         const resetControls = threeRef.current.resetControls;
 
