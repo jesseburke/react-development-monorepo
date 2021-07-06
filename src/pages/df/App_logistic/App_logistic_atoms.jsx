@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
+import * as THREE from 'three';
+
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
 import NumberDataComp from '../../../data/NumberDataComp.jsx';
@@ -9,6 +11,8 @@ import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
+
+import LineFactory from '../../../factories/LineFactory.jsx';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
@@ -119,18 +123,14 @@ export const funcAtom = atom((get) => {
     return { func: (x, y) => k * (1 - y / b) };
 });
 
-export const linePoint1Atom = atom((get) => {
-    const xMin = get(boundsData.atom).xMin;
+export const lineDataAtom = atom((get) => {
     const b = get(bData.atom);
+    const { xMax, xMin } = get(boundsData.atom);
 
-    return [xMin, b];
-});
+    const v1 = new THREE.Vector3(xMin, b, 0);
+    const v2 = new THREE.Vector3(xMax, b, 0);
 
-export const linePoint2Atom = atom((get) => {
-    const xMax = get(boundsData.atom).xMax;
-    const b = get(bData.atom);
-
-    return [xMax, b];
+    return LineFactory(v1, v2);
 });
 
 export const lineColorAtom = atom(initLineColor);

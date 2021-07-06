@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-const defaultVisibleAtom = atom(true);
+const defaultNotVisibleAtom = atom(false);
 
 const defaultColorAtom = atom('#3285ab');
 
@@ -14,22 +14,23 @@ export default function Line({
     threeCBs,
     radius = 0.1,
     colorAtom = defaultColorAtom,
-    point1Atom,
-    point2Atom,
-    visibleAtom = defaultVisibleAtom,
-    labelAtom = defaultLabelAtom
+    lineDataAtom,
+    visibleAtom,
+    notVisibleAtom = defaultNotVisibleAtom,
+    labelAtom = defaultLabelAtom,
+    boundsAtom
 }) {
     const [meshState, setMeshState] = useState();
 
-    const [visible] = useAtom(visibleAtom);
+    const visible = visibleAtom ? useAtom(visibleAtom)[0] : !useAtom(notVisibleAtom)[0];
 
     const [color] = useAtom(colorAtom);
 
-    const [point1] = useAtom(point1Atom);
-
-    const [point2] = useAtom(point2Atom);
-
     const [labelObj] = useAtom(labelAtom);
+
+    const lineData = useAtom(lineDataAtom)[0];
+
+    const bounds = useAtom(boundsAtom)[0];
 
     //------------------------------------------------------------------------
     //
@@ -42,18 +43,13 @@ export default function Line({
             return;
         }
 
-        if (!visible) {
+        if (!visible || !lineData) {
             if (meshState) threeCBs.remove(meshState);
             setMeshState(null);
             return;
         }
 
-        const path = new THREE.LineCurve3(
-            new THREE.Vector3(point1[0], point1[1]),
-            new THREE.Vector3(point2[0], point2[1])
-        );
-
-        const geometry = new THREE.TubeBufferGeometry(path, 16, radius, 8, false);
+        const geometry = lineData.makeGeometry({ bounds });
         const material = new THREE.MeshBasicMaterial({ color });
 
         const mesh = new THREE.Mesh(geometry, material);
@@ -66,7 +62,7 @@ export default function Line({
             if (geometry) geometry.dispose();
             if (material) material.dispose();
         };
-    }, [visible, color, radius, threeCBs, point1, point2]);
+    }, [visible, color, radius, threeCBs, lineData]);
 
     useEffect(() => {
         if (!threeCBs || !labelObj) return;

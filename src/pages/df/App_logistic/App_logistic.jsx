@@ -24,8 +24,7 @@ import {
     solutionCurveData,
     axesData,
     orthoCameraData,
-    linePoint1Atom,
-    linePoint2Atom,
+    lineDataAtom,
     lineLabelAtom,
     lineColorAtom,
     LogisticEquationInput,
@@ -119,8 +118,7 @@ export default function App() {
                             zHeightAtom={zHeightAtom}
                         />
                         <Line
-                            point1Atom={linePoint1Atom}
-                            point2Atom={linePoint2Atom}
+                            lineDataAtom={lineDataAtom}
                             labelAtom={lineLabelAtom}
                             colorAtom={lineColorAtom}
                         />
