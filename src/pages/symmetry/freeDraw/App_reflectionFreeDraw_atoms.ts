@@ -30,7 +30,7 @@ const initOrthographicData = {
     orthographic: { left: -halfXSize, right: halfXSize, top: halfYSize, bottom: -halfYSize }
 };
 
-const initBounds = { xMin: -20, xMax: 20, yMin: -14, yMax: 14 };
+const initBounds = { xMin: -30, xMax: 30, yMin: -14, yMax: 14 };
 
 const initCameraData = {
     center: [0, 0, 0],
@@ -41,7 +41,8 @@ const initCameraData = {
 const initAxesData = {
     radius: 0.02,
     show: true,
-    tickLabelDistance: 5
+    showLabels: false,
+    tickLabelDistance: 0
 };
 
 const labelStyle = {

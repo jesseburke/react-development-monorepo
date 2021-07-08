@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
-import Button from '../components/Button.jsx';
+import Button from './ButtonWithActiveState.jsx';
 
 const freeDrawMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(0xc2374f),
@@ -119,7 +119,7 @@ function FreeDrawComp(
     return (
         <div className='absolute bottom-20 left-20 text-xl'>
             <div className='cursor-pointer'>
-                {drawing ? <Button onClickFunc={clearCB}>Clear Figure</Button> : null}
+                {drawing ? <Button onClick={clearCB}>Clear Figure</Button> : null}
             </div>
         </div>
     );

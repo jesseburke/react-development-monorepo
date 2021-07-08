@@ -9,7 +9,7 @@ import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import Line from '../../../ThreeSceneComps/Line';
 import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
-import Button from '../../../components/Button.jsx';
+import Button from '../../../components/ButtonWithActiveState.jsx';
 
 import { Route, Link } from '../../../routing';
 
@@ -61,7 +61,7 @@ export default function App() {
     const resetCB = useCallback(() => {
         setDrawing(true);
 
-        if (!threeCBs || !meshRef.current) return;
+        if (!threeCBs || !meshRef.current || !meshRef.current.fixedMesh) return;
 
         // rotate mesh back to original position
         gsapRotate({
@@ -111,10 +111,11 @@ export default function App() {
                 />
                 <ClickablePlaneComp clickPointAtom={linePointAtom} pausedAtom={drawingAtom} />
             </ThreeSceneComp>
+
             <Route path='/'>
                 <Link href='/not_drawing'>
                     <div className='absolute top-10 left-10'>
-                        <Button onClickFunc={() => setDrawing(false)}>Done drawing</Button>
+                        <Button onClick={() => setDrawing(false)}>Reflect Figure</Button>
                     </div>
                 </Link>
             </Route>
@@ -126,14 +127,14 @@ export default function App() {
                 >
                     <Link href='/'>
                         <div className='cursor-pointer'>
-                            <Button onClickFunc={resetCB}>Back to drawing</Button>
+                            <Button onClick={resetCB}>Back to drawing</Button>
                         </div>
                     </Link>
 
                     <div>Click on plane to choose reflection line</div>
 
                     <div>
-                        <Button onClickFunc={reflectCB} active={!animating}>
+                        <Button onClick={reflectCB} active={!animating}>
                             Reflect!
                         </Button>
                     </div>
