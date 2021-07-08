@@ -18,7 +18,7 @@ const defaultSvgData = SvgDataComp();
 
 export const SvgContext = createContext({});
 
-export default ({ svgData = defaultSvgData, children = {} } = {}) => {
+export default ({ svgData = defaultSvgData, canPan = true, children = {} } = {}) => {
     const {
         svgHeightAndWidthAtom,
         svgBoundsAtom,
@@ -126,22 +126,29 @@ export default ({ svgData = defaultSvgData, children = {} } = {}) => {
 
     return (
         <div
-            className='h-full w-full relative'
+            className='h-full w-full absolute top-0 left-0'
             ref={(elt) => (svgParentRef.current = elt)}
-            onMouseDown={(e) => {
-                //console.log('mouse down event fired');
-                if (e.button === 0 && !isDown.current) {
-                    isDown.current = 'mouse';
-                    if (mode === 'pan') {
-                        lastPosition.current = [e.clientX, e.clientY];
-                    }
-                    if (mode === 'center') {
-                        const { x: newX, y: newY } = domToSvgCoords({ x: e.clientX, y: e.clientY });
-                        setUpperLeftPoint({ x: newX - width / 2, y: newY - height / 2 });
-                        setMode('pan');
-                    }
-                }
-            }}
+            onMouseDown={
+                canPan
+                    ? (e) => {
+                          //console.log('mouse down event fired');
+                          if (e.button === 0 && !isDown.current) {
+                              isDown.current = 'mouse';
+                              if (mode === 'pan') {
+                                  lastPosition.current = [e.clientX, e.clientY];
+                              }
+                              if (mode === 'center') {
+                                  const { x: newX, y: newY } = domToSvgCoords({
+                                      x: e.clientX,
+                                      y: e.clientY
+                                  });
+                                  setUpperLeftPoint({ x: newX - width / 2, y: newY - height / 2 });
+                                  setMode('pan');
+                              }
+                          }
+                      }
+                    : null
+            }
             onMouseMove={(e) => {
                 //console.log('mouse move event fired');
                 if (isDown.current === 'mouse') {
