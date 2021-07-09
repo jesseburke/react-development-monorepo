@@ -1,269 +1,159 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-
-import { Route, Link } from 'wouter';
-import { Router as WouterRouter } from 'wouter';
+import { useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import './styles.css';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
+import Grid from '../../../ThreeSceneComps/Grid';
+import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
+import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
+import CircularArrow from '../../../ThreeSceneComps/CircularArrow';
+import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
-import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
-import TranslateComp from '../../../components/TranslateComp.jsx';
-import Input from '../../../components/Input.jsx';
+import Button from '../../../components/ButtonWithActiveState.jsx';
 
-import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
-import useHashLocation from '../../../hooks/useHashLocation.jsx';
-import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../../graphics/use2DAxes.jsx';
+import { Route, Link } from '../../../routing';
 
 import gsapTranslate from '../../../animations/gsapTranslate.jsx';
 
-import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
-import Button from '../../components/Button.jsx';
+import {
+    boundsData,
+    axesData,
+    drawingAtom,
+    curTranslationAtom,
+    totalTranslationAtom,
+    CurTranslationComp,
+    TotalTranslationComp,
+    translatePointData
+} from './App_translationFreeDraw_atoms';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
+const aspectRatio = window.innerWidth / window.innerHeight;
 
-//------------------------------------------------------------------------
+const fixedCameraData = {
+    up: [0, 1, 0],
+    near: 0.1,
+    far: 100,
+    aspectRatio,
+    orthographic: true
+};
 
-// const freeDrawMaterial = new THREE.MeshBasicMaterial({ color: new THREE.Color( 0xc2374f ),
-// 						       opacity: 1.0,
-//                                                        side: THREE.FrontSide});
-// const fixedMaterial =  freeDrawMaterial.clone();
-// fixedMaterial.opacity = .35;
-// fixedMaterial.transparent = true;
-
-const fixedMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(0xc2374f),
-    opacity: 1.0,
-    side: THREE.FrontSide
-});
-fixedMaterial.opacity = 0.35;
-fixedMaterial.transparent = true;
+const initControlsData = {
+    enabled: false
+};
 
 const translationDuration = 0.4;
 
-const startingTranslation = [2, 1];
-
 const EPSILON = 0.00001;
 
-const freeDrawMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(0xc2374f),
-    opacity: 1.0,
-    side: THREE.FrontSide
-});
+const translateBoxCss =
+    'absolute top-10 left-10 p-4 flex flex-col justify-between content-between items-center select-none border-black rounded-md border-2';
 
 export default function App() {
-    const [, navigate] = useHashLocation();
-
-    // this is only used to define threeCBs (which are used everywhere)
     const threeSceneRef = useRef(null);
-
-    // following is passed to components that draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
-    const [xCurTranslation, setXCurTranslation] = useState(startingTranslation[0]);
-    const [yCurTranslation, setYCurTranslation] = useState(startingTranslation[1]);
-
-    const [xTotalTranslation, setXTotalTranslation] = useState(0);
-    const [yTotalTranslation, setYTotalTranslation] = useState(0);
+    // used for animations
+    const meshRef = useRef(null);
 
     const [animating, setAnimating] = useState(false);
+    const setDrawing = useAtom(drawingAtom)[1];
 
-    const cameraData = useRef(initOrthographicData, []);
-
-    //------------------------------------------------------------------------
-    //
-    // starting effects
-
-    const userMesh = useExpandingMesh({ threeCBs });
-    const fixedMesh = useExpandingMesh({ threeCBs });
-
-    useGridAndOrigin({ threeCBs, gridData: initGridAndOriginData });
-
-    use2DAxes({ threeCBs, axesData: initAxesData });
-
-    //------------------------------------------------------------------------
-
-    const clearCB = useCallback(() => {
-        if (!threeCBs) return;
-
-        if (userMesh) {
-            userMesh.clear();
-        }
-
-        if (fixedMesh) {
-            fixedMesh.clear();
-        }
-
-        setXTotalTranslation(0);
-        setYTotalTranslation(0);
-        setXCurTranslation(startingTranslation[0]);
-        setYCurTranslation(startingTranslation[1]);
-
-        navigate('/');
-    }, [threeCBs, userMesh, fixedMesh, navigate]);
-
-    const freeDrawDoneCBs = [
-        userMesh.expandCB,
-        useCallback(
-            (mesh) => {
-                if (!mesh) return;
-                mesh.material = fixedMaterial;
-                fixedMesh.expandCB(mesh);
-            },
-            [fixedMesh]
-        )
-    ];
+    const [curTranslation, setCurTranslation] = useAtom(curTranslationAtom);
+    const [totalTranslation, setTotalTranslation] = useAtom(totalTranslationAtom);
 
     const resetCB = useCallback(() => {
-        if (!threeCBs) return;
-
-        if (userMesh.getMesh()) {
-            gsapTranslate({
-                mesh: userMesh.getMesh(),
-                delay: 0,
-                duration: translationDuration,
-                toVec: fixedMesh.getMesh().position,
-                renderFunc: threeCBs.render,
-                clampToEnd: true,
-                onComplete: () => setAnimating(false)
-            });
-        }
-
-        setXTotalTranslation(0);
-        setYTotalTranslation(0);
-
-        navigate('/');
-    }, [threeCBs, userMesh, fixedMesh, navigate]);
-
-    const xCurTranslationCB = useCallback((value) => {
-        setXCurTranslation(Number(eval(value)));
-    }, []);
-
-    const yCurTranslationCB = useCallback((value) => {
-        setYCurTranslation(Number(eval(value)));
-    }, []);
-
-    const xTotalTranslationCB = useCallback((value) => {
-        setXTotalTranslation(Number(eval(value)));
-    }, []);
-
-    const yTotalTranslationCB = useCallback((value) => {
-        setYTotalTranslation(Number(eval(value)));
+        setDrawing(true);
+        setTotalTranslation({ x: 0, y: 0 });
+        setCurTranslation({ x: 2, y: 1 });
     }, []);
 
     useEffect(() => {
-        if (!threeCBs || !userMesh.getMesh()) {
+        if (!threeCBs || !meshRef.current) {
             return;
         }
 
-        //setAnimating(true);
+        setAnimating(true);
 
         gsapTranslate({
-            mesh: userMesh.getMesh(),
+            mesh: meshRef.current.mainMesh,
             delay: 0,
             duration: translationDuration,
-            toVec: new THREE.Vector3(xTotalTranslation, yTotalTranslation, 0),
+            toVec: new THREE.Vector3(totalTranslation.x, totalTranslation.y, 0),
             //translateVec: new THREE.Vector3(newVal,yTotalTranslation,0),
             renderFunc: threeCBs.render,
             clampToEnd: false,
             onComplete: () => setAnimating(false)
         });
-    }, [threeCBs, userMesh, xTotalTranslation, yTotalTranslation]);
+    }, [threeCBs, totalTranslation]);
 
     const translateCB = useCallback(() => {
-        if (!userMesh.getMesh() || !threeCBs) return;
-
-        //console.log('translatecb called with xcurtrans = ', xCurTranslation,
-        //' and ycurtrans = ', yCurTranslation);
+        if (!meshRef.current || !threeCBs) return;
 
         setAnimating(true);
-        setXTotalTranslation((x) => x + xCurTranslation);
-        setYTotalTranslation((y) => y + yCurTranslation);
+        setTotalTranslation(({ x, y }) => ({ x: x + curTranslation.x, y: y + curTranslation.y }));
 
         gsapTranslate({
-            mesh: userMesh.getMesh(),
+            mesh: meshRef.current.mainMesh,
             delay: 0,
             duration: translationDuration,
-            translateVec: new THREE.Vector3(xCurTranslation, yCurTranslation, 0),
+            translateVec: new THREE.Vector3(curTranslation.x, curTranslation.y, 0),
             renderFunc: threeCBs.render,
             onComplete: () => {
                 setAnimating(false);
             }
         });
-    }, [userMesh, threeCBs, xCurTranslation, yCurTranslation]);
+    }, [threeCBs, curTranslation]);
 
     return (
-        <FullScreenBaseComponent fonts={fonts}>
-            <ThreeSceneComp ref={threeSceneRef} initCameraData={cameraData.current} />
-
-            <WouterRouter hook={useHashLocation}>
-                <Route path='/'>
-                    <FreeDrawComp
-                        threeCBs={threeCBs}
-                        doneCBs={freeDrawDoneCBs}
-                        material={freeDrawMaterial}
-                        clearCB={clearCB}
-                        transforms={[]}
-                        fontSize={'1.25em'}
-                    />
-                    <Link href='/not_drawing'>
-                        <div className='done-link'>
-                            <Button>Done drawing</Button>
-                        </div>
-                    </Link>
-                </Route>
-
-                <Route path='/not_drawing'>
-                    <div className='reflection-box'>
-                        <div className='top-line-reflection-box'>
-                            <span className='med-margin'>
-                                <Button onClickFunc={translateCB} active={!animating}>
-                                    Translate
-                                </Button>
-                            </span>
-                            <span className='med-margin'> by </span>
-                            <span className='med-margin'>
-                                <Input
-                                    size={2}
-                                    initValue={xCurTranslation}
-                                    onC={xCurTranslationCB}
-                                />
-                                ,
-                                <Input
-                                    size={2}
-                                    initValue={yCurTranslation}
-                                    onC={yCurTranslationCB}
-                                />
-                            </span>
-                        </div>
-
-                        <div className='med-margin'>
-                            <span className='med-margin'>Total translation: </span>
-                            <span className='med-margin'>
-                                <Input
-                                    size={2}
-                                    initValue={xTotalTranslation}
-                                    onC={xTotalTranslationCB}
-                                />
-                                <Input
-                                    size={2}
-                                    initValue={yTotalTranslation}
-                                    onC={yTotalTranslationCB}
-                                />
-                            </span>
-                        </div>
+        <div className='full-screen-base'>
+            <ThreeSceneComp
+                fixedCameraData={fixedCameraData}
+                controlsData={initControlsData}
+                ref={threeSceneRef}
+            >
+                <Axes2D
+                    tickDistance={1}
+                    boundsAtom={boundsData.atom}
+                    axesDataAtom={axesData.atom}
+                />
+                <Grid boundsAtom={boundsData.atom} gridShow={true} />
+                <FreeDrawComp ref={meshRef} transforms={[]} activeAtom={drawingAtom} />
+                <ClickablePlaneComp
+                    clickPointAtom={translatePointData.atom}
+                    pausedAtom={drawingAtom}
+                />
+            </ThreeSceneComp>
+            <Route path='/'>
+                <Link href='/not_drawing'>
+                    <div className='absolute top-10 left-10'>
+                        <Button onClick={() => setDrawing(false)}>Translate Figure</Button>
                     </div>
-                    <TranslateComp
-                        resetCB={resetCB}
-                        xCurTranslation={xCurTranslation}
-                        yCurTranslation={yCurTranslation}
-                        threeCBs={threeCBs}
-                        animating={animating}
-                    />
-                </Route>
-            </WouterRouter>
-        </FullScreenBaseComponent>
+                </Link>
+            </Route>
+
+            <Route path='/not_drawing'>
+                <div className={translateBoxCss}>
+                    <div className='px-4 py-2 flex justify-around align-baseline'>
+                        <span className='m-2'>
+                            <Button onClick={translateCB} active={!animating}>
+                                Translate
+                            </Button>
+                        </span>
+                        <span className='m-2'> by </span>
+                        <CurTranslationComp classNameStr='m-2' />
+                    </div>
+
+                    <div className='m-2'>
+                        <span className='m-2'>Total translation: </span>
+                        <TotalTranslationComp classNameStr='m-2' />
+                    </div>
+                </div>
+                <Link href='/'>
+                    <div className='absolute bottom-10 left-6 cursor-pointer'>
+                        <Button onClick={resetCB}>Back to drawing</Button>
+                    </div>
+                </Link>
+            </Route>
+        </div>
     );
 }

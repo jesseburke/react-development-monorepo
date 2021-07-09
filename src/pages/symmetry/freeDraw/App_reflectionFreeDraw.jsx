@@ -7,7 +7,7 @@ import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import Line from '../../../ThreeSceneComps/Line';
-import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
+import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
 import Button from '../../../components/ButtonWithActiveState.jsx';
 

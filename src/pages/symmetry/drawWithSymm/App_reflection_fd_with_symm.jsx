@@ -10,7 +10,7 @@ import './styles.css';
 import useHashLocation from '../../../hooks/useHashLocation.jsx';
 
 import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
-import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
+import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import LineFactory from '../../../factories/LineFactory.jsx';

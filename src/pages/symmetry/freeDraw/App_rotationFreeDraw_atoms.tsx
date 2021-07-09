@@ -128,7 +128,7 @@ export function CurAngleComp({ classNameStr = '' }) {
     }, []);
 
     return (
-        <span>
+        <span className={classNameStr}>
             <Input size={4} initValue={round(radToDeg(curAngle), 2)} onC={curAngleCB} />
             {`\u{00B0}`}
         </span>
@@ -143,7 +143,7 @@ export function TotalRotationComp({ classNameStr = '' }) {
     }, []);
 
     return (
-        <span>
+        <span className={classNameStr}>
             <Input size={4} initValue={round(radToDeg(tr), 2)} onC={TRCB} />
             {`\u{00B0}`}
         </span>

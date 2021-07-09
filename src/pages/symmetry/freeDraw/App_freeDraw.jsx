@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { ThreeSceneComp } from '../../../components/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
+import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 
 import { boundsData } from './App_freeDraw_atoms';
 

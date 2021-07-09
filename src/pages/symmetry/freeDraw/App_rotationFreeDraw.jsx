@@ -1,17 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { atom, useAtom } from 'jotai';
-import * as THREE from 'three';
+import { useAtom } from 'jotai';
 
 import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
 import CircularArrow from '../../../ThreeSceneComps/CircularArrow';
+import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 
-import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
 import Button from '../../../components/ButtonWithActiveState.jsx';
-import Input from '../../../components/Input';
 
 import { Route, Link } from '../../../routing';
 
@@ -24,8 +21,8 @@ import {
     curAngleAtom,
     totalRotationAtom,
     CurAngleComp,
-    rotatePointData,
-    TotalRotationComp
+    TotalRotationComp,
+    rotatePointData
 } from './App_rotationFreeDraw_atoms';
 
 //------------------------------------------------------------------------
@@ -58,14 +55,13 @@ const rotateBoxCss =
 //------------------------------------------------------------------------
 
 export default function App() {
-    const setDrawing = useAtom(drawingAtom)[1];
-
     const threeSceneRef = useRef(null);
-    const meshRef = useRef(null);
-
-    // following will be passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
+    // used for animations
+    const meshRef = useRef(null);
+
+    const setDrawing = useAtom(drawingAtom)[1];
     const [animating, setAnimating] = useState(false);
 
     const [curAngle, setCurAngle] = useAtom(curAngleAtom);
@@ -75,12 +71,9 @@ export default function App() {
 
     const resetCB = useCallback(() => {
         setDrawing(true);
-
-        if (!threeCBs || !meshRef.current || !meshRef.current.fixedMesh) return;
-
         setTotalRotation(0);
         setCurAngle(degToRad(startingAngle));
-    }, [threeCBs, meshRef]);
+    }, []);
 
     const prevTRRef = useRef(0);
 

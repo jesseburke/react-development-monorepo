@@ -9,7 +9,7 @@ import './styles.css';
 
 import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
 import GraphDrawComp from '../../../components/GraphDrawComp.jsx';
-import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
+import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 import RotateComp from '../../../components/RotateComp.jsx';
 import { FullScreenBaseComponent } from '@jesseburke/basic-react-components';
 import Button from '../../components/Button.jsx';
