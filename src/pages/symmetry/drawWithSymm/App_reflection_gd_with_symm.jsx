@@ -7,23 +7,23 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import useHashLocation from '../../hooks/useHashLocation.jsx';
+import useHashLocation from '../../../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
-import GraphDrawComp from '../../components/GraphDrawComp.jsx';
-import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import GraphDrawComp from '../../../components/GraphDrawComp.jsx';
+import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
-import LineFactory from '../../factories/LineFactory.jsx';
-import ReflectionFactory from '../../factories/ReflectionFactory.jsx';
+import LineFactory from '../../../factories/LineFactory.jsx';
+import ReflectionFactory from '../../../factories/ReflectionFactory.jsx';
 
-import useExpandingMesh from '../../graphics/useExpandingMesh.jsx';
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
+import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
+import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
+import use2DAxes from '../../../graphics/use2DAxes.jsx';
 
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
-import Input from '../../components/Input.jsx';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent.jsx';
+import Input from '../../../components/Input.jsx';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from './constants.jsx';
+import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
 
 //------------------------------------------------------------------------
 

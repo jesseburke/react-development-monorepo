@@ -7,22 +7,22 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
-import FreeDrawComp from '../../components/FreeDrawComp.jsx';
-import TranslateComp from '../../components/TranslateComp.jsx';
-import Input from '../../components/Input.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
+import TranslateComp from '../../../components/TranslateComp.jsx';
+import Input from '../../../components/Input.jsx';
 
-import useExpandingMesh from '../../graphics/useExpandingMesh.jsx';
-import useHashLocation from '../../hooks/useHashLocation.jsx';
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
+import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
+import useHashLocation from '../../../hooks/useHashLocation.jsx';
+import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
+import use2DAxes from '../../../graphics/use2DAxes.jsx';
 
-import gsapTranslate from '../../animations/gsapTranslate.jsx';
+import gsapTranslate from '../../../animations/gsapTranslate.jsx';
 
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from './constants.jsx';
+import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
 
 //------------------------------------------------------------------------
 

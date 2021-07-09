@@ -6,21 +6,21 @@ import { gsap } from 'gsap';
 
 import './styles.css';
 
-import gsapReflect from '../../animations/gsapReflect.jsx';
-import gsapTextAnimation from '../../animations/gsapTextAnimation.jsx';
+import gsapReflect from '../../../animations/gsapReflect.jsx';
+import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import LineFactory from '../../factories/LineFactory.jsx';
+import LineFactory from '../../../factories/LineFactory.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
-import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
+import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
+import use2DAxes from '../../../graphics/use2DAxes.jsx';
 
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from './constants.jsx';
+import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
 
 //------------------------------------------------------------------------
 

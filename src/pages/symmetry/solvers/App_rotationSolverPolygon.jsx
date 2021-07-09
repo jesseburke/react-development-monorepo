@@ -6,21 +6,22 @@ import { gsap } from 'gsap';
 
 import './styles.css';
 
-import gsapRotate from '../../animations/gsapRotate.jsx';
-import gsapTextAnimation from '../../animations/gsapTextAnimation.jsx';
+import gsapRotate from '../../../animations/gsapRotate.jsx';
+import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
-import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import { rotatedArrowheadGeom } from '../../graphics/CircularArrowGeom.jsx';
+import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
+import use2DAxes from '../../../graphics/use2DAxes.jsx';
+import { rotatedArrowheadGeom } from '../../../graphics/CircularArrowGeom.jsx';
+import LinePathGeom, { RegularNgonPts } from '../../../graphics/LinePathGeom.jsx';
 
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';
-import Input from '../../components/Input.jsx';
+import Input from '../../../components/Input.jsx';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from './constants.jsx';
+import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
 
 //------------------------------------------------------------------------
 
@@ -29,17 +30,28 @@ const textDisplayStyle = {
     padding: '.1em',
     margin: '.5em',
     fontSize: '3em',
-    top: '25%',
+    top: '38%',
     left: '3%'
 };
-
-const innerRadius = 7;
-const outerRadius = 10;
-const thetaSegments = 128;
 
 const degToRad = (deg) => deg * 0.0174533;
 const radToDeg = (rad) => rad * 57.2958;
 
+const size = 10;
+const n = 7;
+let figurePointArray = RegularNgonPts(n, size);
+// each entry of figurePointArray has the form [x,y,z]
+// we round each entry
+figurePointArray = figurePointArray.map((p) => p.map((q) => round(q, 1)));
+
+let symmetryArray = [];
+for (let i = 1; i < n; i++) {
+    symmetryArray.push(i * (360 / n));
+}
+symmetryArray = symmetryArray.map((a) => degToRad(normalizeAngleDeg(round(a, 1))));
+
+const figureRadius = 0.75;
+const figureVertexSize = 1.5;
 const figureMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(0xc2374f),
     opacity: 1.0,
@@ -50,7 +62,8 @@ const rotatedArrowMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(231, 71, 
 const symmLineMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(150, 150, 150)' });
 symmLineMaterial.transparent = true;
 
-const EPSILON = 0.001;
+const EPSILON = 0.01;
+
 const gridSize = 100;
 
 const startingAngle = 30;
@@ -70,6 +83,11 @@ export default function App() {
     const [rotatedArrowMesh, setRotatedArrowMesh] = useState(null);
     const [rotatedArrowPt, setRotatedArrowPt] = useState(startPt);
 
+    // whether the current angle is a symmetry
+    const [isSymmetry, setIsSymmetry] = useState(
+        rotationInArray(symmetryArray, degToRad(normalizeAngleDeg(startingAngle))) >= 0
+    );
+
     // this is the array of symmetries found by the user
     const [symmFoundArray, setSymmFoundArray] = useState([]);
 
@@ -79,9 +97,10 @@ export default function App() {
 
     // adds the grid and origin to the ThreeScene
     useGridAndOrigin({
-        threeCBs
+        threeCBs,
+        gridData: Object.assign(initGridAndOriginData, { size: gridSize })
     });
-    use2DAxes({ threeCBs });
+    use2DAxes({ threeCBs, axesData: initAxesData });
 
     //------------------------------------------------------------------------
     //
@@ -90,7 +109,7 @@ export default function App() {
     useEffect(() => {
         if (!threeCBs) return;
 
-        const geom = new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments);
+        const geom = LinePathGeom(figurePointArray, figureRadius, figureVertexSize);
 
         const mesh = new THREE.Mesh(geom, figureMaterial);
 
@@ -157,8 +176,18 @@ export default function App() {
     }, []);
 
     const curAngleCB = useCallback((value) => {
-        const newAngle = degToRad(normalizeAngleDeg(value));
+        // the eval e.g., turns fractions into numbers
+        const newAngle = degToRad(normalizeAngleDeg(eval(value)));
 
+        const index = rotationInArray(symmetryArray, newAngle);
+
+        if (index >= 0) {
+            setIsSymmetry(true);
+            setCurAngle(symmetryArray[index]);
+            return;
+        }
+
+        setIsSymmetry(false);
         setCurAngle(newAngle);
     }, []);
 
@@ -182,39 +211,68 @@ export default function App() {
         const textFadeDuration = 0.25;
         const textDisplayDuration = 0.5;
 
-        //console.log(curAngle);
+        if (isSymmetry) {
+            tl.add(
+                gsapRotate({
+                    mesh: figureMesh,
+                    angle: curAngle,
+                    delay: 0,
+                    renderFunc: threeCBs.render,
+                    duration: reflectionDuration
+                })
+            );
 
-        tl.add(
-            gsapRotate({
-                mesh: figureMesh,
-                angle: curAngle,
-                delay: 0,
-                renderFunc: threeCBs.render,
-                duration: reflectionDuration
-            })
-        );
+            tl.add(
+                gsapTextAnimation({
+                    parentNode: document.body,
+                    style: textDisplayStyle,
+                    entrySide: 'left',
+                    duration: textFadeDuration,
+                    displayTime: textDisplayDuration,
+                    text: 'symmetry!',
+                    ease: 'sine'
+                })
+            );
 
-        tl.add(
-            gsapTextAnimation({
-                parentNode: document.body,
-                style: textDisplayStyle,
-                entrySide: 'left',
-                duration: textFadeDuration,
-                displayTime: textDisplayDuration,
-                text: 'symmetry!',
-                ease: 'sine'
-            })
-        );
+            // user has already found this line
+            if (rotationInArray(symmFoundArray, curAngle) >= 0) {
+                return;
+            }
 
-        // user has already found this angle
-        if (rotationInArray(symmFoundArray, curAngle) >= 0) {
-            return;
+            setSymmFoundArray((curArr) => [...curArr, curAngle]);
+        } else {
+            tl.add(
+                gsapRotate({
+                    mesh: figureMesh,
+                    angle: curAngle,
+                    delay: 0,
+                    renderFunc: threeCBs.render,
+                    duration: reflectionDuration,
+                    options: {
+                        yoyo: true,
+                        repeat: 1,
+                        repeatDelay: textDisplayDuration + textFadeDuration
+                    }
+                })
+            );
+
+            tl.add(
+                gsapTextAnimation({
+                    parentNode: document.body,
+                    style: textDisplayStyle,
+                    entrySide: 'left',
+                    duration: textFadeDuration,
+                    displayTime: textDisplayDuration,
+                    text: 'not a symmetry',
+                    ease: 'sine'
+                }),
+                `-=${reflectionDuration + textDisplayDuration + textFadeDuration}`
+            );
         }
+    }, [threeCBs, figureMesh, fixedMesh, curAngle, symmFoundArray, isSymmetry]);
 
-        setSymmFoundArray((curArr) => [...curArr, curAngle]);
-    }, [threeCBs, figureMesh, fixedMesh, curAngle, symmFoundArray]);
-
-    let symmLinesFoundDisplay = symmFoundArray.length.toString();
+    let symmFoundDisplay = symmFoundArray.length.toString();
+    if (symmFoundArray.length === symmetryArray.length) symmFoundDisplay += ` = all`;
 
     return (
         <FullScreenBaseComponent fonts={fonts}>
@@ -236,7 +294,7 @@ export default function App() {
             </div>
 
             <div className='solver-box-left'>
-                Nonzero rotational symmetries found: {symmLinesFoundDisplay}
+                Nonzero rotational symmetries found: {symmFoundDisplay}
             </div>
 
             <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} paused={animating} />

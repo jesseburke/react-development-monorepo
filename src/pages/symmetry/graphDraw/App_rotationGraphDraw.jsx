@@ -7,23 +7,23 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
-import GraphDrawComp from '../../components/GraphDrawComp.jsx';
-import FreeDrawComp from '../../components/FreeDrawComp.jsx';
-import RotateComp from '../../components/RotateComp.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import GraphDrawComp from '../../../components/GraphDrawComp.jsx';
+import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
+import RotateComp from '../../../components/RotateComp.jsx';
 import { FullScreenBaseComponent } from '@jesseburke/basic-react-components';
 import Button from '../../components/Button.jsx';
-import Input from '../../components/Input.jsx';
+import Input from '../../../components/Input.jsx';
 
-import useHashLocation from '../../hooks/useHashLocation.jsx';
+import useHashLocation from '../../../hooks/useHashLocation.jsx';
 
-import useExpandingMesh from '../../graphics/useExpandingMesh.jsx';
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
+import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
+import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
+import use2DAxes from '../../../graphics/use2DAxes.jsx';
 
-import gsapRotate from '../../animations/gsapRotate.jsx';
+import gsapRotate from '../../../animations/gsapRotate.jsx';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from './constants.jsx';
+import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
 
 //------------------------------------------------------------------------
 

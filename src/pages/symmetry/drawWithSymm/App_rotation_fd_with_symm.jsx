@@ -4,28 +4,28 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-import useHashLocation from '../../hooks/useHashLocation.jsx';
+import useHashLocation from '../../../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
-import GraphDrawComp from '../../components/GraphDrawComp.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import FreeDrawComp from '../../../components/FreeDrawComp.jsx';
 
-import RationalRotationCSFactory from '../../factories/RationalRotationCSFactory.jsx';
+import RationalRotationCSFactory from '../../../factories/RationalRotationCSFactory.jsx';
 
-import useExpandingMesh from '../../graphics/useExpandingMesh.jsx';
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
+import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
+import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
+import use2DAxes from '../../../graphics/use2DAxes.jsx';
 
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent';
-import Input from '../../components/Input.jsx';
+import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
+import Input from '../../../components/Input.jsx';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from './constants.jsx';
+import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
 
-const graphDrawMaterial = new THREE.MeshBasicMaterial({
+const freeDrawMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(0xc2374f),
     opacity: 1.0,
     side: THREE.FrontSide
 });
-const fixedMaterial = graphDrawMaterial.clone();
+const fixedMaterial = freeDrawMaterial.clone();
 fixedMaterial.opacity = 0.35;
 fixedMaterial.transparent = true;
 
@@ -62,7 +62,7 @@ export default function App() {
         navigate('/');
     }, [threeCBs, userMesh, navigate]);
 
-    const graphDrawDoneCBs = [userMesh.expandCB];
+    const freeDrawDoneCBs = [userMesh.expandCB];
 
     const angleCB = useCallback((inputStr) => {
         const [m, n] = toFrac(Number(inputStr), roundingConst);
@@ -90,11 +90,11 @@ export default function App() {
         <FullScreenBaseComponent fonts={fonts}>
             <ThreeSceneComp ref={threeSceneRef} initCameraData={cameraData.current} />
 
-            <GraphDrawComp
+            <FreeDrawComp
                 threeCBs={threeCBs}
-                doneCBs={graphDrawDoneCBs}
+                doneCBs={freeDrawDoneCBs}
                 clearCB={clearCB}
-                material={graphDrawMaterial}
+                material={freeDrawMaterial}
                 transforms={transforms}
             />
             <div className='reflection-box'>
