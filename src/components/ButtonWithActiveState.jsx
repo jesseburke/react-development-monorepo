@@ -41,10 +41,9 @@ export default memo(function Button({
 
     const disabledCss = Object.assign(
         {
-            cursor: 'not-allowed',
-            display: 'none'
+            cursor: 'not-allowed'
         },
-        baseCss.current
+        baseCss
     );
 
     if (!active) {

@@ -1,4 +1,11 @@
-import React, { useState, useRef, useContext, useEffect, useCallback } from 'react';
+import React, {
+    useState,
+    useRef,
+    useContext,
+    useEffect,
+    useLayoutEffect,
+    useCallback
+} from 'react';
 import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
@@ -28,12 +35,6 @@ function FreeDrawComp(
     const freeDrawRef = useRef(null);
 
     //------------------------------------------------------------------------
-
-    React.useImperativeHandle(ref, () => ({
-        mainMesh: mainMeshRef.current,
-        fixedMesh: fixedMeshRef.current
-    }));
-
     const clearCB = useCallback(() => {
         if (freeDrawRef.current) {
             freeDrawRef.current.reset();
@@ -91,7 +92,7 @@ function FreeDrawComp(
     ];
 
     // sets up FreeDraw
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!threeCBs) return;
 
         if (drawing) {
@@ -115,6 +116,11 @@ function FreeDrawComp(
             }
         };
     }, [threeCBs, startingGeom, transforms, drawing, freeDrawRef]);
+
+    React.useImperativeHandle(ref, () => ({
+        mainMesh: mainMeshRef.current,
+        fixedMesh: fixedMeshRef.current
+    }));
 
     return (
         <div className='absolute bottom-20 left-20 text-xl'>

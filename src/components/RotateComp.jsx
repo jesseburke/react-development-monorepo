@@ -6,7 +6,7 @@ import ClickablePlaneComp from '../components/ClickablePlaneComp.jsx';
 //import Input from '../components/Input.jsx';
 import Button from '../components/Button.jsx';
 
-import { rotatedArrowheadMesh } from '../graphics/RotatedArrowhead.jsx';
+import { rotatedArrowheadMesh } from '../graphics/CircularArrowGeom.jsx';
 import OriginHalfLine from '../graphics/OriginHalfLine.jsx';
 
 //------------------------------------------------------------------------
@@ -67,7 +67,8 @@ export default function RotateComp({ resetCB, threeCBs, curAngle, animating }) {
                     left: '5%',
                     fontSize: '1.25em',
                     cursor: 'pointer'
-                }}>
+                }}
+            >
                 <Button onClickFunc={resetCB}>Back to drawing</Button>
             </div>
 

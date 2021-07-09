@@ -24,6 +24,8 @@ import {
     drawingAtom
 } from './App_reflectionFreeDraw_atoms';
 
+//------------------------------------------------------------------------
+
 const aspectRatio = window.innerWidth / window.innerHeight;
 
 const fixedCameraData = {
@@ -38,10 +40,10 @@ const initControlsData = {
     enabled: false
 };
 
-//------------------------------------------------------------------------
-
 const rotationDuration = 0.4;
 const reflectionDuration = 0.5;
+
+//------------------------------------------------------------------------
 
 export default function App() {
     const setDrawing = useAtom(drawingAtom)[1];

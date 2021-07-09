@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
@@ -20,7 +20,7 @@ export default function Line({
     labelAtom = defaultLabelAtom,
     boundsAtom
 }) {
-    const [meshState, setMeshState] = useState();
+    const meshRef = useRef(null);
 
     const visible = visibleAtom ? useAtom(visibleAtom)[0] : !useAtom(notVisibleAtom)[0];
 
@@ -39,13 +39,12 @@ export default function Line({
 
     useEffect(() => {
         if (!threeCBs) {
-            setMeshState((s) => s);
             return;
         }
 
         if (!visible || !lineData) {
-            if (meshState) threeCBs.remove(meshState);
-            setMeshState(null);
+            if (meshRef.current) threeCBs.remove(meshRef.current);
+            meshRef.current = null;
             return;
         }
 
@@ -55,7 +54,7 @@ export default function Line({
         const mesh = new THREE.Mesh(geometry, material);
 
         threeCBs.add(mesh);
-        setMeshState(mesh);
+        meshRef.current = mesh;
 
         return () => {
             if (mesh) threeCBs.remove(mesh);

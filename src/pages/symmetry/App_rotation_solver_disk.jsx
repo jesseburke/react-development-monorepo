@@ -14,7 +14,7 @@ import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
 import use2DAxes from '../../graphics/use2DAxes.jsx';
-import { rotatedArrowheadGeom } from '../../graphics/RotatedArrowhead.jsx';
+import { rotatedArrowheadGeom } from '../../graphics/CircularArrowGeom.jsx';
 
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';
