@@ -6,10 +6,10 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 export default function ArrowGeom({ length, thickness = 1 }) {
     const rawGeom = RawArrowGeom({
-        baseLength: 1.25,
-        baseRadius: 0.1 * thickness,
-        tipLength: 0.75,
-        tipRadius: 0.35 * thickness
+        baseLength: 1.5,
+        baseRadius: 0.04 * thickness,
+        tipLength: 0.5,
+        tipRadius: 0.15 * thickness
     });
 
     // the 2 is the length of the raw arrow above

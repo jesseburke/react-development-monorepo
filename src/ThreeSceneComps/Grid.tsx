@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { atom, useAtom, ReadOnlyAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import GridGeom from '../graphics/GridGeom.js';
 import { ArrayPoint2, Bounds } from '../my-types';
@@ -13,7 +13,7 @@ export interface GridProps {
     gridCB?: Function;
 }
 
-export default (function GridTS({
+export default function GridTS({
     threeCBs,
     center = [0, 0],
     gridShow = true,
@@ -37,4 +37,4 @@ export default (function GridTS({
     }, [threeCBs, center, gridShow, gridCB, xMax, xMin, yMax, yMin]);
 
     return null;
-});
+}

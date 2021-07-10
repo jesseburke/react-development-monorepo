@@ -2,11 +2,14 @@
 // for ideas on how to change hover behavior
 
 import React, { useRef, useEffect, useState, memo } from 'react';
+import { atom, useAtom } from 'jotai';
 
 // should:
 // - gray out the button, or some other visual effect, when not active
 // - maybe component should be renamed to ButtonWithActiveState? (to
 //   emphasize it's difference from a regular html button)
+
+const defaultNotActiveAtom = atom(false);
 
 export default memo(function Button({
     children,
@@ -14,9 +17,14 @@ export default memo(function Button({
     fontSize = '1em',
     margin = 0,
     borderRadius = '.35em',
-    active = true,
+    activeAtom,
+    notActiveAtom = defaultNotActiveAtom,
     className
 }) {
+    const active = activeAtom ? useAtom(activeAtom)[0] : !useAtom(notActiveAtom)[0];
+
+    //console.log('button called with children and active = ', children, active);
+
     const baseCss = {
         paddingLeft: '1em',
         paddingRight: '1em',

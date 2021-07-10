@@ -64,13 +64,43 @@ export const axesData = AxesDataComp({
     tickLabelStyle
 });
 
-export const translatePointData = PointDataComp(initTranslatePoint);
-
 export const drawingAtom = atom(true);
+
+const primAnimAtom = atom(false);
+
+export const animatingAtom = atom(
+    (get) => get(primAnimAtom),
+    (get, set, val) => {
+        //console.log('animatingAtom set called with val = ', val);
+        set(primAnimAtom, val);
+    }
+);
 
 export const curTranslationAtom = atom(initTranslatePoint);
 
-export const totalTranslationAtom = atom({ x: 0, y: 0 });
+export const totalTranslationAtom = atom({ x: 0.0, y: 0.0 });
+
+export const translateStartPointAtom = atom(initTranslatePoint);
+export const translateEndPointAtom = atom((get) => {
+    const s = get(translateStartPointAtom);
+    const t = get(curTranslationAtom);
+
+    return { x: s.x + t.x, y: s.y + t.y };
+});
+
+export const resetAtom = atom(null, (get, set) => {
+    set(curTranslationAtom, initTranslatePoint);
+    set(totalTranslationAtom, { x: 0, y: 0 });
+    set(drawingAtom, true);
+});
+
+export const addCurToTotalAtom = atom(null, (get, set) => {
+    const ct = get(curTranslationAtom);
+    const tt = get(totalTranslationAtom);
+
+    const newTT = { x: ct.x + tt.x, y: ct.y + tt.y };
+    set(totalTranslationAtom, newTT);
+});
 
 export function CurTranslationComp({ classNameStr = '' }) {
     const [curT, setCurT] = useAtom(curTranslationAtom);
@@ -79,7 +109,7 @@ export function CurTranslationComp({ classNameStr = '' }) {
         (value) =>
             setCurT((oldVal) => ({
                 ...oldVal,
-                x: value
+                x: parseFloat(value)
             })),
         []
     );
@@ -88,7 +118,7 @@ export function CurTranslationComp({ classNameStr = '' }) {
         (value) =>
             setCurT((oldVal) => ({
                 ...oldVal,
-                y: value
+                y: parseFloat(value)
             })),
         []
     );
@@ -108,7 +138,7 @@ export function TotalTranslationComp({ classNameStr = '' }) {
         (value) =>
             setTT((oldVal) => ({
                 ...oldVal,
-                x: value
+                x: parseFloat(value)
             })),
         []
     );
@@ -117,7 +147,7 @@ export function TotalTranslationComp({ classNameStr = '' }) {
         (value) =>
             setTT((oldVal) => ({
                 ...oldVal,
-                y: value
+                y: parseFloat(value)
             })),
         []
     );

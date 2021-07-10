@@ -29,37 +29,29 @@ export default function CircularArrow({
 
     // this sets up and displays the orange rotation arrow
     useEffect(() => {
-        if (!threeCBs) {
-            return;
+        let geom;
+
+        if (visible && angle !== 0 && threeCBs) {
+            geom = circularArrowGeom({
+                x: point.x,
+                y: point.y,
+                angle,
+                meshRadius: radius,
+                reversed: angle < 0
+            });
+
+            const material = new THREE.MeshBasicMaterial({ color, opacity: 1 });
+            material.transparent = false;
+
+            meshRef.current = new THREE.Mesh(geom, material);
+            threeCBs.add(meshRef.current);
         }
-
-        if (!visible || angle === 0) {
-            if (meshRef.current) threeCBs.remove(meshRef.current);
-            meshRef.current = null;
-            return;
-        }
-
-        const geom = circularArrowGeom({
-            x: point.x,
-            y: point.y,
-            angle,
-            meshRadius: radius,
-            reversed: angle < 0
-        });
-
-        const material = new THREE.MeshBasicMaterial({ color, opacity: 1 });
-        material.transparent = false;
-
-        const raMesh = new THREE.Mesh(geom, material);
-
-        threeCBs.add(raMesh);
-        meshRef.current = raMesh;
 
         return () => {
-            threeCBs.remove(raMesh);
-            raMesh.geometry.dispose();
+            if (meshRef.current) threeCBs.remove(meshRef.current);
+            if (geom) geom.dispose();
         };
-    }, [angle, threeCBs, point]);
+    }, [angle, threeCBs, point, visible]);
 
     return null;
 }
