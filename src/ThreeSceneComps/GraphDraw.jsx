@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
-import Button from './ButtonWithActiveState.jsx';
+import Button from '../components/ButtonWithActiveState.jsx';
 
 export default function GraphDrawComp({
     threeCBs,

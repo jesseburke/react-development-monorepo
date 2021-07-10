@@ -9,7 +9,7 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 //import FreeDrawComp from '../../components/FreeDrawComp.jsx';
-import GraphDrawComp from '../../components/GraphDrawComp.jsx';
+import GraphDrawComp from '../../ThreeSceneComps/GraphDraw.jsx';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 
 import useExpandingMesh from '../../graphics/useExpandingMesh.jsx';
