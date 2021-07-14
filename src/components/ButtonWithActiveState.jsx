@@ -35,7 +35,6 @@ export default memo(function Button({
         borderRadius: borderRadius,
         fontSize: fontSize.toString() + 'em',
         margin: margin,
-        width: '10em',
         textAlign: 'center',
         userSelect: 'none'
     };

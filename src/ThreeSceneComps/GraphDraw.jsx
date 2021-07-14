@@ -1,84 +1,140 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-
+import React, {
+    useState,
+    useRef,
+    useContext,
+    useEffect,
+    useLayoutEffect,
+    useCallback
+} from 'react';
+import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 import Button from '../components/ButtonWithActiveState.jsx';
 
-export default function GraphDrawComp({
-    threeCBs,
-    doneCBs = [() => null],
-    transforms = [],
-    material,
-    clearCB,
-    fontSize = '1em'
-}) {
-    const [graphDraw, setGraphDraw] = useState(null);
+const graphDrawMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(0xc2374f),
+    opacity: 1.0,
+    side: THREE.FrontSide
+});
 
-    const resetCB = useCallback(() => {
-        if (graphDraw) graphDraw.reset();
+const fixedMaterial = graphDrawMaterial.clone();
+fixedMaterial.opacity = 0.35;
+fixedMaterial.transparent = true;
 
-        if (clearCB) clearCB();
-    }, [graphDraw, clearCB]);
+const defaultDrawingAtom = atom(true);
 
-    const undoCB = useCallback(() => {
-        graphDraw.undoLatest();
-    }, [graphDraw]);
+function GraphDrawComp(
+    { startingGeom = null, transforms = [], activeAtom = defaultDrawingAtom, threeCBs },
+    ref
+) {
+    const drawing = useAtom(activeAtom)[0];
 
-    // following sets up GraphDraw
-    useEffect(() => {
-        let gd;
+    const graphDrawRef = useRef(null);
+    const mainMeshRef = useRef(null);
+    const fixedMeshRef = useRef(null);
 
-        if (!threeCBs || !material) {
-            setGraphDraw(null);
+    const clearCB = useCallback(() => {
+        if (graphDrawRef.current) {
+            graphDrawRef.current.reset();
+        }
+
+        if (mainMeshRef.current) {
+            threeCBs.remove(mainMeshRef.current);
+            mainMeshRef.current.geometry.dispose();
+            mainMeshRef.current = null;
+        }
+
+        if (fixedMeshRef.current) {
+            threeCBs.remove(fixedMeshRef.current);
+            fixedMeshRef.current.geometry.dispose();
+            fixedMeshRef.current = null;
+        }
+    }, [threeCBs, graphDrawRef, mainMeshRef, fixedMeshRef]);
+
+    // sets up GraphDraw
+    useLayoutEffect(() => {
+        if (!threeCBs) return;
+
+        if (drawing) {
+            if (!graphDrawRef.current) {
+                graphDrawRef.current = GraphDrawFactory({
+                    threeCBs,
+                    startingGeom,
+                    material: graphDrawMaterial,
+                    transforms
+                });
+            }
         } else {
-            //console.log('GraphDrawFactory called with transforms = ', transforms);
-            gd = GraphDrawFactory({ threeCBs, material, transforms });
-            setGraphDraw(gd);
+            if (graphDrawRef.current) {
+                graphDrawRef.current.dispose();
+                graphDrawRef.current = null;
+            }
         }
 
         return () => {
-            if (gd) {
-                doneCBs.map((cb) => cb(gd.getMesh()));
-                gd.dispose();
+            if (graphDrawRef.current) {
+                const newMesh = graphDrawRef.current.getMesh();
+
+                if (!newMesh) return;
+
+                if (!mainMeshRef.current) {
+                    mainMeshRef.current = newMesh;
+                    threeCBs.add(mainMeshRef.current);
+                } else {
+                    mainMeshRef.current.geometry = BufferGeometryUtils.mergeBufferGeometries(
+                        [mainMeshRef.current.geometry, newMesh.geometry].filter((e) => e)
+                    );
+                }
+
+                if (!fixedMeshRef.current) {
+                    fixedMeshRef.current = new THREE.Mesh();
+                    fixedMeshRef.current.geometry = newMesh.geometry;
+                    fixedMeshRef.current.material = fixedMaterial;
+                    threeCBs.add(fixedMeshRef.current);
+                } else {
+                    fixedMeshRef.current.geometry = BufferGeometryUtils.mergeBufferGeometries(
+                        [fixedMeshRef.current.geometry, newMesh.geometry].filter((e) => e)
+                    );
+                }
+
+                threeCBs.render();
+                graphDrawRef.current.dispose();
             }
         };
-    }, [threeCBs, material, doneCBs]);
+    }, [threeCBs, startingGeom, transforms, drawing, graphDrawRef]);
+
+    const undoCB = useCallback(() => {
+        graphDrawRef.current.undoLatest();
+    }, [graphDrawRef]);
+
+    React.useImperativeHandle(ref, () => ({
+        mainMesh: mainMeshRef.current,
+        fixedMesh: fixedMeshRef.current
+    }));
 
     return (
-        <div
-            css={{
-                position: 'absolute',
-                top: '90%',
-                left: '10%',
-                width: '80%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontSize
-            }}
-        >
-            <div css={{ cursor: 'pointer' }}>
-                <Button onClickFunc={resetCB}>Clear Figure</Button>
-            </div>
-            <div
-                css={{
-                    padding: '1%',
-                    border: '1px',
-                    borderStyle: 'solid',
-                    borderRadius: '50%',
-                    // next line stops cursor from changing to text selection on hover
-                    cursor: 'pointer'
-                }}
-                onClick={undoCB}
-            >
-                <span css={{ padding: '.15em', fontSize: '2rem', userSelect: 'none' }}>
-                    {'\u{270F}'}
-                </span>
-            </div>
-        </div>
+        <>
+            {drawing ? (
+                <div
+                    className='absolute bottom-4 left-8 text-xl flex flex-col
+		    align-center justify-center cursor-pointer'
+                >
+                    <div className='m-4'>
+                        <Button onClick={clearCB}>Clear Figure</Button>
+                    </div>
+                    <div className='m-4'>
+                        <Button className='m-4' onClick={undoCB}>
+                            Undo
+                        </Button>
+                    </div>
+                </div>
+            ) : null}
+        </>
     );
 }
+
+export default React.forwardRef(GraphDrawComp);
 
 function GraphDrawFactory({
     threeCBs,

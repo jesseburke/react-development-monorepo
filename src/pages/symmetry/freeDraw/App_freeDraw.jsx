@@ -7,7 +7,7 @@ import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 
-import { boundsData } from './App_freeDraw_atoms';
+import { axesData, boundsData } from './App_freeDraw_atoms';
 
 //------------------------------------------------------------------------
 
@@ -22,21 +22,18 @@ const fixedCameraData = {
 };
 
 const initControlsData = {
-    mouseButtons: { LEFT: THREE.MOUSE.PAN },
-    touches: { ONE: THREE.MOUSE.PAN, TWO: THREE.TOUCH.DOLLY_PAN },
-    enableRotate: true,
-    enablePan: true,
-    enabled: false,
-    keyPanSpeed: 50,
-    zoomSpeed: 2,
-    screenSpacePanning: true
+    enabled: false
 };
 
 function App() {
     return (
         <div className='full-screen-base'>
             <ThreeSceneComp fixedCameraData={fixedCameraData} controlsData={initControlsData}>
-                <Axes2D tickDistance={1} boundsAtom={boundsData.atom} />
+                <Axes2D
+                    tickDistance={1}
+                    boundsAtom={boundsData.atom}
+                    axesDataAtom={axesData.atom}
+                />
                 <Grid boundsAtom={boundsData.atom} gridShow={true} />
                 <FreeDrawComp transforms={[]} />
             </ThreeSceneComp>

@@ -30,15 +30,13 @@ function FreeDrawComp(
 ) {
     const drawing = useAtom(activeAtom)[0];
 
+    const freeDrawRef = useRef(null);
     const mainMeshRef = useRef(null);
     const fixedMeshRef = useRef(null);
-    const freeDrawRef = useRef(null);
 
-    //------------------------------------------------------------------------
     const clearCB = useCallback(() => {
         if (freeDrawRef.current) {
             freeDrawRef.current.reset();
-            //freeDrawRef.current = null;
         }
 
         if (mainMeshRef.current) {
@@ -54,9 +52,30 @@ function FreeDrawComp(
         }
     }, [threeCBs, freeDrawRef, mainMeshRef, fixedMeshRef]);
 
-    const doneCBs = [
-        useCallback(
-            (newMesh) => {
+    // sets up FreeDraw
+    useLayoutEffect(() => {
+        if (!threeCBs) return;
+
+        if (drawing) {
+            if (!freeDrawRef.current) {
+                freeDrawRef.current = FreeDrawFactory({
+                    threeCBs,
+                    startingGeom,
+                    material: freeDrawMaterial,
+                    transforms
+                });
+            }
+        } else {
+            if (freeDrawRef.current) {
+                freeDrawRef.current.dispose();
+                freeDrawRef.current = null;
+            }
+        }
+
+        return () => {
+            if (freeDrawRef.current) {
+                const newMesh = freeDrawRef.current.getMesh();
+
                 if (!newMesh) return;
 
                 if (!mainMeshRef.current) {
@@ -67,13 +86,6 @@ function FreeDrawComp(
                         [mainMeshRef.current.geometry, newMesh.geometry].filter((e) => e)
                     );
                 }
-                threeCBs.render();
-            },
-            [mainMeshRef, threeCBs]
-        ),
-        useCallback(
-            (newMesh) => {
-                if (!newMesh) return;
 
                 if (!fixedMeshRef.current) {
                     fixedMeshRef.current = new THREE.Mesh();
@@ -85,33 +97,8 @@ function FreeDrawComp(
                         [fixedMeshRef.current.geometry, newMesh.geometry].filter((e) => e)
                     );
                 }
+
                 threeCBs.render();
-            },
-            [fixedMeshRef, threeCBs]
-        )
-    ];
-
-    // sets up FreeDraw
-    useLayoutEffect(() => {
-        if (!threeCBs) return;
-
-        if (drawing) {
-            freeDrawRef.current = FreeDrawFactory({
-                threeCBs,
-                startingGeom,
-                material: freeDrawMaterial,
-                transforms
-            });
-        } else {
-            if (freeDrawRef.current) {
-                freeDrawRef.current.dispose();
-            }
-            freeDrawRef.current = null;
-        }
-
-        return () => {
-            if (freeDrawRef.current) {
-                doneCBs.map((cb) => cb(freeDrawRef.current.getMesh()));
                 freeDrawRef.current.dispose();
             }
         };
@@ -123,11 +110,15 @@ function FreeDrawComp(
     }));
 
     return (
-        <div className='absolute bottom-20 left-20 text-xl'>
-            <div className='cursor-pointer'>
-                {drawing ? <Button onClick={clearCB}>Clear Figure</Button> : null}
-            </div>
-        </div>
+        <>
+            {drawing ? (
+                <div className='absolute bottom-20 left-20 text-xl'>
+                    <div className='cursor-pointer'>
+                        <Button onClick={clearCB}>Clear Figure</Button>
+                    </div>
+                </div>
+            ) : null}
+        </>
     );
 }
 

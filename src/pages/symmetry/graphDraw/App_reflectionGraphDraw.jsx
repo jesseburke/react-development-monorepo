@@ -1,218 +1,147 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-
-import { Route, Link } from 'wouter';
-import { Router as WouterRouter } from 'wouter';
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import './styles.css';
-
-import useHashLocation from '../../../hooks/useHashLocation.jsx';
-
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
+import Grid from '../../../ThreeSceneComps/Grid';
+import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
+import Line from '../../../ThreeSceneComps/Line';
 import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
-import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
-import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent.jsx';
-import Button from '../../components/Button.jsx';
+import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
+import Button from '../../../components/ButtonWithActiveState.jsx';
 
-import LineFactory from '../../../factories/LineFactory.jsx';
-
-import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../../graphics/use2DAxes.jsx';
-import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
+import { Route, Link } from '../../../routing';
 
 import gsapRotate from '../../../animations/gsapRotate.jsx';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
 
-import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
+import {
+    boundsData,
+    axesData,
+    linePointAtom,
+    lineDataAtom,
+    drawingAtom
+} from './App_reflectionGraphDraw_atoms';
 
 //------------------------------------------------------------------------
 
-const reflectionLineColor = 'rgb(231, 71, 41)';
-const reflectionLineMaterial = new THREE.MeshBasicMaterial({ color: reflectionLineColor });
-const reflectionLineRadius = 0.05;
+const aspectRatio = window.innerWidth / window.innerHeight;
 
-const freeDrawMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(0xc2374f),
-    opacity: 1.0,
-    side: THREE.FrontSide
-});
+const fixedCameraData = {
+    up: [0, 1, 0],
+    near: 0.1,
+    far: 100,
+    aspectRatio,
+    orthographic: true
+};
 
-const fixedMaterial = freeDrawMaterial.clone();
-fixedMaterial.opacity = 0.15;
-fixedMaterial.transparent = true;
+const initControlsData = {
+    enabled: false
+};
 
 const rotationDuration = 0.4;
 const reflectionDuration = 0.5;
 
+//------------------------------------------------------------------------
+
 export default function App() {
-    const [, navigate] = useHashLocation();
+    const setDrawing = useAtom(drawingAtom)[1];
 
     const threeSceneRef = useRef(null);
+    const meshRef = useRef(null);
 
     // following will be passed to components that need to draw
     const threeCBs = useThreeCBs(threeSceneRef);
 
-    const [line, setLine] = useState(null);
-    const [lineMesh, setLineMesh] = useState(null);
+    const line = useAtom(lineDataAtom)[0];
 
     const [animating, setAnimating] = useState(false);
 
-    const cameraData = useRef(initOrthographicData, []);
-
     //------------------------------------------------------------------------
-    //
-    // starting effects
-
-    const userMesh = useExpandingMesh({ threeCBs });
-    const fixedMesh = useExpandingMesh({ threeCBs });
-
-    // adds the grid and origin to the ThreeScene
-    useGridAndOrigin({ threeCBs, gridData: initGridAndOriginData });
-    use2DAxes({ threeCBs, axesData: initAxesData });
-
-    //------------------------------------------------------------------------
-
-    const clearCB = useCallback(() => {
-        if (!threeCBs) return;
-
-        if (userMesh) {
-            userMesh.clear();
-        }
-
-        if (fixedMesh) {
-            fixedMesh.clear();
-        }
-
-        if (lineMesh) {
-            threeCBs.remove(lineMesh);
-            lineMesh.geometry.dispose();
-        }
-
-        navigate('/');
-    }, [threeCBs, userMesh, fixedMesh]);
-
-    const graphDrawDoneCBs = [
-        userMesh.expandCB,
-        useCallback(
-            (mesh) => {
-                if (!mesh) return;
-                mesh.material = fixedMaterial;
-                fixedMesh.expandCB(mesh);
-            },
-            [fixedMesh]
-        )
-    ];
-
-    // passed to ClickablePlaneComp
-    const clickCB = useCallback((pt) => {
-        setLine(LineFactory(pt));
-    }, []);
-
-    useEffect(() => {
-        if (!threeCBs || !line) {
-            setLineMesh(null);
-            return;
-        }
-
-        const geom = line.makeGeometry({ radius: reflectionLineRadius });
-        const mesh = new THREE.Mesh(geom, reflectionLineMaterial);
-        setLineMesh(mesh);
-        threeCBs.add(mesh);
-
-        return () => {
-            threeCBs.remove(mesh);
-            geom.dispose();
-        };
-    }, [line, threeCBs]);
 
     const resetCB = useCallback(() => {
-        if (!threeCBs) return;
+        setDrawing(true);
 
-        if (userMesh.getMesh()) {
-            // rotate mesh back to original position
-            gsapRotate({
-                mesh: userMesh.getMesh(),
-                delay: 0,
-                duration: rotationDuration,
-                quaternion: fixedMesh.getMesh().quaternion,
-                renderFunc: threeCBs.render,
-                clampToEnd: true,
-                onStart: () => {
-                    setAnimating(true);
-                },
-                onComplete: () => {
-                    setAnimating(false);
-                }
-            });
-        }
+        if (!threeCBs || !meshRef.current || !meshRef.current.fixedMesh) return;
 
-        if (lineMesh) {
-            threeCBs.remove(lineMesh);
-            lineMesh.geometry.dispose();
-        }
-
-        setLine(null);
-
-        navigate('/');
-    }, [threeCBs, userMesh, fixedMesh, lineMesh]);
+        // rotate mesh back to original position
+        gsapRotate({
+            mesh: meshRef.current.mainMesh,
+            delay: 0,
+            duration: rotationDuration,
+            quaternion: meshRef.current.fixedMesh.quaternion,
+            renderFunc: () => threeCBs.render(),
+            clampToEnd: true,
+            onStart: () => setAnimating(true),
+            onComplete: () => setAnimating(false)
+        });
+    }, [threeCBs, meshRef]);
 
     const reflectCB = useCallback(() => {
-        if (!userMesh.getMesh() || !line || !threeCBs) return;
+        if (!threeCBs || !meshRef.current || !line) return;
 
         gsapReflect({
-            mesh: userMesh.getMesh(),
+            mesh: meshRef.current.mainMesh,
             axis: line.getDirection(),
             delay: 0,
-            renderFunc: threeCBs.render,
+            renderFunc: () => threeCBs.render(),
             duration: reflectionDuration,
-            onStart: () => {
-                setAnimating(true);
-            },
-            onComplete: () => {
-                setAnimating(false);
-            }
+            onStart: () => setAnimating(true),
+            onComplete: () => setAnimating(false)
         });
-    }, [userMesh, line, threeCBs]);
+    }, [line, threeCBs, meshRef]);
 
     return (
-        <FullScreenBaseComponent fonts={fonts}>
-            <ThreeSceneComp ref={threeSceneRef} initCameraData={cameraData.current} />
+        <div className='full-screen-base'>
+            <ThreeSceneComp
+                fixedCameraData={fixedCameraData}
+                controlsData={initControlsData}
+                ref={threeSceneRef}
+            >
+                <Axes2D
+                    tickDistance={1}
+                    boundsAtom={boundsData.atom}
+                    axesDataAtom={axesData.atom}
+                />
+                <Grid boundsAtom={boundsData.atom} gridShow={true} />
+                <GraphDrawComp ref={meshRef} transforms={[]} activeAtom={drawingAtom} />
+                <Line
+                    lineDataAtom={lineDataAtom}
+                    notVisibleAtom={drawingAtom}
+                    boundsAtom={boundsData.atom}
+                />
+                <ClickablePlaneComp clickPointAtom={linePointAtom} pausedAtom={drawingAtom} />
+            </ThreeSceneComp>
 
-            <WouterRouter hook={useHashLocation}>
-                <Route path='/'>
-                    <GraphDrawComp
-                        threeCBs={threeCBs}
-                        doneCBs={graphDrawDoneCBs}
-                        clearCB={clearCB}
-                        material={freeDrawMaterial}
-                        fontSize='1.25em'
-                    />
+            <Route path='/'>
+                <Link href='/not_drawing'>
+                    <div className='absolute top-10 left-10'>
+                        <Button onClick={() => setDrawing(false)}>Reflect Figure</Button>
+                    </div>
+                </Link>
+            </Route>
 
-                    <Link href='/not_drawing'>
-                        <div className='done-link'>
-                            <Button>Done drawing</Button>
+            <Route path='/not_drawing'>
+                <div
+                    className='absolute bottom-5 width-full flex
+		    items-end justify-around'
+                >
+                    <Link href='/'>
+                        <div className='cursor-pointer'>
+                            <Button onClick={resetCB}>Back to drawing</Button>
                         </div>
                     </Link>
-                </Route>
 
-                <Route path='/not_drawing'>
-                    <ClickablePlaneComp threeCBs={threeCBs} clickCB={clickCB} paused={animating} />
-                    <div className='bottom-row'>
-                        <div className='cursor-pointer'>
-                            <Button onClickFunc={resetCB}>Back to drawing</Button>
-                        </div>
+                    <div>Click on plane to choose reflection line</div>
 
-                        <div>Click on plane to choose reflection line</div>
-
-                        <div>
-                            <Button onClickFunc={reflectCB} active={!animating}>
-                                Reflect!
-                            </Button>
-                        </div>
+                    <div>
+                        <Button onClick={reflectCB} active={!animating}>
+                            Reflect!
+                        </Button>
                     </div>
-                </Route>
-            </WouterRouter>
-        </FullScreenBaseComponent>
+                </div>
+            </Route>
+        </div>
     );
 }
