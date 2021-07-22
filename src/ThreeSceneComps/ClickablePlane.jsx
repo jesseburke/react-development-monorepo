@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { useAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
+
+const defaultPausedAtom = atom(false);
 
 export default function ClickablePlaneComp({
     threeCBs,
     clickPointAtom,
-    pausedAtom,
+    pausedAtom = defaultPausedAtom,
     xSize = 1000,
     ySize = 1000,
     mesh

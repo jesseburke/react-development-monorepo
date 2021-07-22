@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { atom } from 'jotai';
 
-import LineFactory from '../../../factories/LineFactory.jsx';
+import Line2dFactory from '../../../data/LineDataComp.jsx';
 
 import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
@@ -12,6 +12,7 @@ import BoundsDataComp from '../../../data/BoundsDataComp';
 import AnimationData from '../../../data/AnimationData';
 import PerspCameraData from '../../../data/PerspCameraDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
+import LineDataComp from '../../../data/LineDataComp';
 
 //------------------------------------------------------------------------
 //
@@ -78,20 +79,4 @@ export const axesData = AxesDataComp({
 
 export const drawingAtom = atom(true);
 
-export const linePointAtom = atom(null);
-
-export const lineDataAtom = atom((get) => {
-    const pt = get(linePointAtom);
-
-    if (!pt) return null;
-
-    return LineFactory(pt);
-});
-
-const atomStoreAtom = atom({
-    bd: boundsData.readWriteAtom,
-    cd: cameraData.readWriteAtom,
-    ad: axesData.readWriteAtom
-});
-
-//export const DataComp = MainDataComp(atomStoreAtom);
+export const { pt1Atom: linePointAtom, lineDataAtom, component: LineInputComp } = LineDataComp();

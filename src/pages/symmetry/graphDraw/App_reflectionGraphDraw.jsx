@@ -21,7 +21,8 @@ import {
     axesData,
     linePointAtom,
     lineDataAtom,
-    drawingAtom
+    drawingAtom,
+    LineInputComp
 } from './App_reflectionGraphDraw_atoms';
 
 //------------------------------------------------------------------------
@@ -76,7 +77,7 @@ export default function App() {
             onStart: () => setAnimating(true),
             onComplete: () => setAnimating(false)
         });
-    }, [threeCBs, meshRef]);
+    }, [threeCBs, meshRef, setDrawing, setAnimating]);
 
     const reflectCB = useCallback(() => {
         if (!threeCBs || !meshRef.current || !line) return;
@@ -141,6 +142,7 @@ export default function App() {
                         </Button>
                     </div>
                 </div>
+                <LineInputComp originLineP={true} />
             </Route>
         </div>
     );

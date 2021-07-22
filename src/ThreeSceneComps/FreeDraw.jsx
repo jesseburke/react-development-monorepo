@@ -221,7 +221,7 @@ function FreeDrawFactory({
             closed
         );
         if (areTransforming) {
-            const newCopies = transforms.map((t) => t.transformGeometry(curGeom));
+            const newCopies = transforms.map((t) => t(curGeom));
             newCopies.push(curGeom);
 
             curGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);
@@ -269,7 +269,7 @@ function FreeDrawFactory({
             curCompGeom = new THREE.SphereBufferGeometry(radius, 15, 15).translate(pt.x, pt.y, 0);
 
             if (areTransforming) {
-                const newCopies = transforms.map((t) => t.transformGeometry(curCompGeom));
+                const newCopies = transforms.map((t) => t(curCompGeom));
                 newCopies.push(curCompGeom);
 
                 curCompGeom = BufferGeometryUtils.mergeBufferGeometries(newCopies);

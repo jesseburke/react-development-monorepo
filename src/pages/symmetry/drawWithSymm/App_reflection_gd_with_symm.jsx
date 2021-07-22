@@ -13,7 +13,7 @@ import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
 import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
-import LineFactory from '../../../factories/LineFactory.jsx';
+import Line2dFactory from '../../../data/LineDataComp.jsx';
 import ReflectionFactory from '../../../factories/ReflectionFactory.jsx';
 
 import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
@@ -50,7 +50,7 @@ export default function App() {
 
     const threeCBs = useThreeCBs(threeSceneRef);
 
-    const [line, setLine] = useState(LineFactory(new THREE.Vector3(...startingPt)));
+    const [line, setLine] = useState(Line2dFactory(new THREE.Vector3(...startingPt)));
 
     const [transforms, setTransforms] = useState([ReflectionFactory(line)]);
 
@@ -107,7 +107,7 @@ export default function App() {
 
     // passed to ClickablePlaneComp
     const clickCB = useCallback((pt) => {
-        setLine(LineFactory(pt));
+        setLine(Line2dFactory(pt));
 
         navigate('/');
     }, []);
@@ -119,12 +119,12 @@ export default function App() {
             const yVal = oldLine.getEquation().y;
 
             // if yVal is already 0, then whatever xVal is, force line to be the vertical line
-            if (yVal === 0) return LineFactory(new THREE.Vector3(0, 1, 0));
+            if (yVal === 0) return Line2dFactory(new THREE.Vector3(0, 1, 0));
             else if (xVal === 0) {
-                return LineFactory(new THREE.Vector3(1, 0, 0));
+                return Line2dFactory(new THREE.Vector3(1, 0, 0));
             }
 
-            return LineFactory(new THREE.Vector3(yVal / xVal, 1, 0));
+            return Line2dFactory(new THREE.Vector3(yVal / xVal, 1, 0));
         });
     }, []);
 
@@ -135,12 +135,12 @@ export default function App() {
             const xVal = oldLine.getEquation().x;
 
             // if xVal is already 0, then whatever yVal is, force line to be the horizontal line
-            if (xVal === 0) return LineFactory(new THREE.Vector3(1, 0, 0));
+            if (xVal === 0) return Line2dFactory(new THREE.Vector3(1, 0, 0));
             else if (yVal === 0) {
-                return LineFactory(new THREE.Vector3(0, 1, 0));
+                return Line2dFactory(new THREE.Vector3(0, 1, 0));
             }
 
-            return LineFactory(new THREE.Vector3(yVal / xVal, 1, 0));
+            return Line2dFactory(new THREE.Vector3(yVal / xVal, 1, 0));
         });
     });
 

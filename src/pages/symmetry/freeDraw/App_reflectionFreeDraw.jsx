@@ -21,7 +21,8 @@ import {
     axesData,
     linePointAtom,
     lineDataAtom,
-    drawingAtom
+    drawingAtom,
+    LineInputComp
 } from './App_reflectionFreeDraw_atoms';
 
 //------------------------------------------------------------------------
@@ -141,6 +142,7 @@ export default function App() {
                         </Button>
                     </div>
                 </div>
+                <LineInputComp originLineP={true} />
             </Route>
         </div>
     );

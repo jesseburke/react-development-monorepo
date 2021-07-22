@@ -9,7 +9,7 @@ import './styles.css';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
 import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import LineFactory from '../../../factories/LineFactory.jsx';
+import Line2dFactory from '../../../data/LineDataComp.jsx';
 
 import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
@@ -113,7 +113,7 @@ export default function App() {
 
     // passed to ClickablePlaneComp
     const clickCB = useCallback((pt) => {
-        setLine(LineFactory(pt));
+        setLine(Line2dFactory(pt));
     }, []);
 
     // makes the line mesh

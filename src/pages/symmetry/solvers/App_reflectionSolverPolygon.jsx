@@ -9,7 +9,7 @@ import './styles.css';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
 import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import LineFactory, { OriginLineFromSlope } from '../../../factories/LineFactory.jsx';
+import Line2dFactory, { OriginLineFromSlope } from '../../../data/LineDataComp.jsx';
 
 import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
@@ -132,7 +132,7 @@ export default function App() {
     // line, so can snap to that line
 
     const clickCB = useCallback((pt) => {
-        const l = LineFactory(pt);
+        const l = Line2dFactory(pt);
 
         const matches = newSymmArray.filter((sl) => sl.angleWithinEpsilon(l, EPSILON));
 

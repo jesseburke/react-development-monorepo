@@ -12,7 +12,7 @@ import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
-import LineFactory from '../../../factories/LineFactory.jsx';
+import Line2dFactory from '../../../data/LineDataComp.jsx';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
@@ -130,7 +130,7 @@ export const lineDataAtom = atom((get) => {
     const v1 = new THREE.Vector3(xMin, b, 0);
     const v2 = new THREE.Vector3(xMax, b, 0);
 
-    return LineFactory(v1, v2);
+    return Line2dFactory(v1, v2);
 });
 
 export const lineColorAtom = atom(initLineColor);
