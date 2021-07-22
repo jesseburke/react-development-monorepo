@@ -23,11 +23,15 @@ export default (function Input({ onC, initValue, size = 10 }) {
         [initValue]
     );
 
+    // want this to run every time?
+    // e.g., an input is normalized to always be 1 (e.g., the coeff in
+    // eq of a line), but still need to change the input value,
+    // because user may have changed it
     useEffect(() => {
         if (!inputElt.current) return;
 
         inputElt.current.value = initValue;
-    }, [initValue]);
+    });
 
     return (
         <input

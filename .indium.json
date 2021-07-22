@@ -4,6 +4,13 @@
             "name": "projet",
             "type": "chrome",
             "url": "http://localhost:3000/"
+        },
+        {
+            "name": "jest",
+            "type": "node",
+            "program": "node",
+            "args": "./node_modules/jest/bin/jest --runInBand --silent --watch",
+            "inspect-brk": true
         }
     ]
 }
