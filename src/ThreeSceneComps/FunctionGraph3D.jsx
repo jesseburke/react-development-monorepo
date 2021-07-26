@@ -5,7 +5,7 @@ import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-import FunctionGraph3DGeom from '../graphics/FunctionGraph3DGeom.jsx';
+import FunctionGraph3DGeom from '../geometries/FunctionGraph3DGeom.js';
 
 export default function FunctionGraph3D({
     threeCBs,

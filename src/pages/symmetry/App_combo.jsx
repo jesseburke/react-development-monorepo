@@ -12,10 +12,10 @@ import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 import GraphDrawComp from '../../ThreeSceneComps/GraphDraw.jsx';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 
-import useExpandingMesh from '../../graphics/useExpandingMesh.jsx';
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import OriginLine from '../../graphics/OriginLine.jsx';
+import useExpandingMesh from '../../geometries/useExpandingMesh.jsx';
+import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
+import use2DAxes from '../../geometries/use2DAxes.jsx';
+import OriginLine from '../../geometries/OriginLine.jsx';
 
 import gsapRotate from '../../animations/gsapRotate.jsx';
 import gsapReflect from '../../animations/gsapReflect.jsx';

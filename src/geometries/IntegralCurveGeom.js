@@ -1,12 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-
 import * as THREE from 'three';
 
 import { RK4Pts } from '../math/RK4.js';
 
 // function func is a function of x and y
 
-export default function DirectionFieldApproxGeom({
+export default function IntegralCurveGeom({
     func,
     initialPt = [1, 3],
     bounds = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },

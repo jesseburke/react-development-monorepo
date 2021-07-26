@@ -4,7 +4,7 @@ import { atom, useAtom, PrimitiveAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import DirectionFieldApproxGeom from '../graphics/DirectionFieldApprox.jsx';
+import IntegralCurveGeom from '../geometries/IntegralCurveGeom.js';
 import DraggableSphere from './DraggableSphere.jsx';
 
 import { ArrayPoint2, Bounds, CurveData2 } from '../my-types';
@@ -72,7 +72,7 @@ export default function IntegralCurve({
             return;
         }
 
-        const dfag = DirectionFieldApproxGeom({
+        const dfag = IntegralCurveGeom({
             func: func.func,
             initialPt: [initialPt.x, initialPt.y],
             bounds,

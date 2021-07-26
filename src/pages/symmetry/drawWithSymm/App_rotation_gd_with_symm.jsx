@@ -11,9 +11,9 @@ import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 
 import RationalRotationCSFactory from '../../../factories/RationalRotationCSFactory.jsx';
 
-import useExpandingMesh from '../../../graphics/useExpandingMesh.jsx';
-import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../../graphics/use2DAxes.jsx';
+import useExpandingMesh from '../../../geometries/useExpandingMesh.jsx';
+import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';
+import use2DAxes from '../../../geometries/use2DAxes.jsx';
 
 import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Input from '../../../components/Input.jsx';

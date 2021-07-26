@@ -8,11 +8,11 @@ import { gsap } from 'gsap';
 
 import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import LinePathGeom, { RegularNgonPts, IrregularNgon } from '../../graphics/LinePathGeom.jsx';
+import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
+import use2DAxes from '../../geometries/use2DAxes.jsx';
+import LinePathGeom, { RegularNgonPts, IrregularNgon } from '../../geometries/LinePathGeom.js';
 
-import OriginLine from '../../graphics/OriginLine.jsx';
+import OriginLine from '../../geometries/OriginLine.jsx';
 
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 

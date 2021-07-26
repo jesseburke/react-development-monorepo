@@ -18,10 +18,10 @@ import ArrowGridOptions from '../../components/ArrowGridOptions.jsx';
 import SaveButton from '../../components/SaveButton.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 
-import useGridAndOrigin from '../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../graphics/use2DAxes.jsx';
-import DirectionFieldApproxGeom from '../../graphics/DirectionFieldApprox.jsx';
-import useDraggableMeshArray from '../../graphics/useDraggableMeshArray.jsx';
+import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
+import use2DAxes from '../../geometries/use2DAxes.jsx';
+import DirectionFieldApproxGeom from '../../geometries/DirectionFieldApprox.jsx';
+import useDraggableMeshArray from '../../geometries/useDraggableMeshArray.jsx';
 
 import Streamlines from '../../math/differentialEquations/Streamlines.jsx';
 

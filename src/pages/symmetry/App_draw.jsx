@@ -19,9 +19,9 @@ import FreeDrawOptions from '../components/FreeDrawOptions.jsx';
 
 import LineFactory from '../factories/LineFactory.jsx';
 
-import useGridAndOrigin from '../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../graphics/use2DAxes.jsx';
-import useExpandingMesh from '../graphics/useExpandingMesh.jsx';
+import useGridAndOrigin from '../geometries/useGridAndOrigin.jsx';
+import use2DAxes from '../geometries/use2DAxes.jsx';
+import useExpandingMesh from '../geometries/useExpandingMesh.jsx';
 
 import gsapRotate from '../animations/gsapRotate.jsx';
 import gsapReflect from '../animations/gsapReflect.jsx';

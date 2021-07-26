@@ -12,10 +12,10 @@ import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
-import useGridAndOrigin from '../../../graphics/useGridAndOrigin.jsx';
-import use2DAxes from '../../../graphics/use2DAxes.jsx';
-import { rotatedArrowheadGeom } from '../../../graphics/CircularArrowGeom.jsx';
-import LinePathGeom, { RegularNgonPts } from '../../../graphics/LinePathGeom.jsx';
+import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';
+import use2DAxes from '../../../geometries/use2DAxes.jsx';
+import { rotatedArrowheadGeom } from '../../../geometries/CircularArrowGeom.jsx';
+import LinePathGeom, { RegularNgonPts } from '../../../geometries/LinePathGeom.js';
 
 import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';

@@ -28,7 +28,7 @@ function FreeDrawComp(
     { startingGeom = null, transforms = [], activeAtom = defaultDrawingAtom, threeCBs },
     ref
 ) {
-    const drawing = useAtom(activeAtom)[0];
+    const active = useAtom(activeAtom)[0];
 
     const freeDrawRef = useRef(null);
     const mainMeshRef = useRef(null);
@@ -56,7 +56,7 @@ function FreeDrawComp(
     useLayoutEffect(() => {
         if (!threeCBs) return;
 
-        if (drawing) {
+        if (active) {
             if (!freeDrawRef.current) {
                 freeDrawRef.current = FreeDrawFactory({
                     threeCBs,
@@ -102,7 +102,7 @@ function FreeDrawComp(
                 freeDrawRef.current.dispose();
             }
         };
-    }, [threeCBs, startingGeom, transforms, drawing, freeDrawRef]);
+    }, [threeCBs, startingGeom, transforms, active, freeDrawRef]);
 
     React.useImperativeHandle(ref, () => ({
         mainMesh: mainMeshRef.current,
@@ -111,7 +111,7 @@ function FreeDrawComp(
 
     return (
         <>
-            {drawing ? (
+            {active ? (
                 <div className='absolute bottom-20 left-20 text-xl'>
                     <div className='cursor-pointer'>
                         <Button onClick={clearCB}>Clear Figure</Button>
@@ -137,6 +137,7 @@ function FreeDrawFactory({
 
     let areDrawing = false;
 
+    let curPoint;
     let curPointArray = [];
 
     let curGeomArray = [];
@@ -177,8 +178,6 @@ function FreeDrawFactory({
         curPointArray.push(getMouseCoords(e, planeMesh));
     }
 
-    let curPoint;
-
     function mouseMoveCB(e) {
         if (!areDrawing) return;
 
@@ -186,9 +185,7 @@ function FreeDrawFactory({
     }
 
     function animatedDrawing() {
-        //requestAnimationFrame( animatedDrawing );
-
-        setTimeout(animatedDrawing, 30);
+        requestAnimationFrame(animatedDrawing);
 
         if (!areDrawing || !curPoint) return;
 
@@ -233,9 +230,7 @@ function FreeDrawFactory({
         add(curMesh);
     }
 
-    //requestAnimationFrame( animatedDrawing );
-
-    setTimeout(animatedDrawing, 30);
+    requestAnimationFrame(animatedDrawing);
 
     function mouseUpCB(e) {
         if (!areDrawing) return;
