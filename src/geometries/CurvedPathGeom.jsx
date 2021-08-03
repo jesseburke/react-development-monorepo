@@ -1,49 +1,39 @@
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-// compArray is an array of arrays; each array is a chain of points to be drawn
+// ptArray is an array of THREE.Vector3's to be drawn
 export default function CurvedPathGeom({
-    compArray,
-    // this is the max no of line segments in a component
-    maxSegLength = 20,
-    tubularSegments = 1064,
+    ptArray,
+    tubularSegments = 2128,
     radius = 0.05,
     radialSegments = 4
 }) {
-    const geomArray = [];
-    let curve, curArray, nextPt, l, tempD;
+    let curve;
 
-    for (let i = 0; i < compArray.length; i++) {
-        curArray = compArray[i];
-        l = curArray.length;
+    if (!ptArray || ptArray.length === 0) return null;
 
-        //
-        for (let k = 0; k < Math.floor(l / maxSegLength); k++) {
-            curve = curveSeg(curArray.slice(k * maxSegLength, (k + 1) * maxSegLength + 1));
+    //curve = curveSeg(ptArray);
 
-            geomArray.push(
-                new THREE.TubeBufferGeometry(curve, tubularSegments, radius, radialSegments, false)
-            );
-        }
+    // if there is only one point, then return a sphere at that point
+    if (ptArray.length === 1) {
+        const pt = ptArray[0];
 
-        tempD = l - maxSegLength * Math.floor(l / maxSegLength);
-
-        if (tempD === 0) continue;
-        else if (tempD === 1) curve = new THREE.LineCurve3(curArray[l - 2], curArray[l - 1]);
-        else curve = curveSeg(curArray.slice(maxSegLength * Math.floor(l / maxSegLength), l));
-
-        geomArray.push(
-            new THREE.TubeBufferGeometry(curve, tubularSegments, radius, radialSegments, false)
-        );
+        return new THREE.SphereBufferGeometry(radius, 15, 15).translate(pt.x, pt.y, 0);
     }
 
-    if (geomArray.length === 0) return null;
+    if (ptArray.length == 2) {
+        curve = new THREE.LineCurve3(ptArray[0], ptArray[0]);
+    } else if (ptArray.length == 3) {
+        curve = new THREE.QuadraticBezierCurve3(ptArray[0], ptArray[1], ptArray[2]);
+    } else {
+        curve = new THREE.CatmullRomCurve3(ptArray);
+    }
 
-    return BufferGeometryUtils.mergeBufferGeometries(geomArray);
+    return new THREE.TubeBufferGeometry(curve, tubularSegments, radius, radialSegments, false);
 }
 
-function curveSeg(pointArray) {
-    const l = pointArray.length;
+function curveSeg(ptArray) {
+    const l = ptArray.length;
 
     let curve = new THREE.CurvePath();
 
@@ -57,7 +47,7 @@ function curveSeg(pointArray) {
     // 	curve.add( new THREE.LineCurve3( pointArray[l-2], pointArray[l-1] ) );
 
     for (let i = 0; i < l - 1; i++) {
-        curve.add(new THREE.LineCurve3(pointArray[i], pointArray[i + 1]));
+        curve.add(new THREE.LineCurve3(ptArray[i], ptArray[i + 1]));
     }
 
     return curve;

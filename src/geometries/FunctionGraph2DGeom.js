@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import CurvedPathGeom from './CurvedPathGeom.jsx';
 
@@ -18,7 +19,11 @@ export default function FunctionGraph2DGeom({
 
     let compArray = curveComps({ bounds, func, approxH });
 
-    return CurvedPathGeom({ compArray, maxSegLength, tubularSegments, radius, radialSegments });
+    return BufferGeometryUtils.mergeBufferGeometries(
+        compArray.map((c) =>
+            CurvedPathGeom({ ptArray: c, tubularSegments, radius, radialSegments })
+        )
+    );
 }
 
 // this will output an array of arrays, with each array representing a connected component of

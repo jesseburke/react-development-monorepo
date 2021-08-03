@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
 import { RK4Pts } from '../math/RK4.js';
+import CurvedPathGeom from './CurvedPathGeom';
 
 // function func is a function of x and y
-
 export default function IntegralCurveGeom({
     func,
     initialPt = [1, 3],
@@ -23,19 +23,22 @@ export default function IntegralCurveGeom({
         return;
     }
 
-    let pointArray = RK4Pts({ func, initialPt, bounds, h });
+    let ptArray = RK4Pts({ func, initialPt, bounds, h });
 
-    pointArray = pointArray.map(([x, y]) => new THREE.Vector3(x, y, zHeightFunc(x, y)));
+    ptArray = ptArray.map(([x, y]) => new THREE.Vector3(x, y, zHeightFunc(x, y)));
 
-    const path = new THREE.CurvePath();
+    /* const path = new THREE.CurvePath();
 
-    for (let i = 0; i < pointArray.length - 1; i++) {
-        path.add(new THREE.LineCurve3(pointArray[i], pointArray[i + 1]));
-    }
+     * for (let i = 0; i < pointArray.length - 1; i++) {
+     *     path.add(new THREE.LineCurve3(pointArray[i], pointArray[i + 1]));
+     * }
 
-    if (path.curves.length === 0) {
-        return null;
-    }
+     * if (path.curves.length === 0) {
+     *     return null;
+     * }
 
-    return new THREE.TubeBufferGeometry(path, tubularSegments, radius, radialSegments, false);
+     * return new THREE.TubeBufferGeometry(path, tubularSegments,
+       /radius, radialSegments, false); */
+
+    return CurvedPathGeom({ ptArray });
 }
