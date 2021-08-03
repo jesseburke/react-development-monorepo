@@ -8,6 +8,7 @@ import '../../styles.css';
 
 import { ThreeSceneComp } from '../../components/ThreeScene';
 import CanvasComp from '../../components/CanvasComp.jsx';
+import MainDataComp from '../../data/MainDataComp.jsx';
 import OptionsTabComp from '../../components/OptionsTabComp';
 
 import Grid from '../../ThreeSceneComps/Grid';
@@ -31,7 +32,7 @@ import {
     animationData,
     planeHeightAndWidthAtom,
     planeCenterAtom,
-    DataComp
+    atomStoreAtom
 } from './App_vs_atoms';
 
 const initControlsData = {
@@ -63,7 +64,7 @@ const canvasClassStr = 'absolute left-1/2 w-6/12 h-full block border-l-2 border-
 //------------------------------------------------------------------------
 
 export default function App() {
-    //console.log(theme.colors);
+    const DataComp = MainDataComp(atomStoreAtom);
 
     return (
         <JotaiProvider>
@@ -78,7 +79,7 @@ export default function App() {
                         className={'w-32 bg-gray-50 text-persian_blue-900 p-2 rounded'}
                         nameComponentArray={[
                             ['Bounds', boundsData.component],
-                            ['Camera', orthoCameraData.component]
+                            ['Camera', cameraData.component]
                         ]}
                     />
                 </header>

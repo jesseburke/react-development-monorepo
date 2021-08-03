@@ -1,13 +1,11 @@
 import { atom } from 'jotai';
 
-import MainDataComp from '../../data/MainDataComp.jsx';
 import LabelDataComp from '../../data/LabelDataComp.jsx';
 import FunctionDataComp from '../../data/FunctionDataComp.jsx';
 import AxesDataComp from '../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../data/BoundsDataComp';
 import AnimationData from '../../data/AnimationData';
 import PerspCameraData from '../../data/PerspCameraDataComp';
-import OrthoCameraDataComp from '../../data/OrthoCameraDataComp';
 
 import { ObjectPoint2, Bounds, CurveData2, LabelStyle, AxesDataT } from '../../my-types';
 
@@ -133,7 +131,7 @@ export const twoDFuncAtom = atom((get) => {
 
 export const cameraData = PerspCameraData(initCameraData);
 
-const atomStoreAtom = atom({
+export const atomStoreAtom = atom({
     ls: labelData.readWriteAtom,
     ax: axesData.readWriteAtom,
     fn: funcData.readWriteAtom,
@@ -141,5 +139,3 @@ const atomStoreAtom = atom({
     cd: cameraData.readWriteAtom,
     ad: animationData.readWriteAtom
 });
-
-export const DataComp = MainDataComp(atomStoreAtom);

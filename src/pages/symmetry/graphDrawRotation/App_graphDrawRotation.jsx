@@ -6,7 +6,7 @@ import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
 import CircularArrow from '../../../ThreeSceneComps/CircularArrow';
-import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
+import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 
 import Button from '../../../components/ButtonWithActiveState.jsx';
 
@@ -23,7 +23,7 @@ import {
     CurAngleComp,
     TotalRotationComp,
     rotatePointData
-} from './App_rotationFreeDraw_atoms';
+} from './App_graphDrawRotation_atoms';
 
 //------------------------------------------------------------------------
 
@@ -156,7 +156,7 @@ export default function App() {
                     axesDataAtom={axesData.atom}
                 />
                 <Grid boundsAtom={boundsData.atom} gridShow={true} />
-                <FreeDrawComp ref={meshRef} transforms={[]} activeAtom={drawingAtom} />
+                <GraphDrawComp ref={meshRef} transforms={[]} activeAtom={drawingAtom} />
                 <CircularArrow
                     notVisibleAtom={drawingAtom}
                     pointAtom={rotatePointData.atom}

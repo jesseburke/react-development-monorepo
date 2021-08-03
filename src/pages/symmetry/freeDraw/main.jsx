@@ -3,10 +3,8 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-//import App from './App_freeDraw';
-import App from './App_reflectionFreeDraw';
-//import App from './App_rotationFreeDraw';
-//import App from './App_translationFreeDraw';
+import App from './App_freeDraw';
+
 const title = 'Free Draw';
 
 function main() {

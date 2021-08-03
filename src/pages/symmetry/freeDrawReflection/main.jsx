@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import App from './App_graphDraw';
+import App from './App_freeDrawReflection';
 
-const title = 'Graph Draw';
+const title = 'Free Draw and reflect';
 
 function main() {
     const element = document.createElement('div');

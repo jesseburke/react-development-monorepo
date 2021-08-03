@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-import ArrowGeom from '../graphics/ArrowGeom.js';
+import ArrowGeom from './ArrowGeom.js';
 
 // arrowLength*aGridSqSize will be actual arrow length
 

@@ -206,7 +206,8 @@ function FreeDrawFactory({
             curPath = new THREE.CatmullRomCurve3([
                 curPointArray[l - 1],
                 curPointArray[l - 2],
-                curPointArray[l - 3]
+                curPointArray[l - 3],
+                curPointArray[l - 4]
             ]);
         }
 

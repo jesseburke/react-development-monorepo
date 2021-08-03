@@ -7,7 +7,7 @@ import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import Line from '../../../ThreeSceneComps/Line';
-import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
+import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
 import Button from '../../../components/ButtonWithActiveState.jsx';
 
@@ -23,7 +23,7 @@ import {
     lineDataAtom,
     drawingAtom,
     LineInputComp
-} from './App_reflectionGraphDraw_atoms';
+} from './App_freeDrawReflection_atoms';
 
 //------------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ export default function App() {
             onStart: () => setAnimating(true),
             onComplete: () => setAnimating(false)
         });
-    }, [threeCBs, meshRef, setDrawing, setAnimating]);
+    }, [threeCBs, meshRef]);
 
     const reflectCB = useCallback(() => {
         if (!threeCBs || !meshRef.current || !line) return;
@@ -106,7 +106,7 @@ export default function App() {
                     axesDataAtom={axesData.atom}
                 />
                 <Grid boundsAtom={boundsData.atom} gridShow={true} />
-                <GraphDrawComp ref={meshRef} transforms={[]} activeAtom={drawingAtom} />
+                <FreeDrawComp ref={meshRef} transforms={[]} activeAtom={drawingAtom} />
                 <Line
                     lineDataAtom={lineDataAtom}
                     notVisibleAtom={drawingAtom}

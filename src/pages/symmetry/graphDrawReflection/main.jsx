@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import App from './App_graphDraw';
+import App from './App_graphDrawReflection';
 
 const title = 'Graph Draw';
 

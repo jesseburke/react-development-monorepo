@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import App from './App_graphDraw';
-
-const title = 'Graph Draw';
+import App from './App_freeDrawTranslation';
+const title = 'Free Draw';
 
 function main() {
     const element = document.createElement('div');

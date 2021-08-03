@@ -26,7 +26,7 @@ import {
     translateEndPointAtom,
     resetAtom,
     addCurToTotalAtom
-} from './App_translationFreeDraw_atoms';
+} from './App_freeDrawTranslation_atoms';
 
 const aspectRatio = window.innerWidth / window.innerHeight;
 
