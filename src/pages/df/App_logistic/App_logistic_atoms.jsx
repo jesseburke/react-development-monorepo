@@ -4,6 +4,7 @@ import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
 
 import LabelDataComp from '../../../data/LabelDataComp.jsx';
+import LineDataComp from '../../../data/LineDataComp.jsx';
 import PointDataComp from '../../../data/PointDataComp.jsx';
 import NumberDataComp from '../../../data/NumberDataComp.jsx';
 import ArrowGridDataComp from '../../../data/ArrowGridDataComp.jsx';
@@ -11,8 +12,6 @@ import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
-
-import Line2dFactory from '../../../data/LineDataComp.jsx';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
@@ -123,15 +122,21 @@ export const funcAtom = atom((get) => {
     return { func: (x, y) => k * (1 - y / b) };
 });
 
-export const lineDataAtom = atom((get) => {
+const pt1Atom = atom((get) => {
     const b = get(bData.atom);
     const { xMax, xMin } = get(boundsData.atom);
 
-    const v1 = new THREE.Vector3(xMin, b, 0);
-    const v2 = new THREE.Vector3(xMax, b, 0);
-
-    return Line2dFactory(v1, v2);
+    return new THREE.Vector3(xMin, b, 0);
 });
+
+const pt2Atom = atom((get) => {
+    const b = get(bData.atom);
+    const { xMax, xMin } = get(boundsData.atom);
+
+    return new THREE.Vector3(xMax, b, 0);
+});
+
+export const { lineDataAtom } = LineDataComp({ pt1Atom, pt2Atom });
 
 export const lineColorAtom = atom(initLineColor);
 

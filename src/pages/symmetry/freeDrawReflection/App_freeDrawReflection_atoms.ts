@@ -77,7 +77,7 @@ export const axesData = AxesDataComp({
 
 export const drawingAtom = atom(true);
 
-export const { pt1Atom: linePointAtom, lineDataAtom, component: LineInputComp } = LineDataComp();
+export const { pt1Atom: linePointAtom, lineDataAtom, component: LineInputComp } = LineDataComp({});
 
 const atomStoreAtom = atom({
     bd: boundsData.readWriteAtom,

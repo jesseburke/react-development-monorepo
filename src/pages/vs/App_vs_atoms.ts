@@ -19,9 +19,9 @@ const colors = {
     tick: '#cf6c28' //#e19662'
 };
 
-const initBounds: Bounds = { xMin: -1, xMax: 10, yMin: -10, yMax: 10, zMin: -5, zMax: 5 };
+const initBounds: Bounds = { xMin: -1, xMax: 30, yMin: -10, yMax: 10, zMin: -5, zMax: 5 };
 
-const initFuncStr: string = '4*e^(-(x-2*t)^2)+sin(x+t)-cos(x-t)';
+const initFuncStr: string = '4*e^(-(x-2*t^2)^2)+sin(x+t)-cos(x-t)'; //'4*e^(-(x-2*t)^2)+sin(x+t)-cos(x-t)';
 
 const initAxesData: AxesDataT = {
     radius: 0.02,
@@ -33,8 +33,9 @@ const initXLength = initBounds.xMax - initBounds.xMin;
 const initYLength = initBounds.yMax - initBounds.yMin;
 
 const initCameraData = {
-    target: [initXLength * (10.15 / 20), initYLength * (4.39 / 20), 0],
-    position: [(-16.7 / 20) * initXLength, (-26.1 / 20) * initYLength, 6.65]
+    target: [5.06, 1.65, 0],
+    //[initXLength * (10.15 / 20), initYLength * (4.39 / 20), 0],
+    position: [-19.73, -22.32, 24.65] //[(-16.7 / 20) * initXLength, (-26.1 / 20) * initYLength, 6.65]
 };
 
 export const labelStyle: LabelStyle = {

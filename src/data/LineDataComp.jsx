@@ -10,14 +10,14 @@ import Input from '../components/Input.jsx';
 // the line has direction: from pt2 to pt1
 //
 
-// - arguments should be of form {x, y}
+const defaultPt1 = new THREE.Vector3(1, 1, 0);
+const defaultPt2 = new THREE.Vector3(0, 0, 0);
+const defaultPt1Atom = atom(defaultPt1);
+const defaultPt2Atom = atom(defaultPt2);
 
-export default function LineDataComp(
-    initPt1 = new THREE.Vector3(1, 1, 0),
-    initPt2 = new THREE.Vector3(0, 0, 0)
-) {
-    const pt1Atom = atom(initPt1);
-    const pt2Atom = atom(initPt2);
+export default function LineDataComp({ pt1Atom = defaultPt1Atom, pt2Atom = defaultPt2Atom }) {
+    //const pt1Atom = atom(initPt1);
+    //const pt2Atom = atom(initPt2);
 
     const lineDataAtom = atom((get) => {
         const pt1 = get(pt1Atom);

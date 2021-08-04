@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
-export default function Axes2DC({
+export default function Axes2D({
     addFunc,
     removeFunc,
     boundsAtom,
@@ -28,7 +28,7 @@ export default function Axes2DC({
         ctx.canvas.height = canvasHeight;
         ctx.strokeStyle = color;
         ctx.lineWidth = lineWidth;
-    }, [canvasWidth, canvasHeight, color, lineWidth]);
+    }, [ctx, canvasWidth, canvasHeight, color, lineWidth]);
 
     const clearCanvas = useCallback(() => {
         if (!ctx) return;
@@ -98,7 +98,7 @@ export default function Axes2DC({
         return () => {
             if (ctx) removeFunc(ctx);
         };
-    });
+    }, [bounds, ctx, showLabels, addFunc, removeFunc]);
 
     return null;
 }

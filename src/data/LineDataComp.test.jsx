@@ -35,26 +35,3 @@ test('intercepts', () => {
     expect(horizLine.xIntercept(1)).toBe(0);
     expect(horizLine.xIntercept(0)).toBe(null);
 });
-
-test('eq atom', () => {
-    const { eqAtom, lineDataAtom } = LineDataComp(new THREE.Vector3(-1, 1, 0));
-
-    const { result: eqResult, rerender: eqRender } = renderHook(() => useAtom(eqAtom));
-
-    const { result: lineDataResult, rerender: ldRender } = renderHook(() => useAtom(lineDataAtom));
-
-    expect(eqResult.current[0].x).toBe(-1);
-
-    act(() => {
-        eqResult.current[1]({ x: 2, y: 1, c: 1 });
-    });
-
-    eqRender();
-    ldRender();
-
-    expect(eqResult.current[0].x).toBe(2);
-    expect(eqResult.current[0].c).toBe(1);
-
-    expect(lineDataResult.current[0].getSlope()).toBe(2);
-    expect(lineDataResult.current[0].xIntercept()).toBe(-0.5);
-});

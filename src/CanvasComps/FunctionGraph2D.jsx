@@ -15,7 +15,7 @@ export default function FunctionGraph2D({
     canvasWidth = 1024,
     canvasHeight = 1024
 }) {
-    const [ctx] = useState(document.createElement('canvas').getContext('2d'), []);
+    const [ctx] = useState(document.createElement('canvas').getContext('2d'));
 
     const [compArray, setCompArray] = useState();
 
@@ -88,7 +88,7 @@ export default function FunctionGraph2D({
         return () => {
             if (ctx) removeFunc(ctx);
         };
-    });
+    }, [compArray, bounds, clearCanvas, ctx, addFunc, removeFunc]);
 
     return null;
 }

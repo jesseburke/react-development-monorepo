@@ -60,11 +60,9 @@ const fixedCameraData = {
 const btnClassStr =
     'absolute left-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
 
-const saveBtnClassStr = btnClassStr + ' bottom-40';
+const saveBtnClassStr = btnClassStr + ' bottom-24';
 
-const resetBtnClassStr = btnClassStr + ' bottom-24';
-
-const photoBtnClassStr = btnClassStr + ' bottom-8';
+const resetBtnClassStr = btnClassStr + ' bottom-8';
 
 export default function App() {
     const DataComp = MainDataComp(atomStoreAtom);
@@ -94,8 +92,7 @@ export default function App() {
                     <ThreeSceneComp
                         fixedCameraData={fixedCameraData}
                         controlsData={initControlsData}
-                        photoButton={true}
-                        photoBtnClassStr={photoBtnClassStr}
+                        photoButton={false}
                     >
                         <Grid boundsAtom={boundsData.atom} gridShow={true} />
                         <Axes2D
@@ -121,6 +118,7 @@ export default function App() {
                             lineDataAtom={lineDataAtom}
                             labelAtom={lineLabelAtom}
                             colorAtom={lineColorAtom}
+                            boundsAtom={boundsData.atom}
                         />
                         <CameraControls cameraDataAtom={orthoCameraData.atom} />
                     </ThreeSceneComp>
