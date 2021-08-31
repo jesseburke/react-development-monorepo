@@ -37,7 +37,8 @@ export default defineConfig({
                 GraphDrawTranslation: resolve(
                     __dirname,
                     'public_pages/graphDrawTranslation/index.html'
-                )
+                ),
+                DrawWithSymm: resolve(__dirname, 'public_pages/drawWithSymm/index.html')
             },
             output: {
                 dir: 'dist'
