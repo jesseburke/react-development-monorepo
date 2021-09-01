@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 import { curveToBezier } from 'points-on-curve/lib/curve-to-bezier.js';
 
 import ParamGraphPts2D from '../math/ParamGraphPts2D';
-import { SvgContext } from './SvgScene';
+import { SvgContext } from '../components/SvgScene';
 
 export default function SvgParamGraph({
     displayPoints = false,

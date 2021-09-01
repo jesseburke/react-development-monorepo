@@ -9,7 +9,7 @@ import React, {
 import { atom, useAtom } from 'jotai';
 
 import { round } from '../utils/BaseUtils';
-import { SvgContext } from './SvgScene';
+import { SvgContext } from '../components/SvgScene';
 
 export default function SvgAxes() {
     const { mathBoundsAtom, svgBoundsAtom, zoomAtom, mathToSvgFuncAtom } = useContext(SvgContext);
