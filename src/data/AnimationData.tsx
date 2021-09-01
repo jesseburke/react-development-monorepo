@@ -1,10 +1,10 @@
 import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
-import gsap from 'gsap';
 import queryString from 'query-string-esm';
 import { useImmerAtom } from 'jotai/immer';
 
 import Slider from '../components/Slider.jsx';
+import animFactory from '../factories/AnimationFactory';
 
 import { diffObjects, isEmpty, round } from '../utils/BaseUtils';
 import { AnimationDataType } from '../my-types';
@@ -142,31 +142,3 @@ export default function AnimationData({
 
     return { atom: animationAtom, readWriteAtom, component };
 }
-
-const animFactory = ({
-    startTime,
-    duration,
-    updateCB,
-    repeatCB = () => null,
-    repeatDelay = 0.75
-}) => {
-    let animatedObject = { time: 0 };
-
-    const tl = gsap.timeline();
-
-    tl.to(animatedObject, {
-        time: 1,
-        ease: 'none',
-        duration,
-        paused: false,
-        repeat: -1,
-        onUpdate: () => updateCB(animatedObject.time)
-    });
-
-    tl.pause();
-
-    // the argument should be in seconds
-    tl.play(startTime * duration);
-
-    return tl;
-};
