@@ -5,7 +5,7 @@ import LabelDataComp from '../../../data/LabelDataComp.jsx';
 import NumberDataComp from '../../../data/NumberDataComp.jsx';
 import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import CurveDataComp from '../../../data/CurveDataComp';
-import SvgDataComp from '../../../SVGComps/SvgDataComp';
+import SvgDataComp from '../../../data/SvgDataComp';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';

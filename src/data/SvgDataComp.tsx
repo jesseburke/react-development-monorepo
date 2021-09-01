@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
 
-import NumberDataComp from '../data/NumberDataComp';
-import PointDataComp from '../data/PointDataComp';
-import CombineReadWriteAtoms from '../data/CombineRWAtoms';
+import NumberDataComp from './NumberDataComp';
+import PointDataComp from './PointDataComp';
+import CombineReadWriteAtoms from './CombineRWAtoms';
 
 import MatrixFactory from '../math/MatrixFactory';
 
