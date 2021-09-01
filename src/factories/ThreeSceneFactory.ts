@@ -6,7 +6,7 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 //import GLTFExporter from 'three-gltf-exporter';
 
-import LabelMaker from './LabelMaker';
+import LabelMaker from '../ThreeSceneComps/LabelMaker';
 
 import { pubsub } from '../utils/BaseUtils';
 import { LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
