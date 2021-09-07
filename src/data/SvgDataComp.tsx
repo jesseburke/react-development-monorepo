@@ -8,17 +8,12 @@ import MatrixFactory from '../math/MatrixFactory';
 
 import { diffObjects, isEmpty, myStringify } from '../utils/BaseUtils.js';
 
-export const defaultZoom1XWidth = 20;
-// y width will be determined by aspect ratio of svg
-
+export const defaultZoom1XWidth = 20; // can y width from this and aspect ratio
 export const defaultInitXCenter = 0;
 export const defaultInitYCenter = 0;
-
-const defaultInitGraphSqW = 1;
-
 export const defaultZoomFactorButton = 2;
+const defaultInitGraphSqW = 1;
 const defaultZoomFactorWheel = 1.03;
-
 const defaultZoomMax = 2 ** 15;
 const defaultZoomMin = 1 / defaultZoomMax;
 

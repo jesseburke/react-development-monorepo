@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import App from './App_reflection_fd_with_symm';
+import App from './App_reflectionFreeDraw_withSymm';
 
 const title = 'Free Draw';
 
