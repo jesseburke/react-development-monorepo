@@ -1,5 +1,5 @@
-import { processNum } from '../../utils/BaseUtils.js';
-import MatrixFactory from '../MatrixFactory.tsx';
+import { processNum } from '../utils/BaseUtils.js';
+import MatrixFactory from '../MatrixFactory';
 
 // a,b are numbers, initialConds is a 2 elt array of 2 elt arrays
 //

@@ -14,9 +14,9 @@ import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
 
 import { round, processNum } from '../../../utils/BaseUtils';
-import funcParser from '../../../utils/funcParser.jsx';
+import funcParser from '../../../math/funcParser.js';
 
-import { solnStrs } from '../../../math/differentialEquations/secOrderConstantCoeff.jsx';
+import { solnStrs } from '../../../math/secOrderConstantCoeff.js';
 
 //------------------------------------------------------------------------
 //

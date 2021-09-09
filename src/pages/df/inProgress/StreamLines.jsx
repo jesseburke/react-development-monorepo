@@ -1,6 +1,6 @@
 import { RK4Pts } from './RK4.jsx';
-import TriangulationFactory from '../../factories/TriangulationFactory.jsx';
-import PriorityQueueFactory from '../../utils/PriorityQueueFactory.jsx';
+import TriangulationFactory from '../../../factories/TriangulationFactory.jsx';
+import PriorityQueueFactory from '../../../factories/PriorityQueueFactory.js';
 
 // h is used to calculate solution curves
 

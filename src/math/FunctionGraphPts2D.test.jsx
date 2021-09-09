@@ -1,7 +1,3 @@
-import { atom, useAtom } from 'jotai';
-
-import { renderHook, act, cleanup } from '@testing-library/react-hooks';
-
 import FunctionGraphPts2D from './FunctionGraphPts2D';
 
 const testFunc1 = (x) => Math.sin(x ^ (2 + 1));

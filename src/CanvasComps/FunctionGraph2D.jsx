@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import FunctionGraphPts2D from '../math/FunctionGraphPts2D.jsx';
+import FunctionGraphPts2D from '../math/FunctionGraphPts2D.js';
 
 // compArray is an array of arrays; each array is a chain of points to be drawn
 export default function FunctionGraph2D({
