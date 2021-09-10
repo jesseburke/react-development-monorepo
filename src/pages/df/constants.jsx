@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import funcParser from '../../math/funcParser.js';
+import { funcParser } from '@jesseburke/math';
 
 export const fonts = "'Helvetica', 'Hind', sans-serif";
 

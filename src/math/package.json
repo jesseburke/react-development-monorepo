@@ -1,0 +1,9 @@
+{
+    "name": "@jesseburke/math",
+    "version": "0.0.0",
+    "dependencies": {
+        "expr-eval": "^2.0.2",
+        "jotai": "^0.16.8",
+        "react": "^16.14.0"
+    }
+}

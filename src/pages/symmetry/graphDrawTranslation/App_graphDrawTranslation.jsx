@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAtom } from 'jotai';
 
-import { ThreeSceneComp } from '../../../components/ThreeScene';
+import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Arrow from '../../../ThreeSceneComps/Arrow';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';

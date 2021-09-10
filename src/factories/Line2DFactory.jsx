@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { round } from '../utils/BaseUtils';
+import { round } from '@jesseburke/basic-utils';
 
 export default function Line2dFactory(pt1, pt2 = new THREE.Vector3(0, 0, 0), roundPlace = 2) {
     if (pt1.x === pt2.x && pt1.y === pt2.y) {

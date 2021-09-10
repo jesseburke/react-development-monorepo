@@ -8,8 +8,8 @@ import React, {
 } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import { round } from '../utils/BaseUtils';
-import { SvgContext } from '../components/SvgScene';
+import { round } from '@jesseburke/basic-utils';
+import { SvgContext } from '../SVGComps/SvgScene';
 
 export default function SvgAxes() {
     const { mathBoundsAtom, svgBoundsAtom, zoomAtom, mathToSvgFuncAtom } = useContext(SvgContext);

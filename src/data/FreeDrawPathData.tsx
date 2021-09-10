@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 
 import animFactory from '../factories/AnimationFactory';
 
-import { diffObjects, isEmpty, round } from '../utils/BaseUtils';
+import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';
 
 import '../styles.css';
 

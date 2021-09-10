@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import NumberDataComp from './NumberDataComp.jsx';
-import { myStringify } from '../utils/BaseUtils';
+import { myStringify } from '@jesseburke/basic-utils';
 
 describe('number data component', () => {
     const testNumberData = NumberDataComp(5);

@@ -7,7 +7,7 @@ import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.js';
 //import FreeDrawComp from '../../components/FreeDrawComp.jsx';
 import GraphDrawComp from '../../ThreeSceneComps/GraphDraw.jsx';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';

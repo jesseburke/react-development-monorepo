@@ -9,7 +9,7 @@ import './styles.css';
 import gsapRotate from '../../../animations/gsapRotate.jsx';
 import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';

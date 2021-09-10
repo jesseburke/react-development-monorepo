@@ -13,10 +13,10 @@ import SvgDataComp from '../../../data/SvgDataComp';
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
 
-import { round, processNum } from '../../../utils/BaseUtils';
-import funcParser from '../../../math/funcParser.js';
+import { round, processNum } from '@jesseburke/basic-utils';
+import { funcParser } from '@jesseburke/math';
 
-import { solnStrs } from '../../../math/secOrderConstantCoeff.js';
+import { solnStrs } from '@jesseburke/math';
 
 //------------------------------------------------------------------------
 //

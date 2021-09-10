@@ -11,7 +11,7 @@ import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
 import Line2dFactory, { OriginLineFromSlope } from '../../../data/LineDataComp.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';

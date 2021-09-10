@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAtom } from 'jotai';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
+import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';

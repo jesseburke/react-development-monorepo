@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect, useCallback, useContext } from 'rea
 import { atom, useAtom } from 'jotai';
 import { curveToBezier } from 'points-on-curve/lib/curve-to-bezier.js';
 
-import ParamGraphPts2D from '../math/ParamGraphPts2D';
-import { SvgContext } from '../components/SvgScene';
+import { ParamGraphPts2D } from '@jesseburke/math';
+import { SvgContext } from '../SVGComps/SvgScene';
 
 export default function SvgParamGraph({
     displayPoints = false,

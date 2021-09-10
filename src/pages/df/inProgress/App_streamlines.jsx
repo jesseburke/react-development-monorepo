@@ -7,11 +7,11 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 import { Helmet } from 'react-helmet';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.jsx';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 import FunctionInput from '../../components/FunctionInput.jsx';
-import funcParser from '../../math/funcParser.js';
+import { funcParser } from '@jesseburke/math';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 import Input from '../../components/Input.jsx';
 import ArrowGridOptions from '../../components/ArrowGridOptions.jsx';
@@ -26,7 +26,7 @@ import useDraggableMeshArray from '../../geometries/useDraggableMeshArray.jsx';
 import Streamlines from './Streamlines.jsx';
 
 import { fonts, labelStyle } from './constants.jsx';
-import { round } from '../../utils/BaseUtils.ts';
+import { round } from '../@jesseburke/basic-utils';
 
 //------------------------------------------------------------------------
 //

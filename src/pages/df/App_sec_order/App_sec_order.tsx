@@ -5,7 +5,7 @@ import { atom, useAtom, Provider as JProvider } from 'jotai';
 import OptionsTabComp from '../../../components/OptionsTabComp';
 import MainDataComp from '../../../data/MainDataComp.jsx';
 
-import SvgScene, { SvgContext } from '../../../components/SvgScene';
+import SvgScene, { SvgContext } from '../../../SVGComps/SvgScene';
 import SvgBorderAxes from '../../../SVGComps/SvgBorderAxes';
 import SvgAxes from '../../../SVGComps/SvgAxes';
 import SvgFunctionGraph from '../../../SVGComps/SvgFunctionGraph';

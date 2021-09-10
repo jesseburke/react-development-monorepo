@@ -1,5 +1,5 @@
 // func: f(x)
-export default function ParametricGraphPts2D({ xFunc, yFunc, tBounds, approxH = 0.1 }) {
+export function ParamGraphPts2D({ xFunc, yFunc, tBounds, approxH = 0.1 }) {
     const { tMin, tMax } = tBounds;
 
     if (isNaN(tMin) || isNaN(tMax)) return [];

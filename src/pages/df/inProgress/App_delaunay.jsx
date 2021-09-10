@@ -6,7 +6,7 @@ import Delaunator from 'delaunator';
 
 import { FullScreenBaseComponent } from '@jesseburke/basic-react-components';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.jsx';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';

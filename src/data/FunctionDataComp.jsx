@@ -2,8 +2,8 @@ import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import Input from '../components/Input.jsx';
-import funcParser from '../math/funcParser.js';
-import { isEmpty } from '../utils/BaseUtils';
+import { funcParser } from '@jesseburke/math';
+import { isEmpty } from '@jesseburke/basic-utils';
 
 import '../styles.css';
 

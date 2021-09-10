@@ -10,7 +10,7 @@ import React, {
 import * as THREE from 'three';
 import { atom, useAtom } from 'jotai';
 
-import ThreeSceneFactory from '../ThreeSceneComps/ThreeSceneFactory';
+import ThreeSceneFactory from './ThreeSceneFactory';
 import { ArrayPoint3 } from '../my-types';
 
 //------------------------------------------------------------------------

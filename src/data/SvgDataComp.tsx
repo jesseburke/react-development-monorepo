@@ -4,9 +4,9 @@ import NumberDataComp from './NumberDataComp';
 import PointDataComp from './PointDataComp';
 import CombineReadWriteAtoms from './CombineRWAtoms';
 
-import MatrixFactory from '../math/MatrixFactory';
+import { MatrixFactory } from '@jesseburke/math';
 
-import { diffObjects, isEmpty, myStringify } from '../utils/BaseUtils.js';
+import { diffObjects, isEmpty, myStringify } from '@jesseburke/basic-utils';
 
 export const defaultZoom1XWidth = 20; // can y width from this and aspect ratio
 export const defaultInitXCenter = 0;

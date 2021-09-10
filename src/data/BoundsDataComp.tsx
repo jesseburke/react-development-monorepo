@@ -6,7 +6,7 @@ import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
 
-import { diffObjects, isEmpty } from '../utils/BaseUtils';
+import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 import { Bounds, BoundsMin, Label2 } from '../my-types';
 
 const defaultLabelAtom: PrimitiveAtom<Label2> = atom({ x: 'x', y: 'y' });

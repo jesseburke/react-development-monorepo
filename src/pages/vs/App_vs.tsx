@@ -6,8 +6,8 @@ import * as THREE from 'three';
 
 import '../../styles.css';
 
-import { ThreeSceneComp } from '../../components/ThreeScene';
-import CanvasComp from '../../components/CanvasComp.jsx';
+import { ThreeSceneComp } from '../../ThreeSceneComps/ThreeScene';
+import CanvasComp from '../../CanvasComps/CanvasComp.jsx';
 import MainDataComp from '../../data/MainDataComp.jsx';
 import OptionsTabComp from '../../components/OptionsTabComp';
 

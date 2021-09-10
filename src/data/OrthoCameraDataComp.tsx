@@ -5,7 +5,7 @@ import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
-import { diffObjects, isEmpty, round } from '../utils/BaseUtils';
+import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';
 import { OrthoCamera } from '../my-types';
 import '../styles.css';
 

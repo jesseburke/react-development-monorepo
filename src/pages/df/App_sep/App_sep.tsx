@@ -5,7 +5,7 @@ import { atom, useAtom, Provider as JProvider } from 'jotai';
 import * as THREE from 'three';
 
 import OptionsTabComp from '../../../components/OptionsTabComp';
-import { ThreeSceneComp } from '../../../components/ThreeScene';
+import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
 import MainDataComp from '../../../data/MainDataComp.jsx';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';

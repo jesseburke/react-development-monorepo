@@ -7,7 +7,7 @@ import queryString from 'query-string-esm';
 import * as Checkbox from '@radix-ui/react-checkbox';
 
 import Input from '../components/Input.jsx';
-import { diffObjects, isEmpty } from '../utils/BaseUtils';
+import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 import { CurveData2, CurveData2Min } from '../my-types';
 import '../styles.css';
 

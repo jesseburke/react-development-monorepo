@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect, useCallback, useContext } from 'rea
 import { atom, useAtom } from 'jotai';
 import { curveToBezier } from 'points-on-curve/lib/curve-to-bezier.js';
 
-import FunctionGraphPts2D from '../math/FunctionGraphPts2D';
-import { SvgContext } from '../components/SvgScene';
+import { FunctionGraphPts2D } from '@jesseburke/math';
+import { SvgContext } from '../SVGComps/SvgScene';
 
 export default function SvgFunctionGraph({ displayPoints = false, curveDataAtom, funcAtom }) {
     const { mathBoundsAtom, mathToSvgFuncAtom, zoomAtom } = useContext(SvgContext);

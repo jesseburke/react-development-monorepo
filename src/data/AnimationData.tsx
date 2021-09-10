@@ -6,7 +6,7 @@ import { useImmerAtom } from 'jotai/immer';
 import Slider from '../components/Slider.jsx';
 import animFactory from '../factories/AnimationFactory';
 
-import { diffObjects, isEmpty, round } from '../utils/BaseUtils';
+import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';
 import { AnimationDataType } from '../my-types';
 
 import '../styles.css';

@@ -8,7 +8,7 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls';
 
 import LabelMaker from './LabelMaker';
 
-import { pubsub } from '../utils/BaseUtils';
+import { pubsub } from '@jesseburke/basic-utils';
 import { LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
 
 export interface MouseButtons {

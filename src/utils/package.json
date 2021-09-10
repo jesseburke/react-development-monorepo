@@ -1,0 +1,9 @@
+{
+    "name": "@jesseburke/basic-utils",
+    "version": "0.0.0",
+    "dependencies": {
+        "jotai": "^0.16.8",
+        "query-string-esm": "^6.13.6",
+        "react": "^16.14.0"
+    }
+}

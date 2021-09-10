@@ -6,7 +6,7 @@ import CombineRWAtoms from './CombineRWAtoms';
 import BoundsDataComp from './BoundsDataComp';
 import NumberDataComp from './NumberDataComp';
 
-import { isEmpty, myStringify } from '../utils/BaseUtils';
+import { isEmpty, myStringify } from '@jesseburke/basic-utils';
 
 const testBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20, zMin: -20, zMax: 20 };
 const testBoundsData = BoundsDataComp({ initBounds: testBounds });

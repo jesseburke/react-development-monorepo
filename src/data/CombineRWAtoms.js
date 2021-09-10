@@ -9,7 +9,7 @@ import React, {
 import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
 
-import { isEmpty, myStringify } from '../utils/BaseUtils';
+import { isEmpty, myStringify } from '@jesseburke/basic-utils';
 
 export default function CombineReadWriteAtoms(atomsToCombine) {
     const newRWAtom = atom(null, (get, set, action) => {

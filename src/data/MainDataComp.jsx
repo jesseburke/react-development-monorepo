@@ -10,7 +10,7 @@ import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
-import { myStringify } from '../utils/BaseUtils';
+import { myStringify } from '@jesseburke/basic-utils';
 
 export default function MainDataComp(atomStoreAtom) {
     const atomStore = useAtom(atomStoreAtom)[0];

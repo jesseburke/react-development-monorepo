@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import { round } from '../utils/BaseUtils';
+import { round } from '@jesseburke/basic-utils';
 
-import { SvgContext } from '../components/SvgScene';
+import { SvgContext } from '../SVGComps/SvgScene';
 
 const originRadius = 5;
 const axesWidth = 2;

@@ -1,6 +1,6 @@
 import { Parser } from 'expr-eval';
 
-export default function funcParser(funcStr, firstVar = 'x', secondVar = 'y') {
+export function funcParser(funcStr, firstVar = 'x', secondVar = 'y') {
     const parser = new Parser();
 
     parser.consts.e = Math.E;

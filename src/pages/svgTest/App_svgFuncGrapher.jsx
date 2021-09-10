@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import MainDataComp from '../../data/MainDataComp.jsx';
 import OptionsTabComp from '../../components/OptionsTabComp';
 
-import SvgScene from '../../components/SvgScene';
+import SvgScene from '../../SVGComps/SvgScene';
 import SvgBorderAxes from '../../SVGComps/SvgBorderAxes';
 import SvgAxes from '../../SVGComps/SvgAxes';
 import SvgFunctionGraph from '../../SVGComps/SvgFunctionGraph';

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp } from '../../../components/ThreeScene';
+import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';

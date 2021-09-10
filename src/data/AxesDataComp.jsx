@@ -5,7 +5,7 @@ import { atomWithReset } from 'jotai/utils';
 import queryString from 'query-string-esm';
 
 import Input from '../components/Input.jsx';
-import { diffObjects, isEmpty } from '../utils/BaseUtils.js';
+import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 
 import '../styles.css';
 

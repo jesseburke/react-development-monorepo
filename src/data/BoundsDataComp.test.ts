@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 
 import BoundsDataComp from './BoundsDataComp';
-import { myStringify } from '../utils/BaseUtils';
+import { myStringify } from '@jesseburke/basic-utils';
 
 const testBounds = { xMin: -20, xMax: 20, yMin: -20, yMax: 20, zMin: -20, zMax: 20 };
 

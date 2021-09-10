@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../components/ThreeScene';
+import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import Line from '../../../ThreeSceneComps/Line';

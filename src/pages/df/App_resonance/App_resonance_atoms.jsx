@@ -9,7 +9,7 @@ import SvgDataComp from '../../../data/SvgDataComp';
 
 import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
 import Slider from '../../../components/Slider.jsx';
-import { processNum } from '../../../utils/BaseUtils';
+import { processNum } from '../../@jesseburke/basic-utils';
 //------------------------------------------------------------------------
 //
 // initial constants

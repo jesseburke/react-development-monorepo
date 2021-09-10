@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.js';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 
-import funcParser from '../../math/funcParser.js';
+import funcParser from '@jesseburke/math';
 import Input from '../../components/Input.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import Button from '../../components/Button.jsx';
@@ -14,13 +14,9 @@ import Button from '../../components/Button.jsx';
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';
 
-import ImplicitFuncGraph, {
-    nextSide,
-    borderingSquare,
-    ptOnSide
-} from '../../math/ImplicitFuncGraph.jsx';
+import ImplicitFuncGraph, { nextSide, borderingSquare, ptOnSide } from './ImplicitFuncGraph.js';
 
-import { round } from '../../utils/BaseUtils.js';
+import { round } from '../@jesseburke/basic-utils';
 
 //------------------------------------------------------------------------
 //

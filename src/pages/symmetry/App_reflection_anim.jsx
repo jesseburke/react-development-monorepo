@@ -6,7 +6,7 @@ import { css } from 'emotion';
 
 import { gsap } from 'gsap';
 
-import { ThreeSceneComp, useThreeCBs } from '../../components/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.js';
 
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';

@@ -12,7 +12,7 @@ export interface MyMatrix {
 
 type MathMatrix = ReturnType<typeof MatrixFactory>;
 
-export default function MatrixFactory(mat: number[][]) {
+export function MatrixFactory(mat: number[][]) {
     // don't compute this until the rref function is called
     let rref_of_mat: number[][];
 

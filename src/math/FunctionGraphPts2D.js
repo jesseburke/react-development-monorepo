@@ -1,5 +1,5 @@
 // func: f(x)
-export default function FunctionGraphPts2D({ func, bounds, approxH = 0.1 }) {
+export function FunctionGraphPts2D({ func, bounds, approxH = 0.1 }) {
     const { xMin, xMax, yMin, yMax } = bounds;
 
     if (isNaN(xMin) || isNaN(xMax) || isNaN(yMin) || isNaN(yMax)) return [];
