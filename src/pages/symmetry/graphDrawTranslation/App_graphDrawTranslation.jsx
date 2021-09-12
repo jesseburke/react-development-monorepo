@@ -9,7 +9,7 @@ import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
 import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 
-import Button from '../../../components/ButtonWithActiveState.jsx';
+import {Button} from '@jesseburke/components';
 
 import { Route, Link } from '../../../routing';
 

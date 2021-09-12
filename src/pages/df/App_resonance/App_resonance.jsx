@@ -4,7 +4,7 @@ import * as THREE from 'three';
 
 import { atom, useAtom, Provider as JProvider } from 'jotai';
 
-import OptionsTabComp from '../../../components/OptionsTabComp';
+import { OptionsTabComp } from '@jesseburke/components';
 import MainDataComp from '../../../data/MainDataComp.jsx';
 
 import SvgScene from '../../../SVGComps/SvgScene';

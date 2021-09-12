@@ -13,8 +13,8 @@ import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
-import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
-import Slider from '../../../components/Slider.jsx';
+import {TexDisplayComp} from '@jesseburke/components';
+import {Slider} from '@jesseburke/components';
 
 //------------------------------------------------------------------------
 //

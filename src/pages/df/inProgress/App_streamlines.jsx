@@ -8,15 +8,15 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 import { Helmet } from 'react-helmet';
 
 import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.jsx';
-import ControlBar from '../../components/ControlBar.jsx';
-import Main from '../../components/Main.jsx';
-import FunctionInput from '../../components/FunctionInput.jsx';
+import { ControlBar } from '@jesseburke/components';
+import { Main } from '@jesseburke/components';
+import { FunctionInput } from '@jesseburke/components';
 import { funcParser } from '@jesseburke/math';
-import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
-import Input from '../../components/Input.jsx';
-import ArrowGridOptions from '../../components/ArrowGridOptions.jsx';
-import SaveButton from '../../components/SaveButton.jsx';
-import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
+import { ClickablePlaneComp } from '@jesseburke/components';
+import { Input } from '@jesseburke/components';
+import { ArrowGridOptions } from '@jesseburke/components';
+import { SaveButton } from '@jesseburke/components';
+import { FullScreenBaseComponent } from '@jesseburke/components';
 
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';

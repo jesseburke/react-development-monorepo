@@ -8,7 +8,7 @@ import '../../../styles.css';
 
 import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
 import MainDataComp from '../../../data/MainDataComp.jsx';
-import OptionsTabComp from '../../../components/OptionsTabComp';
+import { OptionsTabComp } from '@jesseburke/components';
 
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';

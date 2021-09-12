@@ -4,7 +4,7 @@ import { atom, useAtom, PrimitiveAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
-import Input from '../components/Input.jsx';
+import { Input } from '@jesseburke/components';
 
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 import { Bounds, BoundsMin, Label2 } from '../my-types';

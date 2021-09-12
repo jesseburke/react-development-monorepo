@@ -8,7 +8,7 @@ import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
 import CircularArrow from '../../../ThreeSceneComps/CircularArrow';
 import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 
-import Button from '../../../components/ButtonWithActiveState.jsx';
+import { Button } from '@jesseburke/components';
 
 import { Route, Link } from '../../../routing';
 

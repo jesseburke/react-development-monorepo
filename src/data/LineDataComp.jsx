@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 import { atom, useAtom } from 'jotai';
 
-import Input from '../components/Input.jsx';
+import { Input } from '@jesseburke/components';
 
 import Line2dFactory from '../factories/Line2DFactory.jsx';
 

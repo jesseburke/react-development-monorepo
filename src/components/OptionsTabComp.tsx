@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import * as Popover from '@radix-ui/react-popover';
 
-export default function OptionsModalComp({ nameComponentArray, className }) {
+export default function OptionsTabComp({ nameComponentArray, className }) {
     const [optionsOpen, setOptionsOpen] = useState(true);
 
     const optionsOpenCB = useCallback(() => setOptionsOpen((o) => !o), []);

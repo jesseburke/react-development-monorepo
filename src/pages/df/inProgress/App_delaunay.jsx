@@ -4,10 +4,10 @@ import * as THREE from 'three';
 
 import Delaunator from 'delaunator';
 
-import { FullScreenBaseComponent } from '@jesseburke/basic-react-components';
+import} {{ FullScreenBaseComponent } from '@jesseburke/components';
 
 import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.jsx';
-import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
+import {ClickablePlaneComp} from '@jesseburke/components';
 
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';

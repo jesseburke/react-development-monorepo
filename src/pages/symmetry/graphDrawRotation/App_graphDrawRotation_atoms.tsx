@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import Input from '../../../components/Input';
+import {Input} from '@jesseburke/components';
 
 import MainDataComp from '../../../data/MainDataComp.jsx';
 import LabelDataComp from '../../../data/LabelDataComp.jsx';

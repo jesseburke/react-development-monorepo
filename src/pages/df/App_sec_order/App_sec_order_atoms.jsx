@@ -10,8 +10,8 @@ import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 import SvgDataComp from '../../../data/SvgDataComp';
 
-import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
-import Slider from '../../../components/Slider.jsx';
+import { TexDisplayComp } from '@jesseburke/components';
+import { Slider } from '@jesseburke/components';
 
 import { round, processNum } from '@jesseburke/basic-utils';
 import { funcParser } from '@jesseburke/math';

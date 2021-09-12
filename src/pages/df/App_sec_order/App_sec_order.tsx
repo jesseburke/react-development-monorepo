@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useContext } from 'rea
 
 import { atom, useAtom, Provider as JProvider } from 'jotai';
 
-import OptionsTabComp from '../../../components/OptionsTabComp';
+import { OptionsTabComp } from '@jesseburke/components';
 import MainDataComp from '../../../data/MainDataComp.jsx';
 
 import SvgScene, { SvgContext } from '../../../SVGComps/SvgScene';

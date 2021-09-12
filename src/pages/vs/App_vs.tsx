@@ -9,7 +9,7 @@ import '../../styles.css';
 import { ThreeSceneComp } from '../../ThreeSceneComps/ThreeScene';
 import CanvasComp from '../../CanvasComps/CanvasComp.jsx';
 import MainDataComp from '../../data/MainDataComp.jsx';
-import OptionsTabComp from '../../components/OptionsTabComp';
+import { OptionsTabComp } from '@jesseburke/components';
 
 import Grid from '../../ThreeSceneComps/Grid';
 import Plane from '../../ThreeSceneComps/Plane';

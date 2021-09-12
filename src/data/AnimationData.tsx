@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
 import { useImmerAtom } from 'jotai/immer';
 
-import Slider from '../components/Slider.jsx';
+import { Slider } from '@jesseburke/components';
 import animFactory from '../factories/AnimationFactory';
 
 import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';

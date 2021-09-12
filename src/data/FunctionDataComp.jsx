@@ -1,7 +1,7 @@
 import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import Input from '../components/Input.jsx';
+import { Input } from '@jesseburke/components';
 import { funcParser } from '@jesseburke/math';
 import { isEmpty } from '@jesseburke/basic-utils';
 

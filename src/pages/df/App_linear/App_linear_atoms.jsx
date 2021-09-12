@@ -10,7 +10,7 @@ import BoundsDataComp from '../../../data/BoundsDataComp';
 import CurveDataComp from '../../../data/CurveDataComp';
 import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
 
-import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
+import {TexDisplayComp} from '@jesseburke/components';
 
 //------------------------------------------------------------------------
 //

@@ -7,8 +7,8 @@ import AxesDataComp from '../../../data/AxesDataComp.jsx';
 import CurveDataComp from '../../../data/CurveDataComp';
 import SvgDataComp from '../../../data/SvgDataComp';
 
-import TexDisplayComp from '../../../components/TexDisplayComp.jsx';
-import Slider from '../../../components/Slider.jsx';
+import { TexDisplayComp } from '@jesseburke/components';
+import { Slider } from '@jesseburke/components';
 import { processNum } from '../../@jesseburke/basic-utils';
 //------------------------------------------------------------------------
 //

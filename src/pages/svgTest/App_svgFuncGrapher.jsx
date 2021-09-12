@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import MainDataComp from '../../data/MainDataComp.jsx';
-import OptionsTabComp from '../../components/OptionsTabComp';
+import { OptionsTabComp } from '@jesseburke/components';
 
 import SvgScene from '../../SVGComps/SvgScene';
 import SvgBorderAxes from '../../SVGComps/SvgBorderAxes';

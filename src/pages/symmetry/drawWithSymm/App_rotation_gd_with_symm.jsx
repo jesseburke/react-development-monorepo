@@ -15,8 +15,8 @@ import useExpandingMesh from '../../../geometries/useExpandingMesh.jsx';
 import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../../geometries/use2DAxes.jsx';
 
-import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
-import Input from '../../../components/Input.jsx';
+import { FullScreenBaseComponent } from '@jesseburke/components';
+import { Input } from '@jesseburke/components';
 
 import { fonts, initAxesData, initGridAndOriginData, initOrthographicData } from '../constants.jsx';
 

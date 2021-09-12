@@ -4,7 +4,7 @@ import { Provider as JProvider } from 'jotai';
 
 import * as THREE from 'three';
 
-import OptionsTabComp from '../../components/OptionsTabComp';
+import { OptionsTabComp } from '@jesseburke/components';
 
 import { ThreeSceneComp } from '../../ThreeSceneComps/ThreeScene';
 import MainDataComp from '../../data/MainDataComp.jsx';

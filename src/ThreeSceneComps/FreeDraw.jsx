@@ -10,7 +10,7 @@ import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
 
-import Button from '../components/ButtonWithActiveState.jsx';
+import { Button } from '@jesseburke/components';
 
 const freeDrawMaterial = new THREE.MeshBasicMaterial({
     color: new THREE.Color(0xc2374f),
