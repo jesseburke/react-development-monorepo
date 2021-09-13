@@ -1,0 +1,38 @@
+# NPM
+npm-debug.log*
+node_modules/
+.npm
+
+# IDEs
+.vscode/
+*.code-workspace
+
+# ignore package-lock.json since it's a package
+# see https://github.com/sindresorhus/ama/issues/479#issuecomment-310661514
+/package-lock.json
+/yarn.lock
+
+# bundler
+dist/
+.cache
+
+# OSX
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# test coverage
+coverage/
+
+# preact dist: all files are ignored by default
+# expect sources that are Preact-specific
+preact/*
+!preact/react-deps.js
+!preact/package.json
+
+# type definitions in the project root are copied from types/ folder
+# before publishing, so they should be ignored
+/*.d.ts
+
+# ignore bundled CommonJS files
+cjs/
