@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import { useDebug } from '../utils/debugUtils';
+import { useDebug } from '@jesseburke/basic-utils';
 
 const defaultVisibleAtom = atom(true);
 

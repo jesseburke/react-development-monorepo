@@ -9,7 +9,7 @@ import './styles.css';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
 import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import Line2dFactory, { OriginLineFromSlope } from '../../../data/LineData.jsx';
+import { LineDataComp, OriginLineFromSlope } from '@jesseburke/data';
 
 import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';

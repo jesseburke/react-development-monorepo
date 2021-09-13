@@ -4,9 +4,9 @@ import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
 
 import { LabelDataComp } from '@jesseburke/data';
-import { LineData } from '@jesseburke/data';
+import { LineDataComp } from '@jesseburke/data';
 import { PointDataComp } from '@jesseburke/data';
-import { NumberData } from '@jesseburke/data';
+import { NumberDataComp } from '@jesseburke/data';
 import { ArrowGridDataComp } from '@jesseburke/data';
 import { AxesDataComp } from '@jesseburke/data';
 import { BoundsDataComp } from '@jesseburke/data';

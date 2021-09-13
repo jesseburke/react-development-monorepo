@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import { LabelDataComp } from '@jesseburke/data';
-import { NumberData } from '@jesseburke/data';
+import { NumberDataComp } from '@jesseburke/data';
 import { AxesDataComp } from '@jesseburke/data';
 import { CurveDataComp } from '@jesseburke/data';
 import { SvgDataComp } from '@jesseburke/data';

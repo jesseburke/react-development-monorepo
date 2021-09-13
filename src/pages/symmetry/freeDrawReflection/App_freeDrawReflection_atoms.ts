@@ -10,7 +10,7 @@ import { BoundsDataComp } from '@jesseburke/data';
 import { AnimationData } from '@jesseburke/data';
 import { PerspCameraData } from '@jesseburke/data';
 import { OrthoCameraDataComp } from '@jesseburke/data';
-import LineDataComp, { Line2dFactory } from '../../../data/LineData';
+import { LineDataComp, Line2dFactory } from '@jesseburke/data';
 
 //------------------------------------------------------------------------
 //

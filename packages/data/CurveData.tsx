@@ -9,7 +9,7 @@ import * as Checkbox from '@radix-ui/react-checkbox';
 import { Input } from '@jesseburke/components';
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 import { CurveData2, CurveData2Min } from '../my-types';
-import '../styles.css';
+import './styles.css';
 
 const defaultInitValues: CurveData2 = {
     color: '#C2374F',

@@ -13,7 +13,7 @@ import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene
 import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
-import Line2dFactory from '../../../data/LineData.jsx';
+import { Line2dFactory } from '@jesseburke/data';
 import ReflectionFactory from '../../../factories/ReflectionFactory.jsx';
 
 import useExpandingMesh from '../../../geometries/useExpandingMesh.jsx';

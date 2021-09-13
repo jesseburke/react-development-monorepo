@@ -8,8 +8,9 @@
         "test": "jest --silent --watch"
     },
     "dependencies": {
-        "@jesseburke/components": "file:src/components",
-        "@jesseburke/data": "file:src/data",
+        "@jesseburke/components": "file:packages/components",
+        "@jesseburke/data": "file:packages/data",
+        "@jesseburke/math": "file:packages/math",
         "@radix-ui/react-tooltip": "^0.0.20",
         "classnames": "^2.2.6",
         "emotion": "^10.0.27",
@@ -58,9 +59,9 @@
         "vite": "^2.0.0-beta.23"
     },
     "workspaces": [
-        "src/utils",
-        "src/math",
-        "src/components",
-        "src/data"
+        "packages/utils",
+        "packages/math",
+        "packages/components",
+        "packages/data"
     ]
 }

@@ -8,6 +8,7 @@ export { default as FreeDrawPathData } from './FreeDrawPathData';
 export { default as FunctionDataComp } from './FunctionData';
 export { default as LabelDataComp } from './LabelData';
 export { default as LineDataComp } from './LineData';
+export { default as Line2dFactory, OriginLineFromSlope } from './factories/Line2DFactory';
 export { default as MainDataComp } from './MainDataComp';
 export { default as NumberDataComp } from './NumberData';
 export { default as OrthoCameraDataComp } from './OrthoCameraData';

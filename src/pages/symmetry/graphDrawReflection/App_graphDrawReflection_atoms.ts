@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { atom } from 'jotai';
 
-import Line2dFactory from '../../../data/LineData.jsx';
+import { LineDataComp, Line2dFactory } from '@jesseburke/data';
 
 import { MainDataComp } from '@jesseburke/data';
 import { LabelDataComp } from '@jesseburke/data';
@@ -12,7 +12,6 @@ import { BoundsDataComp } from '@jesseburke/data';
 import { AnimationData } from '@jesseburke/data';
 import { PerspCameraData } from '@jesseburke/data';
 import { OrthoCameraDataComp } from '@jesseburke/data';
-import { LineData } from '@jesseburke/data';
 
 //------------------------------------------------------------------------
 //

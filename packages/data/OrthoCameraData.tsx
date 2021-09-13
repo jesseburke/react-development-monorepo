@@ -7,7 +7,7 @@ import queryString from 'query-string-esm';
 import { Input } from '@jesseburke/components';
 import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';
 import { OrthoCamera } from '../my-types';
-import '../styles.css';
+import './styles.css';
 
 const defaultInitValues: OrthoCamera = {
     target: [0, 0, 0],

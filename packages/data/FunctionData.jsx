@@ -5,7 +5,7 @@ import { Input } from '@jesseburke/components';
 import { funcParser } from '@jesseburke/math';
 import { isEmpty } from '@jesseburke/basic-utils';
 
-import '../styles.css';
+import './styles.css';
 
 export const defaultLabelStyle = {
     color: 'black',
