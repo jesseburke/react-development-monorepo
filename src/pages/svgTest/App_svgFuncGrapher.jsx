@@ -3,10 +3,10 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MainDataComp } from '@jesseburke/data';
 import { OptionsTabComp } from '@jesseburke/components';
 
-import SvgScene from '../../SVGComps/SvgScene';
-import SvgBorderAxes from '../../SVGComps/SvgBorderAxes';
-import SvgAxes from '../../SVGComps/SvgAxes';
-import SvgFunctionGraph from '../../SVGComps/SvgFunctionGraph';
+import { SvgScene } from '@jesseburke/svg-scene-in-react';
+import { SvgBorderAxes } from '@jesseburke/svg-scene-in-react';
+import { SvgAxes } from '@jesseburke/svg-scene-in-react';
+import { SvgFunctionGraph } from '@jesseburke/svg-scene-in-react';
 
 import { funcData, svgData, curveData, atomStoreAtom } from './App_svgFuncGrapher_atoms';
 

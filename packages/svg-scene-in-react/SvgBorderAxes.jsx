@@ -9,9 +9,9 @@ import React, {
 import { atom, useAtom } from 'jotai';
 
 import { round } from '@jesseburke/basic-utils';
-import { SvgContext } from '../SVGComps/SvgScene';
+import { SvgContext } from './SvgScene';
 
-export default function SvgAxes() {
+export default function SvgBorderAxes() {
     const { mathBoundsAtom, svgBoundsAtom, zoomAtom, mathToSvgFuncAtom } = useContext(SvgContext);
 
     const { xMin: xMinMath, xMax: xMaxMath, yMin: yMinMath, yMax: yMaxMath } = useAtom(

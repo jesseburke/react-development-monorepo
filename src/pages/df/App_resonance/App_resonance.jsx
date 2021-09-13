@@ -7,10 +7,10 @@ import { atom, useAtom, Provider as JProvider } from 'jotai';
 import { OptionsTabComp } from '@jesseburke/components';
 import { MainDataComp } from '@jesseburke/data';
 
-import SvgScene from '../../../SVGComps/SvgScene';
-import SvgBorderAxes from '../../../SVGComps/SvgBorderAxes';
-import SvgAxes from '../../../SVGComps/SvgAxes';
-import SvgFunctionGraph from '../../../SVGComps/SvgFunctionGraph';
+import { SvgScene } from '@jesseburke/svg-scene-in-react';
+import { SvgBorderAxes } from '@jesseburke/svg-scene-in-react';
+import { SvgAxes } from '@jesseburke/svg-scene-in-react';
+import { SvgFunctionGraph } from '@jesseburke/svg-scene-in-react';
 
 import {
     funcAtom,

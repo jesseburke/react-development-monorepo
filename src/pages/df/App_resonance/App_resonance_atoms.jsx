@@ -9,7 +9,7 @@ import { SvgDataComp } from '@jesseburke/data';
 
 import { TexDisplayComp } from '@jesseburke/components';
 import { Slider } from '@jesseburke/components';
-import { processNum } from '../../@jesseburke/basic-utils';
+import { processNum } from '@jesseburke/basic-utils';
 //------------------------------------------------------------------------
 //
 // initial constants
