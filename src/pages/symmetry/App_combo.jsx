@@ -15,7 +15,7 @@ import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 import useExpandingMesh from '../../geometries/useExpandingMesh.jsx';
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';
-import OriginLine from '../../geometries/OriginLine.jsx';
+import OriginLine from '../../../packages/three-scene-in-react/geometries/OriginLine.jsx';
 
 import gsapRotate from '../../animations/gsapRotate.jsx';
 import gsapReflect from '../../animations/gsapReflect.jsx';

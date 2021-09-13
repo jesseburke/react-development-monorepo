@@ -14,7 +14,7 @@ import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../../geometries/use2DAxes.jsx';
-import { rotatedArrowheadGeom } from '../../../geometries/CircularArrowGeom.jsx';
+import { rotatedArrowheadGeom } from '../../../../packages/three-scene-in-react/geometries/CircularArrowGeom.jsx';
 
 import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';

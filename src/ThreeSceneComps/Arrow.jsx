@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import ArrowGeom from '../geometries/ArrowGeom.js';
+import ArrowGeom from '../../packages/three-scene-in-react/geometries/ArrowGeom.js';
 
 const defaultNotVisibleAtom = atom(false);
 

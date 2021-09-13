@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+qimport * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
 const defaultRadius = 0.075;

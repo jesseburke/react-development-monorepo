@@ -10,9 +10,9 @@ import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.js
 
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';
-import LinePathGeom, { RegularNgonPts, IrregularNgon } from '../../geometries/LinePathGeom.js';
+import LinePathGeom, { RegularNgonPts, IrregularNgon } from '../../../packages/three-scene-in-react/geometries/LinePathGeom.js';
 
-import OriginLine from '../../geometries/OriginLine.jsx';
+import OriginLine from '../../../packages/three-scene-in-react/geometries/OriginLine.jsx';
 
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 

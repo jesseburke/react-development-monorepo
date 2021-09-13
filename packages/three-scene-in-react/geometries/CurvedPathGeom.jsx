@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+qimport * as THREE from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 // ptArray is an array of THREE.Vector3's to be drawn

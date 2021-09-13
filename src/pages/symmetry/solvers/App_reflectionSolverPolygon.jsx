@@ -19,7 +19,7 @@ import use2DAxes from '../../../geometries/use2DAxes.jsx';
 import LinePathGeom, {
     RegularNgonPts,
     RegularNgonSymmetrySlopes
-} from '../../../geometries/LinePathGeom.js';
+} from '../../../../packages/three-scene-in-react/geometries/LinePathGeom.js';
 
 import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';
