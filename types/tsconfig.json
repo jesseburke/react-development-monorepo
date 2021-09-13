@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "dom"],
+    "jsx": "react",
+    "noEmit": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "wouter": ["."],
+      "wouter/use-location": ["./use-location"],
+      "wouter/static-location": ["./static-location"]
+    }
+  },
+  "files": ["./type-specs.tsx"]
+}
