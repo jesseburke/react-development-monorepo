@@ -10,7 +10,7 @@ import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 
 import { Button } from '@jesseburke/components';
 
-import { Route, Link } from '../../../routing';
+import { Route, Link } from '@jesseburke/wouter-minimal-fork';
 
 import gsapRotate from '../../../animations/gsapRotate.jsx';
 

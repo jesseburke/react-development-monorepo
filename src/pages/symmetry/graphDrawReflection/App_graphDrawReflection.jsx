@@ -11,7 +11,7 @@ import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
 import { Button } from '@jesseburke/components';
 
-import { Route, Link } from '../../../routing';
+import { Route, Link } from '@jesseburke/wouter-minimal-fork';
 
 import gsapRotate from '../../../animations/gsapRotate.jsx';
 import gsapReflect from '../../../animations/gsapReflect.jsx';

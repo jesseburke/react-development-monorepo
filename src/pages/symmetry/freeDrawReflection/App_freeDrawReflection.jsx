@@ -9,9 +9,9 @@ import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import Line from '../../../ThreeSceneComps/Line';
 import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
 import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
-import Button from '../../../components/ButtonWithActiveState.jsx';
 
-import { Route, Link } from '../../../routing';
+import { Button } from '@jesseburke/components';
+import { Route, Link } from '@jesseburke/wouter-minimal-fork';
 
 import gsapRotate from '../../../animations/gsapRotate.jsx';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
