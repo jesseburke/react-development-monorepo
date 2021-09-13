@@ -1,12 +1,12 @@
 {
-    "name": "@jesseburke/components",
+    "name": "@jesseburke/data",
     "version": "0.0.0",
     "dependencies": {
-        "@radix-ui/react-popover": "^0.1.0",
-        "@radix-ui/react-tabs": "^0.0.15",
+        "@radix-ui/react-checkbox": "^0.0.16",
         "jotai": "^0.16.8",
-        "katex": "^0.12.0",
-        "react": "^17.0"
+        "query-string-esm": "^6.13.6",
+        "react": "^16.14.0",
+        "three": "^0.125.2"
     },
     "devDependencies": {
         "autoprefixer": "^10.3.4",

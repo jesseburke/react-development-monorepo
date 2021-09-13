@@ -18,7 +18,7 @@ export interface BoundsDataProps {
     initBounds?: Bounds;
 }
 
-export default function BoundsDataComp({
+export default function BoundsData({
     labelAtom = defaultLabelAtom,
     initBounds = defaultInitBounds,
     twoD = false

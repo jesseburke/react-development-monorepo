@@ -3,18 +3,18 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import LabelDataComp from '../../../data/LabelDataComp.jsx';
-import LineDataComp from '../../../data/LineDataComp.jsx';
-import PointDataComp from '../../../data/PointDataComp.jsx';
-import NumberDataComp from '../../../data/NumberDataComp.jsx';
-import ArrowGridDataComp from '../../../data/ArrowGridDataComp.jsx';
-import AxesDataComp from '../../../data/AxesDataComp.jsx';
-import BoundsDataComp from '../../../data/BoundsDataComp';
-import CurveDataComp from '../../../data/CurveDataComp';
-import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
+import { LabelDataComp } from '@jesseburke/data';
+import { LineData } from '@jesseburke/data';
+import { PointDataComp } from '@jesseburke/data';
+import { NumberData } from '@jesseburke/data';
+import { ArrowGridDataComp } from '@jesseburke/data';
+import { AxesDataComp } from '@jesseburke/data';
+import { BoundsDataComp } from '@jesseburke/data';
+import { CurveDataComp } from '@jesseburke/data';
+import { OrthoCameraDataComp } from '@jesseburke/data';
 
-import {TexDisplayComp} from '@jesseburke/components';
-import {Slider} from '@jesseburke/components';
+import { TexDisplayComp } from '@jesseburke/components';
+import { Slider } from '@jesseburke/components';
 
 //------------------------------------------------------------------------
 //

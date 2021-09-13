@@ -3,7 +3,7 @@ import { atom, useAtom } from 'jotai';
 
 import queryString from 'query-string-esm';
 
-export default function NumberDataComp(initVal = 0) {
+export default function NumberData(initVal = 0) {
     const at = atom(initVal);
 
     const readWriteAtom = atom(null, (get, set, action) => {

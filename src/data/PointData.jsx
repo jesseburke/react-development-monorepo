@@ -18,7 +18,7 @@ const defaultInitValues = {
     y: 0
 };
 
-export default function PointDataComp(initArgs) {
+export default function PointData(initArgs) {
     const initValue = { ...defaultInitValues, ...initArgs };
 
     const ptAtom = atom(initValue);

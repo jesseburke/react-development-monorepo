@@ -3,8 +3,8 @@ import { atom, useAtom } from 'jotai';
 import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 
 import CombineRWAtoms from './CombineRWAtoms';
-import BoundsDataComp from './BoundsDataComp';
-import NumberDataComp from './NumberDataComp';
+import BoundsDataComp from './BoundsData';
+import NumberDataComp from './NumberData';
 
 import { isEmpty, myStringify } from '@jesseburke/basic-utils';
 

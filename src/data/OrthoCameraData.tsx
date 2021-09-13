@@ -15,7 +15,7 @@ const defaultInitValues: OrthoCamera = {
     position: [0, 0, 50]
 };
 
-export default function OrthoCameraDataComp(args: OrthoCamera = {}) {
+export default function OrthoCameraData(args: OrthoCamera = {}) {
     const initValue = { ...defaultInitValues, ...args };
 
     const cameraDataAtom = atom(initValue);

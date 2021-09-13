@@ -6,7 +6,7 @@ import SvgDataComp, {
     defaultInitXCenter,
     defaultInitYCenter,
     defaultZoomFactorButton
-} from './SvgDataComp';
+} from './SvgData';
 
 const {
     upperLeftPointAtom,

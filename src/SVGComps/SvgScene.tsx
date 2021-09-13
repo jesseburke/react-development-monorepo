@@ -10,7 +10,7 @@ import React, {
 import { atom, useAtom } from 'jotai';
 
 import SvgZoomBar from './SvgZoomBar';
-import SvgDataComp from '../data/SvgDataComp';
+import { SvgDataComp } from '@jesseburke/data';
 
 const pixelRatio = 1; //window.devicePixelRatio;
 

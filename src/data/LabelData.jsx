@@ -8,9 +8,9 @@ import { Input } from '@jesseburke/components';
 
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 
-import '../styles.css';
+import './styles.css';
 
-export default function LabelDataComp({ xLabel = 'x', yLabel = 'y', zLabel = 'z', twoD = 0 } = {}) {
+export default function LabelData({ xLabel = 'x', yLabel = 'y', zLabel = 'z', twoD = 0 } = {}) {
     const initLabels = { x: xLabel, y: yLabel, z: zLabel };
     const labelAtom = atom(initLabels);
 

@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import '../../../styles.css';
 
 import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
-import MainDataComp from '../../../data/MainDataComp.jsx';
+import { MainDataComp } from '@jesseburke/data';
 import { OptionsTabComp } from '@jesseburke/components';
 
 import Grid from '../../../ThreeSceneComps/Grid';

@@ -8,7 +8,8 @@
         "test": "jest --silent --watch"
     },
     "dependencies": {
-        "@radix-ui/react-checkbox": "^0.0.16",
+        "@jesseburke/components": "file:src/components",
+        "@jesseburke/data": "file:src/data",
         "@radix-ui/react-tooltip": "^0.0.20",
         "classnames": "^2.2.6",
         "emotion": "^10.0.27",
@@ -17,7 +18,6 @@
         "jotai": "^0.16.8",
         "points-on-curve": "^0.2.0",
         "prettier": "^2.2.1",
-        "query-string-esm": "^6.13.6",
         "react": "^16.14.0",
         "react-dom": "^16.14.0",
         "react-helmet": "^6.1.0",
@@ -60,6 +60,7 @@
     "workspaces": [
         "src/utils",
         "src/math",
-        "src/components"
+        "src/components",
+        "src/data"
     ]
 }

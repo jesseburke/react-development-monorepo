@@ -20,7 +20,7 @@ const defaultLabelAtom = atom({ x: 'x', y: 'y' });
 
 const identity = (x) => x;
 
-export default function FunctionDataComp({
+export default function FunctionData({
     initVal = defaultInitVal,
     functionLabelAtom,
     functionLabelString = 'default label string',

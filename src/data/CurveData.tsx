@@ -18,7 +18,7 @@ const defaultInitValues: CurveData2 = {
     width: 0.1
 };
 
-export default function CurveDataComp(args: CurveData2 = {}) {
+export default function CurveData(args: CurveData2 = {}) {
     const initValue = { ...defaultInitValues, ...args };
 
     const cdAtom = atom(initValue);

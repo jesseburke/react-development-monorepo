@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import MainDataComp from '../../data/MainDataComp.jsx';
+import { MainDataComp } from '@jesseburke/data';
 import { OptionsTabComp } from '@jesseburke/components';
 
 import SvgScene from '../../SVGComps/SvgScene';

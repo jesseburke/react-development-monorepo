@@ -2,7 +2,7 @@ import { atom, useAtom } from 'jotai';
 
 import { renderHook, act } from '@testing-library/react-hooks';
 
-import NumberDataComp from './NumberDataComp.jsx';
+import NumberDataComp from './NumberData.jsx';
 import { myStringify } from '@jesseburke/basic-utils';
 
 describe('number data component', () => {

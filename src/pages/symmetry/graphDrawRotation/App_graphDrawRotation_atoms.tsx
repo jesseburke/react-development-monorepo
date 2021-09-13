@@ -3,17 +3,17 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import {Input} from '@jesseburke/components';
+import { Input } from '@jesseburke/components';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
-import LabelDataComp from '../../../data/LabelDataComp.jsx';
-import FunctionDataComp from '../../../data/FunctionDataComp.jsx';
-import AxesDataComp from '../../../data/AxesDataComp.jsx';
-import BoundsDataComp from '../../../data/BoundsDataComp';
-import AnimationData from '../../../data/AnimationData';
-import PerspCameraData from '../../../data/PerspCameraDataComp';
-import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
-import PointDataComp from '../../../data/PointDataComp.jsx';
+import { MainDataComp } from '@jesseburke/data';
+import { LabelDataComp } from '@jesseburke/data';
+import { FunctionDataComp } from '@jesseburke/data';
+import { AxesDataComp } from '@jesseburke/data';
+import { BoundsDataComp } from '@jesseburke/data';
+import { AnimationData } from '@jesseburke/data';
+import { PerspCameraData } from '@jesseburke/data';
+import { OrthoCameraDataComp } from '@jesseburke/data';
+import { PointDataComp } from '@jesseburke/data';
 
 //------------------------------------------------------------------------
 //

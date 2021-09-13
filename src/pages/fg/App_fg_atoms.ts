@@ -1,10 +1,10 @@
 import { atom, useAtom } from 'jotai';
 
-import LabelDataComp from '../../data/LabelDataComp.jsx';
-import FunctionDataComp from '../../data/FunctionDataComp.jsx';
-import AxesDataComp from '../../data/AxesDataComp.jsx';
-import BoundsDataComp from '../../data/BoundsDataComp';
-import PerspCameraDataComp from '../../data/PerspCameraDataComp';
+import { LabelDataComp } from '@jesseburke/data';
+import { FunctionDataComp } from '@jesseburke/data';
+import { AxesDataComp } from '@jesseburke/data';
+import { BoundsDataComp } from '@jesseburke/data';
+import { PerspCameraData } from '@jesseburke/data';
 
 import { Bounds } from '../../my-types';
 

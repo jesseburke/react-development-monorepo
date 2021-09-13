@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import {Input} from '@jesseburke/components';
+import { Input } from '@jesseburke/components';
 
-import AxesDataComp from '../../../data/AxesDataComp.jsx';
-import BoundsDataComp from '../../../data/BoundsDataComp';
-import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
-import PointDataComp from '../../../data/PointDataComp.jsx';
+import { AxesDataComp } from '@jesseburke/data';
+import { BoundsDataComp } from '@jesseburke/data';
+import { OrthoCameraDataComp } from '@jesseburke/data';
+import { PointDataComp } from '@jesseburke/data';
 
 //------------------------------------------------------------------------
 //

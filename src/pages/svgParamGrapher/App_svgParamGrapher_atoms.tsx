@@ -1,9 +1,9 @@
 import React from 'react';
 import { atom } from 'jotai';
 
-import FunctionDataComp from '../../data/FunctionDataComp.jsx';
-import CurveDataComp from '../../data/CurveDataComp';
-import SvgDataComp from '../../data/SvgDataComp';
+import { FunctionDataComp } from '@jesseburke/data';
+import { CurveDataComp } from '@jesseburke/data';
+import { SvgDataComp } from '@jesseburke/data';
 
 //------------------------------------------------------------------------
 //

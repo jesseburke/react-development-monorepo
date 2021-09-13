@@ -5,7 +5,7 @@ import { atom, useAtom } from 'jotai';
 
 import { Input } from '@jesseburke/components';
 
-import Line2dFactory from '../factories/Line2DFactory.jsx';
+import Line2dFactory from './factories/Line2DFactory.jsx';
 
 // pt1 and pt2 are Three.Vector3's, with z component assumed to be 0
 //
@@ -17,7 +17,7 @@ const defaultPt2 = new THREE.Vector3(0, 0, 0);
 const defaultPt1Atom = atom(defaultPt1);
 const defaultPt2Atom = atom(defaultPt2);
 
-export default function LineDataComp({ pt1Atom = defaultPt1Atom, pt2Atom = defaultPt2Atom } = {}) {
+export default function LineData({ pt1Atom = defaultPt1Atom, pt2Atom = defaultPt2Atom } = {}) {
     //const pt1Atom = atom(initPt1);
     //const pt2Atom = atom(initPt2);
 

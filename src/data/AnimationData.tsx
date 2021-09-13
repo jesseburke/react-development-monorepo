@@ -4,12 +4,12 @@ import queryString from 'query-string-esm';
 import { useImmerAtom } from 'jotai/immer';
 
 import { Slider } from '@jesseburke/components';
-import animFactory from '../factories/AnimationFactory';
+import animFactory from './factories/AnimationFactory';
 
 import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';
 import { AnimationDataType } from '../my-types';
 
-import '../styles.css';
+import './styles.css';
 
 const defaultInitValue: AnimationDataType = {
     t: 0,

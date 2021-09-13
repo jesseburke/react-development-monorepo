@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 
-import NumberDataComp from './NumberDataComp';
-import PointDataComp from './PointDataComp';
+import NumberDataComp from './NumberData';
+import PointDataComp from './PointData';
 import CombineReadWriteAtoms from './CombineRWAtoms';
 
 import { MatrixFactory } from '@jesseburke/math';
@@ -17,7 +17,7 @@ const defaultZoomFactorWheel = 1.03;
 const defaultZoomMax = 2 ** 15;
 const defaultZoomMin = 1 / defaultZoomMax;
 
-export default function SvgDataComp({
+export default function SvgData({
     zoom1XWidth = defaultZoom1XWidth,
     initXCenter = defaultInitXCenter,
     initYCenter = defaultInitYCenter,

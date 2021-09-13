@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { OptionsTabComp } from '@jesseburke/components';
 import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
+import { MainDataComp } from '@jesseburke/data';
 import Grid from '../../../ThreeSceneComps/Grid';
 import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
 import ArrowGrid from '../../../ThreeSceneComps/ArrowGrid.jsx';

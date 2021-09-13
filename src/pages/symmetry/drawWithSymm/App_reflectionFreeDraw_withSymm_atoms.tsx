@@ -4,15 +4,15 @@ import * as THREE from 'three';
 
 import { atom, useAtom } from 'jotai';
 
-import MainDataComp from '../../../data/MainDataComp.jsx';
-import LabelDataComp from '../../../data/LabelDataComp.jsx';
-import FunctionDataComp from '../../../data/FunctionDataComp.jsx';
-import AxesDataComp from '../../../data/AxesDataComp.jsx';
-import BoundsDataComp from '../../../data/BoundsDataComp';
-import AnimationData from '../../../data/AnimationData';
-import PerspCameraData from '../../../data/PerspCameraDataComp';
-import OrthoCameraDataComp from '../../../data/OrthoCameraDataComp';
-import LineDataComp, { Line2dFactory } from '../../../data/LineDataComp';
+import { MainDataComp } from '@jesseburke/data';
+import { LabelDataComp } from '@jesseburke/data';
+import { FunctionDataComp } from '@jesseburke/data';
+import { AxesDataComp } from '@jesseburke/data';
+import { BoundsDataComp } from '@jesseburke/data';
+import { AnimationData } from '@jesseburke/data';
+import { PerspCameraData } from '@jesseburke/data';
+import { OrthoCameraDataComp } from '@jesseburke/data';
+import LineDataComp, { Line2dFactory } from '../../../data/LineData';
 
 //------------------------------------------------------------------------
 //

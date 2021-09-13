@@ -7,7 +7,7 @@ import queryString from 'query-string-esm';
 import { Input } from '@jesseburke/components';
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 
-import '../styles.css';
+import './styles.css';
 
 export const defaultLabelStyle = {
     color: 'black',

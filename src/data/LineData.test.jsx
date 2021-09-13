@@ -7,7 +7,7 @@ import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 
 import * as THREE from 'three';
 
-import LineDataComp, { Line2dFactory } from './LineDataComp';
+import LineDataComp, { Line2dFactory } from './LineData';
 
 test('intercepts', () => {
     const testPt1 = new THREE.Vector3(1, 1, 0);

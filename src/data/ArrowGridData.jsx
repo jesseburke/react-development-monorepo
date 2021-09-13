@@ -7,7 +7,7 @@ import { Input } from '@jesseburke/components';
 
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 
-import '../styles.css';
+import './styles.css';
 
 const defaultInitValues = {
     density: 1,
@@ -23,7 +23,7 @@ function strArrayToArray(strArray, f = Number) {
     return strArray.split(',').map((x) => f(x));
 }
 
-export default function ArrowGridDataComp(args) {
+export default function ArrowGridData(args) {
     const initValue = { ...defaultInitValues, ...args };
 
     const agAtom = atom(initValue);

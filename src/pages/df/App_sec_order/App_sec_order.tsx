@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useCallback, useContext } from 'rea
 import { atom, useAtom, Provider as JProvider } from 'jotai';
 
 import { OptionsTabComp } from '@jesseburke/components';
-import MainDataComp from '../../../data/MainDataComp.jsx';
+import { MainDataComp } from '@jesseburke/data';
 
 import SvgScene, { SvgContext } from '../../../SVGComps/SvgScene';
 import SvgBorderAxes from '../../../SVGComps/SvgBorderAxes';

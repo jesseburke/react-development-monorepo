@@ -1,9 +1,9 @@
 import { atom } from 'jotai';
 
-import FunctionDataComp from '../../data/FunctionDataComp.jsx';
-import AxesDataComp from '../../data/AxesDataComp.jsx';
-import CurveDataComp from '../../data/CurveDataComp';
-import SvgDataComp from '../../data/SvgDataComp';
+import { FunctionDataComp } from '@jesseburke/data';
+import { AxesDataComp } from '@jesseburke/data';
+import { CurveDataComp } from '@jesseburke/data';
+import { SvgDataComp } from '@jesseburke/data';
 
 //------------------------------------------------------------------------
 //

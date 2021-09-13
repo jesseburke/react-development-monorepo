@@ -1,11 +1,11 @@
 import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import animFactory from '../factories/AnimationFactory';
+import animFactory from './factories/AnimationFactory';
 
 import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';
 
-import '../styles.css';
+import './styles.css';
 
 export default function FreeDrawPathData(arrayOfPathComps) {
     const component = () => {
