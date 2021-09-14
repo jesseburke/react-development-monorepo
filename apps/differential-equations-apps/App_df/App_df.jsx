@@ -1,38 +1,33 @@
-import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { atom, useAtom, Provider as JProvider } from 'jotai';
+import { Provider as JotaiProvider } from 'jotai';
 
 import * as THREE from 'three';
 
-import { OptionsTabComp } from '@jesseburke/components';
+import '../styles.css';
+
 import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
 import { MainDataComp } from '@jesseburke/data';
+import { OptionsTabComp } from '@jesseburke/components';
+
 import { Grid } from '@jesseburke/three-scene-in-react';
 import { Axes2D } from '@jesseburke/three-scene-in-react';
 import { ArrowGrid } from '@jesseburke/three-scene-in-react';
 import { IntegralCurve } from '@jesseburke/three-scene-in-react';
 import { CameraControls } from '@jesseburke/three-scene-in-react';
 
-import '../../../styles.css';
-
 import {
     arrowGridData,
     boundsData,
     initialPointData,
-    funcAtom,
+    diffEqData,
     labelData,
     solutionCurveData,
     axesData,
     orthoCameraData,
     zHeightAtom,
-    atomStoreAtom,
-    SepEquationInput
-} from './App_sep_atoms';
-
-//------------------------------------------------------------------------
-//
-// initial data
-//
+    atomStoreAtom
+} from './App_df_atoms';
 
 const initControlsData = {
     mouseButtons: { LEFT: THREE.MOUSE.PAN },
@@ -41,7 +36,8 @@ const initControlsData = {
     enablePan: true,
     enabled: true,
     keyPanSpeed: 50,
-    screenSpaceSpanning: true
+    zoomSpeed: 2,
+    screenSpacePanning: true
 };
 
 const aspectRatio = window.innerWidth / window.innerHeight;
@@ -67,14 +63,15 @@ const photoBtnClassStr = btnClassStr + ' bottom-8';
 
 export default function App() {
     const DataComp = MainDataComp(atomStoreAtom);
+
     return (
-        <JProvider>
+        <JotaiProvider>
             <div className='full-screen-base'>
                 <header
                     className='control-bar bg-persian_blue-900 font-sans
-		    p-4 md:p-8 text-white'
+		    p-8 text-white'
                 >
-                    <SepEquationInput />
+                    <diffEqData.component />
                     <initialPointData.component inputStr={'Initial Point: '} />
                     <OptionsTabComp
                         className={'w-32 bg-gray-50 text-persian_blue-900 p-2 rounded'}
@@ -96,15 +93,15 @@ export default function App() {
                         photoButton={true}
                         photoBtnClassStr={photoBtnClassStr}
                     >
-                        <Grid boundsAtom={boundsData.atom} gridShow={true} />
                         <Axes2D
-                            tickLabelDistance={1}
+                            tickDistance={1}
                             boundsAtom={boundsData.atom}
                             axesDataAtom={axesData.atom}
                             labelAtom={labelData.atom}
                         />
+                        <Grid boundsAtom={boundsData.atom} gridShow={true} />
                         <ArrowGrid
-                            diffEqAtom={funcAtom}
+                            diffEqAtom={diffEqData.funcAtom}
                             boundsAtom={boundsData.atom}
                             arrowGridDataAtom={arrowGridData.atom}
                             zHeightAtom={zHeightAtom}
@@ -112,10 +109,11 @@ export default function App() {
                         <IntegralCurve
                             initialPointAtom={initialPointData.atom}
                             boundsAtom={boundsData.atom}
-                            diffEqAtom={funcAtom}
+                            diffEqAtom={diffEqData.funcAtom}
                             curveDataAtom={solutionCurveData.atom}
                             zHeightAtom={zHeightAtom}
                         />
+
                         <CameraControls cameraDataAtom={orthoCameraData.atom} />
                     </ThreeSceneComp>
                     <DataComp
@@ -124,6 +122,6 @@ export default function App() {
                     />
                 </main>
             </div>
-        </JProvider>
+        </JotaiProvider>
     );
 }

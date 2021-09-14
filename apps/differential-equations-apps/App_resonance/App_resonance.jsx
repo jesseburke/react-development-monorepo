@@ -22,6 +22,8 @@ import {
     svgData
 } from './App_resonance_atoms.jsx';
 
+import '../styles.css';
+
 //------------------------------------------------------------------------
 //
 // initial data

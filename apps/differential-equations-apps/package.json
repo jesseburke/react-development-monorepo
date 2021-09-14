@@ -1,0 +1,30 @@
+{
+    "name": "@jesseburke/direction-field-apps",
+    "version": "0.0.0",
+    "description": "",
+    "scripts": {
+        "dev": "NODE_ENV=development vite",
+        "build": "vite build",
+        "serve": "vite preview",
+        "test": "jest --silent --watch"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@jesseburke/basic-utils": "^0.0.1",
+        "@jesseburke/components": "^0.0.1",
+        "@jesseburke/data": "^0.1.1",
+        "@jesseburke/svg-scene-in-react": "^0.0.0",
+        "@jesseburke/three-scene-in-react": "^0.0.0",
+        "jotai": "^0.16.11",
+        "react": "^16.14.0",
+        "react-dom": "^16.14.0",
+        "react-helmet": "^6.1.0",
+        "three": "^0.125.2"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.3.4",
+        "postcss": "^8.3.6",
+        "tailwindcss": "^2.2.15"
+    }
+}
