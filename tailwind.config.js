@@ -3,7 +3,19 @@ const plugin = require('tailwindcss/plugin');
 
 module.exports = {
     plugins: [],
-    purge: ['./src/**/*.html', './src/**/*.js', './src/**/*.tsx', './src/**/*.jsx'],
+    mode: 'jit',
+    purge: [
+        './src/**/*.html',
+        './src/**/*.js',
+        './src/**/*.ts',
+        './src/**/*.tsx',
+        './src/**/*.jsx',
+        './packages/**/*.html',
+        './packages/**/*.js',
+        './packages/**/*.ts',
+        './packages/**/*.tsx',
+        './packages/**/*.jsx'
+    ],
     darkMode: false, // or 'media' or 'class'
     theme: {
         screens: {

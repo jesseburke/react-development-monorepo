@@ -13,6 +13,8 @@ import { atom, useAtom } from 'jotai';
 import ThreeSceneFactory from './ThreeSceneFactory';
 import { ArrayPoint3 } from '../../src/my-types';
 
+import './styles.css';
+
 //------------------------------------------------------------------------
 //
 

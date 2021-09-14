@@ -17,5 +17,10 @@
     "jotai": "^0.16.11",
     "react": "^16.14.0",
     "three": "^0.132.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.3.4",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.15"
   }
 }
