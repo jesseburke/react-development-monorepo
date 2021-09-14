@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useAtom, atom } from 'jotai';
 
-import '../styles.css';
-
 export default function CameraControls({ cameraDataAtom, threeCBs }) {
     const [cameraData, setCameraData] = useAtom(cameraDataAtom);
 

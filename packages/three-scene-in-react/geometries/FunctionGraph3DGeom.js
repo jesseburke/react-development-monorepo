@@ -1,4 +1,4 @@
-qimport * as THREE from 'three';
+import * as THREE from 'three';
 
 // func: f(x,y) = z
 export default function FunctionGraph3DGeom({

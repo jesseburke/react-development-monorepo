@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { RK4Pts } from '@jesseburke/math';
-import CurvedPathGeom from '.q/CurvedPathGeom';
+import CurvedPathGeom from './CurvedPathGeom';
 
 // function func is a function of x and y
 export default function IntegralCurveGeom({

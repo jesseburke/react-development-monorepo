@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 

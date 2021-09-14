@@ -5,15 +5,15 @@ import { atom, useAtom, Provider as JProvider } from 'jotai';
 import * as THREE from 'three';
 
 import { OptionsTabComp } from '@jesseburke/components';
-import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
+import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
 
 import { MainDataComp } from '@jesseburke/data';
-import Grid from '../../../ThreeSceneComps/Grid';
-import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-import ArrowGrid from '../../../ThreeSceneComps/ArrowGrid.jsx';
-import IntegralCurve from '../../../ThreeSceneComps/IntegralCurve';
-import CameraControls from '../../../ThreeSceneComps/CameraControls.jsx';
-import Line from '../../../ThreeSceneComps/Line.jsx';
+import { Grid } from '@jesseburke/three-scene-in-react';
+import { Axes2D } from '@jesseburke/three-scene-in-react';
+import { ArrowGrid } from '@jesseburke/three-scene-in-react';
+import { IntegralCurve } from '@jesseburke/three-scene-in-react';
+import { CameraControls } from '@jesseburke/three-scene-in-react';
+import { Line } from '@jesseburke/three-scene-in-react';
 
 import {
     arrowGridData,

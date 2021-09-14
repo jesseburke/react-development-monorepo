@@ -5,11 +5,11 @@ import { Router as WouterRouter } from 'wouter';
 
 import { jsx } from '@emotion/core';
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
+import { BufferGeometryUtils } from 'three/* asxamples/jsm/utils/fferGeometryUtils.jsx';
 
 import useHashLocation from '../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../ThreeSceneComps/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
 import FreeDrawComp from '../components/FreeDrawComp.jsx';
 import GraphDrawComp from '../components/GraphDrawComp.jsx';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.jsx';
@@ -148,7 +148,8 @@ export default function App() {
                             top: '5%',
                             left: '5%',
                             fontSize: '1.25em'
-                        }}>
+                        }}
+                    >
                         <FreeDrawOptions>
                             <Link css={linkCss} href='/graph_draw'>
                                 Change to Graph Draw
@@ -173,7 +174,8 @@ export default function App() {
                             top: '5%',
                             left: '5%',
                             fontSize: '1.25em'
-                        }}>
+                        }}
+                    >
                         <Link css={linkCss} href='/'>
                             Change to Free Draw
                         </Link>

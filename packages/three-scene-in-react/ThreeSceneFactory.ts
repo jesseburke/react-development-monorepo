@@ -9,7 +9,7 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import LabelMaker from './LabelMaker';
 
 import { pubsub } from '@jesseburke/basic-utils';
-import { LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
+import { LabelStyle, LabelProps, ArrayPoint3 } from '../../src/my-types';
 
 export interface MouseButtons {
     LEFT: THREE.MOUSE;

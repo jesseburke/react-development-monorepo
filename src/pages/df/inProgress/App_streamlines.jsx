@@ -3,11 +3,11 @@ import React, { Fragment, useState, useRef, useEffect, useCallback } from 'react
 import queryString from 'query-string';
 
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
 import { Helmet } from 'react-helmet';
 
-import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.jsx';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
 import { ControlBar } from '@jesseburke/components';
 import { Main } from '@jesseburke/components';
 import { FunctionInput } from '@jesseburke/components';

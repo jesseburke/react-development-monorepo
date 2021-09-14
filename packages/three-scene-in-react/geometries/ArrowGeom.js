@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 // output has middle at origin; arrow is parallel to y-axis
 // base of arrow is at (0, -length/2) and tip of arrow is at (0, length/2)

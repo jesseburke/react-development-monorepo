@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 const defaultRadius = 0.075;
 const defaultVertexSize = 2;

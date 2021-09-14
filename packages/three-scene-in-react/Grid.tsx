@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 
 import { atom, useAtom } from 'jotai';
 
-import GridGeom from '../../packages/three-scene-in-react/geometries/GridGeom.js';
-import { ArrayPoint2, Bounds } from '../my-types';
+import GridGeom from './geometries/GridGeom.js';
+import { ArrayPoint2, Bounds } from '../../src/my-types';
 
 export interface GridProps {
     threeCBs?: Function;
@@ -13,7 +13,7 @@ export interface GridProps {
     gridCB?: Function;
 }
 
-export default function GridTS({
+export default function Grid({
     threeCBs,
     center = [0, 0],
     gridShow = true,

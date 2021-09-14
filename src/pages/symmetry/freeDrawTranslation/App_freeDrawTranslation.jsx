@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAtom } from 'jotai';
 
-import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
-import Grid from '../../../ThreeSceneComps/Grid';
-import Arrow from '../../../ThreeSceneComps/Arrow';
-import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
-import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
+import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
+import { Grid } from '@jesseburke/three-scene-in-react';
+import { Arrow } from '@jesseburke/three-scene-in-react';
+import { Axes2D } from '@jesseburke/three-scene-in-react';
+import { ClickablePlaneComp } from '@jesseburke/three-scene-in-react';
+import { FreeDrawComp } from '@jesseburke/three-scene-in-react';
 
 import { Button } from '@jesseburke/components';
 

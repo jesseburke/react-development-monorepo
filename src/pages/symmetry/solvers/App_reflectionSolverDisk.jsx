@@ -11,7 +11,10 @@ import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
 import { Line2dFactory } from '@jesseburke/data';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene.js';
+import {
+    ThreeSceneComp,
+    useThreeCBs
+} from '../../../../packages/three-scene-in-react/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';

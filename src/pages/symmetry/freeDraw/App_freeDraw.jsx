@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp } from '../../../ThreeSceneComps/ThreeScene';
-import Grid from '../../../ThreeSceneComps/Grid';
-import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
+import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
+import { Grid } from '@jesseburke/three-scene-in-react';
+import { Axes2D } from '@jesseburke/three-scene-in-react';
+import { FreeDrawComp } from '@jesseburke/three-scene-in-react';
 
 import { axesData, boundsData } from './App_freeDraw_atoms';
 

@@ -3,9 +3,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-import FunctionGraph3DGeom from '../../packages/three-scene-in-react/geometries/FunctionGraph3DGeom.js';
+import FunctionGraph3DGeom from './geometries/FunctionGraph3DGeom.js';
 
 export default function FunctionGraph3D({
     threeCBs,

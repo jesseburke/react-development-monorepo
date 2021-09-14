@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { atom, useAtom } from 'jotai';
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 
 import { Button } from '@jesseburke/components';
 

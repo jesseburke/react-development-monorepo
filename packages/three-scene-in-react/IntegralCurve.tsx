@@ -4,10 +4,10 @@ import { atom, useAtom, PrimitiveAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import IntegralCurveGeom from '../../packages/three-scene-in-react/geometries/IntegralCurveGeom.js';
+import IntegralCurveGeom from './geometries/IntegralCurveGeom.js';
 import DraggableSphere from './DraggableSphere.jsx';
 
-import { ArrayPoint2, Bounds, CurveData2 } from '../my-types';
+import { ArrayPoint2, Bounds, CurveData2 } from '../../src/my-types';
 
 export interface DirectionFieldApproxProps {
     threeCBs?: Function;

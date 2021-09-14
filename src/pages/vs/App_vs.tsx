@@ -6,16 +6,16 @@ import * as THREE from 'three';
 
 import '../../styles.css';
 
-import { ThreeSceneComp } from '../../ThreeSceneComps/ThreeScene';
+import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
 import CanvasComp from '../../CanvasComps/CanvasComp.jsx';
 import { MainDataComp } from '@jesseburke/data';
 import { OptionsTabComp } from '@jesseburke/components';
 
-import Grid from '../../ThreeSceneComps/Grid';
-import Plane from '../../ThreeSceneComps/Plane';
-import Axes3D from '../../ThreeSceneComps/Axes3D.jsx';
-import FunctionGraph3D from '../../ThreeSceneComps/FunctionGraph3D.jsx';
-import CameraControls from '../../ThreeSceneComps/CameraControls.jsx';
+import { Grid } from '@jesseburke/three-scene-in-react';
+import { Plane } from '@jesseburke/three-scene-in-react';
+import { Axes3D } from '@jesseburke/three-scene-in-react';
+import { FunctionGraph3D } from '@jesseburke/three-scene-in-react';
+import { CameraControls } from '@jesseburke/three-scene-in-react';
 
 import Axes2DCanv from '../../CanvasComps/Axes2D.jsx';
 import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';

@@ -9,8 +9,8 @@ import './styles.css';
 
 import useHashLocation from '../../../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene.js';
-import FreeDrawComp from '../../../ThreeSceneComps/FreeDraw.jsx';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
+import { FreeDrawComp } from '@jesseburke/three-scene-in-react';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import { Line2dFactory } from '@jesseburke/data';

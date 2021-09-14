@@ -3,12 +3,12 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '../../../ThreeSceneComps/ThreeScene';
-import Grid from '../../../ThreeSceneComps/Grid';
-import Axes2D from '../../../ThreeSceneComps/Axes2D.jsx';
-import Line from '../../../ThreeSceneComps/Line';
-import GraphDrawComp from '../../../ThreeSceneComps/GraphDraw.jsx';
-import ClickablePlaneComp from '../../../ThreeSceneComps/ClickablePlane.jsx';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
+import { Grid } from '@jesseburke/three-scene-in-react';
+import { Axes2D } from '@jesseburke/three-scene-in-react';
+import { Line } from '@jesseburke/three-scene-in-react';
+import { GraphDrawComp } from '@jesseburke/three-scene-in-react';
+import { ClickablePlaneComp } from '@jesseburke/three-scene-in-react';
 import { Button } from '@jesseburke/components';
 
 import { Route, Link } from '@jesseburke/wouter-minimal-fork';

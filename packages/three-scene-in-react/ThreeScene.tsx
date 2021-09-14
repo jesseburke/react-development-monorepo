@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import { atom, useAtom } from 'jotai';
 
 import ThreeSceneFactory from './ThreeSceneFactory';
-import { ArrayPoint3 } from '../my-types';
+import { ArrayPoint3 } from '../../src/my-types';
 
 //------------------------------------------------------------------------
 //
@@ -275,7 +275,7 @@ const ThreeScene: FunctionComponent = (
     );
 };
 
-export const ThreeSceneComp = React.memo(React.forwardRef(ThreeScene));
+export default React.memo(React.forwardRef(ThreeScene));
 
 // should get rid of this as soon as possible
 export function useThreeCBs(threeRef) {

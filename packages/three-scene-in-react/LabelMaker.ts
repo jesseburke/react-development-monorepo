@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 
-import { OrthoCamera, LabelStyle, LabelProps, ArrayPoint3 } from '../my-types';
+import { OrthoCamera, LabelStyle, LabelProps, ArrayPoint3 } from '../../src/my-types';
 
 export default function LabelMaker(labelContainerDiv, initCoordFunc, width, height) {
     //----------------------------------------

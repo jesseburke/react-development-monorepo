@@ -3,9 +3,9 @@ import React, { memo, useEffect } from 'react';
 import { useAtom, atom } from 'jotai';
 
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-const defaultLabelAtom = atom({ x: 'x', y: 'y', z: 'z' });
+const defaultLabelAtom = atom({ x: 'x', y: 'y' });
 
 const defaultAxesDataAtom = atom({
     radius: 0.01,
@@ -16,12 +16,12 @@ const defaultAxesDataAtom = atom({
     tickLabelDistance: 2
 });
 
-export default memo(function Axes3D({
+export default memo(function Axes2D({
     threeCBs,
     boundsAtom,
     axesDataAtom = defaultAxesDataAtom,
-    tickLabelDistanceFromEnds = 1,
     show = true,
+    tickLabelDistanceFromEnds = 1,
     labelAtom = defaultLabelAtom
 }) {
     const {
@@ -35,9 +35,9 @@ export default memo(function Axes3D({
         tickLabelStyle
     } = useAtom(axesDataAtom)[0];
 
-    const { xMin, xMax, yMin, yMax, zMin, zMax } = useAtom(boundsAtom)[0];
+    const { xMin, xMax, yMin, yMax } = useAtom(boundsAtom)[0];
 
-    const { x: xLabel, y: yLabel, z: zLabel } = useAtom(labelAtom)[0];
+    const { x: xLabel, y: yLabel } = useAtom(labelAtom)[0];
 
     useEffect(() => {
         if (!threeCBs) return;
@@ -46,6 +46,8 @@ export default memo(function Axes3D({
         const axesGroup = new THREE.Group();
 
         if (show) {
+            // make two axes first
+
             const radiusTop = radius;
             const radiusBottom = radius;
             let radialSegments = 8;
@@ -73,23 +75,15 @@ export default memo(function Axes3D({
             );
             ya.translate(0, (yMax + yMin) / 2, 0);
 
-            const za = new THREE.CylinderBufferGeometry(
-                radiusTop,
-                radiusBottom,
-                zMax - zMin,
-                radialSegments,
-                heightSegments,
-                openEnded
-            );
-            //za.translate(0, 0, (zMax + zMin) / 2);
-            za.rotateX(Math.PI / 2);
-
             const axesMaterial = new THREE.MeshBasicMaterial({ color: color });
+            //axesMaterial.transparent = true;
+            //axesMaterial.opacity = .5;
+
             axesGroup.add(new THREE.Mesh(xa, axesMaterial));
             axesGroup.add(new THREE.Mesh(ya, axesMaterial));
-            axesGroup.add(new THREE.Mesh(za, axesMaterial));
 
             // make ticks now
+
             let tickGeomArray = [];
 
             for (let i = xMin; i <= xMax; i++) {
@@ -100,11 +94,6 @@ export default memo(function Axes3D({
                 tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(0, i, 0));
             }
 
-            for (let i = zMin; i <= zMax; i++) {
-                tickGeomArray.push(RawTickGeometry(radius * tickRadiusMultiple).translate(0, 0, i));
-            }
-
-            // am not using tickColor for now
             const tickGeom = BufferGeometryUtils.mergeBufferGeometries(tickGeomArray);
             const tickMaterial = new THREE.MeshBasicMaterial({ color: color });
             axesGroup.add(new THREE.Mesh(tickGeom, tickMaterial));
@@ -117,36 +106,22 @@ export default memo(function Axes3D({
                 threeCBs.remove(axesGroup);
             }
         };
-    }, [threeCBs, show, xMax, xMin, yMax, yMin, zMax, zMin, radius, tickRadiusMultiple, color]);
+    }, [threeCBs, show, xMin, xMax, yMin, yMax, radius, tickRadiusMultiple, color]);
 
     useEffect(() => {
-        if (!threeCBs || !show || !showLabels) return;
+        if (!threeCBs || !show) return;
 
         let xLabelID;
         let yLabelID;
-        let zLabelID;
 
         if (showLabels) {
             xLabelID = threeCBs.addLabel({
-                pos: [xMax, 0, 0],
+                pos: [xMax - 1, 0, 0],
                 text: xLabel,
-                //anchor: 'lr',
                 style: labelStyle
             });
 
-            yLabelID = threeCBs.addLabel({
-                pos: [0, yMax, 0],
-                text: yLabel,
-                //anchor: 'lr',
-                style: labelStyle
-            });
-
-            zLabelID = threeCBs.addLabel({
-                pos: [0, 0, zMax],
-                text: zLabel,
-                //anchor: 'lr',
-                style: labelStyle
-            });
+            yLabelID = threeCBs.addLabel({ pos: [0, yMax, 0], text: yLabel, style: labelStyle });
 
             threeCBs.drawLabels();
             threeCBs.render();
@@ -163,14 +138,9 @@ export default memo(function Axes3D({
                 yLabelID = null;
             }
 
-            if (zLabelID) {
-                threeCBs.removeLabel(zLabelID);
-                zLabelID = null;
-            }
-
             threeCBs.drawLabels();
         };
-    }, [threeCBs, show, showLabels, xMax, yMax, zMax, labelStyle, xLabel, yLabel, zLabel]);
+    }, [threeCBs, show, showLabels, xMax, yMax, labelStyle, xLabel, yLabel]);
 
     // tick labeling
     useEffect(() => {
@@ -207,19 +177,6 @@ export default memo(function Axes3D({
             );
         }
 
-        //z labels
-        const noTickZLabels = (zMax - zMin - 2 * tickLabelDistanceFromEnds) / tickLabelDistance;
-
-        for (let i = 0; i <= noTickZLabels; i++) {
-            labelArr.push(
-                threeCBs.addLabel({
-                    pos: [0, 0, zMin + i * tickLabelDistance + tickLabelDistanceFromEnds],
-                    text: zMin + i * tickLabelDistance + tickLabelDistanceFromEnds,
-                    style: tickLabelStyle
-                })
-            );
-        }
-
         threeCBs.drawLabels();
 
         return () => {
@@ -239,14 +196,11 @@ export default memo(function Axes3D({
         xMin,
         xMax,
         yMin,
-        yMax,
-        zMin,
-        zMax
+        yMax
     ]);
 
     return null;
 });
-
 function RawTickGeometry(tickRadius) {
     const domeRadius = tickRadius;
     const domeWidthSubdivisions = 12;

@@ -5,17 +5,17 @@ import { Router as WouterRouter } from 'wouter';
 
 import { jsx } from '@emotion/core';
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '../../ThreeSceneComps/ThreeScene.js';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
 //import FreeDrawComp from '../../components/FreeDrawComp.jsx';
-import GraphDrawComp from '../../ThreeSceneComps/GraphDraw.jsx';
+import { GraphDrawComp } from '@jesseburke/three-scene-in-react';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 
 import useExpandingMesh from '../../geometries/useExpandingMesh.jsx';
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';
-import OriginLine from '../../../packages/three-scene-in-react/geometries/OriginLine.jsx';
+import { OriginLine } from '@jesseburke/three-scene-in-react';
 
 import gsapRotate from '../../animations/gsapRotate.jsx';
 import gsapReflect from '../../animations/gsapReflect.jsx';
