@@ -15,7 +15,6 @@
         "@jesseburke/wouter-minimal-fork": "file:packages/wouter-minimal-fork",
         "@radix-ui/react-tooltip": "^0.0.20",
         "classnames": "^2.2.6",
-        "emotion": "^10.0.27",
         "gsap": "^3.6.0",
         "immer": "^8.0.1",
         "jotai": "^0.16.8",
@@ -59,12 +58,7 @@
         "vite": "^2.0.0-beta.23"
     },
     "workspaces": [
-        "packages/utils",
-        "packages/math",
-        "packages/components",
-        "packages/data",
-        "packages/wouter-minimal-fork",
-        "packages/svg-scene-in-react",
-        "packages/three-scene-in-react"
+        "packages/*",
+        "apps/*"
     ]
 }
