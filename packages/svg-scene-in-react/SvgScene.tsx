@@ -18,6 +18,8 @@ const defaultSvgData = SvgDataComp();
 
 export const SvgContext = createContext({});
 
+import './styles.css';
+
 export default ({ svgData = defaultSvgData, canPan = true, children = {} } = {}) => {
     const {
         svgHeightAndWidthAtom,

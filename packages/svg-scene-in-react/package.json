@@ -7,5 +7,10 @@
         "@jesseburke/math": "^0.1.0",
         "jotai": "^0.16.8",
         "react": "^16.14.0"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.3.4",
+        "postcss": "^8.3.6",
+        "tailwindcss": "^2.2.15"
     }
 }
