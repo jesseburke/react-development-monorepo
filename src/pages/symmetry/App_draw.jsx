@@ -9,7 +9,7 @@ import { BufferGeometryUtils } from 'three/* asxamples/jsm/utils/fferGeometryUti
 
 import useHashLocation from '../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
 import FreeDrawComp from '../components/FreeDrawComp.jsx';
 import GraphDrawComp from '../components/GraphDrawComp.jsx';
 import ClickablePlaneComp from '../components/ClickablePlaneComp.jsx';

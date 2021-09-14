@@ -3,12 +3,12 @@ import React, { useState, useRef, useEffect, useCallback, useContext } from 'rea
 import { atom, useAtom, Provider as JProvider } from 'jotai';
 
 import { OptionsTabComp } from '@jesseburke/components';
-import { MainDataComp } from '@jesseburke/data';
+import { MainDataComp } from '@jesseburke/jotai-data-setup';
 
-import { SvgScene, SvgContext } from '@jesseburke/svg-scene-in-react';
-import { SvgBorderAxes } from '@jesseburke/svg-scene-in-react';
-import { SvgAxes } from '@jesseburke/svg-scene-in-react';
-import { SvgFunctionGraph } from '@jesseburke/svg-scene-in-react';
+import { SvgScene, SvgContext } from '@jesseburke/svg-scene-with-react';
+import { SvgBorderAxes } from '@jesseburke/svg-scene-with-react';
+import { SvgAxes } from '@jesseburke/svg-scene-with-react';
+import { SvgFunctionGraph } from '@jesseburke/svg-scene-with-react';
 
 import {
     labelData,

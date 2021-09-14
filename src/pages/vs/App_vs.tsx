@@ -6,16 +6,16 @@ import * as THREE from 'three';
 
 import '../../styles.css';
 
-import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp } from '@jesseburke/three-scene-with-react';
 import CanvasComp from '../../CanvasComps/CanvasComp.jsx';
-import { MainDataComp } from '@jesseburke/data';
+import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { OptionsTabComp } from '@jesseburke/components';
 
-import { Grid } from '@jesseburke/three-scene-in-react';
-import { Plane } from '@jesseburke/three-scene-in-react';
-import { Axes3D } from '@jesseburke/three-scene-in-react';
-import { FunctionGraph3D } from '@jesseburke/three-scene-in-react';
-import { CameraControls } from '@jesseburke/three-scene-in-react';
+import { Grid } from '@jesseburke/three-scene-with-react';
+import { Plane } from '@jesseburke/three-scene-with-react';
+import { Axes3D } from '@jesseburke/three-scene-with-react';
+import { FunctionGraph3D } from '@jesseburke/three-scene-with-react';
+import { CameraControls } from '@jesseburke/three-scene-with-react';
 
 import Axes2DCanv from '../../CanvasComps/Axes2D.jsx';
 import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';

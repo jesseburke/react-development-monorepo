@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 
-import { LabelDataComp } from '@jesseburke/data';
-import { NumberDataComp } from '@jesseburke/data';
-import { AxesDataComp } from '@jesseburke/data';
-import { CurveDataComp } from '@jesseburke/data';
-import { SvgDataComp } from '@jesseburke/data';
+import { LabelDataComp } from '@jesseburke/jotai-data-setup';
+import { NumberDataComp } from '@jesseburke/jotai-data-setup';
+import { AxesDataComp } from '@jesseburke/jotai-data-setup';
+import { CurveDataComp } from '@jesseburke/jotai-data-setup';
+import { SvgDataComp } from '@jesseburke/jotai-data-setup';
 
 import { TexDisplayComp } from '@jesseburke/components';
 import { Slider } from '@jesseburke/components';

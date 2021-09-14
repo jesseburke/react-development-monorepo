@@ -9,7 +9,7 @@
     },
     "dependencies": {
         "@jesseburke/components": "file:packages/components",
-        "@jesseburke/data": "file:packages/data",
+        "@jesseburke/jotai-data-setup": "file:packages/jotai-data-setup",
         "@jesseburke/math": "file:packages/math",
         "@jesseburke/svg-scene-in-react": "file:packages/svg-scene-in-react",
         "@jesseburke/wouter-minimal-fork": "file:packages/wouter-minimal-fork",

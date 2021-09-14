@@ -7,7 +7,7 @@ import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUti
 
 import { Helmet } from 'react-helmet';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
 import { ControlBar } from '@jesseburke/components';
 import { Main } from '@jesseburke/components';
 import { FunctionInput } from '@jesseburke/components';

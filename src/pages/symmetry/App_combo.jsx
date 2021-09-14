@@ -7,15 +7,15 @@ import { jsx } from '@emotion/core';
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
 //import FreeDrawComp from '../../components/FreeDrawComp.jsx';
-import { GraphDrawComp } from '@jesseburke/three-scene-in-react';
+import { GraphDrawComp } from '@jesseburke/three-scene-with-react';
 import ClickablePlaneComp from '../../components/ClickablePlaneComp.jsx';
 
 import useExpandingMesh from '../../geometries/useExpandingMesh.jsx';
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';
-import { OriginLine } from '@jesseburke/three-scene-in-react';
+import { OriginLine } from '@jesseburke/three-scene-with-react';
 
 import gsapRotate from '../../animations/gsapRotate.jsx';
 import gsapReflect from '../../animations/gsapReflect.jsx';

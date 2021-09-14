@@ -6,8 +6,8 @@ import './styles.css';
 
 import useHashLocation from '../../../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
-import { FreeDrawComp } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
+import { FreeDrawComp } from '@jesseburke/three-scene-with-react';
 
 import RationalRotationCSFactory from '../../../factories/RationalRotationCSFactory.jsx';
 

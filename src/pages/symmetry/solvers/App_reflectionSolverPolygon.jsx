@@ -9,12 +9,12 @@ import './styles.css';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
 import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import { LineDataComp, OriginLineFromSlope } from '@jesseburke/data';
+import { LineDataComp, OriginLineFromSlope } from '@jesseburke/jotai-data-setup';
 
 import {
     ThreeSceneComp,
     useThreeCBs
-} from '../../../../packages/three-scene-in-react/ThreeScene.js';
+} from '../../../../packages/three-scene-with-react/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';
@@ -22,7 +22,7 @@ import use2DAxes from '../../../geometries/use2DAxes.jsx';
 import LinePathGeom, {
     RegularNgonPts,
     RegularNgonSymmetrySlopes
-} from '../../../../packages/three-scene-in-react/geometries/LinePathGeom.js';
+} from '../../../../packages/three-scene-with-react/geometries/LinePathGeom.js';
 
 import FullScreenBaseComponent from '../../../components/FullScreenBaseComponent';
 import Button from '../../components/Button.jsx';

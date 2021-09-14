@@ -6,13 +6,13 @@ import { css } from 'emotion';
 
 import { gsap } from 'gsap';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
 
 import useGridAndOrigin from '../../geometries/useGridAndOrigin.jsx';
 import use2DAxes from '../../geometries/use2DAxes.jsx';
-import {LinePathGeom, RegularNgonPts, IrregularNgon } from '@jesseburke/three-scene-in-react';
+import {LinePathGeom, RegularNgonPts, IrregularNgon } from '@jesseburke/three-scene-with-react';
 
-import{ OriginLine} from '@jesseburke/three-scene-in-react';
+import{ OriginLine} from '@jesseburke/three-scene-with-react';
 
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 

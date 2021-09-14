@@ -1,10 +1,10 @@
 import { atom, useAtom } from 'jotai';
 
-import { LabelDataComp } from '@jesseburke/data';
-import { FunctionDataComp } from '@jesseburke/data';
-import { AxesDataComp } from '@jesseburke/data';
-import { BoundsDataComp } from '@jesseburke/data';
-import { PerspCameraData } from '@jesseburke/data';
+import { LabelDataComp } from '@jesseburke/jotai-data-setup';
+import { FunctionDataComp } from '@jesseburke/jotai-data-setup';
+import { AxesDataComp } from '@jesseburke/jotai-data-setup';
+import { BoundsDataComp } from '@jesseburke/jotai-data-setup';
+import { PerspCameraData } from '@jesseburke/jotai-data-setup';
 
 import { Bounds } from '../../my-types';
 

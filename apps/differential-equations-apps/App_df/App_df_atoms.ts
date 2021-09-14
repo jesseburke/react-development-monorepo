@@ -1,13 +1,13 @@
 import { atom } from 'jotai';
 
-import { LabelDataComp } from '@jesseburke/data';
-import { PointDataComp } from '@jesseburke/data';
-import { FunctionDataComp } from '@jesseburke/data';
-import { ArrowGridDataComp } from '@jesseburke/data';
-import { AxesDataComp } from '@jesseburke/data';
-import { BoundsDataComp } from '@jesseburke/data';
-import { CurveDataComp } from '@jesseburke/data';
-import { OrthoCameraDataComp } from '@jesseburke/data';
+import { LabelDataComp } from '@jesseburke/jotai-data-setup';
+import { PointDataComp } from '@jesseburke/jotai-data-setup';
+import { FunctionDataComp } from '@jesseburke/jotai-data-setup';
+import { ArrowGridDataComp } from '@jesseburke/jotai-data-setup';
+import { AxesDataComp } from '@jesseburke/jotai-data-setup';
+import { BoundsDataComp } from '@jesseburke/jotai-data-setup';
+import { CurveDataComp } from '@jesseburke/jotai-data-setup';
+import { OrthoCameraDataComp } from '@jesseburke/jotai-data-setup';
 
 import { ObjectPoint2, Bounds, CurveData2, LabelStyle, AxesDataT } from '../../../my-types';
 

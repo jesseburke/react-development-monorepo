@@ -6,15 +6,15 @@ import * as THREE from 'three';
 
 import '../styles.css';
 
-import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
-import { MainDataComp } from '@jesseburke/data';
+import { ThreeSceneComp } from '@jesseburke/three-scene-with-react';
+import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { OptionsTabComp } from '@jesseburke/components';
 
-import { Grid } from '@jesseburke/three-scene-in-react';
-import { Axes2D } from '@jesseburke/three-scene-in-react';
-import { ArrowGrid } from '@jesseburke/three-scene-in-react';
-import { IntegralCurve } from '@jesseburke/three-scene-in-react';
-import { CameraControls } from '@jesseburke/three-scene-in-react';
+import { Grid } from '@jesseburke/three-scene-with-react';
+import { Axes2D } from '@jesseburke/three-scene-with-react';
+import { ArrowGrid } from '@jesseburke/three-scene-with-react';
+import { IntegralCurve } from '@jesseburke/three-scene-with-react';
+import { CameraControls } from '@jesseburke/three-scene-with-react';
 
 import {
     arrowGridData,

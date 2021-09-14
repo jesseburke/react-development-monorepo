@@ -1,15 +1,12 @@
 {
-    "name": "@jesseburke/data",
-    "version": "0.1.1",
+    "name": "@jesseburke/svg-scene-with-react",
+    "version": "0.0.0",
     "dependencies": {
         "@jesseburke/basic-utils": "^0.0.1",
-        "@jesseburke/components": "^0.0.1",
+        "@jesseburke/jotai-data-setup": "^0.0.0",
         "@jesseburke/math": "^0.1.0",
-        "@radix-ui/react-checkbox": "^0.0.16",
         "jotai": "^0.16.8",
-        "query-string-esm": "^6.13.6",
-        "react": "^16.14.0",
-        "three": "^0.125.2"
+        "react": "^16.14.0"
     },
     "devDependencies": {
         "autoprefixer": "^10.3.4",

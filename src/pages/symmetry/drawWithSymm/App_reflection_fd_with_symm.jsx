@@ -9,11 +9,11 @@ import './styles.css';
 
 import useHashLocation from '../../../hooks/useHashLocation.jsx';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-in-react';
-import { FreeDrawComp } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
+import { FreeDrawComp } from '@jesseburke/three-scene-with-react';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
-import { Line2dFactory } from '@jesseburke/data';
+import { Line2dFactory } from '@jesseburke/jotai-data-setup';
 import ReflectionFactory from '../../../factories/ReflectionFactory.jsx';
 
 import useExpandingMesh from '../../../geometries/useExpandingMesh.jsx';

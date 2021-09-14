@@ -3,12 +3,12 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp } from '@jesseburke/three-scene-in-react';
-import { Grid } from '@jesseburke/three-scene-in-react';
-import { Axes2D } from '@jesseburke/three-scene-in-react';
-import { Line } from '@jesseburke/three-scene-in-react';
-import { FreeDrawComp } from '@jesseburke/three-scene-in-react';
-import { ClickablePlaneComp } from '@jesseburke/three-scene-in-react';
+import { ThreeSceneComp } from '@jesseburke/three-scene-with-react';
+import { Grid } from '@jesseburke/three-scene-with-react';
+import { Axes2D } from '@jesseburke/three-scene-with-react';
+import { Line } from '@jesseburke/three-scene-with-react';
+import { FreeDrawComp } from '@jesseburke/three-scene-with-react';
+import { ClickablePlaneComp } from '@jesseburke/three-scene-with-react';
 
 import {
     boundsData,

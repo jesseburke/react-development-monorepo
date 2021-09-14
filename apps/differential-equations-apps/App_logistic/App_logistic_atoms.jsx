@@ -3,15 +3,15 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import { LabelDataComp } from '@jesseburke/data';
-import { LineDataComp } from '@jesseburke/data';
-import { PointDataComp } from '@jesseburke/data';
-import { NumberDataComp } from '@jesseburke/data';
-import { ArrowGridDataComp } from '@jesseburke/data';
-import { AxesDataComp } from '@jesseburke/data';
-import { BoundsDataComp } from '@jesseburke/data';
-import { CurveDataComp } from '@jesseburke/data';
-import { OrthoCameraDataComp } from '@jesseburke/data';
+import { LabelDataComp } from '@jesseburke/jotai-data-setup';
+import { LineDataComp } from '@jesseburke/jotai-data-setup';
+import { PointDataComp } from '@jesseburke/jotai-data-setup';
+import { NumberDataComp } from '@jesseburke/jotai-data-setup';
+import { ArrowGridDataComp } from '@jesseburke/jotai-data-setup';
+import { AxesDataComp } from '@jesseburke/jotai-data-setup';
+import { BoundsDataComp } from '@jesseburke/jotai-data-setup';
+import { CurveDataComp } from '@jesseburke/jotai-data-setup';
+import { OrthoCameraDataComp } from '@jesseburke/jotai-data-setup';
 
 import { TexDisplayComp } from '@jesseburke/components';
 import { Slider } from '@jesseburke/components';

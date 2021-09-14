@@ -9,12 +9,12 @@ import './styles.css';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
 import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import { Line2dFactory } from '@jesseburke/data';
+import { Line2dFactory } from '@jesseburke/jotai-data-setup';
 
 import {
     ThreeSceneComp,
     useThreeCBs
-} from '../../../../packages/three-scene-in-react/ThreeScene.js';
+} from '../../../../packages/three-scene-with-react/ThreeScene.js';
 import ClickablePlaneComp from '../../../components/ClickablePlaneComp.jsx';
 
 import useGridAndOrigin from '../../../geometries/useGridAndOrigin.jsx';
