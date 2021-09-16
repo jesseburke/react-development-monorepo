@@ -1,4 +1,4 @@
-import MatrixFactory from './MatrixFactory';
+import { MatrixFactory } from './MatrixFactory';
 
 let testMat = MatrixFactory([
     [1, 2, 3],
