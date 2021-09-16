@@ -11,7 +11,7 @@ import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react'
 import { ControlBar } from '@jesseburke/components';
 import { Main } from '@jesseburke/components';
 import { FunctionInput } from '@jesseburke/components';
-import { funcParser } from '@jesseburke/math';
+import { funcParser } from '@jesseburke/math-utils';
 import { ClickablePlaneComp } from '@jesseburke/components';
 import { Input } from '@jesseburke/components';
 import { ArrowGridOptions } from '@jesseburke/components';

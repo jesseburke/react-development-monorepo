@@ -4,7 +4,7 @@ import NumberDataComp from './NumberData';
 import PointDataComp from './PointData';
 import CombineReadWriteAtoms from './CombineRWAtoms';
 
-import { MatrixFactory } from '@jesseburke/math';
+import { MatrixFactory } from '@jesseburke/math-utils';
 
 import { diffObjects, isEmpty, myStringify } from '@jesseburke/basic-utils';
 

@@ -8,7 +8,7 @@
     "peerDependencies": {
         "@jesseburke/basic-utils": "^0.0.1",
         "@jesseburke/components": "^0.0.1",
-        "@jesseburke/math": "^0.1.0",
+        "@jesseburke/math-utils": "^0.0.0",
         "jotai": ">=0.16.8",
         "react": ">=16.8",
         "three": ">= 0.125.2"

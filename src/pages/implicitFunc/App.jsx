@@ -6,7 +6,7 @@ import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react'
 import ControlBar from '../../components/ControlBar.jsx';
 import Main from '../../components/Main.jsx';
 
-import funcParser from '@jesseburke/math';
+import funcParser from '@jesseburke/math-utils';
 import Input from '../../components/Input.jsx';
 import FullScreenBaseComponent from '../../components/FullScreenBaseComponent.jsx';
 import Button from '../../components/Button.jsx';

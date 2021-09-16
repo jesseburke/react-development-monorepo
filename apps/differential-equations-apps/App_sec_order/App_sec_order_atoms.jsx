@@ -14,9 +14,7 @@ import { TexDisplayComp } from '@jesseburke/components';
 import { Slider } from '@jesseburke/components';
 
 import { round, processNum } from '@jesseburke/basic-utils';
-import { funcParser } from '@jesseburke/math';
-
-import { solnStrs } from '@jesseburke/math';
+import { funcParser, solnStrs } from '@jesseburke/math-utils';
 
 //------------------------------------------------------------------------
 //
