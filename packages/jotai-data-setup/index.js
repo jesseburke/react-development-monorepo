@@ -14,4 +14,3 @@ export { default as NumberDataComp } from './NumberData';
 export { default as OrthoCameraDataComp } from './OrthoCameraData';
 export { default as PerspCameraData } from './PerspCameraData';
 export { default as PointDataComp } from './PointData';
-export { default as SvgDataComp } from './SvgData';

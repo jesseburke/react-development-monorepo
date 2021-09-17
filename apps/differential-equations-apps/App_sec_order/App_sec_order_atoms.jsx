@@ -8,7 +8,7 @@ import { AxesDataComp } from '@jesseburke/jotai-data-setup';
 import { BoundsDataComp } from '@jesseburke/jotai-data-setup';
 import { CurveDataComp } from '@jesseburke/jotai-data-setup';
 import { OrthoCameraDataComp } from '@jesseburke/jotai-data-setup';
-import { SvgDataComp } from '@jesseburke/jotai-data-setup';
+import SvgDataComp from './SvgData';
 
 import { TexDisplayComp } from '@jesseburke/components';
 import { Slider } from '@jesseburke/components';

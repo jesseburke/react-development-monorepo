@@ -3,7 +3,7 @@ import { atom } from 'jotai';
 
 import { FunctionDataComp } from '@jesseburke/jotai-data-setup';
 import { CurveDataComp } from '@jesseburke/jotai-data-setup';
-import { SvgDataComp } from '@jesseburke/jotai-data-setup';
+import SvgDataComp from './SvgData';
 
 //------------------------------------------------------------------------
 //
