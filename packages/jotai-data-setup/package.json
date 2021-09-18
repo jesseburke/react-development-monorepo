@@ -1,9 +1,11 @@
 {
     "name": "@jesseburke/jotai-data-setup",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "dependencies": {
         "@radix-ui/react-checkbox": "^0.0.16",
-        "query-string-esm": "^6.13.6"
+        "query-string-esm": "^6.13.6",
+        "gsap": "^3.6.0",
+        "immer": "^8.0.1"
     },
     "peerDependencies": {
         "@jesseburke/basic-utils": "^0.0.1",
