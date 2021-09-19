@@ -1,0 +1,36 @@
+* React development monorepo
+
+  This is a monorepo where I simultaneously develop: a framework to build math apps in Javascript, using
+  React and ThreeJS, and examples of such math apps. 
+
+** apps  
+
+*** differential equations apps
+    https://github.com/jesseburke/differential-equations-apps
+   
+*** symmetry apps   
+    https://github.com/jesseburke/symmetry-apps
+   
+** libraries
+
+*** three scene (made) with react
+    https://github.com/jesseburke/three-scene-with-react
+
+*** svg (made) with react
+    https://github.com/jesseburke/svg-scene-with-react
+
+*** data setup using jotai
+    https://github.com/jesseburke/jotai-data-setup
+
+*** react dom components
+    https://github.com/jesseburke/components
+
+** utils
+
+*** basic utils   
+    https://github.com/jesseburke/basic-utils
+    
+*** math utils   
+    https://github.com/jesseburke/math-utils
+
+    
