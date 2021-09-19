@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/jotai-data-setup",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "dependencies": {
         "@radix-ui/react-checkbox": "^0.0.16",
         "@radix-ui/react-tooltip": "^0.0.20",
