@@ -7,12 +7,11 @@ import { Arrow } from '@jesseburke/three-scene-with-react';
 import { Axes2D } from '@jesseburke/three-scene-with-react';
 import { ClickablePlaneComp } from '@jesseburke/three-scene-with-react';
 import { FreeDrawComp } from '@jesseburke/three-scene-with-react';
+import { TranslateAnimWrapper } from '@jesseburke/three-scene-with-react';
 
 import { Button } from '@jesseburke/components';
 
 import { Route, Link } from '@jesseburke/wouter-minimal-fork';
-
-import TranslateAnimWrapper from '../../../animations/TranslateAnimWrapper.jsx';
 
 import {
     boundsData,

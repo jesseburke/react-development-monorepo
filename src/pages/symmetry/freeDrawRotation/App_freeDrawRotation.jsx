@@ -15,7 +15,7 @@ import { Button } from '@jesseburke/components';
 
 import { Route, Link } from '@jesseburke/wouter-minimal-fork';
 
-import gsapRotate from '../../../animations/gsapRotate.jsx';
+import { gsapRotate } from '@jesseburke/three-scene-with-react';
 
 import {
     boundsData,

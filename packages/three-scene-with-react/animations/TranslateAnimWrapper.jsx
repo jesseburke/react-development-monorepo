@@ -7,7 +7,7 @@ import gsapTranslate from './gsapTranslate.jsx';
 
 const defaultTranslationDuration = 0.4;
 
-export default function TranslationAnimWrapper({
+export default function TranslateAnimWrapper({
     threeCBs,
     translationAtom,
     animatingAtom,
