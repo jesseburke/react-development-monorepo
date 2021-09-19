@@ -5,7 +5,6 @@ import { Router as WouterRouter } from 'wouter';
 
 import { jsx } from '@emotion/core';
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/* asxamples/jsm/utils/fferGeometryUtils.jsx';
 
 import useHashLocation from '../hooks/useHashLocation.jsx';
 

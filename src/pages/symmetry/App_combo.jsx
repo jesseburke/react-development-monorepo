@@ -5,7 +5,6 @@ import { Router as WouterRouter } from 'wouter';
 
 import { jsx } from '@emotion/core';
 import * as THREE from 'three';
-import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.jsx';
 
 import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
 //import FreeDrawComp from '../../components/FreeDrawComp.jsx';
