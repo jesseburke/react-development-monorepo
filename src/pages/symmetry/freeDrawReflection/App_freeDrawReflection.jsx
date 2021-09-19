@@ -3,12 +3,15 @@ import { atom, useAtom } from 'jotai';
 
 import * as THREE from 'three';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
-import { Grid } from '@jesseburke/three-scene-with-react';
-import { Axes2D } from '@jesseburke/three-scene-with-react';
-import { Line } from '@jesseburke/three-scene-with-react';
-import { FreeDrawComp } from '@jesseburke/three-scene-with-react';
-import { ClickablePlaneComp } from '@jesseburke/three-scene-with-react';
+import {
+    ThreeSceneComp,
+    useThreeCBs,
+    Grid,
+    Axes2D,
+    Line,
+    FreeDrawComp,
+    ClickablePlaneComp
+} from '@jesseburke/three-scene-with-react';
 
 import { Button } from '@jesseburke/components';
 import { Route, Link } from '@jesseburke/wouter-minimal-fork';

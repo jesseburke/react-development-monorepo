@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAtom } from 'jotai';
 
-import { ThreeSceneComp, useThreeCBs } from '@jesseburke/three-scene-with-react';
-import { Grid } from '@jesseburke/three-scene-with-react';
-import { Axes2D } from '@jesseburke/three-scene-with-react';
-import { ClickablePlaneComp } from '@jesseburke/three-scene-with-react';
-import { CircularArrow } from '@jesseburke/three-scene-with-react';
-import { FreeDrawComp } from '@jesseburke/three-scene-with-react';
+import {
+    ThreeSceneComp,
+    useThreeCBs,
+    Grid,
+    Axes2D,
+    ClickablePlaneComp,
+    CircularArrow,
+    FreeDrawComp
+} from '@jesseburke/three-scene-with-react';
 
 import { Button } from '@jesseburke/components';
 

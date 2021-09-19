@@ -1,16 +1,11 @@
-import * as THREE from 'three';
-
 import { atom } from 'jotai';
 
-import { MainDataComp } from '@jesseburke/jotai-data-setup';
-import { LabelDataComp } from '@jesseburke/jotai-data-setup';
-import { FunctionDataComp } from '@jesseburke/jotai-data-setup';
-import { AxesDataComp } from '@jesseburke/jotai-data-setup';
-import { BoundsDataComp } from '@jesseburke/jotai-data-setup';
-import { AnimationData } from '@jesseburke/jotai-data-setup';
-import { PerspCameraData } from '@jesseburke/jotai-data-setup';
-import { OrthoCameraDataComp } from '@jesseburke/jotai-data-setup';
-import { LineDataComp, Line2dFactory } from '@jesseburke/jotai-data-setup';
+import {
+    AxesDataComp,
+    BoundsDataComp,
+    OrthoCameraDataComp,
+    LineDataComp
+} from '@jesseburke/jotai-data-setup';
 
 //------------------------------------------------------------------------
 //
