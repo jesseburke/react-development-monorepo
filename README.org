@@ -1,7 +1,8 @@
 * React development monorepo
 
-  This is a monorepo where I simultaneously develop: a framework to build math apps in Javascript, using
-  React and ThreeJS, and examples of such math apps. 
+  This is a monorepo where I develop a framework to build math apps in Javascript, using
+  React and ThreeJS, and examples of such math apps. I am working to
+  extract more of the monorepo to individual repos.
 
 ** apps  
 
