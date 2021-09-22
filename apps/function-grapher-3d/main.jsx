@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { Helmet } from 'react-helmet';
 
-import App from './App_fg';
+import App from './App';
 const title = '3d function grapher';
 
 function main() {

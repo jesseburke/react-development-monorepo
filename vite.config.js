@@ -8,37 +8,37 @@ export default defineConfig({
     build: {
         rollupOptions: {
             input: {
-                App_df: resolve(__dirname, 'public_pages/directionFieldGrapher/index.html'),
-                App_sep: resolve(__dirname, 'public_pages/sepGrapher/index.html'),
-                App_linear: resolve(__dirname, 'public_pages/linearGrapher/index.html'),
-                App_logistic: resolve(__dirname, 'public_pages/logisticGrapher/index.html'),
-                App_resonance: resolve(__dirname, 'public_pages/resonance/index.html'),
-                SecOrder: resolve(__dirname, 'public_pages/secOrderGrapher/index.html'),
+		App_df: resolve(__dirname, 'apps/differential-equations-apps/App-df/index.html'),
+                App_sep: resolve(__dirname, 'apps/direction-field-apps/App-sep/index.html'),
+                App_linear: resolve(__dirname, 'apps/direction-field-apps/App-linear/index.html'),
+                App_logistic: resolve(__dirname, 'apps/direction-field-apps/App-logistic/index.html'),
+                App_resonance: resolve(__dirname, 'apps/direction-field-apps/App-resonance/index.html'),
+                App_sec_order: resolve(__dirname, 'apps/direction-field-apps/App-sec-orderGrapher/index.html'),	
                 App_vs: resolve(__dirname, 'public_pages/vibrating_string/index.html'),
-                App_fg: resolve(__dirname, 'public_pages/fg3d/index.html'),
+                App_fg: resolve(__dirname, 'apps/function-grapher-3d/index.html'),
                 SvgFuncGraph: resolve(__dirname, 'public_pages/svgFuncGrapher/index.html'),
                 SvgParamGraph: resolve(__dirname, 'public_pages/svgParamGrapher/index.html'),
-                FreeDraw: resolve(__dirname, 'public_pages/freeDraw/index.html'),
-                FreeDrawReflection: resolve(
+                FreeDraw: resolve(__dirname, 'apps/symmetry/freeDraw/index.html'),
+                freeDrawReflection: resolve(
                     __dirname,
-                    'public_pages/freeDrawReflection/index.html'
+                    'apps/symmetry/freeDrawReflection/index.html'
                 ),
-                FreeDrawRotation: resolve(__dirname, 'public_pages/freeDrawRotation/index.html'),
+                FreeDrawRotation: resolve(__dirname, 'apps/symmetry/freeDrawRotation/index.html'),
                 FreeDrawTranslation: resolve(
                     __dirname,
-                    'public_pages/freeDrawTranslation/index.html'
+                    'apps/symmmetry/freeDrawTranslation/index.html'
                 ),
-                GraphDraw: resolve(__dirname, 'public_pages/graphDraw/index.html'),
+                GraphDraw: resolve(__dirname, 'apps/symmmetry/graphDraw/index.html'),
                 GraphDrawReflection: resolve(
                     __dirname,
-                    'public_pages/graphDrawReflection/index.html'
+                    'apps/symmmetry/graphDrawReflection/index.html'
                 ),
-                GraphDrawRotation: resolve(__dirname, 'public_pages/graphDrawRotation/index.html'),
+                GraphDrawRotation: resolve(__dirname, 'apps/symmmetry/graphDrawRotation/index.html'),
                 GraphDrawTranslation: resolve(
                     __dirname,
-                    'public_pages/graphDrawTranslation/index.html'
+                    'apps/symmmetry/graphDrawTranslation/index.html'
                 ),
-                DrawWithSymm: resolve(__dirname, 'public_pages/drawWithSymm/index.html')
+                DrawWithSymm: resolve(__dirname, 'apps/symmmetry/drawWithSymm/index.html')
             },
             output: {
                 dir: 'dist'

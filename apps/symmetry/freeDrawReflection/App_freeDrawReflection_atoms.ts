@@ -15,15 +15,6 @@ export const halfXSize = 20;
 export const halfYSize = 14;
 export const gridSize = 100;
 
-const initOrthographicData = {
-    position: [0, 0, 10],
-    up: [0, 0, 1],
-    //fov: 75,
-    near: -1,
-    far: 50,
-    orthographic: { left: -halfXSize, right: halfXSize, top: halfYSize, bottom: -halfYSize }
-};
-
 const initBounds = { xMin: -30, xMax: 30, yMin: -14, yMax: 14 };
 
 const initCameraData = {
@@ -73,11 +64,3 @@ export const axesData = AxesDataComp({
 export const drawingAtom = atom(true);
 
 export const { pt1Atom: linePointAtom, lineDataAtom, component: LineInputComp } = LineDataComp({});
-
-const atomStoreAtom = atom({
-    bd: boundsData.readWriteAtom,
-    cd: cameraData.readWriteAtom,
-    ad: axesData.readWriteAtom
-});
-
-//export const DataComp = MainDataComp(atomStoreAtom);

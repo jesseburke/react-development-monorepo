@@ -21,7 +21,7 @@ import {
     cameraData,
     axesData,
     atomStoreAtom
-} from './App_fg_atoms';
+} from './App_atoms';
 
 const initColors = {
     arrows: '#C2374F',
