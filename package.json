@@ -7,12 +7,7 @@
         "serve": "vite preview",
         "test": "jest --silent --watch"
     },
-    "dependencies": {
-        "@jesseburke/components": "file:packages/components",
-        "@jesseburke/jotai-data-setup": "file:packages/jotai-data-setup",
-        "@jesseburke/math-utils": "file:packages/math-utils",
-        "@jesseburke/svg-scene-with-react": "file:packages/svg-scene-with-react",
-        "@jesseburke/wouter-minimal-fork": "file:packages/wouter-minimal-fork",
+    "dependencies": {   
         "@radix-ui/react-tooltip": "^0.0.20",
         "classnames": "^2.2.6",
         "gsap": "^3.6.0",

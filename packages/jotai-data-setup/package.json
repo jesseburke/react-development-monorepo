@@ -6,12 +6,12 @@
         "@radix-ui/react-tooltip": "^0.0.20",
         "gsap": "^3.6.0",
         "immer": "^8.0.1",
-        "query-string-esm": "^6.13.6"
+        "query-string-esm": "^6.13.6",
+	"@jesseburke/basic-utils": "latest",
+        "@jesseburke/components": "latest",
+        "@jesseburke/math-utils": "latest"
     },
-    "peerDependencies": {
-        "@jesseburke/basic-utils": "latest",
-        "@jesseburke/components": ">=0.0.1",
-        "@jesseburke/math-utils": ">=0.0.0",
+    "peerDependencies": {       
         "jotai": ">=0.16.8",
         "react": ">=16.8",
         "three": ">= 0.125.2"
