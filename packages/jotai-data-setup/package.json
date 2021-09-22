@@ -9,7 +9,7 @@
         "query-string-esm": "^6.13.6"
     },
     "peerDependencies": {
-        "@jesseburke/basic-utils": ">=0.0.1",
+        "@jesseburke/basic-utils": "latest",
         "@jesseburke/components": ">=0.0.1",
         "@jesseburke/math-utils": ">=0.0.0",
         "jotai": ">=0.16.8",

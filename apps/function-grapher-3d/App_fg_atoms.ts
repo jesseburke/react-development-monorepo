@@ -84,7 +84,7 @@ export const gridBoundsAtom = atom((get) => {
     };
 });
 
-export const cameraData = PerspCameraDataComp(initCameraData);
+export const cameraData = PerspCameraData(initCameraData);
 
 export const atomStoreAtom = atom({
     ls: labelData.readWriteAtom,

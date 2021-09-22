@@ -11,6 +11,9 @@
    
 *** symmetry apps   
     https://github.com/jesseburke/symmetry-apps
+
+*** 3d function grapher
+    https://github.com/jesseburke/function-grapher-3d
    
 ** libraries
 
