@@ -6,7 +6,6 @@ import { Input } from '@jesseburke/components';
 import { AxesDataComp } from '@jesseburke/jotai-data-setup';
 import { BoundsDataComp } from '@jesseburke/jotai-data-setup';
 import { OrthoCameraDataComp } from '@jesseburke/jotai-data-setup';
-import { PointDataComp } from '@jesseburke/jotai-data-setup';
 
 //------------------------------------------------------------------------
 //
@@ -31,22 +30,6 @@ const initAxesData = {
     tickLabelDistance: 0
 };
 
-const labelStyle = {
-    color: 'black',
-    padding: '.1em',
-    margin: '.5em',
-    fontSize: '1.5em'
-};
-
-const colors = {
-    tick: '#cf6c28' //#e19662'
-};
-
-const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
-    fontSize: '1.5em',
-    color: colors.tick
-});
-
 const initTranslatePoint = { x: 2.0, y: 1.0 };
 
 //------------------------------------------------------------------------
@@ -60,8 +43,7 @@ export const boundsData = BoundsDataComp({
 export const cameraData = OrthoCameraDataComp(initCameraData);
 
 export const axesData = AxesDataComp({
-    ...initAxesData,
-    tickLabelStyle
+    ...initAxesData
 });
 
 export const drawingAtom = atom(true);
