@@ -27,6 +27,8 @@ import {
     addCurToTotalAtom
 } from './App_freeDrawTranslation_atoms';
 
+import '../styles.css';
+
 const aspectRatio = window.innerWidth / window.innerHeight;
 
 const fixedCameraData = {

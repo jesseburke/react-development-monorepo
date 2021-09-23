@@ -7,7 +7,13 @@
         "serve": "vite preview",
         "test": "jest --silent --watch"
     },
-    "dependencies": {   
+    "dependencies": {
+        "@jesseburke/basic-utils": "file:packages/basic-utils",
+        "@jesseburke/components": "file:packages/components",
+        "@jesseburke/jotai-data-setup": "file:packages/jotai-data-setup",
+        "@jesseburke/math-utils": "file:packages/math-utils",
+        "@jesseburke/svg-scene-with-react": "file:packages/svg-scene-with-react",
+        "@jesseburke/three-scene-with-react": "file:packages/three-scene-with-react",
         "@radix-ui/react-tooltip": "^0.0.20",
         "classnames": "^2.2.6",
         "gsap": "^3.6.0",
@@ -54,6 +60,7 @@
     },
     "workspaces": [
         "packages/*",
-        "apps/*"
+        "apps/*",
+        "apps/symmetry/"
     ]
 }

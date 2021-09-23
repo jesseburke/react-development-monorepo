@@ -2,16 +2,16 @@
     "name": "@jesseburke/jotai-data-setup",
     "version": "0.0.5",
     "dependencies": {
+        "@jesseburke/basic-utils": "^0.0.1",
+        "@jesseburke/components": "^0.0.1",
+        "@jesseburke/math-utils": "^0.0.0",
         "@radix-ui/react-checkbox": "^0.0.16",
         "@radix-ui/react-tooltip": "^0.0.20",
         "gsap": "^3.6.0",
         "immer": "^8.0.1",
-        "query-string-esm": "^6.13.6",
-	"@jesseburke/basic-utils": "latest",
-        "@jesseburke/components": "latest",
-        "@jesseburke/math-utils": "latest"
+        "query-string-esm": "^6.13.6"
     },
-    "peerDependencies": {       
+    "peerDependencies": {
         "jotai": ">=0.16.8",
         "react": ">=16.8",
         "three": ">= 0.125.2"

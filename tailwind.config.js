@@ -14,7 +14,12 @@ module.exports = {
         './packages/**/*.js',
         './packages/**/*.ts',
         './packages/**/*.tsx',
-        './packages/**/*.jsx'
+        './packages/**/*.jsx',
+	'./apps/**/*.html',
+        './apps/**/*.js',
+        './apps/**/*.ts',
+        './apps/**/*.tsx',
+        './apps/**/*.jsx'
     ],
     darkMode: false, // or 'media' or 'class'
     theme: {
