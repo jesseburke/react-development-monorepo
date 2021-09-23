@@ -7,7 +7,7 @@ import { Arrow } from '@jesseburke/three-scene-with-react';
 import { Axes2D } from '@jesseburke/three-scene-with-react';
 import { ClickablePlaneComp } from '@jesseburke/three-scene-with-react';
 import { FreeDrawComp } from '@jesseburke/three-scene-with-react';
-import { TranslateAnimWrapper } from '@jesseburke/three-scene-with-react';
+import { TranslationAnimWrapper } from '@jesseburke/three-scene-with-react';
 
 import { Button } from '@jesseburke/components';
 
@@ -63,12 +63,12 @@ export default function App() {
                     axesDataAtom={axesData.atom}
                 />
                 <Grid boundsAtom={boundsData.atom} gridShow={true} />
-                <TranslateAnimWrapper
+                <TranslationAnimWrapper
                     translationAtom={totalTranslationAtom}
                     animatingAtom={animatingAtom}
                 >
                     <FreeDrawComp transforms={[]} activeAtom={drawingAtom} />
-                </TranslateAnimWrapper>
+                </TranslationAnimWrapper>
                 <Arrow
                     startPointAtom={translateStartPointAtom}
                     endPointAtom={translateEndPointAtom}
