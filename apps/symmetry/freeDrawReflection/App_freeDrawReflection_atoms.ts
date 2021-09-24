@@ -30,22 +30,6 @@ const initAxesData = {
     tickLabelDistance: 0
 };
 
-const labelStyle = {
-    color: 'black',
-    padding: '.1em',
-    margin: '.5em',
-    fontSize: '1.5em'
-};
-
-const colors = {
-    tick: '#cf6c28' //#e19662'
-};
-
-const tickLabelStyle = Object.assign(Object.assign({}, labelStyle), {
-    fontSize: '1.5em',
-    color: colors.tick
-});
-
 //------------------------------------------------------------------------
 //
 // atoms
@@ -57,8 +41,7 @@ export const boundsData = BoundsDataComp({
 export const cameraData = OrthoCameraDataComp(initCameraData);
 
 export const axesData = AxesDataComp({
-    ...initAxesData,
-    tickLabelStyle
+    ...initAxesData
 });
 
 export const drawingAtom = atom(true);

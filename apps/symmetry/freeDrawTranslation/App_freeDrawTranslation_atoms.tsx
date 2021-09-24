@@ -58,10 +58,24 @@ export const animatingAtom = atom(
     }
 );
 
+// amount the shape will be translated, when 'translate' button is clicked
 export const curTranslationAtom = atom(initTranslatePoint);
 
+// the total amount of translation that has been applied; usually
+// comes from button clicking, but can also be set directly
 export const totalTranslationAtom = atom({ x: 0.0, y: 0.0 });
 
+export const addCurToTotalAtom = atom(null, (get, set) => {
+    const ct = get(curTranslationAtom);
+    const tt = get(totalTranslationAtom);
+
+    const newTT = { x: ct.x + tt.x, y: ct.y + tt.y };
+    set(totalTranslationAtom, newTT);
+});
+
+// this is used to display an arrow that shows where a point will be
+// moved by the current translation; translateStartPointAtom is passed
+// to a ClickablePlaneComp, and set by that
 export const translateStartPointAtom = atom(initTranslatePoint);
 export const translateEndPointAtom = atom((get) => {
     const s = get(translateStartPointAtom);
@@ -74,14 +88,6 @@ export const resetAtom = atom(null, (get, set) => {
     set(curTranslationAtom, initTranslatePoint);
     set(totalTranslationAtom, { x: 0, y: 0 });
     set(drawingAtom, true);
-});
-
-export const addCurToTotalAtom = atom(null, (get, set) => {
-    const ct = get(curTranslationAtom);
-    const tt = get(totalTranslationAtom);
-
-    const newTT = { x: ct.x + tt.x, y: ct.y + tt.y };
-    set(totalTranslationAtom, newTT);
 });
 
 export function CurTranslationComp({ classNameStr = '' }) {
@@ -141,3 +147,5 @@ export function TotalTranslationComp({ classNameStr = '' }) {
         </span>
     );
 }
+
+

@@ -9,11 +9,11 @@ export default function Line2dFactory(pt1, pt2 = new THREE.Vector3(0, 0, 0), rou
     }
 
     // in radians, between 0 and Math.PI
-
     function getAngle() {
         return (Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x) + Math.PI) % Math.PI;
     }
 
+    // unit THREE.Vector3
     function getDirection() {
         const newVec = new THREE.Vector3().copy(pt2);
 
@@ -26,7 +26,6 @@ export default function Line2dFactory(pt1, pt2 = new THREE.Vector3(0, 0, 0), rou
     // assume the equation is ay = bx + d;
     // if a = 0, returns {x: 1, y:0, c: d/b}
     // otherwise, returns {x: b/a, y: 1, c: d/a}
-
     function getEquation() {
         const a = pt2.x - pt1.x;
         const b = pt2.y - pt1.y;

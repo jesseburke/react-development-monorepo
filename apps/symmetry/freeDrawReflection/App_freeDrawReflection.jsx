@@ -63,7 +63,7 @@ export default function App() {
 
     //------------------------------------------------------------------------
 
-    const resetCB = useCallback(() => {
+    const backToDrawingCB = useCallback(() => {
         setDrawing(true);
 
         if (!threeCBs || !meshRef.current || !meshRef.current.fixedMesh) return;
@@ -132,7 +132,7 @@ export default function App() {
                 >
                     <Link href='/'>
                         <div className='cursor-pointer'>
-                            <Button onClick={resetCB}>Back to drawing</Button>
+                            <Button onClick={backToDrawingCB}>Back to drawing</Button>
                         </div>
                     </Link>
 
