@@ -38,7 +38,7 @@ describe('number data component', () => {
             result.current[1](10);
             // read that value to adddress bar string
             readWriteFunc({
-                type: 'readToAddressBar',
+                type: 'readAndEncode',
                 callback: (obj) => {
                     if (obj) queryString = myStringify(obj);
                 }
@@ -47,7 +47,7 @@ describe('number data component', () => {
             result.current[1](5);
 
             // read value from address bar
-            readWriteFunc({ type: 'writeFromAddressBar', value: queryString });
+            readWriteFunc({ type: 'decodeAndWrite', value: queryString });
         });
         rerender();
         expect(result.current[0]).toBe(10);

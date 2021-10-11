@@ -12,22 +12,15 @@ export default function NumberData(initVal = 0) {
                 set(at, initVal);
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 if (get(at) === initVal) return;
 
                 action.callback({ val: get(at) });
 
                 break;
 
-            case 'writeFromAddressBar':
-                const objStr = action.value;
-
-                if (!objStr || !objStr.length || objStr.length === 0) {
-                    set(at, initVal);
-                    return;
-                }
-
-                const rawObj = queryString.parse(objStr);
+            case 'decodeAndWrite':
+                const rawObj = action.value;
 
                 const newKeys = Object.keys(rawObj);
 

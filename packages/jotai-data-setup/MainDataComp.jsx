@@ -13,15 +13,20 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { myStringify } from '@jesseburke/basic-utils';
 
 export default function MainDataComp(atomStoreAtom) {
-    
-    const readAtomStoreAtom = atom(null, (get, set, callback) => {
 
+    // write-only atom; write function is called with
+    // one argument, callback. on writing, the atom fetches the
+    // atomStore, iterates over the fields of it, calling the
+    // analogous write-only atom for each entry of atomStore. it
+    // applies myStringify to each object before assigning it as a
+    // value of ro.
+    const readAndEncodeAtomStoreAtom = atom(null, (get, set, callback) => {
 	const atomStore = get(atomStoreAtom);
         let ro = {};
 
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
             set(atom, {
-                type: 'readToAddressBar',
+                type: 'readAndEncode',
                 callback: (obj) => {
                     if (obj) ro[abbrev] = myStringify(obj);
                 }
@@ -41,19 +46,19 @@ export default function MainDataComp(atomStoreAtom) {
         });
     });
 
-    const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
+    const decodeAndWriteAtomStoreAtom = atom(null, (get, set, newObj) => {
 	const atomStore = get(atomStoreAtom);
 	
         Object.keys(newObj).forEach((k) => {
             set(atomStore[k], {
-                type: 'writeFromAddressBar',
-                value: newObj[k]
+                type: 'decodeAndWrite',
+                value: queryString.parse(newObj[k])
             });
         });
     });
 
     function useSaveToAddressBar() {
-        const readAtomStore = useAtom(readAtomStoreAtom)[1];
+        const readAtomStore = useAtom(readAndEncodeAtomStoreAtom)[1];
 
         const saveCB = useCallback(() => {
             let saveObj;
@@ -79,7 +84,7 @@ export default function MainDataComp(atomStoreAtom) {
 
     // on load, parse the address bar data and dole it out to atoms
     function useReadAddressBar() {
-        const writeToAtomStoreFunc = useAtom(writeToAtomStoreAtom)[1];
+        const writeToAtomStoreFunc = useAtom(decodeAndWriteAtomStoreAtom)[1];
         const resetAtomStoreFunc = useAtom(resetAtomStoreAtom)[1];
 
         useLayoutEffect(() => {

@@ -31,7 +31,7 @@ export default function BoundsData({
                 set(boundsAtom, initBounds);
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 const { xMin, xMax, yMin, yMax, zMin, zMax }: Bounds = diffObjects(
                     get(boundsAtom),
                     initBounds
@@ -52,15 +52,8 @@ export default function BoundsData({
 
                 break;
 
-            case 'writeFromAddressBar':
-                const objStr = action.value;
-
-                if (!objStr || !objStr.length || objStr.length === 0) {
-                    set(boundsAtom, initBounds);
-                    return;
-                }
-
-                const rawObj = queryString.parse(objStr);
+            case 'decodeAndWrite':
+                const rawObj = action.value;
 
                 const newKeys = Object.keys(rawObj);
 

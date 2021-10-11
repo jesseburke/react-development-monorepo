@@ -7,7 +7,7 @@ import queryString from 'query-string-esm';
 import { Input } from '@jesseburke/components';
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 
-import './styles.css';
+import '../styles.css';
 
 export const defaultLabelStyle = {
     color: 'black',
@@ -43,7 +43,7 @@ export default function AxesDataComp(args) {
                 set(aoAtom, initValue);
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 const { radius, color, tickLabelDistance } = diffObjects(get(aoAtom), initValue);
 
                 let ro = {};
@@ -57,15 +57,8 @@ export default function AxesDataComp(args) {
                 action.callback(ro);
                 break;
 
-            case 'writeFromAddressBar':
-                const objStr = action.value;
-
-                if (!objStr || !objStr.length || objStr.length === 0) {
-                    set(aoAtom, initValue);
-                    return;
-                }
-
-                const rawObj = queryString.parse(objStr);
+            case 'decodeAndWrite':
+                const rawObj = action.value;
 
                 const newKeys = Object.keys(rawObj);
 

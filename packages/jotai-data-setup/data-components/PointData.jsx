@@ -29,7 +29,7 @@ export default function PointData(initArgs) {
                 set(ptAtom, initValue);
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 const { x, y } = diffObjects(get(ptAtom), initValue);
 
                 let ro = {};
@@ -42,17 +42,8 @@ export default function PointData(initArgs) {
                 action.callback(ro);
                 break;
 
-            case 'writeFromAddressBar':
-                const objStr = action.value;
-
-                if (!objStr || !objStr.length || objStr.length === 0) {
-                    set(ptAtom, initValue);
-                    return;
-                }
-
-                //console.log('deserialize of point occured with action.value = ', action.value);
-
-                const rawObj = queryString.parse(objStr);
+            case 'decodeAndWrite':
+                const rawObj = action.value;
 
                 const newKeys = Object.keys(rawObj);
 

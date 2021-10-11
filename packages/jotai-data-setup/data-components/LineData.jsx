@@ -5,7 +5,7 @@ import { atom, useAtom } from 'jotai';
 
 import { Input } from '@jesseburke/components';
 
-import Line2dFactory from './factories/Line2DFactory.jsx';
+import Line2dFactory from '../factories/Line2DFactory.jsx';
 
 // pt1 and pt2 are Three.Vector3's, with z component assumed to be 0
 //

@@ -22,12 +22,12 @@ export default function CombineReadWriteAtoms(atomsToCombine) {
                 });
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 let ro = {};
 
                 Object.entries(atomsToCombine).forEach(([abbrev, atom]) =>
                     set(atom, {
-                        type: 'readToAddressBar',
+                        type: 'readAndEncode',
                         callback: (obj) => {
                             if (obj) ro[abbrev] = myStringify(obj);
                         }
@@ -38,19 +38,9 @@ export default function CombineReadWriteAtoms(atomsToCombine) {
                 action.callback(ro);
                 break;
 
-            case 'writeFromAddressBar':
-                const objStr = action.value;
-
-                if (!objStr || !objStr.length || objStr.length === 0) {
-                    Object.entries(atomsToCombine).forEach(([abbrev, atom]) =>
-                        set(atom, {
-                            type: 'reset'
-                        })
-                    );
-                    break;
-                }
-
-                const rawObj = queryString.parse(objStr);
+            case 'decodeAndWrite':
+         
+                const rawObj = action.value;
                 const newKeys = Object.keys(rawObj);
 
                 let nro = {};
@@ -58,8 +48,8 @@ export default function CombineReadWriteAtoms(atomsToCombine) {
                 Object.entries(atomsToCombine).forEach(([abbrev, atom]) => {
                     if (newKeys.includes(abbrev)) {
                         set(atom, {
-                            type: 'writeFromAddressBar',
-                            value: rawObj[abbrev]
+                            type: 'decodeAndWrite',
+                            value: queryString.parse(rawObj[abbrev])
                         });
                     }
                 });

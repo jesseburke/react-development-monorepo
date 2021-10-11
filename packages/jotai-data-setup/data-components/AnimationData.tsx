@@ -1,13 +1,70 @@
 import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
+import queryString from 'query-string-esm';
+import { useImmerAtom } from 'jotai/immer';
 
-import animFactory from './factories/AnimationFactory';
+import { Slider } from '@jesseburke/components';
+import animFactory from '../factories/AnimationFactory';
 
 import { diffObjects, isEmpty, round } from '@jesseburke/basic-utils';
+import { AnimationDataType } from '../my-types';
 
-import './styles.css';
+import '../styles.css';
 
-export default function FreeDrawPathData(arrayOfPathComps) {
+const defaultInitValue: AnimationDataType = {
+    t: 0,
+    paused: true,
+    animationTime: 12
+    //min: 0,
+    //max: 20
+};
+
+// problem here: want to connect, e.g., min, to another piece of data
+
+export default function AnimationData({
+    animationTime = defaultInitValue.animationTime,
+    minMaxAtom
+}) {
+    const initValue = { ...defaultInitValue, animationTime };
+
+    const animationAtom = atom(initValue);
+
+    const readWriteAtom = atom(null, (get, set, action) => {
+        switch (action.type) {
+            case 'reset':
+                set(animationAtom, initValue);
+                break;
+
+            case 'readAndEncode':
+                const { t, paused, animationTime } = diffObjects(get(animationAtom), initValue);
+
+                let ro: AnimationDataType = {};
+
+                if (t) ro.t = t;
+                if (paused) ro.p = paused ? 0 : 1;
+                if (animationTime) ro.a = animationTime;
+
+                if (isEmpty(ro)) return;
+
+                action.callback(ro);
+                break;
+
+            case 'decodeAndWrite':
+                const rawObj: AnimationData = action.value;
+
+                const newKeys = Object.keys(rawObj);
+
+                const nro = {};
+
+                if (newKeys.includes('t')) nro.t = Number(rawObj.t);
+                if (newKeys.includes('p')) nro.paused = rawObj.p === 0 ? false : true;
+                if (newKeys.includes('a')) nro.animationTime = Number(rawObj.a);
+
+                set(animationAtom, { ...initValue, ...nro });
+                break;
+        }
+    });
+
     const component = () => {
         //----------------------------------------
         //

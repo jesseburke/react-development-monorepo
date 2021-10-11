@@ -9,7 +9,7 @@ import * as Checkbox from '@radix-ui/react-checkbox';
 import { Input } from '@jesseburke/components';
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 import { CurveData2, CurveData2Min } from '../my-types';
-import './styles.css';
+import '../styles.css';
 
 const defaultInitValues: CurveData2 = {
     color: '#C2374F',
@@ -29,7 +29,7 @@ export default function CurveData(args: CurveData2 = {}) {
                 set(cdAtom, initValue);
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 const { color, approxH, visible, width } = diffObjects(get(cdAtom), initValue);
 
                 let ro: CurveData2Min = {};
@@ -44,15 +44,8 @@ export default function CurveData(args: CurveData2 = {}) {
                 action.callback(ro);
                 break;
 
-            case 'writeFromAddressBar':
-                const objStr = action.value;
-
-                if (!objStr || !objStr.length || objStr.length === 0) {
-                    set(cdAtom, initValue);
-                    return;
-                }
-
-                const rawObj: CurveData2Min = queryString.parse(objStr);
+            case 'decodeAndWrite':
+                const rawObj: CurveData2Min = action.value;
 
                 const newKeys = Object.keys(rawObj);
 

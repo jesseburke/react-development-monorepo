@@ -7,7 +7,7 @@ import { Input } from '@jesseburke/components';
 
 import { diffObjects, isEmpty } from '@jesseburke/basic-utils';
 
-import './styles.css';
+import '../styles.css';
 
 const defaultInitValues = {
     density: 1,
@@ -34,7 +34,7 @@ export default function ArrowGridData(args) {
                 set(agAtom, initValue);
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 const { density, thickness, length, color } = diffObjects(get(agAtom), initValue);
 
                 let ro = {};
@@ -49,15 +49,8 @@ export default function ArrowGridData(args) {
                 action.callback(ro);
                 break;
 
-            case 'writeFromAddressBar':
-                const objStr = action.value;
-
-                if (!objStr || !objStr.length || objStr.length === 0) {
-                    set(agAtom, initValue);
-                    return;
-                }
-
-                const rawObj = queryString.parse(objStr);
+            case 'decodeAndWrite':
+                const rawObj = action.value;
 
                 const newKeys = Object.keys(rawObj);
 

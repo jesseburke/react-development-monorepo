@@ -63,7 +63,7 @@ test('read and write', () => {
 
         // read those values to adddress bar string
         comboReadWriteFunc({
-            type: 'readToAddressBar',
+            type: 'readAndEncode',
             callback: (obj) => {
                 if (obj) addressBarString = myStringify(obj);
             }
@@ -73,7 +73,7 @@ test('read and write', () => {
         comboReadWriteFunc({ type: 'reset' });
 
         // read values from address bar
-        comboReadWriteFunc({ type: 'writeFromAddressBar', value: addressBarString });
+        comboReadWriteFunc({ type: 'decodeAndWrite', value: addressBarString });
     });
 
     brerender();

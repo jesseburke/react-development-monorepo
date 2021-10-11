@@ -5,7 +5,7 @@ import { Input } from '@jesseburke/components';
 import { funcParser } from '@jesseburke/math-utils';
 import { isEmpty } from '@jesseburke/basic-utils';
 
-import './styles.css';
+import '../styles.css';
 
 export const defaultLabelStyle = {
     color: 'black',
@@ -47,11 +47,11 @@ export default function FunctionData({
                 set(functionStrAtom, initVal);
                 break;
 
-            case 'readToAddressBar':
+            case 'readAndEncode':
                 action.callback(get(functionStrAtom));
                 break;
 
-            case 'writeFromAddressBar':
+            case 'decodeAndWrite':
                 const funStr = action.value;
 
                 if (!funStr || !funStr.length || funStr.length === 0) {
