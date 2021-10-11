@@ -162,25 +162,3 @@ function DefaultResetComp(
         </Tooltip.Root>
     );
 }
-
-function DiscIconSaveComp({ saveCB }) {
-    const cssRef = useRef({
-        position: 'absolute',
-        top: '85%',
-        left: '5%',
-        padding: '1%',
-        border: '1px',
-        borderStyle: 'solid',
-        borderRadius: '50%',
-        // next line stops cursor from changing to text selection on hover
-        cursor: 'pointer'
-    });
-
-    const cssRef2 = useRef({ padding: '.15em', fontSize: '2rem' });
-
-    return (
-        <div style={cssRef.current} onClick={saveCB}>
-            <span style={cssRef2.current}>{'\u{1F4BE}'}</span>
-        </div>
-    );
-}
