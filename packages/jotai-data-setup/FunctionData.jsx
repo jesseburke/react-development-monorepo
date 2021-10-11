@@ -34,7 +34,11 @@ export default function FunctionData({
     const functionAtom = atom((get) => {
         const { x, y } = get(labelAtom);
 
-        return { func: funcParser(get(functionStrAtom), x, y) };
+        const functionStr = get(functionStrAtom);
+
+        const ro = { func: funcParser(functionStr, x, y) };
+
+        return ro;
     });
 
     const readWriteAtom = atom(null, (get, set, action) => {

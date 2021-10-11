@@ -13,13 +13,10 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { myStringify } from '@jesseburke/basic-utils';
 
 export default function MainDataComp(atomStoreAtom) {
-    const atomStore = useAtom(atomStoreAtom)[0];
-
-    return WrappedComp({ atomStore });
-}
-
-function WrappedComp({ atomStore }) {
+    
     const readAtomStoreAtom = atom(null, (get, set, callback) => {
+
+	const atomStore = get(atomStoreAtom);
         let ro = {};
 
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
@@ -35,6 +32,8 @@ function WrappedComp({ atomStore }) {
     });
 
     const resetAtomStoreAtom = atom(null, (get, set) => {
+	const atomStore = get(atomStoreAtom);
+	
         Object.values(atomStore).forEach((atom) => {
             set(atom, {
                 type: 'reset'
@@ -43,6 +42,8 @@ function WrappedComp({ atomStore }) {
     });
 
     const writeToAtomStoreAtom = atom(null, (get, set, newObj) => {
+	const atomStore = get(atomStoreAtom);
+	
         Object.keys(newObj).forEach((k) => {
             set(atomStore[k], {
                 type: 'writeFromAddressBar',

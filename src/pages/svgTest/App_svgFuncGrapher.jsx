@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { OptionsTabComp } from '@jesseburke/components';
 
 import { SvgScene } from '@jesseburke/svg-scene-with-react';
@@ -8,7 +7,7 @@ import { SvgBorderAxes } from '@jesseburke/svg-scene-with-react';
 import { SvgAxes } from '@jesseburke/svg-scene-with-react';
 import { SvgFunctionGraph } from '@jesseburke/svg-scene-with-react';
 
-import { funcData, svgData, curveData, atomStoreAtom } from './App_svgFuncGrapher_atoms';
+import { funcData, svgData, curveData, DataComp } from './App_svgFuncGrapher_atoms';
 
 const btnClassStr =
     'absolute right-8 p-2 border med:border-2 rounded-md border-solid border-persian_blue-900 bg-gray-200 cursor-pointer text-lg';
@@ -20,8 +19,6 @@ const resetBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
-    const DataComp = MainDataComp(atomStoreAtom);
-
     return (
         <div className='full-screen-base'>
             <header

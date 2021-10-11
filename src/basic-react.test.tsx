@@ -27,3 +27,10 @@ describe('useCallback tests', () => {
         expect(v).toBe(2);
     });
 });
+
+// describe('jotai tests', () => {
+//     test('does changing primitive atom causes derived atom function
+// to get called', () => {
+//     let v = 0;
+// });
+// });

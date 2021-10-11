@@ -1,9 +1,10 @@
 import React from 'react';
 import { atom } from 'jotai';
 
+import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { FunctionDataComp } from '@jesseburke/jotai-data-setup';
 import { CurveDataComp } from '@jesseburke/jotai-data-setup';
-import SvgDataComp from './SvgData';
+import { SvgDataComp } from '@jesseburke/svg-scene-with-react';
 
 //------------------------------------------------------------------------
 //
@@ -47,6 +48,8 @@ export const atomStoreAtom = atom({
     cd: curveData.readWriteAtom,
     svg: svgData.svgSaveDataAtom
 });
+
+export const DataComp = MainDataComp(atomStoreAtom);
 
 //------------------------------------------------------------------------
 //

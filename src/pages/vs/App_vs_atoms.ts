@@ -1,5 +1,6 @@
 import { atom } from 'jotai';
 
+import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { LabelDataComp } from '@jesseburke/jotai-data-setup';
 import { FunctionDataComp } from '@jesseburke/jotai-data-setup';
 import { AxesDataComp } from '@jesseburke/jotai-data-setup';
@@ -140,3 +141,5 @@ export const atomStoreAtom = atom({
     cd: cameraData.readWriteAtom,
     ad: animationData.readWriteAtom
 });
+
+export const DataComp = MainDataComp(atomStoreAtom);

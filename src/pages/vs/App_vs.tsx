@@ -8,7 +8,7 @@ import '../../styles.css';
 
 import { ThreeSceneComp } from '@jesseburke/three-scene-with-react';
 import CanvasComp from '../../CanvasComps/CanvasComp.jsx';
-import { MainDataComp } from '@jesseburke/jotai-data-setup';
+
 import { OptionsTabComp } from '@jesseburke/components';
 
 import { Grid } from '@jesseburke/three-scene-with-react';
@@ -32,7 +32,7 @@ import {
     animationData,
     planeHeightAndWidthAtom,
     planeCenterAtom,
-    atomStoreAtom
+    DataComp
 } from './App_vs_atoms';
 
 const initControlsData = {
@@ -64,8 +64,6 @@ const canvasClassStr = 'absolute left-1/2 w-6/12 h-full block border-l-2 border-
 //------------------------------------------------------------------------
 
 export default function App() {
-    const DataComp = MainDataComp(atomStoreAtom);
-
     return (
         <JotaiProvider>
             <div className='full-screen-base'>

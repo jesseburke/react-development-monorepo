@@ -1,5 +1,6 @@
 import { atom, useAtom } from 'jotai';
 
+import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { LabelDataComp } from '@jesseburke/jotai-data-setup';
 import { FunctionDataComp } from '@jesseburke/jotai-data-setup';
 import { AxesDataComp } from '@jesseburke/jotai-data-setup';
@@ -93,3 +94,5 @@ export const atomStoreAtom = atom({
     bd: boundsData.readWriteAtom,
     cd: cameraData.readWriteAtom
 });
+
+export const DataComp = MainDataComp(atomStoreAtom);

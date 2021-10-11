@@ -7,7 +7,6 @@ import * as THREE from 'three';
 import { OptionsTabComp } from '@jesseburke/components';
 
 import { ThreeSceneComp } from '@jesseburke/three-scene-with-react';
-import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { Grid } from '@jesseburke/three-scene-with-react';
 import { Axes3D } from '@jesseburke/three-scene-with-react';
 import { FunctionGraph3D } from '@jesseburke/three-scene-with-react';
@@ -20,7 +19,7 @@ import {
     labelData,
     cameraData,
     axesData,
-    atomStoreAtom
+    DataComp
 } from './App_atoms';
 
 const initColors = {
@@ -67,8 +66,6 @@ const photoBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
-    const DataComp = MainDataComp(atomStoreAtom);
-
     return (
         <JProvider>
             <div className='full-screen-base'>

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { MainDataComp } from '@jesseburke/jotai-data-setup';
 import { OptionsTabComp } from '@jesseburke/components';
 
 import { SvgScene } from '@jesseburke/svg-scene-with-react';
@@ -13,8 +12,8 @@ import {
     yFuncData,
     svgData,
     curveData,
-    atomStoreAtom,
-    ParamEqInput
+    ParamEqInput,
+    DataComp
 } from './App_svgParamGrapher_atoms';
 
 const btnClassStr =
@@ -27,8 +26,6 @@ const resetBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
-    const DataComp = MainDataComp(atomStoreAtom);
-
     return (
         <div className='full-screen-base'>
             <header
