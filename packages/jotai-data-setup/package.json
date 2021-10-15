@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/jotai-data-setup",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "dependencies": {
         "@jesseburke/basic-utils": "^0.0.1",
         "@jesseburke/components": "^0.0.1",
