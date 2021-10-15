@@ -12,8 +12,8 @@
     "license": "ISC",
     "dependencies": {
         "@jesseburke/components": "^0.0.1",
-        "@jesseburke/jotai-data-setup": "^0.0.5",
-        "@jesseburke/three-scene-with-react": "^0.0.8",
+        "@jesseburke/jotai-data-setup": "^0.0.7",
+        "@jesseburke/three-scene-with-react": "^0.0.9",
         "jotai": "^0.16.11",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
