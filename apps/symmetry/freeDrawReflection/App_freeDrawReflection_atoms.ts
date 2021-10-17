@@ -1,11 +1,8 @@
 import { atom } from 'jotai';
 
-import {
-    AxesDataComp,
-    BoundsDataComp,
-    OrthoCameraDataComp,
-    LineDataComp
-} from '@jesseburke/jotai-data-setup';
+import { AxesDataComp, BoundsDataComp, OrthoCameraDataComp } from '@jesseburke/jotai-data-setup';
+
+import { LineDataComp } from '@jesseburke/three-scene-with-react';
 
 //------------------------------------------------------------------------
 //
@@ -47,4 +44,3 @@ export const axesData = AxesDataComp({
 export const drawingAtom = atom(true);
 
 export const { pt1Atom: linePointAtom, lineDataAtom, component: LineInputComp } = LineDataComp({});
-

@@ -6,13 +6,10 @@ export { default as CurveDataComp } from './data-components/CurveData';
 export { default as FreeDrawPathData } from './data-components/FreeDrawPathData';
 export { default as FunctionDataComp } from './data-components/FunctionData';
 export { default as LabelDataComp } from './data-components/LabelData';
-export { default as LineDataComp } from './data-components/LineData';
 export { default as NumberDataComp } from './data-components/NumberData';
 export { default as OrthoCameraDataComp } from './data-components/OrthoCameraData';
 export { default as PerspCameraData } from './data-components/PerspCameraData';
 export { default as PointDataComp } from './data-components/PointData';
-
-export { default as Line2dFactory, OriginLineFromSlope } from './factories/Line2DFactory';
 
 export { default as CombineReadWriteAtoms } from './CombineRWAtoms';
 export { default as MainDataComp } from './MainDataComp';

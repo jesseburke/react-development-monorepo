@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { atom } from 'jotai';
 
-import { LineDataComp } from '@jesseburke/jotai-data-setup';
+import { LineDataComp } from '@jesseburke/three-scene-with-react';
 
 import { AxesDataComp } from '@jesseburke/jotai-data-setup';
 import { BoundsDataComp } from '@jesseburke/jotai-data-setup';

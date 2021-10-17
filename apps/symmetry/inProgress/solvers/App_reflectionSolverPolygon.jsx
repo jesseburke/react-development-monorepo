@@ -9,7 +9,7 @@ import './styles.css';
 import gsapReflect from '../../../animations/gsapReflect.jsx';
 import gsapTextAnimation from '../../../animations/gsapTextAnimation.jsx';
 
-import { LineDataComp, OriginLineFromSlope } from '@jesseburke/jotai-data-setup';
+import { LineDataComp, OriginLineFromSlope } from '@jesseburke/three-scene-with-react';
 
 import {
     ThreeSceneComp,

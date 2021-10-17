@@ -12,7 +12,7 @@ import { BoundsDataComp } from '@jesseburke/jotai-data-setup';
 import { AnimationData } from '@jesseburke/jotai-data-setup';
 import { PerspCameraData } from '@jesseburke/jotai-data-setup';
 import { OrthoCameraDataComp } from '@jesseburke/jotai-data-setup';
-import { LineDataComp, Line2dFactory } from '@jesseburke/jotai-data-setup';
+import { LineDataComp, Line2dFactory } from '@jesseburke/three-scene-with-react';
 
 //------------------------------------------------------------------------
 //
