@@ -1,6 +1,10 @@
 {
     "name": "@jesseburke/jotai-data-setup",
-    "version": "0.0.6",
+    "version": "0.0.7",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "vite build"
+    },
     "dependencies": {
         "@jesseburke/basic-utils": "^0.0.1",
         "@jesseburke/components": "^0.0.1",
@@ -13,8 +17,7 @@
     },
     "peerDependencies": {
         "jotai": ">=0.16.8",
-        "react": ">=16.8",
-        "three": ">= 0.125.2"
+        "react": ">=17.0.2"
     },
     "devDependencies": {
         "autoprefixer": "^10.3.4",

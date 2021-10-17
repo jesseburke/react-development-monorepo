@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors');
 const plugin = require('tailwindcss/plugin');
 
 module.exports = {
-    purge: ['./*.html', './*.js', './*.tsx', './*.jsx'],
+    purge: ['./**/*.html', './**/*.js', './**/*.tsx', './**/*.jsx', './**/*.ts'],
     darkMode: false, // or 'media' or 'class',
     mode: 'jit',
     theme: {
