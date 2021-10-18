@@ -25,8 +25,9 @@ export default defineConfig({
                     __dirname,
                     'apps/differential-equations-apps/App-sec-order/index.html'
                 ),
-                App_vs: resolve(__dirname, 'public_pages/vibrating_string/index.html'),
+                App_vs: resolve(__dirname, 'apps/vibrating-string/index.html'),
                 App_fg: resolve(__dirname, 'apps/function-grapher-3d/index.html'),
+                three_example: resolve(__dirname, 'apps/three-scene-with-react-example/index.html'),
                 SvgFuncGraph: resolve(__dirname, 'public_pages/svgFuncGrapher/index.html'),
                 SvgParamGraph: resolve(__dirname, 'public_pages/svgParamGrapher/index.html')
                 // FreeDraw: resolve(__dirname, 'apps/symmetry/freeDraw/index.html'),
