@@ -60,7 +60,6 @@
     },
     "workspaces": [
         "packages/*",
-        "apps/*",
-        "apps/symmetry/"
+        "apps/*"
     ]
 }
