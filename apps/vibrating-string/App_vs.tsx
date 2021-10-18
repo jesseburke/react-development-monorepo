@@ -4,10 +4,12 @@ import { Provider as JotaiProvider } from 'jotai';
 
 import * as THREE from 'three';
 
-import '../../styles.css';
+import './styles.css';
 
 import { ThreeSceneComp } from '@jesseburke/three-scene-with-react';
-import CanvasComp from '../../CanvasComps/CanvasComp.jsx';
+import CanvasComp from './CanvasComps/CanvasComp.jsx';
+import Axes2DCanv from './CanvasComps/Axes2D.jsx';
+import FunctionGraph2D from './CanvasComps/FunctionGraph2D.jsx';
 
 import { OptionsTabComp } from '@jesseburke/components';
 
@@ -16,9 +18,6 @@ import { Plane } from '@jesseburke/three-scene-with-react';
 import { Axes3D } from '@jesseburke/three-scene-with-react';
 import { FunctionGraph3D } from '@jesseburke/three-scene-with-react';
 import { CameraControls } from '@jesseburke/three-scene-with-react';
-
-import Axes2DCanv from '../../CanvasComps/Axes2D.jsx';
-import FunctionGraph2D from '../../CanvasComps/FunctionGraph2D.jsx';
 
 import {
     boundsData,
