@@ -122,7 +122,7 @@ export default function ThreeSceneFactory({
         camera.position.set(...initCameraPosition);
 
         if (cameraDebug) {
-            cameraForDebug = new THREE.PerspectiveCamera(fov, aspectRatio, near, far);
+            cameraForDebug = new THREE.PerspectiveCamera(fov, aspectRatio, near, 2 * far);
             cameraForDebug.position.set(50, 50, 50);
         }
     } else {
@@ -144,7 +144,7 @@ export default function ThreeSceneFactory({
                 60, // fov
                 2, // aspect
                 0.1, // near
-                500 // far
+                1000 // far
             );
 
             cameraForDebug.position.set(0, 0, 10);
