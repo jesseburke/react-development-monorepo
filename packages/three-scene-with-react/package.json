@@ -2,7 +2,7 @@
     "name": "@jesseburke/three-scene-with-react",
     "version": "0.0.17",
     "description": "",
-    "main": "dist/output.es.js",
+    "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "vite build"
@@ -12,8 +12,7 @@
     "dependencies": {
         "delaunator": "^5.0.0",
         "emotion": "^10.0.27",
-        "@jesseburke/math-utils": "^0.0.0",
-        "@jesseburke/three-scene-with-react": "^0.0.16"
+        "@jesseburke/math-utils": "^0.0.0"
     },
     "peerDependencies": {
         "jotai": ">=0.16.8",

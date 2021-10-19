@@ -3,7 +3,7 @@ as arguments: labelContainerDiv, initCoordFunc, width, height, where
 initCoordFunc is a function that....
 
 LabelMakers should return an
-object of the form {addLabel, removeLabel, removeAllLabels,
+object of the form: {addLabel, removeLabel, removeAllLabels,
 drawLabels, changeCoordFunc}, where addLabel expects an object of form
 {pos, text, style, anchor} and returns a string. removeLabel expects a
 string that was returned from addLabel, and removes the label that was
