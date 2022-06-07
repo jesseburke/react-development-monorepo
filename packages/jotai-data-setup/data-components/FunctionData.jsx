@@ -42,6 +42,8 @@ export default function FunctionData({
     });
 
     const readWriteAtom = atom(null, (get, set, action) => {
+        console.log('functionData atom called with action.value = ', action.value);
+
         switch (action.type) {
             case 'reset':
                 set(functionStrAtom, initVal);

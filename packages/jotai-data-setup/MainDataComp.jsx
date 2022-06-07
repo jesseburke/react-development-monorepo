@@ -13,7 +13,6 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { myStringify } from '@jesseburke/basic-utils';
 
 export default function MainDataComp(atomStoreAtom) {
-
     // write-only atom; write function is called with
     // one argument, callback. on writing, the atom fetches the
     // atomStore, iterates over the fields of it, calling the
@@ -21,7 +20,7 @@ export default function MainDataComp(atomStoreAtom) {
     // applies myStringify to each object before assigning it as a
     // value of ro.
     const readAndEncodeAtomStoreAtom = atom(null, (get, set, callback) => {
-	const atomStore = get(atomStoreAtom);
+        const atomStore = get(atomStoreAtom);
         let ro = {};
 
         Object.entries(atomStore).forEach(([abbrev, atom]) => {
@@ -33,12 +32,14 @@ export default function MainDataComp(atomStoreAtom) {
             });
         });
 
+        //console.log('readAndEncodeAtomStoreAtom called with ro = ', ro);
+
         callback(ro);
     });
 
     const resetAtomStoreAtom = atom(null, (get, set) => {
-	const atomStore = get(atomStoreAtom);
-	
+        const atomStore = get(atomStoreAtom);
+
         Object.values(atomStore).forEach((atom) => {
             set(atom, {
                 type: 'reset'
@@ -47,12 +48,14 @@ export default function MainDataComp(atomStoreAtom) {
     });
 
     const decodeAndWriteAtomStoreAtom = atom(null, (get, set, newObj) => {
-	const atomStore = get(atomStoreAtom);
-	
+        const atomStore = get(atomStoreAtom);
+
         Object.keys(newObj).forEach((k) => {
+            const newStr = typeof newObj[k] === 'string' ? newObj[k] : queryString.parse(newObj[k]);
+
             set(atomStore[k], {
                 type: 'decodeAndWrite',
-                value: queryString.parse(newObj[k])
+                value: newStr
             });
         });
     });

@@ -106,8 +106,6 @@ export default function BoundsData({
                 className='w-full h-full flex flex-col flex-center justify-center
 		items-center content-center'
             >
-                <div className='py-2'>Direction field bounds</div>
-
                 <div
                     className='flex justify-center items-center
                     content-center h-full py-2'
@@ -185,8 +183,6 @@ export default function BoundsData({
                 className='w-full h-full flex flex-col flex-center justify-center
 		    items-center content-center'
             >
-                <div className='py-2'>Direction field bounds</div>
-
                 <div
                     className='flex justify-center items-center
                         content-center h-full py-2'
