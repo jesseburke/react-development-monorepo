@@ -26,3 +26,4 @@ package-lock.json
 # build files
 *dist*
 
+.DS_Store
