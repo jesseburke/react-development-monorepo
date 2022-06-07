@@ -1,10 +1,4 @@
 {
-    "packages": [
-        "packages/*",
-        "apps/differential-equations-apps/*",
-        "apps/symmetry/*",
-        "apps/vibrating-string-app",
-        "apps/function-grapher-3d"
-    ],
+    "packages": ["packages/*"],
     "version": "independent"
 }
