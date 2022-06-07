@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/three-scene-with-react",
-    "version": "0.0.17",
+    "version": "0.0.18",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -10,21 +10,21 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@jesseburke/math-utils": "^0.0.1",
         "delaunator": "^5.0.0",
-        "emotion": "^10.0.27",
-        "@jesseburke/math-utils": "^0.0.0"
+        "emotion": "^10.0.27"
     },
     "peerDependencies": {
+        "gsap": ">=3.6.0",
         "jotai": ">=0.16.8",
         "react": ">=17.0.2",
-        "three": ">=0.125.2",
-        "gsap": ">=3.6.0"
+        "three": ">=0.125.2"
     },
     "devDependencies": {
+        "@vitejs/plugin-react-refresh": "^1.1.0",
         "autoprefixer": "^10.3.4",
         "postcss": "^8.3.6",
         "tailwindcss": "^2.2.15",
-        "vite": "^2.5.7",
-        "@vitejs/plugin-react-refresh": "^1.1.0"
+        "vite": "^2.5.7"
     }
 }

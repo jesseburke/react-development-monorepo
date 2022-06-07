@@ -1,14 +1,14 @@
 {
     "name": "@jesseburke/jotai-data-setup",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "vite build"
     },
     "dependencies": {
-        "@jesseburke/basic-utils": "^0.0.1",
-        "@jesseburke/components": "^0.0.1",
-        "@jesseburke/math-utils": "^0.0.0",
+        "@jesseburke/basic-utils": "^0.1.0",
+        "@jesseburke/components": "^0.1.0",
+        "@jesseburke/math-utils": "^0.0.1",
         "@radix-ui/react-checkbox": "^0.0.16",
         "@radix-ui/react-tooltip": "^0.0.20",
         "gsap": "^3.6.0",

@@ -1,10 +1,10 @@
 {
     "name": "@jesseburke/svg-scene-with-react",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "dependencies": {
-        "@jesseburke/basic-utils": "^0.0.1",
-        "@jesseburke/jotai-data-setup": "^0.0.7",
-        "@jesseburke/math-utils": "^0.0.0",
+        "@jesseburke/basic-utils": "^0.1.0",
+        "@jesseburke/jotai-data-setup": "^0.0.8",
+        "@jesseburke/math-utils": "^0.0.1",
         "@radix-ui/react-tooltip": "^0.0.20",
         "points-on-curve": "^0.2.0"
     },

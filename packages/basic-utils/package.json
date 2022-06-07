@@ -1,9 +1,9 @@
 {
     "name": "@jesseburke/basic-utils",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "peerDependencies": {
-        "query-string-esm": "^6.13.6",
         "jotai": ">=0.16.8",
+        "query-string-esm": "^6.13.6",
         "react": ">=16.8"
     }
 }
