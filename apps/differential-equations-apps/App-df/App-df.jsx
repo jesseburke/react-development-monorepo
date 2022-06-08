@@ -61,7 +61,6 @@ const photoBtnClassStr = btnClassStr + ' bottom-8';
 //------------------------------------------------------------------------
 
 export default function App() {
-    
     return (
         <JotaiProvider>
             <div className='full-screen-base'>

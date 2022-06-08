@@ -1,18 +1,12 @@
-import React, {
-    useState,
-    useRef,
-    useEffect,
-    useLayoutEffect,
-    useCallback,
-    cloneElement
-} from 'react';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
-import * as Tooltip from '@radix-ui/react-tooltip';
+import { cloneElement, useCallback, useEffect, useLayoutEffect } from 'react';
 
 import { myStringify } from '@jesseburke/basic-utils';
 
 export default function MainDataComp(atomStoreAtom) {
+    //
     // write-only atom; write function is called with
     // one argument, callback. on writing, the atom fetches the
     // atomStore, iterates over the fields of it, calling the
@@ -37,6 +31,8 @@ export default function MainDataComp(atomStoreAtom) {
         callback(ro);
     });
 
+    //
+    // write-only atom; write function called without arguments.
     const resetAtomStoreAtom = atom(null, (get, set) => {
         const atomStore = get(atomStoreAtom);
 
