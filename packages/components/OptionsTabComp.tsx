@@ -8,6 +8,11 @@ export default function OptionsTabComp({ nameComponentArray, className }) {
 
     const optionsOpenCB = useCallback(() => setOptionsOpen((o) => !o), []);
 
+    const preventDefaultCB = useCallback((e) => {
+        //console.log('preventDefaultCB called');
+        e.preventDefault();
+    });
+
     const triggerArray = nameComponentArray.map(([name, _]) => (
         <TabTrigger value={name} key={name}>
             {name}
@@ -26,7 +31,13 @@ export default function OptionsTabComp({ nameComponentArray, className }) {
                 {optionsOpen ? 'Show options' : 'Hide options'}
             </Popover.Trigger>
 
-            <Popover.Content className='relative border-3 p-6 bg-gray-50 w-full'>
+            <Popover.Content
+                className='relative border-3 p-6
+bg-gray-50 w-full'
+                onFocusOutside={preventDefaultCB}
+                onPointerDownOutside={preventDefaultCB}
+                onInteractOutside={preventDefaultCB}
+            >
                 <TabsComp triggerArray={triggerArray} contentArray={contentArray} />
             </Popover.Content>
         </Popover.Root>
