@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/three-scene-with-react",
-    "version": "0.0.18",
+    "version": "0.0.19",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -10,7 +10,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@jesseburke/math-utils": "^0.0.1",
+        "@jesseburke/math-utils": "^0.1.0",
         "delaunator": "^5.0.0",
         "emotion": "^10.0.27"
     },

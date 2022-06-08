@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/function-grapher-3d",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "",
     "scripts": {
         "dev": "NODE_ENV=development vite",

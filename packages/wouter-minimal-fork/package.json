@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/wouter-minimal-fork",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "An even smaller version of a very small router.",
     "author": "Alexey Taktarov <molefrog@gmail.com>",
     "license": "ISC",

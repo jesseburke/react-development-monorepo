@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/three-scene-with-react-example",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "",
     "scripts": {
         "dev": "NODE_ENV=development vite",

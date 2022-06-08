@@ -1,6 +1,6 @@
 {
     "name": "@jesseburke/symmetry-apps",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "",
     "scripts": {
         "dev": "NODE_ENV=development vite",
@@ -12,9 +12,9 @@
     "license": "ISC",
     "dependencies": {
         "@jesseburke/components": "^0.0.1",
-        "@jesseburke/jotai-data-setup": "^0.0.8",
-        "@jesseburke/three-scene-with-react": "^0.0.18",
-        "@jesseburke/wouter-minimal-fork": "^0.1.0",
+        "@jesseburke/jotai-data-setup": "^0.0.9",
+        "@jesseburke/three-scene-with-react": "^0.0.19",
+        "@jesseburke/wouter-minimal-fork": "^0.1.1",
         "jotai": "^0.16.11",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
