@@ -9,6 +9,7 @@
         "@jesseburke/basic-utils": "^0.1.1",
         "@jesseburke/components": "^0.1.1",
         "@jesseburke/math-utils": "^0.1.0",
+        "@jesseburke/wouter-minimal-fork": "^0.1.1",
         "@radix-ui/react-checkbox": "^0.0.16",
         "@radix-ui/react-tooltip": "^0.0.20",
         "gsap": "^3.6.0",

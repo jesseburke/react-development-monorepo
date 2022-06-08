@@ -11,6 +11,7 @@
     "license": "ISC",
     "dependencies": {
         "@jesseburke/math-utils": "^0.1.0",
+        "@jesseburke/wouter-minimal-fork": "^0.1.1",
         "delaunator": "^5.0.0",
         "emotion": "^10.0.27"
     },

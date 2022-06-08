@@ -11,7 +11,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@jesseburke/components": "^0.0.1",
+        "@jesseburke/components": "^0.1.1",
         "@jesseburke/jotai-data-setup": "^0.0.9",
         "@jesseburke/three-scene-with-react": "^0.0.19",
         "@jesseburke/wouter-minimal-fork": "^0.1.1",

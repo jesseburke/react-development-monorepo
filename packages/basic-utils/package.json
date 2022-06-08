@@ -5,5 +5,8 @@
         "jotai": ">=0.16.8",
         "query-string-esm": "^6.13.6",
         "react": ">=16.8"
+    },
+    "dependencies": {
+        "@jesseburke/wouter-minimal-fork": "^0.1.1"
     }
 }

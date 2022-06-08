@@ -2,6 +2,7 @@
     "name": "@jesseburke/components",
     "version": "0.1.1",
     "dependencies": {
+        "@jesseburke/wouter-minimal-fork": "^0.1.1",
         "@radix-ui/react-popover": "^0.1.0",
         "@radix-ui/react-tabs": "^0.0.15"
     },
