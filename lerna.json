@@ -1,4 +1,7 @@
 {
-    "packages": ["packages/*"],
+    "packages": ["packages/*", "apps/*"],
+    "publish": {
+        "ignoreChanges": ["apps/*"]
+    },
     "version": "independent"
 }
