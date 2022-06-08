@@ -39,12 +39,12 @@ export default function BoundsData({
 
                 let ro: BoundsMin = {};
 
-                if (xMax) ro.xp = xMax;
-                if (xMin) ro.xm = xMin;
-                if (yMax) ro.yp = yMax;
-                if (yMin) ro.ym = yMin;
-                if (zMax) ro.zp = zMax;
-                if (zMin) ro.zm = zMin;
+                if (xMax || xMax === 0) ro.xp = xMax;
+                if (xMin || xMin === 0) ro.xm = xMin;
+                if (yMax || yMax === 0) ro.yp = yMax;
+                if (yMin || yMin === 0) ro.ym = yMin;
+                if (zMax || zMax === 0) ro.zp = zMax;
+                if (zMin || zMin === 0) ro.zm = zMin;
 
                 if (isEmpty(ro)) return;
 
@@ -53,7 +53,7 @@ export default function BoundsData({
                 break;
 
             case 'decodeAndWrite':
-                const rawObj = action.value;
+                const rawObj = queryString.parse(action.value);
 
                 const newKeys = Object.keys(rawObj);
 

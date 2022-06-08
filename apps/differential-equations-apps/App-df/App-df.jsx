@@ -77,8 +77,8 @@ export default function App() {
                             ['Axes', axesData.component],
                             ['Bounds', boundsData.component],
                             ['Camera', orthoCameraData.component],
-                            ['Solution curve', solutionCurveData.component],
-                            ['Variable labels', labelData.component]
+                            ['Solution curve', solutionCurveData.component]
+                            //['Variable labels', labelData.component]
                         ]}
                     />
                 </header>

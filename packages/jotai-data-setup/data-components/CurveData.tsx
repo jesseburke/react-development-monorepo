@@ -45,7 +45,7 @@ export default function CurveData(args: CurveData2 = {}) {
                 break;
 
             case 'decodeAndWrite':
-                const rawObj: CurveData2Min = action.value;
+                const rawObj: CurveData2Min = queryString.parse(action.value);
 
                 const newKeys = Object.keys(rawObj);
 

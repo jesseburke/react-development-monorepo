@@ -20,8 +20,8 @@ export default function NumberData(initVal = 0) {
                 break;
 
             case 'decodeAndWrite':
-                const rawObj = action.value;
-
+                const rawObj = Number(action.value);
+                console.log('rawObj inside NumberData is ', rawObj);
                 const newKeys = Object.keys(rawObj);
 
                 const nro = {};

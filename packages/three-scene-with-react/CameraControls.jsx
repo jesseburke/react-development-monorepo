@@ -8,7 +8,7 @@ export default function CameraControls({ cameraDataAtom, threeCBs }) {
         if (!threeCBs) return;
 
         const target = cameraData.target;
-        //console.log('cameraData.center = ', center);
+        //console.log('cameraData.target = ', target);
 
         threeCBs.setControlsTarget(target);
     }, [threeCBs, cameraData.target]);

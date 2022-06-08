@@ -41,7 +41,7 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
                 break;
 
             case 'decodeAndWrite':
-                const rawObj = action.value;
+                const rawObj = queryString.parse(action.value);
 
                 const newKeys = Object.keys(rawObj);
 
@@ -52,7 +52,9 @@ export default function OrthoCameraData(args: OrthoCamera = {}) {
 
                     nro.target = [Number(t[0]), Number(t[1]), Number(t[2])];
                 }
-                if (newKeys.includes('z')) nro.zoom = Number(rawObj.z);
+                if (newKeys.includes('z')) {
+                    nro.zoom = Number(rawObj.z);
+                }
                 if (newKeys.includes('p')) {
                     const ps = queryString.parse(rawObj.p);
 

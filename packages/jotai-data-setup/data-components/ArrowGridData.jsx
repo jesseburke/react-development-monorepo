@@ -50,7 +50,7 @@ export default function ArrowGridData(args) {
                 break;
 
             case 'decodeAndWrite':
-                const rawObj = action.value;
+                const rawObj = queryString.parse(action.value);
 
                 const newKeys = Object.keys(rawObj);
 

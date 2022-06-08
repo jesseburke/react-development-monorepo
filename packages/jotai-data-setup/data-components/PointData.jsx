@@ -43,7 +43,7 @@ export default function PointData(initArgs) {
                 break;
 
             case 'decodeAndWrite':
-                const rawObj = action.value;
+                const rawObj = queryString.parse(action.value);
 
                 const newKeys = Object.keys(rawObj);
 
@@ -60,12 +60,14 @@ export default function PointData(initArgs) {
     const component = ({ inputStr = '', prefixStr = '', infixStr = ' , ', postfixStr = '' }) => {
         const [point, setPoint] = useAtom(ptAtom);
 
-        const setX = useCallback((newX) => setPoint((old) => ({ ...old, x: Number(newX) })), [
-            setPoint
-        ]);
-        const setY = useCallback((newY) => setPoint((old) => ({ ...old, y: Number(newY) })), [
-            setPoint
-        ]);
+        const setX = useCallback(
+            (newX) => setPoint((old) => ({ ...old, x: Number(newX) })),
+            [setPoint]
+        );
+        const setY = useCallback(
+            (newY) => setPoint((old) => ({ ...old, y: Number(newY) })),
+            [setPoint]
+        );
 
         return (
             <div className='p-2'>

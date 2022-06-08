@@ -39,17 +39,18 @@ export default function CombineReadWriteAtoms(atomsToCombine) {
                 break;
 
             case 'decodeAndWrite':
-         
-                const rawObj = action.value;
+                const rawObj = queryString.parse(action.value);
                 const newKeys = Object.keys(rawObj);
 
+                console.log('rawObj inside CombineRWAtoms is ', rawObj);
+                console.log(queryString.parse('val=0.0625'));
                 let nro = {};
 
                 Object.entries(atomsToCombine).forEach(([abbrev, atom]) => {
                     if (newKeys.includes(abbrev)) {
                         set(atom, {
                             type: 'decodeAndWrite',
-                            value: queryString.parse(rawObj[abbrev])
+                            value: queryString.parse(rawObj[abbrev]).val
                         });
                     }
                 });
