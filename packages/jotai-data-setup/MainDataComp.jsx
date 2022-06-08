@@ -1,7 +1,7 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { atom, useAtom } from 'jotai';
 import queryString from 'query-string-esm';
-import { cloneElement, useCallback, useEffect, useLayoutEffect } from 'react';
+import React, { cloneElement, useCallback, useEffect, useLayoutEffect } from 'react';
 
 import { myStringify } from '@jesseburke/basic-utils';
 
