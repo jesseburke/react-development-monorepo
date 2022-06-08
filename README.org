@@ -8,7 +8,10 @@
 
 *** differential equations apps
     https://github.com/jesseburke/differential-equations-apps
-   
+
+*** vibrating string app
+    https://github.com/jesseburke/vibrating-string-app
+    
 *** symmetry apps   
     https://github.com/jesseburke/symmetry-apps
 
