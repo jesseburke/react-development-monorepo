@@ -4,6 +4,12 @@
   React and ThreeJS, and examples of such math apps. I am working to
   extract more of the monorepo to individual repos.
 
+  To install this repo, after cloning, run
+  #+begin_src sh
+  npx lerna bootstrap
+  #+end_src
+  and answer 'yes' if asked to install lerna.
+  
 ** apps  
 
 *** differential equations apps
