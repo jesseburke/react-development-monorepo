@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { ParametricGeometry } from 'three/examples/jsm/geometries/ParametricGeometry';
 
 // func: f(x,y) = z
 export default function FunctionGraph3DGeom({
@@ -9,7 +10,7 @@ export default function FunctionGraph3DGeom({
     const xRange = xMax - xMin;
     const yRange = yMax - yMin;
 
-    const funcGeom = new THREE.ParametricBufferGeometry(
+    const funcGeom = new ParametricGeometry(
         (u, v, vect) => vect.set(u, v, func(u * xRange + xMin, v * yRange + yMin)),
         meshSize,
         meshSize
