@@ -12,7 +12,7 @@ import { ArrowGrid } from '@jesseburke/three-scene-with-react';
 import { IntegralCurve } from '@jesseburke/three-scene-with-react';
 import { CameraControls } from '@jesseburke/three-scene-with-react';
 
-import '../styles.css';
+import '../../styles.css';
 
 import {
     arrowGridData,

@@ -21,7 +21,7 @@ import {
     DataComp
 } from './App_resonance_atoms.jsx';
 
-import '../styles.css';
+import '../../styles.css';
 
 //------------------------------------------------------------------------
 //
